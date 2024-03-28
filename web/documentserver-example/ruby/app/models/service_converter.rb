@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 #
-# (c) Copyright Ascensio System SIA 2023
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -108,6 +108,8 @@ class ServiceConverter
 
     # add an error message to the error message template depending on the error code
     case error_code
+    when -9
+      error_message = 'Error occurred in the ConvertService.ashx: Error conversion output format'
     when -8
       error_message = 'Error occurred in the ConvertService.ashx: Error document VKey'
     when -7
@@ -139,7 +141,7 @@ class ServiceConverter
 
     error_element = file_result['error']
     unless error_element.nil? # if an error occurs
-      process_convert_service_responce_error(Integer(error_element, 10)) # get an error message
+      process_convert_service_responce_error(Integer(error_element)) # get an error message
     end
 
     is_end_convert = file_result['endConvert'] # check if the conversion is completed
@@ -165,7 +167,13 @@ class ServiceConverter
 
       percent_element = file_result['percent'] # get the percentage value
 
-      result_percent = Integer(percent_element, 10) unless percent_element.nil?
+      result_percent = unless percent_element.nil?
+                         if percent_element.is_a?(String)
+                           Integer(percent_element, 10)
+                         else
+                           Integer(percent_element)
+                         end
+                       end
 
       result_percent = 99 if result_percent >= 100
 

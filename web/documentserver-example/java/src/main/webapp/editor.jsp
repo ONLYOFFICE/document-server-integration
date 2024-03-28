@@ -12,7 +12,7 @@
         <meta name="mobile-web-app-capable" content="yes" />
         <!--
         *
-        * (c) Copyright Ascensio System SIA 2023
+        * (c) Copyright Ascensio System SIA 2024
         *
         * Licensed under the Apache License, Version 2.0 (the "License");
         * you may not use this file except in compliance with the License.
@@ -262,6 +262,43 @@
             document.location.reload();
         };
 
+        var onRequestUsers = function (event) {
+            if (event && event.data) {
+                var c = event.data.c;
+            }
+
+            switch (c) {
+                case "info":
+                    users = [];
+                    var allUsers = <%=(String) request.getAttribute("usersInfo")%>;
+                    for (var i = 0; i < event.data.id.length; i++) {
+                        for (var j = 0; j < allUsers.length; j++) {
+                            if (allUsers[j].id == event.data.id[i]) {
+                                users.push(allUsers[j]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case "protect":
+                    var users = <%=(String) request.getAttribute("usersForProtect")%>;
+                    break;
+                default:
+                    users = <%=(String) request.getAttribute("usersForMentions")%>;
+            }
+
+            docEditor.setUsers({
+                "c": c,
+                "users": users,
+            });
+        };
+
+        var onRequestSendNotify = function(event) {  // the user is mentioned in a comment
+            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+            var data = JSON.stringify(event.data);
+            innerAlert("onRequestSendNotify: " + data);
+        };
+
         config = JSON.parse('<%= FileModel.serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -274,61 +311,26 @@
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestSelectDocument": onRequestSelectDocument,
-            "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
-            "onRequestRestore": onRequestRestore,
-            "onRequestHistory": onRequestHistory,
-            "onRequestHistoryData": onRequestHistoryData,
-            "onRequestHistoryClose": onRequestHistoryClose
+            "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet
         };
-
-        <%
-            String usersForMentions = (String) request.getAttribute("usersForMentions");
-            String usersInfo = (String) request.getAttribute("usersInfo");
-            String usersForProtect = (String) request.getAttribute("usersForProtect");
-        %>
 
         if (config.editorConfig.user.id) {
             // add mentions for not anonymous users
-            config.events['onRequestUsers'] = function (event) {
-                if (event && event.data){
-                    var c = event.data.c;
-                }
-                switch (c) {
-                    case "info":
-                        users = [];
-                        var allUsers = <%=usersInfo%>;
-                        for (var i = 0; i < event.data.id.length; i++) {
-                            for (var j = 0; j < allUsers.length; j++) {
-                                if (allUsers[j].id == event.data.id[i]) {
-                                    users.push(allUsers[j]);
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    case "protect":
-                        var users = <%=usersForProtect%>;
-                        break;
-                    default:
-                        users = <%=usersForMentions%>;
-                }
-                docEditor.setUsers({
-                    "c": c,
-                    "users": users,
-                });
-            };
+            config.events['onRequestUsers'] = onRequestUsers;
             // the user is mentioned in a comment
-            config.events['onRequestSendNotify'] = function (event) {
-                event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-                var data = JSON.stringify(event.data);
-                innerAlert("onRequestSendNotify: " + data);
-            };
+            config.events['onRequestSendNotify'] = onRequestSendNotify;
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
             config.events['onRequestReferenceData'] = onRequestReferenceData;
             // prevent switch the document from the viewing into the editing mode for anonymous users
             config.events['onRequestEditRights'] = onRequestEditRights;
             config.events['onRequestOpen'] = onRequestOpen;
+            config.events['onRequestHistory'] = onRequestHistory;
+            config.events['onRequestHistoryData'] = onRequestHistoryData;
+            if (config.editorConfig.user.id != "uid-3") {
+                config.events['onRequestHistoryClose'] = onRequestHistoryClose;
+                config.events['onRequestRestore'] = onRequestRestore;
+            }
         }
 
         if (config.editorConfig.createUrl) {
@@ -336,12 +338,6 @@
         };
 
         var сonnectEditor = function () {
-            if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
-                && DocsAPI.DocEditor.version().split(".")[0] < 7) {
-                innerAlert("Please update ONLYOFFICE Docs to version 7.0 to work on fillable forms online.");
-                return;
-            }
-
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 

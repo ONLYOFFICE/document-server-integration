@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,15 +45,13 @@ exports.registerRoutes = function registerRoutes(app) {
   app.get('/wopi', async (req, res) => {
     req.DocManager = new DocManager(req, res);
 
-    await utils.initWopi(req.DocManager);
-
     // get the wopi discovery information
     const actions = await utils.getDiscoveryInfo();
     const wopiEnable = actions.length !== 0;
     const docsExtEdit = []; // Supported extensions for WOPI
 
     actions.forEach((el) => {
-      if (el.name === 'edit') docsExtEdit.push(`.${el.ext}`);
+      if (el.name === 'edit') docsExtEdit.push(`${el.ext}`);
     });
 
     // Checking supported extensions
@@ -110,8 +108,6 @@ exports.registerRoutes = function registerRoutes(app) {
   app.get('/wopi-action/:id', async (req, res) => {
     try {
       req.DocManager = new DocManager(req, res);
-
-      await utils.initWopi(req.DocManager);
 
       let fileName = req.DocManager.getCorrectName(req.params.id);
       const fileExt = fileUtility.getFileExtension(fileName, true); // get the file extension from the request

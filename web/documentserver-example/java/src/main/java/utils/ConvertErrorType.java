@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,8 @@ public enum ConvertErrorType {
     UNEXPECTED_GUID_ERROR(-5, "Error unexpected guid"),
     DATABASE_ERROR(-6, "Error database"),
     DOCUMENT_REQUEST_ERROR(-7, "Error document request"),
-    DOCUMENT_VKEY_ERROR(-8, "Error document VKey");
+    DOCUMENT_VKEY_ERROR(-8, "Error document VKey"),
+    CONVERSION_OUTPUT_FORMAT_ERROR(-9, "Error conversion output format");
 
     private final int code;
     private final String label;

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,9 +114,15 @@ public class FileModel {
         editorConfig.getUser().setImage(user.getAvatar() ? DocumentManager.getServerUrl(false)
         + "/css/img/" + user.getId() + ".png" : null);
 
-        // write the absolute URL to the file location
-        editorConfig.getCustomization().getGoback()
+        if (user.getGoback() != null) {
+            // write the absolute URL to the file location
+            editorConfig.getCustomization().getGoback()
                 .setUrl(DocumentManager.getServerUrl(false) + "/IndexServlet");
+            editorConfig.getCustomization().getGoback()
+                .setText(user.getGoback().getText());
+            editorConfig.getCustomization().getGoback()
+                .setBlank(user.getGoback().getBlank());
+        }
 
         changeType(mode, type, user, fileName);
     }
@@ -291,7 +297,7 @@ public class FileModel {
             edit = canEdit && (modeParam.equals("edit") || modeParam.equals("view") || modeParam.equals("filter")
                     || modeParam.equals("blockcontent"));
             print = !user.getDeniedPermissions().contains("print");
-            fillForms = !modeParam.equals("view") && !modeParam.equals("comment") && !modeParam.equals("embedded")
+            fillForms = !modeParam.equals("view") && !modeParam.equals("comment")
                     && !modeParam.equals("blockcontent");
             modifyFilter = !modeParam.equals("filter");
             modifyContentControl = !modeParam.equals("blockcontent");
@@ -601,6 +607,8 @@ public class FileModel {
 
             public class Goback {
                 private String url;
+                private String text;
+                private Boolean blank;
 
                 public String getUrl() {
                     return url;
@@ -608,6 +616,22 @@ public class FileModel {
 
                 public void setUrl(final String urlParam) {
                     this.url = urlParam;
+                }
+
+                public String getText() {
+                    return text;
+                }
+
+                public void setText(final String textParam) {
+                    this.text = textParam;
+                }
+
+                public Boolean getBlank() {
+                    return blank;
+                }
+
+                public void setBlank(final Boolean blankParam) {
+                    this.blank = blankParam;
                 }
             }
         }

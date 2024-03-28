@@ -5,7 +5,7 @@ namespace Example\Helpers;
 use function Example\sendlog;
 
 /**
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,9 @@ final class ExampleUsers
             "Can’t print the file",
             "Can create new files from the editor",
             "Can see the information about Group2 users",
-            "Can’t submit forms"
+            "Can’t submit forms",
+            "Can't close history",
+            "Can't restore the file version"
         ];
         $this->user0Description = [
             "The name is requested when the editor is opened",
@@ -91,7 +93,8 @@ final class ExampleUsers
                 [],
                 $this->user1Description,
                 true,
-                true
+                true,
+                ["blank" => false,]
             ),
             new Users(
                 "uid-2",
@@ -109,7 +112,8 @@ final class ExampleUsers
                 [],
                 $this->user2Description,
                 false,
-                true
+                true,
+                ["text" => "Go to Documents",]
             ),
             new Users(
                 "uid-3",
@@ -127,7 +131,8 @@ final class ExampleUsers
                 ["copy", "download", "print"],
                 $this->user3Description,
                 false,
-                false
+                false,
+                null
             ),
             new Users(
                 "uid-0",
@@ -141,7 +146,8 @@ final class ExampleUsers
                 ["protect"],
                 $this->user0Description,
                 false,
-                false
+                false,
+                null
             ),
         ];
     }

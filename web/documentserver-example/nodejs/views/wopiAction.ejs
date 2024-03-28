@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width" />
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2023
+    * (c) Copyright Ascensio System SIA 2024
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@
             overflow: hidden;
             -ms-content-zooming: none;
         }
-        
+
         #office_frame {
             width: 100%;
             height: 100%;
@@ -66,11 +66,33 @@
         office_frame.title = 'Office Frame';
         office_frame.setAttribute('allowfullscreen', 'true');
 
-        office_frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-popups allow-top-navigation allow-popups-to-escape-sandbox allow-downloads allow-modals');
         office_frame.setAttribute('allow', 'autoplay camera microphone display-capture');
         frameholder.appendChild(office_frame);
 
         document.getElementById('office_form').submit();
+
+        var _onMessage = function(msg) {
+            var data = msg.data;
+            if (Object.prototype.toString.apply(data) !== '[object String]' || !window.JSON) {
+                return;
+            }
+
+            var cmd = JSON.parse(data);
+            if (cmd) {
+                if ( cmd.MessageId == 'App_LoadingStatus' ) {
+                    var fixSize = function() {
+                        document.getElementsByTagName("iframe")[0].style.height = window.innerHeight + "px";
+                    }
+
+                    fixSize();
+                    window.addEventListener("orientationchange", fixSize);
+                }
+            }
+        };
+
+        window.addEventListener('message', function (e) {
+            _onMessage(e);
+        });
     </script>
 
 </body>

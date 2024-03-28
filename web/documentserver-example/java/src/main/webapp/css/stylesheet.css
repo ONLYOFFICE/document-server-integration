@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -228,6 +228,33 @@ label .checkbox {
 .button.gray:not(.disable):hover {
     border: 1px solid #FF6F3D;
     color: #FF6F3D;
+}
+
+.button.file-type {
+    font-size: 11px;
+    color: #FFFFFF;
+    padding: 8px 8px;
+    margin-right: 10px;
+}
+
+.button.file-type.disable {
+    cursor: default;
+}
+
+.button.file-type.pale {
+    opacity: 30%;
+}
+
+.button.file-type.document {
+    background: #446995;
+}
+
+.button.file-type.spreadsheet {
+    background: #40865C;
+}
+
+.button.file-type.presentation {
+    background: #AA5252;
 }
 
 .upload-panel {
@@ -595,6 +622,29 @@ footer table tr td:first-child {
     width: 4%;
 }
 
+.storedHeader {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.storedHeaderClearAll {
+    padding-right: 52px;
+}
+
+.clear-all {
+    display: inline-block;
+    width: 100px;
+    padding: 2px;
+    outline: 1px solid #E5E5E5;
+    text-align: center;
+    cursor:pointer;
+    text-transform: uppercase;
+    background-color: #F5F5F5;
+    color: #666666;
+}
+
 .select-user {
     color: #444444;
     font-family: Open Sans;
@@ -746,6 +796,16 @@ html {
 
 .user-descr > b {
     margin-left: 25px;
+}
+
+.buttonsMobile.indent{
+    padding-left: 35px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.invisible {
+    display: none;
 }
 
 .tooltip {

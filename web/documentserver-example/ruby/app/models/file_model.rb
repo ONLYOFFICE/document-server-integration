@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 #
-# (c) Copyright Ascensio System SIA 2023
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -122,6 +122,9 @@ class FileModel
         url: "#{create_url}&sample=true"
       }
     ]
+    unless @user.goback.nil?
+      @user.goback[:url] = DocumentHelper.get_server_url(false)
+    end
 
     config = {
       type:,
@@ -143,7 +146,7 @@ class FileModel
           download: @user.denied_permissions.exclude?('download'),
           edit: can_edit && ['edit', 'view', 'filter', 'blockcontent'].include?(editors_mode),
           print: @user.denied_permissions.exclude?('print'),
-          fillForms: ['view', 'comment', 'embedded', 'blockcontent'].exclude?(editors_mode),
+          fillForms: ['view', 'comment', 'blockcontent'].exclude?(editors_mode),
           modifyFilter: !editors_mode.eql?('filter'),
           modifyContentControl: !editors_mode.eql?('blockcontent'),
           review: can_edit && (editors_mode.eql?('edit') || editors_mode.eql?('review')),
@@ -180,7 +183,7 @@ class FileModel
           id: @user.id.eql?('uid-0') ? nil : @user.id,
           name: @user.name,
           group: @user.group,
-          image: @user.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{@user.id}.png" : nil
+          image: @user.avatar ? "#{DocumentHelper.get_server_url(false)}/assets/#{@user.id}.png" : nil
         },
         embedded: { # the parameters for the embedded document type
           # the absolute URL that will allow the document to be saved onto the user personal computer
@@ -197,9 +200,7 @@ class FileModel
           feedback: true, # the Feedback & Support menu button display
           forcesave: false, # adding the request for the forced file saving to the callback handler
           submitForm: submit_form, # the Submit form button state
-          goback: {
-            url: DocumentHelper.get_server_url(false)
-          }
+          goback: @user.goback.nil? ? '' : @user.goback
         }
       }
     }
@@ -261,8 +262,7 @@ class FileModel
         data_obj['url'] =
           if i == cur_ver
             DocumentHelper.get_download_url(
-              file_name,
-              true
+              file_name
             )
           else
             DocumentHelper.get_historypath_uri(
@@ -303,22 +303,20 @@ class FileModel
 
           prev = hist_data[(i - 2).to_s] # get the history data from the previous file version
           # write key and url information about previous file version with optional direct url
-          data(
-            obj['previous'] = if enable_direct_url? == true
-                                { # write key and url information about previous file version with optional directUrl
-                                  fileType: prev['fileType'],
-                                  key: prev['key'],
-                                  url: prev['url'],
-                                  directUrl: prev['directUrl']
-                                }
-                              else
-                                {
-                                  fileType: prev['fileType'],
-                                  key: prev['key'],
-                                  url: prev['url']
-                                }
-                              end
-          )
+          data_obj['previous'] = if enable_direct_url? == true
+                                   { # write key and url information about previous file version with optional directUrl
+                                     fileType: prev['fileType'],
+                                     key: prev['key'],
+                                     url: prev['url'],
+                                     directUrl: prev['directUrl']
+                                   }
+                                 else
+                                   {
+                                     fileType: prev['fileType'],
+                                     key: prev['key'],
+                                     url: prev['url']
+                                   }
+                                 end
 
           diff_path = [hist_dir, (i - 1).to_s, 'diff.zip'].join(File::SEPARATOR)
           if File.exist?(diff_path)
@@ -355,14 +353,14 @@ class FileModel
     # direct url to the image
     insert_image = if enable_direct_url? == true
                      {
-                       fileType: 'png', # image file type
-                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.png", # server url to the image
-                       directUrl: "#{DocumentHelper.get_server_url(false)}/assets/logo.png" # direct url to the image
+                       fileType: 'svg', # image file type
+                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.svg", # server url to the image
+                       directUrl: "#{DocumentHelper.get_server_url(false)}/assets/logo.svg" # direct url to the image
                      }
                    else
                      {
-                       fileType: 'png', # image file type
-                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
+                       fileType: 'svg', # image file type
+                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.svg" # server url to the image
                      }
                    end
 
@@ -456,7 +454,7 @@ class FileModel
         templates: user_info.templates,
         avatar: user_info.avatar
       }
-      u['image'] = user_info.avatar ? "#{DocumentHelper.get_server_url(true)}/assets/#{user_info.id}.png" : nil
+      u['image'] = user_info.avatar ? "#{DocumentHelper.get_server_url(false)}/assets/#{user_info.id}.png" : nil
       users_info.push(u)
     end
     users_info

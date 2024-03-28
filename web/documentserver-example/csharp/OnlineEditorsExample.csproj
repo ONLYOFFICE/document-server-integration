@@ -145,7 +145,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Themes\images\loader16.gif" />
-    <Content Include="App_Themes\images\logo.png" />
     <Content Include="App_Themes\jquery-ui.css" />
     <Content Include="App_Themes\stylesheet.css" />
     <Content Include="DocEditor.aspx" />

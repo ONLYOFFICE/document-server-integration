@@ -221,9 +221,19 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
 
     @Override
     public Customization getCustomization(final String fileId) {
+        com.onlyoffice.integration.entities.User appUser = userService.getCurrentUser();
+
         Goback goback = Goback.builder()
                 .url(getUrlManager().getGobackUrl(fileId))
                 .build();
+
+
+        if (appUser != null && appUser.getGoback() != null) {
+            goback.setText(appUser.getGoback().getText());
+            goback.setBlank(appUser.getGoback().getBlank());
+        } else {
+            goback.setUrl("");
+        }
 
         Customization customization = Customization.builder()
                 .autosave(true) // if the Autosave menu option is enabled or disabled
@@ -341,7 +351,6 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
         permissions.setFillForms(
                 !action.equals(Action.view)
                         && !action.equals(Action.comment)
-                        && !action.equals(Action.embedded)
                         && !action.equals(Action.blockcontent)
         );
 

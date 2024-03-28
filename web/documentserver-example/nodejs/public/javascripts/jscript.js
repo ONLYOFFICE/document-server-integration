@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,15 @@
 var language;
 var userid;
 var directUrl;
+var Formats;
+
+window.onload = function () {
+    fetch('formats')
+        .then((response) => response.json())
+        .then((data) => {
+            Formats = data;
+        })
+}
 
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
@@ -100,7 +109,7 @@ if (typeof jQuery != "undefined") {
     });
 
     var timer = null;
-    var checkConvert = function (filePass) {
+    var checkConvert = function (filePass, forceConvert) {
         filePass = filePass ? filePass : null;
         if (timer != null) {
             clearTimeout(timer);
@@ -122,13 +131,16 @@ if (typeof jQuery != "undefined") {
             return;
         }
 
+        var convData = {filename: fileName, filePass: filePass, lang: language};
+        if (forceConvert) convData.forceConv = forceConvert;
+
         timer = setTimeout(function () {
             jq.ajaxSetup({ cache: false });
             jq.ajax({
                 async: true,
                 type: "post",
                 dataType: "json",
-                data: {filename: fileName, filePass: filePass, lang: language},
+                data: convData,
                 url: UrlConverter,
                 complete: function (data) {
                     var responseText = data.responseText;
@@ -148,6 +160,12 @@ if (typeof jQuery != "undefined") {
                             }
                             return;
                         } else {
+                            if (response.error.includes("-9")){
+                                jq("#xmlError").removeClass("invisible");
+                                jq("#step2").removeClass("current");
+                                jq("#hiddenFileName").attr("placeholder",filePass);
+                                return;
+                            }
                             jq(".current").removeClass("current");
                             jq(".step:not(.done)").addClass("error");
                             jq("#mainProgress .error-message").show().find("span").text(response.error);
@@ -159,7 +177,7 @@ if (typeof jQuery != "undefined") {
                     jq("#hiddenFileName").val(response.filename);
 
                     if (typeof response.step != "undefined" && response.step < 100) {
-                        checkConvert(filePass);
+                        checkConvert(filePass, forceConvert);
                     } else {
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
@@ -204,6 +222,15 @@ if (typeof jQuery != "undefined") {
             jq("#beginEdit").removeClass("disable");
         }
     };
+
+    jq(document).on("click", "#forceConvert:not(.disable)", function () {
+        const currentElement = jq(this);
+        var fileType = currentElement.attr("data");
+        var filePass = jq("#hiddenFileName").attr("placeholder");
+        jq("div[id='forceConvert']").addClass("disable, pale");
+        currentElement.removeClass("pale");
+        checkConvert(filePass, fileType);
+    });
 
     jq(document).on("click", "#enterPass", function () {
         var pass = jq("#filePass").val();
@@ -272,6 +299,38 @@ if (typeof jQuery != "undefined") {
         jq("#uploadSteps").after('<iframe id="embeddedView" src="' + url + '" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>');
     });
 
+    jq(document).on("click", "#beginEditConverted:not(.disable)", function () {
+        var fileId = encodeURIComponent(jq('#hiddenFileName').attr("data"));
+        if (UrlEditor == "wopi-action"){
+            var url = UrlEditor + "/" + fileId + "?action=edit" + collectParams(true);
+        }else{
+            var url = UrlEditor + "?fileName=" + fileId + collectParams(true);
+        }
+        window.open(url, "_blank");
+        jq('#hiddenFileName').val("");
+        jq.unblockUI();
+        window.location = collectParams();
+    });
+
+    jq(document).on("click", "#beginViewConverted:not(.disable)", function () {
+        var fileId = encodeURIComponent(jq('#hiddenFileName').attr("data"));
+        if (UrlEditor == "wopi-action"){
+            var url = UrlEditor + "/" + fileId + "?action=view" + collectParams(true);
+        }else{
+            var url = UrlEditor + "?mode=view&fileName=" + fileId + collectParams(true);
+        }
+        window.open(url, "_blank");
+        jq('#hiddenFileName').val("");
+        jq.unblockUI();
+        window.location = collectParams();
+    });
+
+    jq(document).on("click", "#downloadConverted:not(.disable)", function () {
+        var fileId = jq('#hiddenFileName').attr("data");
+        if (jq("#downloadConverted").attr("data") == "fromConverter") window.location.assign(fileId);
+        else window.location.href = "download?fileName=" + encodeURIComponent(fileId);
+    });
+
     jq(document).on("click", ".reload-page", function () {
         setTimeout(function () { window.location = collectParams(); }, 1000);
         return true;
@@ -292,6 +351,97 @@ if (typeof jQuery != "undefined") {
             window.location = collectParams();
         }
     });
+
+    jq(document).on("click", ".convert-file", function () {
+        const currentElement = jq(this);
+        var fileName = currentElement.attr("data");
+        var type = currentElement.attr("data-type");
+
+        jq.blockUI({
+            theme: true,
+            title: "Converting file" + "<div class=\"dialog-close\"></div>",
+            message: jq("#convertingProgress"),
+            overlayCSS: { "background-color": "#aaa" },
+            themedCSS: { width: "539px", top: "20%", left: "50%", marginLeft: "-269px" }
+        });
+
+        jq("#convertFileName").text(decodeURIComponent(fileName));
+        jq("#convertFileName").removeClass("word slide cell");
+        jq("#convertFileName").addClass(type);
+        jq("#convTypes").empty();
+        let convExtensions = Formats.find(format => {return format.name == fileName.split('.').pop()}).convert;
+        convExtensions.forEach(ext => {
+            jq("#convTypes").append(jq(`<td name="convertingTypeButton" id="wordTo${ext}" class="button hoar" data="${ext}">${ext}</td>`));
+        });
+        jq("#hiddenFileName").val(fileName);
+        jq("#convertStep1").addClass("done");
+        jq("#convertStep2").addClass("waiting");
+    });
+
+    jq(document).on("click", "td[name='convertingTypeButton']:not(.disable, .orange)", function () {
+        const currentElement = jq(this);
+        let id = currentElement[0].id;
+        let fileExt = jq(`#${id}`).attr("data");
+        jq(`#${id}`).addClass("orange");
+        jq("td[name='convertingTypeButton']").addClass("disable");
+        jq("#convertStep2").removeClass("waiting").removeClass("done").addClass("current");
+        jq("#convertStep2").text('2. File conversion');
+        jq("#convert-descr").removeClass("disable");
+        jq("#convertPercent").text("0 %");
+        jq("#hiddenFileName").attr("placeholder",fileExt);
+        jq("#downloadConverted").addClass("disable");
+        jq("#beginEditConverted").addClass("disable");
+        jq("#beginViewConverted").addClass("disable");
+        mustReload = true;
+        
+        convertFile();
+    });
+
+    function convertFile (filePass) {
+        let fileName = decodeURIComponent(jq("#hiddenFileName").val());
+        let fileExt = jq("#hiddenFileName").attr("placeholder");
+
+        if (timer != null) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(function () {
+            jq.ajaxSetup({ cache: false });
+            jq.ajax({
+                async: true,
+                type: "post",
+                dataType: "json",
+                data: {filename: fileName, filePass: filePass, lang: language, fileExt: fileExt},
+                url: UrlConverter,
+                complete: function (data) {
+                    try {
+                        var response = jq.parseJSON(data.responseText);
+                    } catch (e)	{
+                        response = { error: e };
+                    }
+                    if(response.step !==100) {
+                        jq("#convertPercent").text(`${response.step} %`);
+                        convertFile();
+                    } else {
+                        jq("#convertPercent").text(`${response.step} %`);
+                        jq("#convertStep2").removeClass("current").addClass("done");
+                        jq("#convertStep2").text(`2. File conversion to ${fileExt}`);
+                        jq("#downloadConverted").removeClass("disable");
+                        if (response.error !== "FileTypeIsNotSupported") {
+                            jq("#hiddenFileName").attr("data",response.filename);
+                            jq("#beginEditConverted").removeClass("disable");
+                            jq("#beginViewConverted").removeClass("disable");
+                            jq("#downloadConverted").attr("data","fromStorage");
+                        } else {
+                            let newFilename = fileName.split('.').slice(0,-1).join('.')
+                            jq("#hiddenFileName").attr("data",response.filename.split("&filename=download").join(`&filename=${newFilename}`));
+                            jq("#downloadConverted").attr("data","fromConverter");
+                        }
+                        jq("td[name='convertingTypeButton']").removeClass("disable orange");
+                    }
+                }
+            });
+        }, 1000);
+    }
 
     jq(document).on("click", ".delete-file", function () {
         const currentElement = jq(this);
@@ -317,6 +467,22 @@ if (typeof jQuery != "undefined") {
                 }
             }
         });
+    });
+
+    jq(document).on("click", ".clear-all", function () {
+        if (confirm("Delete all the files?")) {
+            jq.ajax({
+                async: true,
+                contentType: "text/xml",
+                type: "delete",
+                url: "file",
+                complete: function (data) {
+                    if (JSON.parse(data.responseText).success) {
+                        window.location = collectParams();
+                    }
+                }
+            });
+        }
     });
 
     jq("#createSample").click(function () {

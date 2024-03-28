@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -231,6 +231,10 @@ namespace ASC.Api.DocumentConverter
 
             switch (errorCode)
             {
+                case -9:
+                    // public const int c_nErrorConversionOutputFormatError = -9;
+                    errorMessage = String.Format(errorMessageTemplate, "Error conversion output format");
+                    break;
                 case -8:
                     // public const int c_nErrorFileVKey = -8;
                     errorMessage = String.Format(errorMessageTemplate, "Error document VKey");

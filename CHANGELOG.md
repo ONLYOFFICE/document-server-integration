@@ -1,6 +1,20 @@
 # Change Log
 
+- fill permission in embedded mode
+- delete all files
+- handling conversion -9 error
+- nodejs: wopi formsubmit icon
+- nodejs: tabs menu
+- change insert image
+- different goback for users
+- nodejs: converting function on index page
+- nodejs: close editor
+
+## 1.8.0
+- nodejs: pdf, djvu, xps, oxps as pdf documentType
+- nodejs: filling pdf
 - version number to page meta
+- ar skin languages
 - sr-Latn-RS skin languages
 - getting history via api
 - using a repo with a list of formats

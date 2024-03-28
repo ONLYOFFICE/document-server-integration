@@ -1,5 +1,5 @@
 {
-  "version": "1.7.0",
+  "version": "1.8.0",
   "log": {
     "appenders": [
       {
@@ -39,6 +39,7 @@
     "verify_peer_off": true,
     "languages": {
       "en": "English",
+      "ar": "Arabic",
       "hy": "Armenian",
       "az": "Azerbaijani",
       "eu": "Basque",

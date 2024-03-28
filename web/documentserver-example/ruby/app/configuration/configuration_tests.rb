@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2023
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ class ConfigurationManagerDocumentServerPublicURITests < Test::Unit::TestCase
   def test_assigns_a_default_value
     config_manager = ConfigurationManager.new
     uri = config_manager.document_server_public_uri
-    assert_equal(uri.to_s, 'http://document-server')
+    assert_equal(uri.to_s, 'http://documentserver')
   end
 
   def test_assigns_a_value_from_the_environment
@@ -83,7 +83,7 @@ class ConfigurationManagerDocumentServerPrivateURITests < Test::Unit::TestCase
   def test_assigns_a_default_value
     config_manager = ConfigurationManager.new
     uri = config_manager.document_server_private_uri
-    assert_equal(uri.to_s, 'http://document-server')
+    assert_equal(uri.to_s, 'http://documentserver')
   end
 
   def test_assigns_a_value_from_the_environment
@@ -103,7 +103,7 @@ class ConfigurationManagerDocumentServerAPIURITests < Test::Unit::TestCase
     uri = config_manager.document_server_api_uri
     assert_equal(
       uri.to_s,
-      'http://document-server/web-apps/apps/api/documents/api.js'
+      'http://documentserver/web-apps/apps/api/documents/api.js'
     )
   end
 
@@ -113,7 +113,7 @@ class ConfigurationManagerDocumentServerAPIURITests < Test::Unit::TestCase
     uri = config_manager.document_server_api_uri
     assert_equal(
       uri.to_s,
-      'http://document-server/api'
+      'http://documentserver/api'
     )
   end
 end
@@ -127,7 +127,7 @@ class ConfigurationManagerDocumentServerPreloaderURITests < Test::Unit::TestCase
     uri = config_manager.document_server_preloader_uri
     assert_equal(
       uri.to_s,
-      'http://document-server/web-apps/apps/api/documents/cache-scripts.html'
+      'http://documentserver/web-apps/apps/api/documents/cache-scripts.html'
     )
   end
 
@@ -137,7 +137,7 @@ class ConfigurationManagerDocumentServerPreloaderURITests < Test::Unit::TestCase
     uri = config_manager.document_server_preloader_uri
     assert_equal(
       uri.to_s,
-      'http://document-server/preloader'
+      'http://documentserver/preloader'
     )
   end
 end
@@ -151,7 +151,7 @@ class ConfigurationManagerDocumentServerCommandURITests < Test::Unit::TestCase
     uri = config_manager.document_server_command_uri
     assert_equal(
       uri.to_s,
-      'http://document-server/coauthoring/CommandService.ashx'
+      'http://documentserver/coauthoring/CommandService.ashx'
     )
   end
 
@@ -161,7 +161,7 @@ class ConfigurationManagerDocumentServerCommandURITests < Test::Unit::TestCase
     uri = config_manager.document_server_command_uri
     assert_equal(
       uri.to_s,
-      'http://document-server/command'
+      'http://documentserver/command'
     )
   end
 end
@@ -175,7 +175,7 @@ class ConfigurationManagerDocumentServerConverterURITests < Test::Unit::TestCase
     uri = config_manager.document_server_converter_uri
     assert_equal(
       uri.to_s,
-      'http://document-server/ConvertService.ashx'
+      'http://documentserver/ConvertService.ashx'
     )
   end
 
@@ -185,7 +185,7 @@ class ConfigurationManagerDocumentServerConverterURITests < Test::Unit::TestCase
     uri = config_manager.document_server_converter_uri
     assert_equal(
       uri.to_s,
-      'http://document-server/converter'
+      'http://documentserver/converter'
     )
   end
 end

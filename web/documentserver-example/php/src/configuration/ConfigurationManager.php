@@ -1,6 +1,6 @@
 <?php
 //
-// (c) Copyright Ascensio System SIA 2023
+// (c) Copyright Ascensio System SIA 2024
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ use Example\Common\URL;
 
 class ConfigurationManager
 {
-    public string $version = '1.7.0';
+    public string $version = '1.8.0';
 
     public function getVersion(): string
     {
@@ -40,7 +40,7 @@ class ConfigurationManager
 
     public function documentServerPublicURL(): URL
     {
-        $url = getenv('DOCUMENT_SERVER_PUBLIC_URL') ?: 'http://document-server';
+        $url = getenv('DOCUMENT_SERVER_PUBLIC_URL') ?: 'http://documentserver';
         return new URL($url);
     }
 
@@ -163,7 +163,8 @@ class ConfigurationManager
     public function languages(): array
     {
         return [
-            'en' => "English",
+            'en' => 'English',
+            'ar' => 'Arabic',
             'hy' => 'Armenian',
             'az' => 'Azerbaijani',
             'eu' => 'Basque',

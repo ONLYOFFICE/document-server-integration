@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 
 package com.onlyoffice.integration.services;
 
+import com.onlyoffice.integration.entities.Goback;
 import com.onlyoffice.integration.entities.Group;
 import com.onlyoffice.integration.entities.Permission;
 import com.onlyoffice.integration.entities.User;
@@ -63,7 +64,8 @@ public class UserServices {
                            final List<String> userInfoGroups, final Boolean favoriteDoc,
                            final Boolean chat,
                            final Boolean protect,
-                           final Boolean avatar) {
+                           final Boolean avatar,
+                           final Goback goback) {
         User newUser = new User();
         newUser.setName(name);  // set the user name
         newUser.setEmail(email);  // set the user email
@@ -91,6 +93,8 @@ public class UserServices {
                         chat,
                         protect);  // specify permissions for the current user
         newUser.setPermissions(permission);
+
+        newUser.setGoback(goback);
 
         userRepository.save(newUser); // save a new user
 

@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2023
+ (c) Copyright Ascensio System SIA 2024
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -78,6 +78,7 @@ def processError(error):
     prefix = 'Error occurred in the ConvertService: '
 
     mapping = {
+        '-9': f'{prefix}Error conversion output format',
         '-8': f'{prefix}Error document VKey',
         '-7': f'{prefix}Error document request',
         '-6': f'{prefix}Error database',

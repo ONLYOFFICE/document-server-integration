@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2023
+ (c) Copyright Ascensio System SIA 2024
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -75,13 +75,16 @@ def convert(request):
         lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'
         fileUri = docManager.getDownloadUrl(filename, request)
         fileExt = fileUtils.getFileExt(filename)
-        newExt = 'ooxml'  # convert to .ooxml
+        # get an auto-conversion extension from the request body or set it to the ooxml extension
+        conversionExtension = body.get('fileExt') or 'ooxml'
 
         if docManager.isCanConvert(fileExt):  # check if the file extension is available for converting
             key = docManager.generateFileKey(filename, request)  # generate the file key
 
             # get the url of the converted file
-            convertedData = serviceConverter.getConvertedData(fileUri, fileExt, newExt, key, True, filePass, lang)
+            convertedData = serviceConverter.getConvertedData(
+                fileUri, fileExt, conversionExtension, key, True, filePass, lang
+                )
 
             # if the converter url is not received, the original file name is passed to the response
             if not convertedData:
@@ -132,6 +135,8 @@ def saveAs(request):
         body = json.loads(request.body)
         saveAsFileUrl = body.get('url')
         title = body.get('title')
+        saveAsFileUrl = saveAsFileUrl.replace(config_manager.document_server_public_url().geturl(),
+                                              config_manager.document_server_private_url().geturl())
 
         filename = docManager.getCorrectName(title, request)
         path = docManager.getStoragePath(filename, request)
@@ -153,7 +158,7 @@ def saveAs(request):
         response.setdefault('file', filename)
     except Exception as e:
         response.setdefault('error', 1)
-        response.setdefault('message', e.args[0])
+        response.setdefault('message', str(e.args[0]))
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
@@ -236,7 +241,7 @@ def edit(request):
     if user.id != 'uid-0':
         for userInfo in users.getAllUsers():
             u = userInfo
-            u.image = docManager.getServerUrl(True, request) + f'/static/images/{u.id}.jpg' if user.avatar else None
+            u.image = docManager.getServerUrl(False, request) + f'/static/images/{u.id}.jpg' if user.avatar else None
             usersInfo.append({"id": u.id, "name": u.name, "email": u.email, "image": u.image, "group": u.group,
                               "reviewGroups": u.reviewGroups, "commentGroups": u.commentGroups, "favorite": u.favorite,
                               "deniedPermissions": u.deniedPermissions, "descriptions": u.descriptions,
@@ -253,6 +258,8 @@ def edit(request):
             'uploaded': datetime.today().strftime('%d.%m.%Y %H:%M:%S')
         }
     infObj['favorite'] = user.favorite
+    if user.goback is not None:
+        user.goback['url'] = docManager.getServerUrl(False, request)
     # specify the document config
     edConfig = {
         'type': edType,
@@ -272,7 +279,7 @@ def edit(request):
                 'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter') \
                                    | (edMode == "blockcontent")),
                 'print': 'print' not in user.deniedPermissions,
-                'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') \
+                'fillForms': (edMode != 'view') & (edMode != 'comment') \
                 & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
@@ -305,7 +312,7 @@ def edit(request):
                 'id': user.id if user.id != 'uid-0' else None,
                 'name': user.name,
                 'group': user.group,
-                'image': docManager.getServerUrl(True, request) + f'/static/images/{user.id}.jpg' if user.avatar
+                'image': docManager.getServerUrl(False, request) + f'/static/images/{user.id}.jpg' if user.avatar
                 else None
             },
             'embedded': {  # the parameters for the embedded document type
@@ -322,23 +329,20 @@ def edit(request):
                 'feedback': True,  # the Feedback & Support menu button display
                 'forcesave': False,  # adds the request for the forced file saving to the callback handler
                 'submitForm': submitForm,  # if the Submit form button is displayed or not
-                'goback': {  # settings for the Open file location menu button and upper right corner button
-                    # the absolute URL to the website address
-                    # which will be opened when clicking the Open file location menu button
-                    'url': docManager.getServerUrl(False, request)
-                }
+                # settings for the Open file location menu button and upper right corner button
+                'goback':  user.goback if user.goback is not None else '',
             }
         }
     }
 
     # an image which will be inserted into the document
     dataInsertImage = {
-        'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + '/static/images/logo.png',
-        'directUrl': docManager.getServerUrl(False, request) + '/static/images/logo.png'
+        'fileType': 'svg',
+        'url': docManager.getServerUrl(True, request) + '/static/images/logo.svg',
+        'directUrl': docManager.getServerUrl(False, request) + '/static/images/logo.svg'
     } if isEnableDirectUrl else {
-        'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + '/static/images/logo.png'
+        'fileType': 'svg',
+        'url': docManager.getServerUrl(True, request) + '/static/images/logo.svg'
     }
 
     # a document which will be compared with the current document
@@ -423,13 +427,19 @@ def track(request):
 
 # remove a file
 def remove(request):
-    filename = fileUtils.getFileName(request.GET['filename'])
-
     response = {}
 
-    docManager.removeFile(filename, request)
+    try:
+        filename = request.GET.get('filename', '')
+        if filename:
+            filename = fileUtils.getFileName(filename)
+            docManager.removeFile(filename, request)
+        else:
+            docManager.removeUserFolder(request)
+        response.setdefault('success', True)
+    except Exception as e:
+        response.setdefault('error', str(e.args[0]))
 
-    response.setdefault('success', True)
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 
@@ -562,7 +572,7 @@ def reference(request):
             if userAddress == request.META['REMOTE_ADDR']:
                 fileName = fileKey['fileName']
 
-    link = body['link']
+    link = body.get('link', None)
     if not fileName and link:
         if docManager.getServerUrl(False, request) not in link:
             data = {

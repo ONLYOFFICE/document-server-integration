@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,10 +78,10 @@ public class EditorServlet extends HttpServlet {
 
         // an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
-        dataInsertImage.put("fileType", "png");
-        dataInsertImage.put("url", DocumentManager.getServerUrl(true) + "/css/img/logo.png");
+        dataInsertImage.put("fileType", "svg");
+        dataInsertImage.put("url", DocumentManager.getServerUrl(true) + "/css/img/logo.svg");
         if (isEnableDirectUrl) {
-            dataInsertImage.put("directUrl", DocumentManager.getServerUrl(false) + "/css/img/logo.png");
+            dataInsertImage.put("directUrl", DocumentManager.getServerUrl(false) + "/css/img/logo.svg");
         }
 
         // a document that will be compared with the current document

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -235,15 +235,15 @@ public class FileController {
         String fileName = body.getFileName();
         // get file password if it exists
         String filePass = body.getFilePass() != null ? body.getFilePass() : null;
-        // convert to .ooxml
-        String internalFileExt = "ooxml";
+        // get an auto-conversion extension from the request body or set it to the ooxml extension
+        String conversionExtension = body.getFileExt() != null ? body.getFileExt() : "ooxml";
 
         try {
             // check if the file with such an extension can be converted
             if (documentManager.getDefaultConvertExtension(fileName) != null) {
                 ConvertRequest convertRequest = ConvertRequest.builder()
                         .password(filePass)
-                        .outputtype(internalFileExt)
+                        .outputtype(conversionExtension)
                         .region(lang)
                         .async(true)
                         .build();
@@ -287,24 +287,33 @@ public class FileController {
             return createUserMetadata(uid, fileName);
         } catch (Exception e) {
             e.printStackTrace();
+
+            // if the operation of file converting is unsuccessful, an error occurs
+            return "{ \"error\": \"" + e.getMessage() + "\"}";
         }
-        // if the operation of file converting is unsuccessful, an error occurs
-        return "{ \"error\": \"" + "The file can't be converted.\"}";
     }
 
     @PostMapping("/delete")
     @ResponseBody
     public String delete(@RequestBody final Converter body) {  // delete a file
         try {
-            String fullFileName = documentManager.getDocumentName(body.getFileName());  // get full file name
+            String filename = body.getFileName();
+            boolean success = false;
 
-            // delete a file from the storage and return the status of this operation (true or false)
-            boolean fileSuccess = storageMutator.deleteFile(fullFileName);
+            if (filename != null) {
+                String fullFileName = documentManager.getDocumentName(filename);  // get full file name
 
-            // delete file history and return the status of this operation (true or false)
-            boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);
+                // delete a file from the storage and return the status of this operation (true or false)
+                boolean fileSuccess = storageMutator.deleteFile(fullFileName);
 
-            return "{ \"success\": \"" + (fileSuccess && historySuccess) + "\"}";
+                // delete file history and return the status of this operation (true or false)
+                boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);
+                success = fileSuccess && historySuccess;
+            } else {
+                // delete the user's folder and return the boolean status
+                success = storageMutator.deleteUserFolder();
+            }
+            return "{ \"success\": \"" + (success) + "\"}";
         } catch (Exception e) {
             // if the operation of file deleting is unsuccessful, an error occurs
             return "{ \"error\": \"" + e.getMessage() + "\"}";

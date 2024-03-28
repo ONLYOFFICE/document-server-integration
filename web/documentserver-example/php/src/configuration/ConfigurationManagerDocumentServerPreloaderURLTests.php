@@ -1,6 +1,6 @@
 <?php
 //
-// (c) Copyright Ascensio System SIA 2023
+// (c) Copyright Ascensio System SIA 2024
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ final class ConfigurationManagerDocumentServerPreloaderURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerPreloaderURL();
         $this->assertEquals(
-            'http://document-server/web-apps/apps/api/documents/cache-scripts.html',
+            'http://documentserver/web-apps/apps/api/documents/cache-scripts.html',
             $url->string()
         );
     }
@@ -53,7 +53,7 @@ final class ConfigurationManagerDocumentServerPreloaderURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerPreloaderURL();
         $this->assertEquals(
-            'http://document-server/preloader',
+            'http://documentserver/preloader',
             $url->string()
         );
     }

@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 #
-# (c) Copyright Ascensio System SIA 2023
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -269,7 +269,7 @@ class DocumentHelper
 
   # get image url for templates
   def self.get_template_image_url(file_type)
-    path = "#{get_server_url(true)}/assets/"
+    path = "#{get_server_url(false)}/assets/"
     case file_type
     when 'word'  # for word type
       "#{path}file_docx.svg"

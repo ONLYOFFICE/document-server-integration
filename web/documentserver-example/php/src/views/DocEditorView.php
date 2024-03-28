@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ final class DocEditorView extends View
         $jwtManager = new JwtManager();
         $userList = new ExampleUsers();
         $fileId = $request["fileID"] ?? "";
-        $user = $userList->getUser($request["user"]);
+        $user = $userList->getUser($request["user"] ?? null);
         $isEnableDirectUrl = isset($request["directUrl"]) ? filter_var($request["directUrl"], FILTER_VALIDATE_BOOLEAN)
             : false;
         if (!empty($externalUrl)) {
@@ -104,6 +104,10 @@ final class DocEditorView extends View
             ],
         ];
 
+        if ($user->goback !== null) {
+            $user->goback["url"] = serverPath();
+        }
+
         // specify the document config
         $config = [
             "type" => $type,
@@ -128,7 +132,7 @@ final class DocEditorView extends View
                             $editorsMode == "view" || $editorsMode == "filter" || $editorsMode == "blockcontent"),
                     "print" => !in_array("print", $user->deniedPermissions),
                     "fillForms" => $editorsMode != "view" && $editorsMode != "comment"
-                        && $editorsMode != "embedded" && $editorsMode != "blockcontent",
+                        && $editorsMode != "blockcontent",
                     "modifyFilter" => $editorsMode != "filter",
                     "modifyContentControl" => $editorsMode != "blockcontent",
                     "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),
@@ -161,7 +165,7 @@ final class DocEditorView extends View
                     "id" => $user->id != "uid-0" ? $user->id : null,
                     "name" => $user->name,
                     "group" => $user->group,
-                    "image" => $user->avatar ? serverPath(true) . "/assets/images/" . $user->id . ".png" : null
+                    "image" => $user->avatar ? serverPath(false) . "/assets/images/" . $user->id . ".png" : null
                 ],
                 "embedded" => [  // the parameters for the embedded document type
                     // the absolute URL that will allow the document to be saved onto the user personal computer
@@ -180,23 +184,20 @@ final class DocEditorView extends View
                     // adds the request for the forced file saving to the callback handler when saving the document
                     "forcesave" => false,
                     "submitForm" => $submitForm,  // if the Submit form button is displayed or not
-                    "goback" => [  // settings for the Open file location menu button and upper right corner button
-                        // the absolute URL to the website address which will be opened
-                        // when clicking the Open file location menu button
-                        "url" => serverPath(),
-                    ],
+                    // settings for the Open file location menu button and upper right corner button
+                    "goback" => $user->goback !== null ? $user->goback : "",
                 ],
             ],
         ];
 
         // an image for inserting
         $dataInsertImage = $isEnableDirectUrl ? [
-            "fileType" => "png",
-            "url" => serverPath(true) . "/assets/images/logo.png",
-            "directUrl" => serverPath(false) . "/assets/images/logo.png",
+            "fileType" => "svg",
+            "url" => serverPath(true) . "/assets/images/logo.svg",
+            "directUrl" => serverPath(false) . "/assets/images/logo.svg",
         ] : [
-            "fileType" => "png",
-            "url" => serverPath(true) . "/assets/images/logo.png",
+            "fileType" => "svg",
+            "url" => serverPath(true) . "/assets/images/logo.svg",
         ];
 
         // a document for comparing
@@ -229,7 +230,7 @@ final class DocEditorView extends View
         if ($user->id != 'uid-0') {
             foreach ($userList->getAllUsers() as $userInfo) {
                 $u = $userInfo;
-                $u->image = $userInfo->avatar ? serverPath(true) . "/assets/images/" . $userInfo->id . ".png" : null;
+                $u->image = $userInfo->avatar ? serverPath(false) . "/assets/images/" . $userInfo->id . ".png" : null;
                 array_push($usersInfo, $u);
             }
         }
@@ -246,46 +247,27 @@ final class DocEditorView extends View
         }
 
         $historyLayout = "";
+
+        if ($user->id == "uid-3") {
+            $historyLayout .= "config.events['onRequestHistoryClose'] = null;
+                config.events['onRequestRestore'] = null;";
+        }
+
         if ($user->id != "uid-0") {
             $historyLayout .= "// add mentions for not anonymous users
-                config.events['onRequestUsers'] = function (event) {
-                    if (event && event.data){
-                        var c = event.data.c;
-                    }
-                    switch (c) {
-                        case \"info\":
-                            users = [];
-                            var allUsers = {usersInfo};
-                            for (var i = 0; i < event.data.id.length; i++) {
-                                for (var j = 0; j < allUsers.length; j++) {
-                                    if (allUsers[j].id == event.data.id[i]) {
-                                        users.push(allUsers[j]);
-                                        break;
-                                    }
-                                }
-                            }
-                            break;
-                        case \"protect\":
-                            var users = {usersForProtect};
-                            break;
-                        default:
-                            users = {usersForMentions};
-                    }
-                    docEditor.setUsers({
-                        \"c\": c,
-                        \"users\": users,
-                    });
-                };
+                config.events['onRequestUsers'] = onRequestUsers;
                 // the user is mentioned in a comment
-                config.events['onRequestSendNotify'] = function (event) {
-                    event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-                    var data = JSON.stringify(event.data);
-                    innerAlert(\"onRequestSendNotify: \" + data);
-                };
+                config.events['onRequestSendNotify'] = onRequestSendNotify;
                 // prevent file renaming for anonymous users
                 config.events['onRequestRename'] = onRequestRename;
                 // prevent switch the document from the viewing into the editing mode for anonymous users
-                config.events['onRequestEditRights'] = onRequestEditRights;";
+                config.events['onRequestEditRights'] = onRequestEditRights;
+                config.events['onRequestHistory'] = onRequestHistory;
+                config.events['onRequestHistoryData'] = onRequestHistoryData;";
+            if ($user->id != "uid-3") {
+                $historyLayout .= "config.events['onRequestHistoryClose'] = onRequestHistoryClose;
+                config.events['onRequestRestore'] = onRequestRestore;";
+            }
         }
         $this->tagsValues = [
             "docType" => getDocumentType($filename),

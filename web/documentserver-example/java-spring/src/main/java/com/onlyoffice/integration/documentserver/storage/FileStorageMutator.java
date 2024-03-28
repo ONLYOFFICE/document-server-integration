@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ public interface FileStorageMutator {
     boolean createFile(Path path, InputStream stream);  // create a new file if it does not exist
     boolean deleteFile(String fileName);  // delete a file
     boolean deleteFileHistory(String fileName);  // delete file history
+    boolean deleteUserFolder(); // delete the user's folder recursively
     String updateFile(String fileName, byte[] bytes);  // update a file
     boolean writeToFile(String pathName, String payload);  // write the payload to the file
     boolean moveFile(Path source, Path destination);  // move a file to the specified destination

@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -222,12 +222,22 @@ namespace OnlineEditorsExample
             context.Response.ContentType = "text/plain";
             try
             {
-                var fileName = Path.GetFileName(context.Request["fileName"]);
-                var path = _Default.StoragePath(fileName, HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)));
-                var histDir = _Default.HistoryDir(path);
+                string fileName = context.Request["fileName"];
+                string userAddress = HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
 
-                if (File.Exists(path)) File.Delete(path);  // delete file
-                if (Directory.Exists(histDir)) Directory.Delete(histDir, true);  // delete file history
+                if (!String.IsNullOrEmpty(fileName))
+                {
+                    fileName = Path.GetFileName(fileName);
+                    var path = _Default.StoragePath(fileName, userAddress);
+                    var histDir = _Default.HistoryDir(path);
+
+                    if (File.Exists(path)) File.Delete(path);  // delete file
+                    if (Directory.Exists(histDir)) Directory.Delete(histDir, true);  // delete file history
+                } else
+                {
+                    string userDir = _Default.StoragePath("", userAddress);
+                    if (Directory.Exists(userDir)) Directory.Delete(userDir, true);  // delete the user's directory
+                }
 
                 context.Response.Write("{ \"success\": true }");
             }

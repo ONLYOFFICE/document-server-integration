@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -228,6 +228,7 @@ function convert()
     $lang = $_COOKIE["ulang"] ?? "";
     $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = "ooxml";
+    $conversionExtension = $post['fileExt'] ?? $internalExtension;
 
     // check if the file with such an extension can be converted
     if (in_array($extension, $formatManager->convertibleExtensions()) &&
@@ -245,7 +246,7 @@ function convert()
             $convertedData = getConvertedData(
                 $fileUri,
                 $extension,
-                $internalExtension,
+                $conversionExtension,
                 $key,
                 true,
                 $newFileUri,
@@ -299,12 +300,15 @@ function convert()
 function delete()
 {
     try {
-        $fileName = basename($_GET["fileName"]);
+        if (isset($_GET["fileName"]) && !empty($_GET["fileName"])) {
+            $fileName = basename($_GET["fileName"]);
+            $filePath = getStoragePath($fileName);
 
-        $filePath = getStoragePath($fileName);
-
-        unlink($filePath);  // delete a file
-        delTree(getHistoryDir($filePath));  // delete all the elements from the history directory
+            unlink($filePath);  // delete a file
+            delTree(getHistoryDir($filePath));  // delete all the elements from the history directory
+        } else {
+            delTree(getStoragePath('')); // delete the user's folder and all the containing files
+        }
     } catch (Exception $e) {
         sendlog("Deletion ".$e->getMessage(), "webedior-ajax.log");
         $result["error"] = "error: " . $e->getMessage();
@@ -537,7 +541,7 @@ function reference()
         }
     }
 
-    $link = $post["link"];
+    $link = $post["link"] ?? null;
     if (!isset($filename) && isset($link)) {
         if (strpos($link, serverPath()) === false) {
             return ["url" => $link, "directUrl"=> $link];
