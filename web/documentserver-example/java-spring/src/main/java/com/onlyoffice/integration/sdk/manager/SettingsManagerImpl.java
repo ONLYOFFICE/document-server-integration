@@ -48,7 +48,7 @@ public class SettingsManagerImpl extends DefaultSettingsManager {
         try {
             properties = new Properties();
             InputStream stream = Thread.currentThread().getContextClassLoader()
-                    .getResourceAsStream("docservice.properties");
+                    .getResourceAsStream("application.properties");
             properties.load(stream);
         } catch (Exception e) {
             properties = null;
