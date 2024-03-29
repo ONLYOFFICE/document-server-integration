@@ -121,7 +121,7 @@ if (typeof jQuery !== "undefined") {
                     var responseText = data.responseText;
                     var response = jq.parseJSON(responseText);
                     if (response.error) {
-                        if (response.error.includes("Incorrect password")) {
+                        if (response.error == "PASSWORD") {
                             jq(".current").removeClass("current");
                             jq("#step2").addClass("error");
                             jq("#blockPassword").show();
@@ -131,7 +131,7 @@ if (typeof jQuery !== "undefined") {
                             }
                             return;
                         } else {
-                            if (response.error.includes("Error conversion output format")){
+                            if (response.error == "OOXML_OUTPUT_TYPE"){
                                 jq("#select-file-type").removeClass("invisible");
                                 jq("#step2").removeClass("current");
                                 jq("#hiddenFileName").attr("placeholder",filePass);
@@ -139,17 +139,16 @@ if (typeof jQuery !== "undefined") {
                             }
                             jq(".current").removeClass("current");
                             jq(".step:not(.done)").addClass("error");
-                            jq("#mainProgress .error-message").show().find("span").text(response.error);
+                            jq("#mainProgress .error-message").show().find("span").text("Error automatically determine the output file format");
                             jq('#hiddenFileName').val("");
                             return;
                         }
                     }
 
-                    jq("#hiddenFileName").val(response.filename);
-
-                    if (response.step && response.step < 100) {
+                    if (response.hasOwnProperty("percent") && response.percent < 100) {
                         checkConvert(filePass, fileType);
                     } else {
+                        jq("#hiddenFileName").val(response.filename);
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
                     }

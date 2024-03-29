@@ -250,12 +250,12 @@ public class FileController {
 
                 ConvertResponse convertResponse = convertService.processConvert(convertRequest, fileName);
 
+                if (convertResponse.getError() != null || convertResponse.getFileUrl()  == null) {
+                    return objectMapper.writeValueAsString(convertResponse);
+                }
+
                 String newFileUri = convertResponse.getFileUrl();
                 String newFileType = convertResponse.getFileType();
-
-                if (newFileType == null || newFileUri.isEmpty()) {
-                    return "{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}";
-                }
 
                 /* get a file name of an internal file extension with an index if the file
                  with such a name already exists */
