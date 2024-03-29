@@ -87,6 +87,7 @@ app.use(favicon(`${__dirname}/public/images/favicon.ico`)); // use favicon
 
 app.use(bodyParser.json()); // connect middleware that parses json
 app.use(bodyParser.urlencoded({ extended: false })); // connect middleware that parses urlencoded bodies
+app.use(bodyParser.raw({ type: '*/*' }));
 
 app.get('/', (req, res) => { // define a handler for default page
   try {
@@ -715,6 +716,11 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
   let fName = fileUtility.getFileName(req.query.filename);
   let version = 0;
 
+  if (req.headers['content-type'] === 'application/octet-stream') {
+    fileSystem.writeFileSync(req.DocManager.storagePath(fName, uAddress), req.body);
+    return;
+  }
+
   // track file changes
   const processTrack = async function processTrack(response, bodyTrack, fileNameTrack, userAddressTrack) {
     // callback file saving process
@@ -1204,11 +1210,12 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     // file config data
     const argss = {
+      documentData: fileSystem.readFileSync(req.DocManager.storagePath(fileName, userAddress)).toString('base64'),
       apiUrl: siteUrl + configServer.get('apiUrl'),
       file: {
         name: fileName,
         ext: fileUtility.getFileExtension(fileName, true),
-        uri: url,
+        uri: '_data_',
         directUrl: !userDirectUrl ? null : directUrl,
         uriUser: directUrl,
         created: new Date().toDateString(),
