@@ -77,7 +77,16 @@
 
         var onAppReady = function () {  // the application is loaded into the browser
             innerAlert("Document editor ready");
+            const b64ToBuffer = (b64) => Uint8Array.from(atob(b64), c => c.charCodeAt(0));
+            if (config.document.url === "_data_") docEditor.openDocument(b64ToBuffer("<%= documentData %>"));
         };
+
+        var onSaveDocument = function (event) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", config.editorConfig.callbackUrl);
+            xhr.setRequestHeader('Content-Type', 'application/octet-stream');
+            xhr.send(event.data);
+        }
 
         var onDocumentStateChange = function (event) {  // the document is modified
             var title = document.title.replace(/^\*/g, "");
@@ -454,6 +463,7 @@
             "onRequestSelectDocument": onRequestSelectDocument,
             "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
             "onRequestOpen": onRequestOpen,
+            "onSaveDocument": onSaveDocument,
         };
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
