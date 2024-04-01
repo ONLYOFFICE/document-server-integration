@@ -364,8 +364,7 @@
     <script language="javascript" type="text/javascript" src="script/jquery.iframe-transport.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery.fileupload.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery.dropdownToggle.js"></script>
-    <script language="javascript" type="text/javascript" src="script/format.js"></script>
-    <script language="javascript" type="text/javascript" src="script/format-manager.js"></script>
+    <script language="javascript" type="text/javascript" src="script/formats.js"></script>
     <script language="javascript" type="text/javascript" src="script/jscript.js"></script>
 
 </body>

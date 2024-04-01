@@ -37,3 +37,30 @@ class Format {
         return this.actions.includes('fill');
     }
 }
+
+class FormatManager {
+    formats = [];
+
+    constructor(formats) {
+        if(Array.isArray(formats)) this.formats = formats;
+    }
+
+    findByExtension(extension) {
+        return this.formats.find(format => format.name == extension);
+    }
+
+    isAutoConvertible(extension) {
+        let format = this.findByExtension(extension);
+        return format !== undefined && format.isAutoConvertible();
+    }
+
+    isEditable(extension) {
+        let format = this.findByExtension(extension);
+        return format !== undefined && format.isEditable();
+    }
+
+    isFillable(extension) {
+        let format = this.findByExtension(extension);
+        return format !== undefined && format.isFillable();
+    }
+}
