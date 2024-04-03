@@ -330,9 +330,8 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const lang = req.body.lang ? req.body.lang : null;
   const fileUri = req.DocManager.getDownloadUrl(fileName, true);
   const fileExt = fileUtility.getFileExtension(fileName, true);
-  const internalFileExt = 'ooxml';
-  let convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
-  if (req.body.forceConv) convExt = req.body.forceConv;
+  const conversionExtension = req.body.fileExt ? req.body.fileExt : 'ooxml';
+  const { keepOriginal } = req.body;
   const response = res;
 
   const writeResult = function writeResult(filename, step, error) {
@@ -387,14 +386,14 @@ app.post('/convert', (req, res) => { // define a handler for converting files
         return;
       }
       // remove file with the origin extension
-      if (!('fileExt' in req.body)) fileSystem.unlinkSync(req.DocManager.storagePath(fileName));
+      if (!keepOriginal) fileSystem.unlinkSync(req.DocManager.storagePath(fileName));
 
       const userAddress = req.DocManager.curUserHostAddress();
       const historyPath = req.DocManager.historyPath(fileName, userAddress, true);
       // get the history path to the file with a new extension
       const correctHistoryPath = req.DocManager.historyPath(correctName, userAddress, true);
 
-      if (!('fileExt' in req.body)) {
+      if (!keepOriginal) {
         fileSystem.renameSync(historyPath, correctHistoryPath); // change the previous history path
 
         fileSystem.renameSync(
@@ -423,7 +422,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
 
       key = documentService.generateRevisionId(key); // get document key
       // get the url to the converted file
-      documentService.getConvertedUri(fileUri, fileExt, convExt, key, true, callback, filePass, lang);
+      documentService.getConvertedUri(fileUri, fileExt, conversionExtension, key, true, callback, filePass, lang);
     } else {
       // if the file with such an extension can't be converted, write the origin file to the result object
       writeResult(fileName, null, null);

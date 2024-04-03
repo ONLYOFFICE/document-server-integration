@@ -551,8 +551,8 @@
         margin-bottom: 0;
         flex-wrap: nowrap;
     }
-    .button.forceConvert:hover,
-    .button.forceConvert {
+    .button.file-type:hover,
+    .button.file-type {
         height: 28px;
         width: 100px;
         margin-bottom: 10px !important;
