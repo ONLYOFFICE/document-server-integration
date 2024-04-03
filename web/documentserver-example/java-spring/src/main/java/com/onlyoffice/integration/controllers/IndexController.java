@@ -22,8 +22,10 @@ import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.Misc;
 import com.onlyoffice.integration.documentserver.util.file.FileUtility;
+import com.onlyoffice.integration.documentserver.util.service.FormatService;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.services.UserServices;
+import com.onlyoffice.integration.dto.FormatsList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -33,6 +35,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +63,9 @@ public class IndexController {
 
     @Autowired
     private UserServices userService;
+
+    @Autowired
+    private FormatService formatService;
 
     @Value("${files.docservice.url.site}")
     private String docserviceSite;
@@ -136,16 +142,16 @@ public class IndexController {
     @ResponseBody
     public HashMap<String, String> configParameters() {  // get configuration parameters
         HashMap<String, String> configuration = new HashMap<>();
-
-        configuration.put("FillExtList", String.join(",", fileUtility
-                .getFillExts()));  // put a list of the extensions that can be filled to config
-        configuration.put("ConverExtList", String.join(",", fileUtility
-                .getConvertExts()));  // put a list of the extensions that can be converted to config
-        configuration.put("EditedExtList", String.join(",", fileUtility
-                .getEditedExts()));  // put a list of the extensions that can be edited to config
         configuration.put("UrlConverter", urlConverter);
         configuration.put("UrlEditor", urlEditor);
 
         return configuration;
+    }
+
+    @GetMapping("/formats")
+    @ResponseBody
+    public ResponseEntity<FormatsList> formats() {  // return all the supported formats
+        FormatsList list = new FormatsList(formatService.getFormats());
+        return ResponseEntity.ok(list);
     }
 }

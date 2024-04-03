@@ -16,13 +16,17 @@
  *
  */
 
-var UrlConverter;
-var UrlEditor;
+package com.onlyoffice.integration.dto;
 
-if (typeof jQuery !== "undefined") {
-    jQuery.post('/config',
-        function(data) {
-            UrlConverter = data.UrlConverter;
-            UrlEditor = data.UrlEditor;
-    });
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import com.onlyoffice.integration.documentserver.models.Format;
+import java.util.List;
+
+@Getter
+@Setter
+@AllArgsConstructor
+public class FormatsList {
+    private List<Format> formats;
 }

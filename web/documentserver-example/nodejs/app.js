@@ -93,8 +93,6 @@ app.get('/', (req, res) => { // define a handler for default page
 
     res.render('index', { // render index template with the parameters specified
       preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-      convertExts: fileUtility.getConvertExtensions(),
-      editedExts: fileUtility.getEditExtensions(),
       fillExts: fileUtility.getFillExtensions(),
       storedFiles: req.DocManager.getStoredFiles(),
       params: req.DocManager.getCustomParams(),
@@ -1201,7 +1199,9 @@ app.post('/historyObj', (req, res) => {
 app.get('/formats', (req, res) => {
   try {
     const formats = fileUtility.getFormats();
-    res.json(formats);
+    res.json({
+      formats,
+    });
   } catch (ex) {
     console.log(ex); // display error message in the console
     res.status(500); // write status parameter to the response
