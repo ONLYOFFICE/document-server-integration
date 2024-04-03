@@ -27,10 +27,15 @@ const siteUrl = configServer.get('siteUrl'); // the path to the editors installa
 
 let cache = null;
 
-const requestDiscovery = async function requestDiscovery() {
+const requestDiscovery = async function requestDiscovery(DocManager) {
+  let absSiteUrl = siteUrl;
+  if (absSiteUrl.indexOf('/') === 0) {
+    absSiteUrl = DocManager.getServerHost() + siteUrl;
+  }
+
   // eslint-disable-next-line no-unused-vars
   return new Promise((resolve, reject) => {
-    const uri = siteUrl + configServer.get('wopi.discovery');
+    const uri = absSiteUrl + configServer.get('wopi.discovery');
     const actions = [];
 
     // parse url to allow request by relative url after
@@ -81,13 +86,13 @@ const requestDiscovery = async function requestDiscovery() {
 };
 
 // get the wopi discovery information
-const getDiscoveryInfo = async function getDiscoveryInfo() {
+const getDiscoveryInfo = async function getDiscoveryInfo(DocManager) {
   let actions = [];
 
   if (cache) return cache;
 
   try {
-    actions = await requestDiscovery();
+    actions = await requestDiscovery(DocManager);
   } catch (e) {
     return actions;
   }
@@ -102,8 +107,8 @@ const getDiscoveryInfo = async function getDiscoveryInfo() {
 };
 
 // get actions of the specified extension
-const getActions = async function getActions(ext) {
-  const actions = await getDiscoveryInfo(); // get the wopi discovery information
+const getActions = async function getActions(DocManager, ext) {
+  const actions = await getDiscoveryInfo(DocManager); // get the wopi discovery information
   const filtered = [];
 
   actions.forEach((action) => { // and filter it by the specified extention
@@ -116,8 +121,8 @@ const getActions = async function getActions(ext) {
 };
 
 // get an action for the specified extension and name
-const getAction = async function getAction(ext, name) {
-  const actions = await getDiscoveryInfo();
+const getAction = async function getAction(DocManager, ext, name) {
+  const actions = await getDiscoveryInfo(DocManager);
   let act = null;
 
   actions.forEach((action) => {
@@ -130,8 +135,8 @@ const getAction = async function getAction(ext, name) {
 };
 
 // get the default action for the specified extension
-const getDefaultAction = async function getDefaultAction(ext) {
-  const actions = await getDiscoveryInfo();
+const getDefaultAction = async function getDefaultAction(DocManager, ext) {
+  const actions = await getDiscoveryInfo(DocManager);
   let act = null;
 
   actions.forEach((action) => {

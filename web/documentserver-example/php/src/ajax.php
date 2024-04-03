@@ -659,3 +659,19 @@ function restore()
         ];
     }
 }
+
+function formats()
+{
+    try {
+        $formatManager = new FormatManager();
+        $formats = $formatManager->all();
+
+        return [
+            'formats' => json_encode($formats)
+        ];
+    } catch (Exception $error) {
+        return [
+            'error' => 'Server error'
+        ];
+    }
+}

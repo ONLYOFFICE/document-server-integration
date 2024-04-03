@@ -93,8 +93,6 @@ app.get('/', (req, res) => { // define a handler for default page
 
     res.render('index', { // render index template with the parameters specified
       preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-      convertExts: fileUtility.getConvertExtensions(),
-      editedExts: fileUtility.getEditExtensions(),
       fillExts: fileUtility.getFillExtensions(),
       storedFiles: req.DocManager.getStoredFiles(),
       params: req.DocManager.getCustomParams(),
@@ -333,8 +331,8 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const fileUri = req.DocManager.getDownloadUrl(fileName, true);
   const fileExt = fileUtility.getFileExtension(fileName, true);
   const internalFileExt = 'ooxml';
-  let convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
-  if (req.body.forceConv) convExt = req.body.forceConv;
+  const convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
+  const { keepOriginal } = req.body;
   const response = res;
 
   const writeResult = function writeResult(filename, step, error) {
@@ -389,14 +387,14 @@ app.post('/convert', (req, res) => { // define a handler for converting files
         return;
       }
       // remove file with the origin extension
-      if (!('fileExt' in req.body)) fileSystem.unlinkSync(req.DocManager.storagePath(fileName));
+      if (!keepOriginal) fileSystem.unlinkSync(req.DocManager.storagePath(fileName));
 
       const userAddress = req.DocManager.curUserHostAddress();
       const historyPath = req.DocManager.historyPath(fileName, userAddress, true);
       // get the history path to the file with a new extension
       const correctHistoryPath = req.DocManager.historyPath(correctName, userAddress, true);
 
-      if (!('fileExt' in req.body)) {
+      if (!keepOriginal) {
         fileSystem.renameSync(historyPath, correctHistoryPath); // change the previous history path
 
         fileSystem.renameSync(
@@ -1201,7 +1199,9 @@ app.post('/historyObj', (req, res) => {
 app.get('/formats', (req, res) => {
   try {
     const formats = fileUtility.getFormats();
-    res.json(formats);
+    res.json({
+      formats,
+    });
   } catch (ex) {
     console.log(ex); // display error message in the console
     res.status(500); // write status parameter to the response

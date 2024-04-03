@@ -25,6 +25,7 @@ import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.sdk.manager.DocumentManager;
 import com.onlyoffice.integration.sdk.manager.UrlManager;
 import com.onlyoffice.integration.services.UserServices;
+import com.onlyoffice.integration.dto.FormatsList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -34,6 +35,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -133,38 +135,16 @@ public class IndexController {
     @ResponseBody
     public HashMap<String, String> configParameters() {  // get configuration parameters
         HashMap<String, String> configuration = new HashMap<>();
-
-        List<String> fillExtList = documentManager.getFormats().stream()
-                .filter(format -> format.getActions().contains("fill"))
-                .map(format -> format.getName())
-                .collect(Collectors.toList());
-
-        List<String> converExtList = documentManager.getFormats().stream()
-                .filter(format -> format.getActions().contains("auto-convert"))
-                .map(format -> format.getName())
-                .collect(Collectors.toList());
-
-        List<String> editedExtList = documentManager.getFormats().stream()
-                .filter(format -> format.getActions().contains("edit"))
-                .map(format -> format.getName())
-                .collect(Collectors.toList());
-
-        for (Map.Entry<String, Boolean> lossyEditable : documentManager.getLossyEditableMap().entrySet()) {
-            if (lossyEditable.getValue()) {
-                editedExtList.add(lossyEditable.getKey());
-            }
-        }
-
-
-        // put a list of the extensions that can be filled to config
-        configuration.put("FillExtList", String.join(",", fillExtList));
-        // put a list of the extensions that can be converted to config
-        configuration.put("ConverExtList", String.join(",", converExtList));
-        // put a list of the extensions that can be edited to config
-        configuration.put("EditedExtList", String.join(",", editedExtList));
         configuration.put("UrlConverter", urlConverter);
         configuration.put("UrlEditor", urlEditor);
 
         return configuration;
+    }
+
+    @GetMapping("/formats")
+    @ResponseBody
+    public ResponseEntity<FormatsList> formats() {  // return all the supported formats
+        FormatsList list = new FormatsList(documentManager.getFormats());
+        return ResponseEntity.ok(list);
     }
 }
