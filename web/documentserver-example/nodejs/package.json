@@ -47,5 +47,13 @@
     "eslint": "^8.56.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-plugin-import": "^2.29.1"
+  },
+  "overrides": {
+    "semver": "7.5.2",
+    "word-wrap": "1.2.4",
+    "pac-resolver": "7.0.0",
+    "degenerator": "3.0.1",
+    "qs": "6.7.3",
+    "json5": "2.2.3"
   }
 }
