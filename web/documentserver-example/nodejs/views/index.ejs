@@ -111,6 +111,16 @@
                     </td>
                     <td class="section">
                         <div class="main-panel">
+                            <menu class="links">
+                                <li class="home-link active" >
+                                    <a href="./">
+                                        <img src="images/home.svg" alt="Home"/>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="wopi">Wopi</a>
+                                </li>
+                            </menu>
                             <div id="portal-info" style="display: <%= storedFiles.length > 0 ? "none" : "table-cell" %>">
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                 <span class="portal-descr">
@@ -133,12 +143,6 @@
                             <%if (storedFiles.length > 0)
                                 {%>
                                 <div class="stored-list">
-                                    <div class="links-panel">
-                                        <a href="./" class="links-panel-current">
-                                            <img src="images/home.svg" alt="Home" class="links-panel-home"/>
-                                        </a>
-                                        <a href="wopi">Wopi</a>
-                                    </div>
                                     <div class="storedHeader">
                                         <div class="storedHeaderText">
                                             <span class="header-list">Your documents</span>

@@ -336,34 +336,51 @@ label .checkbox {
     padding: 16px 0;
 }
 
-.links-panel {
+.links {
     display: flex;
+    padding: 0;
     column-gap: 30px;
-    margin-bottom: 35px;
     align-items: center;
+    list-style: none;
+    border-bottom: 1px solid #E2E2E2;
+    margin: 0;
+    margin-bottom: 24px;
 }
 
-.links-panel-current {
-    position: relative;
+.links li {
+    padding: 4px;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
 }
 
-.links-panel-current::after {
-    content: "";
-    background-color: #ff6f3d;
-    position: absolute;
-    left: -10%;
-    bottom: -8px;
-    width: 120%;
-    height: 2.5px;
+.links li.active {
+    border-bottom: 2px solid #FF6F3D;
 }
 
-.links-panel a {
-    font-size: 14px;
+.links li.active a {
+    color: #FF6F3D;
+}
+
+.links li.active a img {
+    filter: invert(55%) sepia(67%) saturate(2727%) hue-rotate(335deg) brightness(104%) contrast(101%);
+}
+
+.links a {
+    display: inline-block;
+    padding: 2px 0;
+    line-height: 20px;
+    font-size: 13px;
     text-decoration: none;
 }
 
-.links-panel-home {
-    width: 22px;
+.home-link {
+    height: 24px;
+    padding: 0 2px 8px !important;
+}
+
+.home-link a {
+    padding: 0;
+    padding-top: 7px;
 }
 
 .upload-panel,
@@ -860,7 +877,7 @@ footer table tr td:first-child {
     overflow-x: auto;
     position: absolute;
     right: 0;
-    top: 130px;
+    top: 75px;
     scrollbar-color: #D0D5DA transparent;
     scrollbar-width: thin;
 }
