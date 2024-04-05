@@ -74,6 +74,12 @@
     }
 }
 
+@media (max-width: 1279px) and (min-width: 1024px) {
+    menu.main-nav {
+        padding-left: 64px;
+    }
+}
+
 @media (max-width: 1080px) {
     .copy {
         margin-right: 32px;
@@ -122,6 +128,12 @@
     .main-panel {
         left: -1%;
         padding: 48px 26px 24px;
+    }
+}
+
+@media (max-width: 1023px) and (min-width: 593px) {
+    menu.main-nav {
+        padding-left: 40px;
     }
 }
 
@@ -768,5 +780,231 @@
 @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
     .tableRow td:first-child{
         max-width: none;
+    }
+}
+@media (max-width: 592px) and (min-width: 320px) {
+    header {
+        min-width: auto;
+    }
+
+    header, footer {
+        position: -webkit-sticky; /* Safari */
+        position: sticky;
+        top: 0;
+        z-index: 99;
+    }
+
+    .main-nav {
+        display: none;
+    }
+
+    .responsive-nav {
+        height: 24px;
+        display: flex;
+        flex-direction: row;
+        margin: 0;
+        align-items: center;
+        column-gap: 16px;
+        padding: 10px 16px;
+        width: 100%;
+    }
+
+    .left-panel {
+        background-color: rgba(186, 186, 186, 0.6);
+        display: none;
+        align-items: start;
+        width: 100%;
+        margin: 0;
+        position: fixed;
+        left: 0;
+        overflow-y: hidden;
+        height: calc(100% - 124px);
+        z-index:99;
+    }
+
+    .left-panel.hide {
+        display: none;
+    }
+
+    .left-panel.active {
+        display: flex;
+    }
+
+    .help-block {
+        height: calc(100% - 66px);
+        margin: 0;
+        background-color: #F5F5F5;
+        width: 192px;
+        padding: 33px 40px 33px 16px;
+        overflow-y: scroll;
+    }
+
+    .help-block::-webkit-scrollbar {
+        display: none;
+      }
+
+    .help-block {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+
+    .mobile-close-btn {
+        display: block;
+        width: 48px;
+        height: 48px;
+        background-color: #E2E2E2;
+        border-radius: 2px;
+        border-color: #E2E2E2;
+        color: #808080;
+        cursor: pointer;
+	    outline: inherit;
+        border: none;
+    }
+
+    .center {
+        width: 100%;
+        margin: 0;
+    }
+
+    .table-main {
+        width: 100%;
+    }
+
+    .main {
+        height: calc(100% - 124px);
+    }
+
+    .main-panel {
+        width: 100%;
+        left: 0;
+        padding: 28px 16px;
+        row-gap: 12px;
+    }
+
+    menu.links {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    #portal-info {
+        width: 100%;
+        max-width: fit-content;
+    }
+
+    #portal-info .portal-name {
+        font-size: 16px;
+    }
+
+    #portal-info span:nth-child(2) {
+        font-size: 13px;
+    }
+
+    #portal-info .portal-descr {
+        font-size: 12px;
+    }
+
+    .users-list>li:first-child {
+        margin-top: 12px;
+        border-top: 1px solid #E5E5E5;
+    }
+
+    .user-descr {
+        width: 100%;
+        max-width: none;
+        min-width: auto;
+        border-bottom: 1px solid #E5E5E5;
+        padding: 12px 0;
+        margin: 0;
+        cursor: pointer;
+    }
+
+    .user-descr ul {
+        display: none;
+    }
+
+    .user-descr ul.open {
+        display: block;
+    }
+
+    .user-descr b {
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        column-gap: 8px;
+        margin: 0;
+    }
+
+    .user-descr b::before {
+        content: url("/images/plus.svg");
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+    }
+
+    .storedHeader {
+        width: 100%;
+        padding: 12px 0;
+    }
+
+    .scroll-table-body tr:first-child {
+        padding-top: 0;
+    }
+
+    .tableRow {
+        width: 100%;
+        row-gap: 16px;
+        padding: 16px 0;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .tableRow td:first-child {
+        width: 100%;
+    }
+
+    .tableRow td {
+        padding: 0;
+    }
+
+    .firstContentCellViewers {
+        border-bottom: none !important;
+    }
+
+    .firstContentCellViewers ~ td {
+        border-bottom: none !important;
+    }
+
+    .downloadContentCellShift:after {
+        display: none;
+    }
+
+    .stored-edit {
+        padding: 0;
+        padding-left: 26px;
+        display: flex;
+        align-items: center;
+    }
+
+    .stored-edit span {
+        font-size: 14px;
+        line-height: 22px;
+    }
+
+    .clear-all {
+        font-size: 11px;
+        width: 112px;
+        height: 32px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0;
+    }
+
+    .scroll-table-body {
+        position: static;
+    }
+
+    .user-block-table {
+        height: auto;
     }
 }

@@ -34,11 +34,27 @@
 
 <body>
     <header>
-        <div class="center">
-            <a href="wopi">
-                <img src="images/logo.svg" alt="ONLYOFFICE" />
-            </a>
-        </div>
+        <nav>
+            <menu class="main-nav">
+                <li>
+                    <a href="./">
+                        <img src ="images/logo.svg" alt="ONLYOFFICE" />
+                    </a>
+                </li>
+            </menu>
+            <menu class="responsive-nav">
+                <li>
+                    <a href="#" onclick="toggleLeftPanel(event)">
+                        <img src ="images/mobile-menu.svg" alt="ONLYOFFICE" />
+                    </a>
+                </li>
+                <li>
+                    <a href="./">
+                        <img src ="images/mobile-logo.svg" alt="ONLYOFFICE" />
+                    </a>
+                </li>
+            </menu>
+        </nav>
     </header>
     <div class="center main">
         <table class="table-main">
@@ -99,6 +115,9 @@
                                 </tbody>
                             </table>
                         </div>
+                        <button class="mobile-close-btn" onclick="toggleLeftPanel(event)">
+                            <img src="images/close.svg" alt="">
+                        </button>
                     </td>
                     <td class="section">
                         <div class="main-panel">

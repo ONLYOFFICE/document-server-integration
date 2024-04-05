@@ -20,6 +20,7 @@ var language;
 var userid;
 var directUrl;
 var formatManager;
+var leftPanelToggle = false;
 
 window.onload = function () {
     fetch('formats')
@@ -609,4 +610,27 @@ function collectParams(startParams) {
         }
     });
     return startChar + params.join("&");
+}
+
+function toggleLeftPanel(event) {
+    leftPanelToggle = !leftPanelToggle;
+    event.preventDefault();
+    let leftPanel = document.querySelector(".left-panel");
+    if (leftPanelToggle) {
+        leftPanel.classList.remove("hide");
+        leftPanel.classList.add("active")
+    } else {
+        leftPanel.classList.remove("active");
+        leftPanel.classList.add("hide");
+    }
+}
+
+function toggleUserDescr(event) {
+    let list = event.currentTarget.querySelector("ul");
+    let cursor = window.getComputedStyle(event.currentTarget).getPropertyValue("cursor");
+
+    if (cursor === 'pointer') {
+        if (list.classList.contains("open")) list.classList.remove("open");
+        else list.classList.add("open");
+    }
 }

@@ -53,14 +53,34 @@ a:visited {
 
 header {
     background: #333333;
-    height: 48px;
-    margin: 0 auto;
-    min-width: 1152px;
-    width: auto;
+    width: 100%;
 }
 
-header img {
-    margin: 10px 0 22px 32px;
+.main-nav {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    padding-left: 192px;
+    height: 48px;
+}
+
+.main-nav, .responsive-nav {
+    list-style: none;
+    column-gap: 24px;
+}
+
+.main-nav li, .mobile-nav li {
+    display: flex;
+    align-items: center;
+    height: 24px;
+}
+
+.responsive-nav {
+    display: none;
+}
+
+.mobile-close-btn {
+    display: none;
 }
 
 .center {
@@ -973,6 +993,12 @@ html {
 }
 .tableHeaderCellDownload{
     padding-right: 28px;
+}
+
+ul.users-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 .user-descr {
