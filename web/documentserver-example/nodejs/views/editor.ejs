@@ -74,7 +74,7 @@
         };
 
         var onRequestEditRights = function () {  // the user is trying to switch the document from the viewing into the editing mode
-            location.href = location.href.replace(RegExp("mode=view\&?", "i"), "");
+            location.href = location.href.replace(RegExp("mode=view\&?", "i"), "") + "&mode=edit";
         };
 
         var onRequestHistory = function (event) {  // the user is trying to show the document version history
@@ -373,7 +373,7 @@
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestSelectDocument": onRequestSelectDocument,
             "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
-            "onRequestOpen": onRequestOpen,
+            "onRequestOpen": onRequestOpen,"onRequestStartFilling":function(){console.log('xer')},
         };
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
