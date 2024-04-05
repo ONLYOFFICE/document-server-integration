@@ -1,5 +1,6 @@
 # Change Log
 
+- switching from filling to editing
 - nodejs: creating pdf instead docxf
 - fill permission in embedded mode
 - nodejs: wopi formsubmit icon
