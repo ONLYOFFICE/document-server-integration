@@ -437,7 +437,14 @@ namespace OnlineEditorsExample
             var lang = context.Request.Cookies.GetOrDefault("ulang", null);
 
             var extension = (Path.GetExtension(_fileName).ToLower() ?? "").Trim('.');
-            var internalExtension = "ooxml";
+            string conversionExtension = "ooxml"; // set the default conversion extension as ooxml
+            object fileExt;
+
+            // change the conversion extension if it was provided in the request body
+            if (body.TryGetValue("fileExt", out fileExt) && !String.IsNullOrEmpty(fileExt.ToString()))
+            {
+                conversionExtension = fileExt.ToString();
+            }
 
             // check if the file with such an extension can be converted
             if (ConvertExts.Contains("." + extension))
@@ -454,7 +461,7 @@ namespace OnlineEditorsExample
 
                 // get the url and file type of the converted file
                 Dictionary<string, string> newFileData;
-                var result = ServiceConverter.GetConvertedData(fileUrl.ToString() , extension, internalExtension, key, true, out newFileData, filePass, lang);
+                var result = ServiceConverter.GetConvertedData(fileUrl.ToString() , extension, conversionExtension, key, true, out newFileData, filePass, lang);
                 if (result != 100)
                 {
                     return "{ \"step\" : \"" + result + "\", \"filename\" : \"" + _fileName + "\"}";

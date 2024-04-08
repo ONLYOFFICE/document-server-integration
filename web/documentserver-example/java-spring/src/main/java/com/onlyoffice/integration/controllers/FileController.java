@@ -248,15 +248,15 @@ public class FileController {
         // get document type (word, cell or slide)
         DocumentType type = fileUtility.getDocumentType(fileName);
 
-        // convert to .ooxml
-        String internalFileExt = "ooxml";
+        // get an auto-conversion extension from the request body or set it to the ooxml extension
+        String conversionExtension = body.getFileExt() != null ? body.getFileExt() : "ooxml";
 
         try {
             // check if the file with such an extension can be converted
             if (fileUtility.getConvertExts().contains(fileExt)) {
                 String key = serviceConverter.generateRevisionId(fileUri);  // generate document key
                 ConvertedData response = serviceConverter  // get the URL to the converted file
-                        .getConvertedData(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang);
 
                 String newFileUri = response.getUri();
                 String newFileType = "." + response.getFileType();
@@ -291,24 +291,33 @@ public class FileController {
             return createUserMetadata(uid, fileName);
         } catch (Exception e) {
             e.printStackTrace();
+
+            // if the operation of file converting is unsuccessful, an error occurs
+            return "{ \"error\": \"" + e.getMessage() + "\"}";
         }
-        // if the operation of file converting is unsuccessful, an error occurs
-        return "{ \"error\": \"" + "The file can't be converted.\"}";
     }
 
     @PostMapping("/delete")
     @ResponseBody
     public String delete(@RequestBody final Converter body) {  // delete a file
         try {
-            String fullFileName = fileUtility.getFileName(body.getFileName());  // get full file name
+            String filename = body.getFileName();
+            boolean success = false;
 
-            // delete a file from the storage and return the status of this operation (true or false)
-            boolean fileSuccess = storageMutator.deleteFile(fullFileName);
+            if (filename != null) {
+                String fullFileName = fileUtility.getFileName(filename);  // get full file name
 
-            // delete file history and return the status of this operation (true or false)
-            boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);
+                // delete a file from the storage and return the status of this operation (true or false)
+                boolean fileSuccess = storageMutator.deleteFile(fullFileName);
 
-            return "{ \"success\": \"" + (fileSuccess && historySuccess) + "\"}";
+                // delete file history and return the status of this operation (true or false)
+                boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);
+                success = fileSuccess && historySuccess;
+            } else {
+                // delete the user's folder and return the boolean status
+                success = storageMutator.deleteUserFolder();
+            }
+            return "{ \"success\": \"" + (success) + "\"}";
         } catch (Exception e) {
             // if the operation of file deleting is unsuccessful, an error occurs
             return "{ \"error\": \"" + e.getMessage() + "\"}";

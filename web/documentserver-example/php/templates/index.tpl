@@ -220,8 +220,7 @@
 <script type="text/javascript" src="assets/js/jquery.iframe-transport.js"></script>
 <script type="text/javascript" src="assets/js/jquery.fileupload.js"></script>
 <script type="text/javascript" src="assets/js/jquery.dropdownToggle.js"></script>
-<script type="text/javascript" src="assets/js/format.js"></script>
-<script type="text/javascript" src="assets/js/format-manager.js"></script>
+<script type="text/javascript" src="assets/js/formats.js"></script>
 <script type="text/javascript" src="assets/components/files/files.js"></script>
 <script type="text/javascript" src="assets/js/jscript.js"></script>
 </body>

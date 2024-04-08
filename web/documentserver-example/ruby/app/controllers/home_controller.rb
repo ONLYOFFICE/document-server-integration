@@ -102,14 +102,15 @@ class HomeController < ApplicationController
     file_pass = body['filePass'] || nil
     file_uri = DocumentHelper.get_download_url(file_name)
     extension = File.extname(file_name).downcase
-    internal_extension = 'ooxml'
+    # get an auto-conversion extension from the request body or set it to the ooxml extension
+    conversion_extension = body['fileExt'] || 'ooxml'
 
     if DocumentHelper.convert_exts.include?(extension) # check if the file with such an extension can be converted
       key = ServiceConverter.generate_revision_id(file_uri) # generate document key
       percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(
         file_uri,
         extension.delete('.'),
-        internal_extension.delete('.'),
+        conversion_extension.delete('.'),
         key,
         true,
         file_pass,
@@ -251,24 +252,31 @@ class HomeController < ApplicationController
 
   # removing a file
   def remove
-    file_name = File.basename(params[:filename]) # get the file name
-    unless file_name # if it doesn't exist
-      render(plain: '{"success":false}') # report that the operation is unsuccessful
-      return
-    end
-
     DocumentHelper.init(request.remote_ip, request.base_url)
-    storage_path = DocumentHelper.storage_path(file_name, nil)
-    hist_dir = DocumentHelper.history_dir(storage_path)
 
-    # if the file exists
-    FileUtils.rm_f(storage_path) # delete it from the storage path
+    if params[:filename].present?
+      file_name = File.basename(params[:filename]) # get the file name
+      unless file_name # if it doesn't exist
+        render(plain: '{"success":false}') # report that the operation is unsuccessful
+        return
+      end
 
-    # if the history directory of this file exists
-    FileUtils.rm_rf(hist_dir) # delete it
+      storage_path = DocumentHelper.storage_path(file_name, nil)
+      hist_dir = DocumentHelper.history_dir(storage_path)
 
+      # if the file exists
+      FileUtils.rm_f(storage_path) # delete it from the storage path
+
+      # if the history directory of this file exists
+      FileUtils.rm_rf(hist_dir) # delete it
+    else
+      storage_path = DocumentHelper.storage_path('', nil)
+      FileUtils.rm_rf(storage_path) # remove the user's directory and all the containing files
+    end
     render(plain: '{"success":true}') # report that the operation is successful
     nil
+  rescue StandardError
+    render(plain: '{"error": "Server error"}')
   end
 
   # getting files information

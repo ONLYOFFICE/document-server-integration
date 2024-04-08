@@ -331,8 +331,8 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const fileUri = req.DocManager.getDownloadUrl(fileName, true);
   const fileExt = fileUtility.getFileExtension(fileName, true);
   const internalFileExt = 'ooxml';
-  let convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
-  if (req.body.forceConv) convExt = req.body.forceConv;
+  const convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
+  const { keepOriginal } = req.body;
   const response = res;
 
   const writeResult = function writeResult(filename, step, error) {
@@ -387,14 +387,14 @@ app.post('/convert', (req, res) => { // define a handler for converting files
         return;
       }
       // remove file with the origin extension
-      if (!('fileExt' in req.body)) fileSystem.unlinkSync(req.DocManager.storagePath(fileName));
+      if (!keepOriginal) fileSystem.unlinkSync(req.DocManager.storagePath(fileName));
 
       const userAddress = req.DocManager.curUserHostAddress();
       const historyPath = req.DocManager.historyPath(fileName, userAddress, true);
       // get the history path to the file with a new extension
       const correctHistoryPath = req.DocManager.historyPath(correctName, userAddress, true);
 
-      if (!('fileExt' in req.body)) {
+      if (!keepOriginal) {
         fileSystem.renameSync(historyPath, correctHistoryPath); // change the previous history path
 
         fileSystem.renameSync(
@@ -686,7 +686,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         }
       } catch (ex) {
         console.log(ex);
-        response.write('{"error":1}');
+        response.write(`{"error":1,"message":${JSON.stringify(ex)}}`);
         response.end();
         return;
       }
@@ -698,7 +698,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     // file saving process
     const processSave = async function processSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
-        response.write('{"error":1}');
+        response.write('{"error":1,"message":"save uri is empty"}');
         response.end();
         return;
       }
@@ -809,7 +809,8 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           }
         }
       } catch (ex) {
-        response.write('{"error":1}');
+        console.log(ex);
+        response.write(`{"error":1,"message":${JSON.stringify(ex)}}`);
         response.end();
         return;
       }
@@ -821,7 +822,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     // file force saving process
     const processForceSave = async function processForceSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
-        response.write('{"error":1}');
+        response.write('{"error":1,"message":"forcesave uri is empty"}');
         response.end();
         return;
       }
@@ -913,7 +914,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       }
     }
     if (!body) {
-      res.write('{"error":1}');
+      res.write('{"error":1,"message":"body is empty"}');
       res.end();
       return;
     }
@@ -1065,7 +1066,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         chat: userid !== 'uid-0',
         coEditing: mode === 'view' && userid === 'uid-0' ? { mode: 'strict', change: false } : null,
         comment: mode !== 'view' && mode !== 'fillForms' && mode !== 'embedded' && mode !== 'blockcontent',
-        fillForms: mode !== 'view' && mode !== 'comment' && mode !== 'embedded' && mode !== 'blockcontent',
+        fillForms: mode !== 'view' && mode !== 'comment' && mode !== 'blockcontent',
         modifyFilter: mode !== 'filter',
         modifyContentControl: mode !== 'blockcontent',
         copy: !user.deniedPermissions.includes('copy'),

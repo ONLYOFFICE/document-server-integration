@@ -111,6 +111,16 @@
                     </td>
                     <td class="section">
                         <div class="main-panel">
+                            <menu class="links">
+                                <li class="home-link active" >
+                                    <a href="./">
+                                        <img src="images/home.svg" alt="Home"/>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="wopi">Wopi</a>
+                                </li>
+                            </menu>
                             <div id="portal-info" style="display: <%= storedFiles.length > 0 ? "none" : "table-cell" %>">
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                 <span class="portal-descr">
@@ -133,12 +143,6 @@
                             <%if (storedFiles.length > 0)
                                 {%>
                                 <div class="stored-list">
-                                    <div class="links-panel">
-                                        <a href="./" class="links-panel-current">
-                                            <img src="images/home.svg" alt="Home" class="links-panel-home"/>
-                                        </a>
-                                        <a href="wopi">Wopi</a>
-                                    </div>
                                     <div class="storedHeader">
                                         <div class="storedHeaderText">
                                             <span class="header-list">Your documents</span>
@@ -274,13 +278,13 @@
             <div class="describeUpload">After these steps are completed, you can work with your document.</div>
             <span id="step1" class="step">1. Loading the file.</span>
             <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
-            <div id="xmlError" class="invisible">
+            <div id="select-file-type" class="invisible">
                 <br />
                 <span class="step">Please select the current document type</span>
                 <div class="buttonsMobile indent">
-                    <div id="forceConvert" class="button forceConvert document" data="docx">Document</div>
-                    <div id="forceConvert" class="button forceConvert spreadsheet" data="xlsx">Spreadsheet</div>
-                    <div id="forceConvert" class="button forceConvert presentation" data="pptx">Presentation</div>
+                    <div class="button file-type document" data="docx">Document</div>
+                    <div class="button file-type spreadsheet" data="xlsx">Spreadsheet</div>
+                    <div class="button file-type presentation" data="pptx">Presentation</div>
                 </div>
             </div>
             <br />
@@ -373,8 +377,7 @@
     <script type="text/javascript" src="javascripts/jquery.iframe-transport.js"></script>
     <script type="text/javascript" src="javascripts/jquery.fileupload.js"></script>
     <script type="text/javascript" src="javascripts/jquery.dropdownToggle.js"></script>
-    <script type="text/javascript" src="javascripts/format.js"></script>
-    <script type="text/javascript" src="javascripts/format-manager.js"></script>
+    <script type="text/javascript" src="javascripts/formats.js"></script>
     <script type="text/javascript" src="javascripts/jscript.js"></script>
 
     <script type="text/javascript">

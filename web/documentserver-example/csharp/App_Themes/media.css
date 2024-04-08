@@ -502,6 +502,17 @@
         justify-content: space-between;
         align-items: center;
     }
+    .buttonsMobile.indent {
+        margin-bottom: 0;
+        flex-wrap: nowrap;
+    }
+    .button.file-type:hover,
+    .button.file-type {
+        height: 28px;
+        width: 100px;
+        margin-bottom: 10px !important;
+        font-size: 9px;
+    }
     .button.gray{
         margin: 0;
     }

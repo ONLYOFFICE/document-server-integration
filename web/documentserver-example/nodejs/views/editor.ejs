@@ -412,7 +412,7 @@
             if (config.type !== "mobile") {
                 return;
             }
-            var wrapEl = document.getElementsByClassName("form");
+            var wrapEl = document.getElementsByTagName("iframe");
             if (wrapEl.length) {
                 wrapEl[0].style.height = screen.availHeight + "px";
                 window.scrollTo(0, -1);

@@ -16,6 +16,28 @@
  *
  */
 
+class Format {
+    constructor(name, type, actions, convert, mime) {
+        this.name = name;
+        this.type = type;
+        this.actions = actions;
+        this.convert = convert;
+        this.mime = mime;
+    }
+
+    isAutoConvertible() {
+        return this.actions.includes('auto-convert');
+    }
+
+    isEditable() {
+        return this.actions.includes('edit') || this.actions.includes('lossy-edit');
+    }
+
+    isFillable() {
+        return this.actions.includes('fill');
+    }
+}
+
 class FormatManager {
     formats = [];
 

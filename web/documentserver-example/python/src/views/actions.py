@@ -77,13 +77,16 @@ def convert(request):
         lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'
         fileUri = docManager.getDownloadUrl(filename, request)
         fileExt = fileUtils.getFileExt(filename)
-        newExt = 'ooxml'  # convert to .ooxml
+        # get an auto-conversion extension from the request body or set it to the ooxml extension
+        conversionExtension = body.get('fileExt') or 'ooxml'
 
         if docManager.isCanConvert(fileExt):  # check if the file extension is available for converting
             key = docManager.generateFileKey(filename, request)  # generate the file key
 
             # get the url of the converted file
-            convertedData = serviceConverter.getConvertedData(fileUri, fileExt, newExt, key, True, filePass, lang)
+            convertedData = serviceConverter.getConvertedData(
+                fileUri, fileExt, conversionExtension, key, True, filePass, lang
+                )
 
             # if the converter url is not received, the original file name is passed to the response
             if not convertedData:
@@ -278,7 +281,7 @@ def edit(request):
                 'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter') \
                                    | (edMode == "blockcontent")),
                 'print': 'print' not in user.deniedPermissions,
-                'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') \
+                'fillForms': (edMode != 'view') & (edMode != 'comment') \
                 & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
@@ -426,13 +429,19 @@ def track(request):
 
 # remove a file
 def remove(request):
-    filename = fileUtils.getFileName(request.GET['filename'])
-
     response = {}
 
-    docManager.removeFile(filename, request)
+    try:
+        filename = request.GET.get('filename', '')
+        if filename:
+            filename = fileUtils.getFileName(filename)
+            docManager.removeFile(filename, request)
+        else:
+            docManager.removeUserFolder(request)
+        response.setdefault('success', True)
+    except Exception as e:
+        response.setdefault('error', str(e.args[0]))
 
-    response.setdefault('success', True)
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 

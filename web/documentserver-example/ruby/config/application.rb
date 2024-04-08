@@ -39,7 +39,7 @@ class Application < Rails::Application
     match '/files', to: 'home#files', via: 'get'
     match '/index', to: 'home#index', via: 'get'
     match '/reference', to: 'home#reference', via: 'post'
-    match '/remove', to: 'home#remove', via: 'get'
+    match '/remove', to: 'home#remove', via: 'delete'
     match '/rename', to: 'home#rename', via: 'post'
     match '/restore', to: 'home#restore', via: 'put'
     match '/sample', to: 'home#sample', via: 'get'

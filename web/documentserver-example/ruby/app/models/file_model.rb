@@ -146,7 +146,7 @@ class FileModel
           download: @user.denied_permissions.exclude?('download'),
           edit: can_edit && ['edit', 'view', 'filter', 'blockcontent'].include?(editors_mode),
           print: @user.denied_permissions.exclude?('print'),
-          fillForms: ['view', 'comment', 'embedded', 'blockcontent'].exclude?(editors_mode),
+          fillForms: ['view', 'comment', 'blockcontent'].exclude?(editors_mode),
           modifyFilter: !editors_mode.eql?('filter'),
           modifyContentControl: !editors_mode.eql?('blockcontent'),
           review: can_edit && (editors_mode.eql?('edit') || editors_mode.eql?('review')),

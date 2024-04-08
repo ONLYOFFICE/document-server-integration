@@ -27,7 +27,8 @@ public enum ConvertErrorType {
     UNEXPECTED_GUID_ERROR(-5, "Error unexpected guid"),
     DATABASE_ERROR(-6, "Error database"),
     DOCUMENT_REQUEST_ERROR(-7, "Error document request"),
-    DOCUMENT_VKEY_ERROR(-8, "Error document VKey");
+    DOCUMENT_VKEY_ERROR(-8, "Error document VKey"),
+    CONVERSION_OUTPUT_FORMAT_ERROR(-9, "Error conversion output format");
 
     private final int code;
     private final String label;
