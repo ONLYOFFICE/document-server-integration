@@ -16,317 +16,266 @@
  *
  */
 
-fetch("assets/components/files/template.html")
-    .then((stream) => stream.text())
-    .then(text => define(text));
+class FilesList extends HTMLElement {
+    constructor() {
+        super();
+        this.template = null;
+    }
 
-function define(html) {
-    class FilesList extends HTMLElement {
-        constructor() {
-            super();
-            const template = document.createElement("template");
-            template.innerHTML = html;
-            const templateContent = template.content.cloneNode(true);
-            this.style.display = "block";
-            this.classList.add("stored-list");
-            this.container = templateContent.querySelector("tbody");
-            this.appendChild(templateContent);
-        }
-    
-        render() {
-            let encodedUser = encodeURIComponent(this.user);
-            let encodedDirectUrl = encodeURIComponent(this.directUrl);
-            this.files.forEach(file => {
-                let encodedTitle = encodeURIComponent(file.title);
-                let editorUrl = `editor?fileID=${encodedTitle}&user=${encodedUser}&directUrl=${encodedDirectUrl}`;
-                
-                const row = this.createElement("tr", {
-                    class: ["tableRow"],
-                    title: `${file.title} [${file.version}]`
-                });
-    
-                row.appendChild(this.createHierarchy({
-                    td: {
-                        class: ["contentCells"]
-                    },
-                    a: {
-                        class: ["stored-edit", file.type],
-                        href: editorUrl,
-                        target: "_blank",
-                        innerHTML: `<span>${file.title}</span>`
-                    }
-                }));
-    
-                if (file.editable) {    
-                    row.appendChild(this.createIconColumn({
-                        a: {
-                            href: `${editorUrl}&action=edit&type=desktop`
-                        },
-                        img: {
-                            src: "assets/images/desktop.svg",
-                            title: "Open in editor for full size screens",
-                            alt: "Open in editor for full size screens"
-                        }
-                    }));
-    
-                    row.appendChild(this.createIconColumn({
-                        a: {
-                            href: `${editorUrl}&action=edit&type=mobile`
-                        },
-                        img: {
-                            src: "assets/images/mobile.svg",
-                            title: "Open in editor for mobile devices",
-                            alt: "Open in editor for mobile devices"
-                        }
-                    }));
-    
-                    row.appendChild(this.createIconColumn({
-                        a: {
-                            href: `${editorUrl}&action=comment&type=desktop`
-                        },
-                        img: {
-                            src: "assets/images/comment.svg",
-                            title: "Open in editor for comment",
-                            alt: "Open in editor for comment"
-                        }
-                    }));
-    
-                    if (file.type === "word") {
-                        row.appendChild(this.createIconColumn({
-                            a: {
-                                href: `${editorUrl}&action=review&type=desktop`
-                            },
-                            img: {
-                                src: "assets/images/review.svg",
-                                title: "Open in editor for review",
-                                alt: "Open in editor for review"
-                            }
-                        }));
-    
-                        row.appendChild(this.createIconColumn({
-                            a: {
-                                href: `${editorUrl}&action=blockcontent&type=desktop`
-                            },
-                            img: {
-                                src: "assets/images/block-content.svg",
-                                title: "Open in editor without content control modification",
-                                alt: "Open in editor without content control modification"
-                            }
-                        }));
-    
-                    } else if (file.type == "cell") {
-                        row.appendChild(this.createIconColumn({
-                            a: {
-                                href: `${editorUrl}&action=filter&type=desktop`
-                            },
-                            img: {
-                                src: "assets/images/filter.svg",
-                                title: "Open in editor without access to change the filter",
-                                alt: "Open in editor without access to change the filter"
-                            }
-                        }));
-                    } else {
-                        row.appendChild(this.createIconColumn({
-                            td: {
-                                class: ["contentCellsEmpty", "contentCells-shift"],
-                                colspan: 2
-                            }
-                        }));
-                    }
-                    if (file.fillable) {
-                        row.appendChild(this.createIconColumn({
-                            td: {
-                                class: ["firstContentCellShift", "contentCells-shift"]
-                            },
-                            a: {
-                                href: `${editorUrl}&action=fillForms&type=desktop`
-                            },
-                            img: {
-                                src: "assets/images/fill-forms.svg",
-                                title: "Open in editor for filling in forms",
-                                alt: "Open in editor for filling in forms"
-                            }
-                        }));
-                    } else {
-                        row.appendChild(this.createIconColumn({
-                            td: {
-                                class: ["firstContentCellShift", "contentCells-shift"],
-                            }
-                        }));
-                    }
-                } else if (file.fillable) {
-                    row.appendChild(this.createIconColumn({
-                        a: {
-                            href: `${editorUrl}&action=fillForms&type=desktop`
-                        },
-                        img: {
-                            src: "assets/images/mobile-fill-forms.svg",
-                            title: "Open in editor for filling in forms for mobile devices",
-                            alt: "Open in editor for filling in forms for mobile devices"
-                        }
-                    }));
-    
-                    row.appendChild(this.createIconColumn({
-                        td: {
-                            class: ["contentCellsEmpty", "contentCells-shift"],
-                            colspan: 3
-                        }
-                    }));
-    
-                    row.appendChild(this.createIconColumn({
-                        td: {
-                            class: ["firstContentCellShift", "contentCells-shift"],
-                        },
-                        a: {
-                            href: `${editorUrl}&action=fillForms&type=desktop`
-                        },
-                        img: {
-                            src: "assets/images/fill-forms.svg",
-                            title: "Open in editor for filling in forms",
-                            alt: "Open in editor for filling in forms"
-                        }
-                    }));
-                }
-    
-                row.appendChild(this.createIconColumn({
-                    td: {
-                        class: ["firstContentCellViewers"],
-                    },
-                    a: {
-                        href: `${editorUrl}&action=view&type=desktop`
-                    },
-                    img: {
-                        src: "assets/images/desktop.svg",
-                        title: "Open in viewer for full size screens",
-                        alt: "Open in viewer for full size screens"
-                    }
-                }));
-    
-                row.appendChild(this.createIconColumn({
-                    a: {
-                        href: `${editorUrl}&action=view&type=mobile`
-                    },
-                    img: {
-                        src: "assets/images/mobile.svg",
-                        title: "Open in viewer for mobile devices",
-                        alt: "Open in viewer for mobile devices"
-                    }
-                }));
-    
-                row.appendChild(this.createIconColumn({
-                    td: {
-                        class: ["contentCells-shift"],
-                    },
-                    a: {
-                        href: `${editorUrl}&action=embedded&type=embedded`
-                    },
-                    img: {
-                        src: "assets/images/embeded.svg",
-                        title: "Open in embedded mode",
-                        alt: "Open in embedded mode"
-                    }
-                }));
-    
-                row.appendChild(this.createIconColumn({
-                    td: {
-                        class: ["contentCells-shift", "downloadContentCellShift"],
-                    },
-                    a: {
-                        href: `download?fileName=${encodedTitle}`
-                    },
-                    img: {
-                        class: ["icon-download"],
-                        src: "assets/images/download.svg",
-                        title: "Download",
-                        alt: "Download"
-                    }
-                }));
-    
-                row.appendChild(this.createIconColumn({
-                    td: {
-                        class: ["contentCells-shift"],
-                    },
-                    a: {
-                        data: file.title,
-                        class: ["delete-file"]
-                    },
-                    img: {
-                        class: ["icon-delete"],
-                        src: "assets/images/delete.svg",
-                        title: "Delete",
-                        alt: "Delete"
-                    }
-                }));
-    
-                this.container.appendChild(row);
-            });
-        }
-    
-        createElement(name, properties) {
-            let element = document.createElement(name);
-            Object.entries(properties).forEach(([property, value], index) => {
-                if(property === "class") {
-                    element.classList.add(...value);
-                } else if(property === "innerHTML") {
-                    element[property] = value;
-                } else {
-                    element.setAttribute(property, value);
-                }
-            });
-            return element;
-        }
-    
-        createHierarchy(elements) {
-            let lastNode = null;
-            let firstNode = null;
-    
-            for(const[element, attributes] of Object.entries(elements)) {
-                let newElement = this.createElement(element, attributes);
-                if (lastNode) lastNode.appendChild(newElement);
-                else firstNode = newElement;
-                lastNode = newElement;
-            }
-            return firstNode;
-        }
-    
-        createIconColumn(elements) {
-            if(elements.td) {
-                elements.td.class.push("contentCells", "contentCells-icon");
-            } else {
-                elements = Object.assign({td : {class: ["contentCells", "contentCells-icon"]}}, elements);
-            }
-            if (elements.a)
-                elements.a.target = "_blank";
-            return this.createHierarchy(elements);
-        }
-    
-        static get observedAttributes() {
-            return ["data"];
-        }
-    
-        attributeChangedCallback(name, oldValue, newValue) {
-            if(name === "data") {
-                this.container.innerHTML = "";
-                this.render();
-            }
-        }
-    
-        get data() {
-            return JSON.parse(this.getAttribute("data")) || {}
-        }
-    
-        get files() {
-            return this.data.files;
-        }
-    
-        get user() {
-            return this.data.user;
-        }
-    
-        get directUrl() {
-            return this.data.directUrl;
+    async connectedCallback() {
+        if (!this.template) {
+            await this.initTemplate();
         }
     }
-    
-    customElements.define("files-list", FilesList);
+
+    async initTemplate() {
+        let templateHtml = await fetch("assets/components/files/template.html")
+            .then((stream) => stream.text());
+
+        this.template = document.createElement("template");
+        this.template.innerHTML = templateHtml;
+        const templateContent = this.template.content.cloneNode(true);
+        this.style.display = "block";
+        this.classList.add("stored-list");
+        this.container = templateContent.querySelector("tbody");
+        this.appendChild(templateContent);
+
+    }
+
+    render() {
+        this.files.forEach(file => {
+            const row = document.createElement("tr", { is: "files-row" })
+            row.dataset.file = JSON.stringify(file);
+            row.dataset.user = this.user;
+            row.dataset.directUrl = this.directUrl;
+
+            this.container.appendChild(row);
+        });
+    }
+
+    static get observedAttributes() {
+        return ["data"];
+    }
+
+    attributeChangedCallback(name, oldValue, newValue) {
+        if (name === "data") {
+            this.container.innerHTML = "";
+            this.render();
+        }
+    }
+
+    get data() {
+        return JSON.parse(this.getAttribute("data")) || {}
+    }
+
+    get files() {
+        return this.data.files;
+    }
+
+    get user() {
+        return this.data.user;
+    }
+
+    get encodedUser() {
+        return encodeURIComponent(this.user);
+    }
+
+    get directUrl() {
+        return this.data.directUrl;
+    }
+
+    get encodedDirectUrl() {
+        return encodeURIComponent(this.directUrl);
+    }
 }
+
+class FilesRow extends HTMLTableRowElement {
+    constructor() {
+        super();
+        this.viewersTemplate = null;
+        this.editorsTemplate = null;
+        this.actionsTemplate = null;
+    }
+
+    async connectedCallback() {
+        if (!this.viewersTemplate || !this.editorsTemplate || !this.actionsTemplate)
+            await this.initTemplates();
+        this.render();
+    }
+
+    async initTemplates() {
+        this.viewersTemplate = await fetch("assets/components/files/viewers.html")
+            .then((stream) => stream.text());
+        this.editorsTemplate = await fetch("assets/components/files/editors.html")
+            .then((stream) => stream.text());
+        this.actionsTemplate = await fetch("assets/components/files/actions.html")
+            .then((stream) => stream.text());
+    }
+
+    render() {
+        this.initSelf();
+        this.appendChild(this.createNameColumn());
+
+        let editors = this.createEditorsColumns();
+        for (let i = 0; i < editors.length; i++) {
+            this.appendChild(editors[i]);
+        }
+
+        let viewers = this.createViewersColumns();
+        for (let i = 0; i < viewers.length; i++) {
+            this.appendChild(viewers[i]);
+        }
+
+        let actions = this.createActionsColumns();
+        for (let i = 0; i < actions.length; i++) {
+            this.appendChild(actions[i]);
+        }
+    }
+
+    initSelf() {
+        this.classList.add("tableRow");
+        this.title = this.name;
+    }
+
+    createNameColumn() {
+        let column = document.createElement("td", { is: "files-name-column" })
+        column.dataset.type = this.file.type;
+        column.dataset.url = this.editorUrl;
+        column.dataset.name = this.file.title;
+
+        return column;
+    }
+
+    createEditorsColumns() {
+        let template = document.createElement("template");
+        template.innerHTML = this.editorsTemplate;
+        let columns = [];
+
+        if (this.file.editable) {
+            let container = template.content.querySelector("#action-editable").content.cloneNode(true);
+            container.querySelectorAll("td").forEach(td => {
+                container.querySelectorAll("a").forEach(link => {
+                    link.href = this.editorUrl + link.href;
+                });
+                columns.push(td);
+            })
+        }
+        if (this.file.type === "word") {
+            let container = template.content.querySelector("#type-word").content.cloneNode(true);
+            container.querySelectorAll("td").forEach(td => {
+                container.querySelectorAll("a").forEach(link => {
+                    link.href = this.editorUrl + link.href;
+                });
+                columns.push(td);
+            })
+        }
+        if (this.file.type === "cell") {
+            let container = template.content.querySelector("#type-cell").content.cloneNode(true);
+            container.querySelectorAll("td").forEach(td => {
+                container.querySelectorAll("a").forEach(link => {
+                    link.href = this.editorUrl + link.href;
+                });
+                columns.push(td);
+            })
+        }
+        if (this.file.fillable) {
+            let container = template.content.querySelector("#action-fillable").content.cloneNode(true);
+            container.querySelectorAll("td").forEach(td => {
+                container.querySelectorAll("a").forEach(link => {
+                    link.href = this.editorUrl + link.href;
+                });
+                columns.push(td);
+            })
+        }
+        return columns;
+    }
+
+    createViewersColumns() {
+        let template = document.createElement("template");
+        template.innerHTML = this.viewersTemplate;
+        let columns = template.content.querySelectorAll("td");
+        columns.forEach(column => {
+            let link = column.querySelector("a");
+            link.href = this.editorUrl + link.href;
+        });
+        return columns;
+    }
+
+    createActionsColumns() {
+        let template = document.createElement("template");
+        template.innerHTML = this.actionsTemplate;
+        let columns = template.content.querySelectorAll("td");
+        columns.forEach(column => {
+            let link = column.querySelector("a");
+            let img = link.querySelector("img");
+            if (img.title === "Download") link.href += this.encodedTitle;
+            if (img.title === "Delete") link.setAttribute("data", this.file.title);
+        });
+        return columns;
+    }
+
+    get file() {
+        return JSON.parse(this.dataset.file || {});
+    }
+
+    get name() {
+        return `${this.file.title} ${this.file.version}`;
+    }
+
+    get encodedTitle() {
+        return encodeURIComponent(this.file.title);
+    }
+
+    get user() {
+        return this.dataset.user;
+    }
+
+    get encodedUser() {
+        return encodeURIComponent(this.user);
+    }
+
+    get directUrl() {
+        return this.dataset.directUrl;
+    }
+
+    get encodedDirectUrl() {
+        return encodeURIComponent(this.directUrl);
+    }
+
+    get editorUrl() {
+        return `editor?fileID=${this.encodedTitle}&user=${this.encodedUser}&directUrl=${this.encodedDirectUrl}`;
+    }
+}
+
+class FilesNameColumn extends HTMLTableCellElement {
+    connectedCallback() {
+        this.classList.add("contentCells");
+
+        let link = document.createElement("a");
+        link.classList.add("stored-edit", this.type);
+        link.href = this.url;
+        link.target = "_blank";
+
+        let span = document.createElement("span");
+        span.innerHTML = this.name;
+
+        link.appendChild(span);
+        this.appendChild(link);
+    }
+
+    get type() {
+        return this.dataset.type || "";
+    }
+
+    get url() {
+        return this.dataset.url || "";
+    }
+
+    get name() {
+        return this.dataset.name || "";
+    }
+}
+
+customElements.define("files-list", FilesList);
+customElements.define("files-row", FilesRow, { extends: "tr" });
+customElements.define("files-name-column", FilesNameColumn, { extends: "td" });
