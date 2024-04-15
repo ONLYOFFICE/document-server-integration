@@ -373,6 +373,23 @@ function getStoredFiles()
 }
 
 /**
+ * Get forgotten files from documentserver
+ *
+ * @return array
+ */
+function getForgottenFiles()
+{
+    $response = json_decode(commandRequest('getForgottenList', ''));
+    $files = [];
+    foreach($response->keys as $key) {
+        $file = json_decode(commandRequest('getForgotten', $key));
+        $file->type = getDocumentType($file->url);
+        $files[] = $file;
+    }
+    return $files;
+}
+
+/**
  * Get the virtual path
  *
  * @param string $forDocumentServer
