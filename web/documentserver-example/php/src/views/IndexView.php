@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ final class IndexView extends View
     {
         parent::__construct($tempName);
         $formatManager = new FormatManager();
+        $configManager = new ConfigurationManager();
 
         $storedList = new IndexStoredListView($request);
         $portalInfo = $this->getPortalInfoStyleDisplay();
@@ -43,9 +44,7 @@ final class IndexView extends View
             "editButton" => $this->getEditButton(),
             "dataDocs" => $this->getPreloaderUrl(),
             "date" => date("Y"),
-            "fillFormsExtList" => implode(",", $formatManager->fillableExtensions()),
-            "converExtList" => implode(",", $formatManager->convertibleExtensions()),
-            "editedExtList" => implode(",", $formatManager->editableExtensions()),
+            "serverVersion" => $configManager -> getVersion(),
         ];
     }
 

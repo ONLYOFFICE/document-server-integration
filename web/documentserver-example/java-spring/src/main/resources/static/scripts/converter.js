@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,12 @@
  *
  */
 
-var ConverExtList;
-var EditedExtList;
 var UrlConverter;
 var UrlEditor;
-var FillExtList;
 
 if (typeof jQuery !== "undefined") {
     jQuery.post('/config',
         function(data) {
-            FillExtList = data.FillExtList.split(',');
-            ConverExtList = data.ConverExtList.split(',');
-            EditedExtList = data.EditedExtList.split(',');
             UrlConverter = data.UrlConverter;
             UrlEditor = data.UrlEditor;
     });

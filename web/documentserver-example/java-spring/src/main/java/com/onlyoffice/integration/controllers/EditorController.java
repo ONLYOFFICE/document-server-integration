@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.dto.Mentions;
+import com.onlyoffice.integration.dto.UserInfo;
+import com.onlyoffice.integration.dto.Protect;
 import com.onlyoffice.integration.documentserver.models.enums.Type;
 import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
 import com.onlyoffice.integration.services.UserServices;
@@ -117,6 +119,8 @@ public class EditorController {
         }
 
         User user = optionalUser.get();
+        user.setImage(user.getAvatar() ? storagePathBuilder.getServerUrl(true) + "/css/img/uid-"
+                + user.getId() + ".png" : null);
 
         // get file model with the default file parameters
         FileModel fileModel = fileConfigurer.getFileModel(
@@ -150,6 +154,12 @@ public class EditorController {
 
         // get user data for mentions and add it to the model
         model.addAttribute("usersForMentions", getUserMentions(uid));
+
+        model.addAttribute("usersInfo", getUsersInfo(uid));
+
+        // get user data for protect and add it to the model
+        model.addAttribute("usersForProtect", getUserProtect(uid));
+
         return "editor.html";
     }
 
@@ -169,14 +179,44 @@ public class EditorController {
         return usersForMentions;
     }
 
+    private List<UserInfo> getUsersInfo(final String uid) {  // get user data for mentions
+        List<UserInfo> usersInfo = new ArrayList<>();
+        if (uid != null && !uid.equals("4")) {
+            List<User> list = userService.findAll();
+            for (User u : list) {
+                String image = u.getAvatar() ? storagePathBuilder.getServerUrl(true) + "/css/img/uid-"
+                + u.getId() + ".png" : null;
+                usersInfo.add(new UserInfo(u.getId(), u.getName(), u.getEmail(), image));
+            }
+        }
+        return usersInfo;
+    }
+
+    private List<Protect> getUserProtect(final String uid) {  // get user data for protect
+        List<Protect> usersForProtect = new ArrayList<>();
+        if (uid != null && !uid.equals("4")) {
+            List<User> list = userService.findAll();
+            for (User u : list) {
+                if (u.getId() != Integer.parseInt(uid) && u.getId() != ANONYMOUS_USER_ID) {
+
+                    // user data includes user names, IDs and emails
+                    usersForProtect.add(new Protect(u.getId(), u.getName(), u.getEmail()));
+                }
+            }
+        }
+
+        return usersForProtect;
+    }
+
+
     @SneakyThrows
     private String getInsertImage(final Boolean directUrl) {  // get an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
-        dataInsertImage.put("fileType", "png");
-        dataInsertImage.put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.png");
+        dataInsertImage.put("fileType", "svg");
+        dataInsertImage.put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.svg");
         if (directUrl) {
             dataInsertImage.put("directUrl", storagePathBuilder
-                    .getServerUrl(false) + "/css/img/logo.png");
+                    .getServerUrl(false) + "/css/img/logo.svg");
         }
 
         // check if the document token is enabled

@@ -13,9 +13,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width" />
+    <meta name="server-version" content=<%= DocManagerHelper.GetVersion() %> />
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2023
+    * (c) Copyright Ascensio System SIA 2024
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -67,7 +68,7 @@
                                             <a class="try-editor slide" data-type="pptx">Presentation</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor form" data-type="docxf">Form template</a>
+                                            <a class="try-editor form" data-type="docxf">PDF form</a>
                                         </li>
                                     </ul>
                                     <label class="side-option">
@@ -150,7 +151,14 @@
                                 if (storedFiles.Any())
                                 { %>
                                 <div class="stored-list">
-                                    <span class="header-list">Your documents</span>
+                                    <div class="storedHeader">
+                                        <div class="storedHeaderText">
+                                            <span class="header-list">Your documents</span>
+                                        </div>
+                                        <div class="storedHeaderClearAll">
+                                            <div class="clear-all">Clear all</div>
+                                        </div>
+                                    </div>
                                     <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
                                         <thead>
                                             <tr>
@@ -294,6 +302,15 @@
             <div class="describeUpload">After these steps are completed, you can work with your document.</div>
             <span id="step1" class="step">1. Loading the file.</span>
             <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+            <div id="select-file-type" class="invisible">
+                <br />
+                <span class="step">Please select the current document type</span>
+                <div class="buttonsMobile indent">
+                    <div class="button file-type document" data="docx">Document</div>
+                    <div class="button file-type spreadsheet" data="xlsx">Spreadsheet</div>
+                    <div class="button file-type presentation" data="pptx">Presentation</div>
+                </div>
+            </div>
             <br />
             <span id="step2" class="step">2. Conversion.</span>
             <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
@@ -356,9 +373,6 @@
     <%: Scripts.Render("~/bundles/jquery", "~/bundles/scripts") %>
 
     <script language="javascript" type="text/javascript">
-        var FillExtList = '<%= string.Join(",", DocManagerHelper.FillFormExts.ToArray()) %>';
-        var ConverExtList = '<%= string.Join(",", DocManagerHelper.ConvertExts.ToArray()) %>';
-        var EditedExtList = '<%= string.Join(",", DocManagerHelper.EditedExts.ToArray()) %>';
         var UrlConverter = '<%= Url.Content("~/webeditor.ashx?type=convert") %>';
         var UrlEditor = '<%= Url.Action("editor", "Home") %>';
     </script>

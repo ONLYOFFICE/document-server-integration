@@ -61,6 +61,12 @@ compose-prod: #  Up containers in a production environment.
 	@docker-compose build
 	@docker-compose up --detach
 
+.PHONY: restart
+restart: #       Restart containers replacing volume files.
+	@docker-compose rm --stop --force proxy example
+	@docker volume rm php_example
+	@docker compose up --detach --build
+
 .PHONY: lint
 lint: #          Lint the source code for the style.
 	@./vendor/bin/phpcs src index.php

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 package com.onlyoffice.integration;
 
 import com.onlyoffice.integration.documentserver.serializers.FilterState;
+import com.onlyoffice.integration.entities.Goback;
 import com.onlyoffice.integration.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -46,7 +47,8 @@ public class ExampleData {
                 "Can't rename files from the editor",
                 "Can't view chat",
                 "Can't protect file",
-                "View file without collaboration"
+                "View file without collaboration",
+                "Can’t submit forms"
         );
 
         // the description for user 1
@@ -58,7 +60,9 @@ public class ExampleData {
                 "The file favorite state is undefined",
                 "Can create a file from a template with data from the editor",
                 "Can see the information about all users",
-                "Can view chat"
+                "Can view chat",
+                "Has an avatar",
+                "Can submit forms"
         );
 
         // the description for user 2
@@ -71,7 +75,9 @@ public class ExampleData {
                 "This file is favorite",
                 "Can create a file from an editor",
                 "Can see the information about users from Group2 and users who don’t belong to any group",
-                "Can view chat"
+                "Can view chat",
+                "Has an avatar",
+                "Can’t submit forms"
         );
 
         // the description for user 3
@@ -86,30 +92,33 @@ public class ExampleData {
                 "He can’t print the file",
                 "Can create a file from an editor",
                 "Can see the information about Group2 users",
-                "Can view chat"
+                "Can view chat",
+                "Can’t submit forms",
+                "Can't close history",
+                "Can't restore the file version"
         );
 
         // create user 1 with the specified parameters
         userService.createUser("John Smith", "smith@example.com", descriptionUserFirst,
                 "", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()), null, true, true);
+                List.of(FilterState.NULL.toString()), null, true, true, true, new Goback(null, false));
 
         // create user 2 with the specified parameters
         userService.createUser("Mark Pottato", "pottato@example.com", descriptionUserSecond,
                 "group-2", List.of("", "group-2"), List.of(FilterState.NULL.toString()),
                 List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true, true,
-                true);
+                true, true, new Goback("Go to Documents", null));
 
         // create user 3 with the specified parameters
-        userService.createUser("Hamish Mitchell", "mitchell@example.com", descriptionUserThird,
+        userService.createUser("Hamish Mitchell", null, descriptionUserThird,
                 "group-3", List.of("group-2"), List.of("group-2", "group-3"), List.of("group-2"),
-                new ArrayList<>(), List.of("group-2"), false, true, true);
+                new ArrayList<>(), List.of("group-2"), false, true, true, false, null);
 
         // create user 0 with the specified parameters
         userService.createUser("Anonymous", null, descriptionUserZero, "",
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                new ArrayList<>(), null, false, false);
+                new ArrayList<>(), null, false, false, false, null);
     }
 }

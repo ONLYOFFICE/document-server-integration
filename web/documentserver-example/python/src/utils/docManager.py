@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2023
+ (c) Copyright Ascensio System SIA 2024
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ def getInternalExtension(fileType):
 
 # get image url for templates
 def getTemplateImageUrl(fileType, request):
-    path = getServerUrl(True, request) + '/static/images/'
+    path = getServerUrl(False, request) + '/static/images/'
     mapping = {
         'word': path + 'file_docx.svg',
         'cell': path + 'file_xlsx.svg',
@@ -284,6 +284,16 @@ def removeFile(filename, req):
     histDir = historyManager.getHistoryDir(path)  # get history directory
     if os.path.exists(histDir):  # remove all the history information about this file
         shutil.rmtree(histDir)
+
+
+# remove the user's directory and all the containing files
+def removeUserFolder(req):
+    path = os.path.normpath(getRootFolder(req))
+
+    if not path.startswith(str(config_manager.storage_path())) or not os.path.exists(path):
+        raise FileNotFoundError
+
+    shutil.rmtree(path)
 
 
 # generate file key

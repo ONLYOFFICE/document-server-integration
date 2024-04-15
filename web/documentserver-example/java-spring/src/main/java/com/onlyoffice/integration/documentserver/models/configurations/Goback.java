@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ package com.onlyoffice.integration.documentserver.models.configurations;
 
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
@@ -38,8 +39,17 @@ public class Goback {  // the settings for the Open file location menu button an
     private String indexMapping;
 
     @Getter
+    @Setter
     private String url;  /* the absolute URL to the website address which will be opened
     when clicking the Open file location menu button */
+
+    @Getter
+    @Setter
+    private String text;
+
+    @Getter
+    @Setter
+    private Boolean blank;
 
     @PostConstruct
     private void init() {

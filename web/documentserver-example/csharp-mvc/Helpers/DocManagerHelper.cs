@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,12 @@ namespace OnlineEditorsExampleMVC.Helpers
 {
     public class DocManagerHelper
     {
+        //get server version
+        public static string GetVersion()
+        {
+            return WebConfigurationManager.AppSettings["version"];
+        }
+
         // get max file size
         public static long MaxFileSize
         {
@@ -51,24 +57,24 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get file extensions that can be viewed
         public static List<string> ViewedExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.viewed-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.ViewableExtensions(); }
         }
 
         public static List<string> FillFormExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.fillform-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.FillableExtensions(); }
         }
 
         // get file extensions that can be edited
         public static List<string> EditedExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.edited-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.EditableExtensions(); }
         }
 
         // get file extensions that can be converted
         public static List<string> ConvertExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.convert-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.ConvertibleExtensions(); }
         }
 
         // get current user host address
@@ -220,7 +226,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         public static string CreateDemo(string fileExt, bool withContent)
         {
             var demoName = (withContent ? "sample." : "new.") + fileExt;  // create sample or new template file with the necessary extension
-            var demoPath = "assets\\" + (withContent ? "sample\\" : "new\\");  // get the path to the sample document
+            var demoPath = "assets\\document-templates\\" + (withContent ? "sample\\" : "new\\");  // get the path to the sample document
 
             var fileName = GetCorrectName(demoName);  // get a file name with an index if the file with such a name already exists
 

@@ -1,6 +1,6 @@
 <?php
 //
-// (c) Copyright Ascensio System SIA 2023
+// (c) Copyright Ascensio System SIA 2024
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ final class ConfigurationManagerDocumentServerConverterURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerConverterURL();
         $this->assertEquals(
-            'http://document-server/ConvertService.ashx',
+            'http://documentserver/ConvertService.ashx',
             $url->string()
         );
     }
@@ -53,7 +53,7 @@ final class ConfigurationManagerDocumentServerConverterURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerConverterURL();
         $this->assertEquals(
-            'http://document-server/converter',
+            'http://documentserver/converter',
             $url->string()
         );
     }

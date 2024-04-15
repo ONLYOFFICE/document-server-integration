@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,10 +78,10 @@ public class EditorServlet extends HttpServlet {
 
         // an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
-        dataInsertImage.put("fileType", "png");
-        dataInsertImage.put("url", DocumentManager.getServerUrl(true) + "/css/img/logo.png");
+        dataInsertImage.put("fileType", "svg");
+        dataInsertImage.put("url", DocumentManager.getServerUrl(true) + "/css/img/logo.svg");
         if (isEnableDirectUrl) {
-            dataInsertImage.put("directUrl", DocumentManager.getServerUrl(false) + "/css/img/logo.png");
+            dataInsertImage.put("directUrl", DocumentManager.getServerUrl(false) + "/css/img/logo.svg");
         }
 
         // a document that will be compared with the current document
@@ -106,6 +106,9 @@ public class EditorServlet extends HttpServlet {
 
         // users data for mentions
         List<Map<String, Object>> usersForMentions = Users.getUsersForMentions(user.getId());
+        List<Map<String, Object>> usersForProtect = Users.getUsersForProtect(user.getId());
+
+        List<Map<String, Object>> usersInfo = Users.getUsersInfo(user.getId());
 
         // check if the document token is enabled
         if (DocumentManager.tokenEnabled()) {
@@ -131,6 +134,9 @@ public class EditorServlet extends HttpServlet {
         request.setAttribute("dataSpreadsheet", gson.toJson(dataSpreadsheet));
         request.setAttribute("usersForMentions", !user.getId()
                 .equals("uid-0") ? gson.toJson(usersForMentions) : null);
+        request.setAttribute("usersInfo", gson.toJson(usersInfo));
+        request.setAttribute("usersForProtect", !user.getId()
+                .equals("uid-0") ? gson.toJson(usersForProtect) : null);
         request.getRequestDispatcher("editor.jsp").forward(request, response);
     }
 

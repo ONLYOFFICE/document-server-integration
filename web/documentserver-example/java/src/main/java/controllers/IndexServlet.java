@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import helpers.FileUtility;
 import helpers.ServiceConverter;
 import helpers.TrackManager;
 import helpers.Users;
+import format.FormatManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -138,6 +139,9 @@ public class IndexServlet extends HttpServlet {
                 break;
             case "historydata":
                 historyData(request, response, writer);
+                break;
+            case "formats":
+                formats(request, response, writer);
                 break;
             default:
                 break;
@@ -283,7 +287,8 @@ public class IndexServlet extends HttpServlet {
             String fileUri = DocumentManager.getDownloadUrl(fileName, true);
             String fileExt = FileUtility.getFileExtension(fileName);
             FileType fileType = FileUtility.getFileType(fileName);
-            String internalFileExt = "ooxml";
+            // get an auto-conversion extension from the request body or set it to the ooxml extension
+            String conversionExtension = body.get("fileExt") != null ? (String) body.get("fileExt") : "ooxml";
 
             // check if the file with such an extension can be converted
             if (DocumentManager.getConvertExts().contains(fileExt)) {
@@ -292,7 +297,7 @@ public class IndexServlet extends HttpServlet {
 
                 // get the url and file type to the converted file
                 Map<String, String> newFileData = ServiceConverter
-                        .getConvertedData(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang);
                 String newFileUri = newFileData.get("fileUrl");
                 String newFileType = "." + newFileData.get("fileType");
 
@@ -416,17 +421,23 @@ public class IndexServlet extends HttpServlet {
                                final HttpServletResponse response,
                                final PrintWriter writer) {
         try {
-            String fileName = FileUtility.getFileName(request.getParameter("filename"));
-            String path = DocumentManager.storagePath(fileName, null);
+            String fileName = request.getParameter("filename");
+            if (fileName != null && !fileName.isEmpty()) {
+                fileName = FileUtility.getFileName(fileName);
+                String path = DocumentManager.storagePath(fileName, null);
 
-            // delete file
-            File f = new File(path);
-            delete(f);
+                // delete file
+                File f = new File(path);
+                delete(f);
 
-            // delete file history
-            File hist = new File(DocumentManager.historyDir(path));
-            delete(hist);
-
+                // delete file history
+                File hist = new File(DocumentManager.historyDir(path));
+                delete(hist);
+            } else {
+                // delete the user's folder and all the containing files
+                File userFolder = new File(DocumentManager.storagePath(null, null));
+                delete(userFolder);
+            }
             writer.write("{ \"success\": true }");
         } catch (Exception e) {
             writer.write("{ \"error\": \"" + e.getMessage() + "\"}");
@@ -691,6 +702,33 @@ public class IndexServlet extends HttpServlet {
                     } catch (Exception e) {
                         incorrectFileKey = true; //data from DocEditor can give incorrect fileKey param in java Example
                     }
+                }
+            }
+
+            Object link = body.get("link");
+            if (fileName.equals("") && link != null) {
+                if (!((String) link).contains(DocumentManager.getServerUrl(false))) {
+                    HashMap<String, Object> data = new HashMap<>();
+                    data.put("url", link);
+                    data.put("directUrl", link);
+                    writer.write(gson.toJson(data));
+                    return;
+                }
+
+                URL url = new URL((String) link);
+                String query = url.getQuery();
+                String[] parameters = query.split("&");
+                for (String parameter : parameters) {
+                    String[] keyValue = parameter.split("=");
+                    if (keyValue.length == 2 && "fileName".equals(keyValue[0])) {
+                        fileName = keyValue[1];
+                        break;
+                    }
+                }
+                boolean fileExists = new File(DocumentManager.storagePath(fileName, null)).exists();
+                if (!fileExists) {
+                    writer.write("{ \"error\": \"File is not exist\"}");
+                    return;
                 }
             }
 
@@ -968,9 +1006,10 @@ public class IndexServlet extends HttpServlet {
                     dataObj.put("version", i);
 
                     if (i > 1) {  //check if the version number is greater than 1
+                        Integer verdiff = i - 1;
 
                         // get the history data from the previous file version
-                        Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 1));
+                        Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(verdiff));
                         Map<String, Object> prevInfo = new HashMap<String, Object>();
                         prevInfo.put("fileType", prev.get("fileType"));
 
@@ -983,12 +1022,16 @@ public class IndexServlet extends HttpServlet {
 
                         // write information about previous file version to the data object
                         dataObj.put("previous", prevInfo);
-                        // write the path to the diff.zip archive with differences in this file version
-                        Integer verdiff = i - 1;
-                        String changesUrl = DocumentManager
-                                .getDownloadHistoryUrl(fileName, verdiff,
-                                        "diff.zip", true);
-                        dataObj.put("changesUrl", changesUrl);
+
+                        String diffPath = Paths.get(histDir, String.valueOf(verdiff), "diff.zip").toString();
+                        File diffFile = new File(diffPath);
+                        if (diffFile.exists()) {
+                            // write the path to the diff.zip archive with differences in this file version
+                            String changesUrl = DocumentManager
+                                    .getDownloadHistoryUrl(fileName, verdiff,
+                                            "diff.zip", true);
+                            dataObj.put("changesUrl", changesUrl);
+                        }
                     }
 
                     if (DocumentManager.tokenEnabled()) {
@@ -1005,6 +1048,16 @@ public class IndexServlet extends HttpServlet {
             return;
         }
         writer.write("{}");
+    }
+
+    private static void formats(final HttpServletRequest request,
+                                final HttpServletResponse response,
+                                final PrintWriter writer) {
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("formats", (new FormatManager()).getFormats());
+        response.setContentType("application/json");
+        Gson gson = new Gson();
+        writer.write(gson.toJson(data));
     }
 
     // process get request

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,4 +43,5 @@ public class Track {
     private String userdata;
     private String lastsave;
     private Boolean notmodified;
+    private String formsdataurl;
 }

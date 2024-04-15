@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,15 +45,13 @@ exports.registerRoutes = function registerRoutes(app) {
   app.get('/wopi', async (req, res) => {
     req.DocManager = new DocManager(req, res);
 
-    await utils.initWopi(req.DocManager);
-
     // get the wopi discovery information
-    const actions = await utils.getDiscoveryInfo();
+    const actions = await utils.getDiscoveryInfo(req.DocManager);
     const wopiEnable = actions.length !== 0;
     const docsExtEdit = []; // Supported extensions for WOPI
 
     actions.forEach((el) => {
-      if (el.name === 'edit') docsExtEdit.push(`.${el.ext}`);
+      if (el.name === 'edit') docsExtEdit.push(`${el.ext}`);
     });
 
     // Checking supported extensions
@@ -67,11 +65,13 @@ exports.registerRoutes = function registerRoutes(app) {
       // run through all the files and write the corresponding information to each file
       // eslint-disable-next-line no-restricted-syntax
       for (const file of files) {
+        const mobile = new RegExp(configServer.get('mobileRegEx'), 'i').test(req.get('User-Agent'));
         const ext = fileUtility.getFileExtension(file.name, true); // get an extension of each file
         // eslint-disable-next-line no-await-in-loop
-        file.actions = await utils.getActions(ext); // get actions of the specified extension
+        file.actions = await utils.getActions(req.DocManager, ext); // get actions of the specified extension
         // eslint-disable-next-line no-await-in-loop
-        file.defaultAction = await utils.getDefaultAction(ext);// get the default action of the specified extension
+        file.defaultAction = await utils.getDefaultAction(req.DocManager, ext);// get the default action for extension
+        if (mobile) file.actions.forEach((act) => { if (act.name === 'mobileEdit') file.defaultAction = act; });
       }
 
       // render wopiIndex template with the parameters specified
@@ -111,14 +111,12 @@ exports.registerRoutes = function registerRoutes(app) {
     try {
       req.DocManager = new DocManager(req, res);
 
-      await utils.initWopi(req.DocManager);
-
       let fileName = req.DocManager.getCorrectName(req.params.id);
       const fileExt = fileUtility.getFileExtension(fileName, true); // get the file extension from the request
       const user = users.getUser(req.query.userid); // get a user by the id
 
       // get an action for the specified extension and name
-      const action = await utils.getAction(fileExt, req.query.action);
+      const action = await utils.getAction(req.DocManager, fileExt, req.query.action);
 
       if (action && req.query.action === 'editnew') {
         fileName = req.DocManager.requestEditnew(req, fileName, user);

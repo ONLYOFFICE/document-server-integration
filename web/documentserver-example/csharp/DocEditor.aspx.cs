@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,6 +64,8 @@ namespace OnlineEditorsExample
         protected string DocumentData { get; private set; }
         protected string DataSpreadsheet { get; private set; }
         protected string UsersForMentions { get; private set; }
+        protected string UsersInfo { get; private set; }
+        protected string UsersForProtect { get; private set; }
         protected string DocumentType { get { return _Default.DocumentType(FileName); } }
 
         // get callback url
@@ -152,7 +154,7 @@ namespace OnlineEditorsExample
                 editorsMode = "fillForms";
                 canEdit = true;
             }            
-            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1") && false;  // check if the Submit form button is displayed or hidden
+            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1");  // check if the Submit form button is displayed or hidden
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // get the editor opening mode (edit or view)
 
             var jss = new JavaScriptSerializer();
@@ -223,7 +225,7 @@ namespace OnlineEditorsExample
                                             { "download", !user.deniedPermissions.Contains("download") },
                                             { "edit", canEdit && (editorsMode == "edit" || editorsMode =="view" || editorsMode == "filter" || editorsMode == "blockcontent") },
                                             { "print", !user.deniedPermissions.Contains("print") },
-                                            { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
+                                            { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "blockcontent" },
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
@@ -256,7 +258,8 @@ namespace OnlineEditorsExample
                                         {
                                             { "id", !user.id.Equals("uid-0") ? user.id : null },
                                             { "name",  user.name },
-                                            { "group", user.group }
+                                            { "group", user.group },
+                                            { "image", user.avatar ? _Default.GetServerUrl(false) + "/App_Themes/images/"+ user.id + ".png" : null }
                                         }
                                 },
                                 {
@@ -279,10 +282,12 @@ namespace OnlineEditorsExample
                                             { "forcesave", false },  // adds the request for the forced file saving to the callback handler
                                             { "submitForm", submitForm },  // if the Submit form button is displayed or not
                                             {
-                                                "goback", new Dictionary<string, object>  // settings for the Open file location menu button and upper right corner button
+                                                "goback", user.goback != null ? new Dictionary<string, object>  // settings for the Open file location menu button and upper right corner button
                                                     {
-                                                        { "url", _Default.GetServerUrl(false) + "default.aspx" }  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
-                                                    }
+                                                        { "url", _Default.GetServerUrl(false) + "default.aspx" }, // the absolute URL to the website address which will be opened when clicking the Open file location menu button
+                                                        { "text", user.goback.text },
+                                                        { "blank", user.goback.blank }
+                                                    } : new Dictionary<string, object>{}
                                             }
                                         }
                                 }
@@ -317,6 +322,13 @@ namespace OnlineEditorsExample
                 // get users for mentions
                 List<Dictionary<string, object>> usersData = Users.getUsersForMentions(user.id);
                 UsersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(usersData) : null;
+
+                List<Dictionary<string, object>> usersInfo = Users.getUsersInfo(user.id);
+                UsersInfo = jss.Serialize(usersData);
+
+                // get users for protect
+                List<Dictionary<string, object>> usersProtectData = Users.getUsersForProtect(user.id);
+                UsersForProtect = !user.id.Equals("uid-0") ? jss.Serialize(usersProtectData) : null;
             }
             catch { }
         }
@@ -328,17 +340,17 @@ namespace OnlineEditorsExample
             var InsertImageUrl = new UriBuilder(_Default.GetServerUrl(true));
             InsertImageUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                + "App_Themes\\images\\logo.png";
+                + "App_Themes\\images\\logo.svg";
 
             var DirectImageUrl = new UriBuilder(_Default.GetServerUrl(false));
             DirectImageUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                + "App_Themes\\images\\logo.png";
+                + "App_Themes\\images\\logo.svg";
 
             // create a logo config
             Dictionary<string, object> logoConfig = new Dictionary<string, object>
                 {
-                    { "fileType", "png"},
+                    { "fileType", "svg"},
                     { "url", InsertImageUrl.ToString()}
                 };
 
@@ -484,7 +496,7 @@ namespace OnlineEditorsExample
                     return;
             }
             var demoName = (string.IsNullOrEmpty(sample) ? "new" : "sample") + ext;  // create demo document name with the necessary extension
-            var demoPath = "assets\\" + (string.IsNullOrEmpty(sample) ? "new\\" : "sample\\");  // and put this file into the assets directory
+            var demoPath = "assets\\document-templates\\" + (string.IsNullOrEmpty(sample) ? "new\\" : "sample\\");  // and put this file into the assets directory
 
             FileName = _Default.GetCorrectName(demoName);  // get file name with an index if such a file name already exists
 

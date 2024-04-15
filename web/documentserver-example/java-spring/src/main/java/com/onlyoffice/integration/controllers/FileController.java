@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -62,6 +63,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.util.UriComponents;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
@@ -70,6 +73,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
@@ -147,6 +151,28 @@ public class FileController {
                 .body(resource);
     }
 
+    private ResponseEntity<Resource> downloadSample(final String fileName) {
+        String serverPath = System.getProperty("user.dir");
+        String contentType = "application/octet-stream";
+        String[] fileLocation = new String[] {serverPath, "src", "main", "resources", "assets", "document-templates",
+                                              "sample", fileName};
+        Path filePath = Paths.get(String.join(File.separator, fileLocation));
+        Resource resource;
+        try {
+            resource = new UrlResource(filePath.toUri());
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.parseMediaType(contentType))
+                        .header(HttpHeaders.CONTENT_DISPOSITION,
+                                "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+        }
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     // download data from the specified history file
     private ResponseEntity<Resource> downloadFileHistory(final String fileName,
                                                          final String version,
@@ -222,15 +248,15 @@ public class FileController {
         // get document type (word, cell or slide)
         DocumentType type = fileUtility.getDocumentType(fileName);
 
-        // convert to .ooxml
-        String internalFileExt = "ooxml";
+        // get an auto-conversion extension from the request body or set it to the ooxml extension
+        String conversionExtension = body.getFileExt() != null ? body.getFileExt() : "ooxml";
 
         try {
             // check if the file with such an extension can be converted
             if (fileUtility.getConvertExts().contains(fileExt)) {
                 String key = serviceConverter.generateRevisionId(fileUri);  // generate document key
                 ConvertedData response = serviceConverter  // get the URL to the converted file
-                        .getConvertedData(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang);
 
                 String newFileUri = response.getUri();
                 String newFileType = "." + response.getFileType();
@@ -265,24 +291,33 @@ public class FileController {
             return createUserMetadata(uid, fileName);
         } catch (Exception e) {
             e.printStackTrace();
+
+            // if the operation of file converting is unsuccessful, an error occurs
+            return "{ \"error\": \"" + e.getMessage() + "\"}";
         }
-        // if the operation of file converting is unsuccessful, an error occurs
-        return "{ \"error\": \"" + "The file can't be converted.\"}";
     }
 
     @PostMapping("/delete")
     @ResponseBody
     public String delete(@RequestBody final Converter body) {  // delete a file
         try {
-            String fullFileName = fileUtility.getFileName(body.getFileName());  // get full file name
+            String filename = body.getFileName();
+            boolean success = false;
 
-            // delete a file from the storage and return the status of this operation (true or false)
-            boolean fileSuccess = storageMutator.deleteFile(fullFileName);
+            if (filename != null) {
+                String fullFileName = fileUtility.getFileName(filename);  // get full file name
 
-            // delete file history and return the status of this operation (true or false)
-            boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);
+                // delete a file from the storage and return the status of this operation (true or false)
+                boolean fileSuccess = storageMutator.deleteFile(fullFileName);
 
-            return "{ \"success\": \"" + (fileSuccess && historySuccess) + "\"}";
+                // delete file history and return the status of this operation (true or false)
+                boolean historySuccess = storageMutator.deleteFileHistory(fullFileName);
+                success = fileSuccess && historySuccess;
+            } else {
+                // delete the user's folder and return the boolean status
+                success = storageMutator.deleteUserFolder();
+            }
+            return "{ \"success\": \"" + (success) + "\"}";
         } catch (Exception e) {
             // if the operation of file deleting is unsuccessful, an error occurs
             return "{ \"error\": \"" + e.getMessage() + "\"}";
@@ -372,14 +407,12 @@ public class FileController {
     @GetMapping("/assets")
     public ResponseEntity<Resource> assets(@RequestParam("name")
                                                final String name) {  // get sample files from the assests
-        String fileName = Path.of("assets", "document-templates", "sample", fileUtility.getFileName(name)).toString();
-        return downloadFile(fileName);
+        return downloadSample(name);
     }
 
     @GetMapping("/csv")
     public ResponseEntity<Resource> csv() {  // download a csv file
-        String fileName = Path.of("assets", "document-templates", "sample", "csv.csv").toString();
-        return downloadFile(fileName);
+        return downloadSample("csv.csv");
     }
 
     @GetMapping("/files")
@@ -485,6 +518,22 @@ public class FileController {
                 }
             }
 
+            String link = body.getLink();
+            if (fileName.equals("") && link != null) {
+                if (!link.contains(storagePathBuilder.getServerUrl(true))) {
+                    HashMap<String, String> data = new HashMap<>();
+                    data.put("url", link);
+                    data.put("directUrl", link);
+                    return gson.toJson(data);
+                }
+
+                UriComponents uriComponents = UriComponentsBuilder.fromUriString(body.getLink()).build();
+                fileName = uriComponents.getQueryParams().getFirst("fileName");
+                boolean fileExists = new File(storagePathBuilder.getFileLocation(fileName)).exists();
+                if (!fileExists) {
+                    return "{ \"error\": \"File is not exist\"}";
+                }
+            }
 
             if (fileName.equals("")) {
                 try {

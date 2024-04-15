@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -293,6 +293,24 @@ public final class TrackManager {
 
             // create meta data for forcesaved file
             DocumentManager.createMeta(fileName, user, "Filling Form", userAddress);
+
+            try {
+                String formsDataUrl = body.get("formsdataurl").toString();
+
+                if (formsDataUrl != null && !formsDataUrl.isEmpty()) {
+                    String formsName = DocumentManager.getCorrectName(FileUtility
+                            .getFileNameWithoutExtension(fileName) + ".txt", userAddress);
+                    String formsPath = DocumentManager.storagePath(formsName, userAddress);
+
+                    byte[] byteArrayFormsData = getDownloadFile(formsDataUrl);
+
+                    saveFile(byteArrayFormsData, Paths.get(formsPath));
+                } else {
+                    throw new Exception("Document editing service did not return formsDataUrl");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

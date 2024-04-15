@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2023
+ (c) Copyright Ascensio System SIA 2024
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -29,6 +29,9 @@ from src.common import http
 from src.configuration import ConfigurationManager
 from src.response import ErrorResponse
 from src.utils import docManager, fileUtils, serviceConverter, users, jwtManager, historyManager, trackManager
+from urllib.parse import urlparse, parse_qs
+from src.format import FormatManager
+import msgspec
 
 config_manager = ConfigurationManager()
 
@@ -74,13 +77,16 @@ def convert(request):
         lang = request.COOKIES.get('ulang') if request.COOKIES.get('ulang') else 'en'
         fileUri = docManager.getDownloadUrl(filename, request)
         fileExt = fileUtils.getFileExt(filename)
-        newExt = 'ooxml'  # convert to .ooxml
+        # get an auto-conversion extension from the request body or set it to the ooxml extension
+        conversionExtension = body.get('fileExt') or 'ooxml'
 
         if docManager.isCanConvert(fileExt):  # check if the file extension is available for converting
             key = docManager.generateFileKey(filename, request)  # generate the file key
 
             # get the url of the converted file
-            convertedData = serviceConverter.getConvertedData(fileUri, fileExt, newExt, key, True, filePass, lang)
+            convertedData = serviceConverter.getConvertedData(
+                fileUri, fileExt, conversionExtension, key, True, filePass, lang
+                )
 
             # if the converter url is not received, the original file name is passed to the response
             if not convertedData:
@@ -131,6 +137,8 @@ def saveAs(request):
         body = json.loads(request.body)
         saveAsFileUrl = body.get('url')
         title = body.get('title')
+        saveAsFileUrl = saveAsFileUrl.replace(config_manager.document_server_public_url().geturl(),
+                                              config_manager.document_server_private_url().geturl())
 
         filename = docManager.getCorrectName(title, request)
         path = docManager.getStoragePath(filename, request)
@@ -152,7 +160,7 @@ def saveAs(request):
         response.setdefault('file', filename)
     except Exception as e:
         response.setdefault('error', 1)
-        response.setdefault('message', e.args[0])
+        response.setdefault('message', str(e.args[0]))
 
     return HttpResponse(json.dumps(response), content_type='application/json')
 
@@ -186,7 +194,6 @@ def edit(request):
 
     ext = fileUtils.getFileExt(filename)
 
-    fileUri = docManager.getFileUri(filename, True, request)
     directUrl = docManager.getDownloadUrl(filename, request, False)
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
@@ -200,7 +207,7 @@ def edit(request):
         edMode = 'fillForms'
         canEdit = True
     # if the Submit form button is displayed or hidden
-    submitForm = edMode == 'fillForms' and user.id == 'uid-1' and False
+    submitForm = edMode == 'fillForms' and user.id == 'uid-1'
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'  # if the file can't be edited, the mode is view
 
     types = ['desktop', 'mobile', 'embedded']
@@ -232,6 +239,16 @@ def edit(request):
         }
     ]
 
+    usersInfo = []
+    if user.id != 'uid-0':
+        for userInfo in users.getAllUsers():
+            u = userInfo
+            u.image = docManager.getServerUrl(False, request) + f'/static/images/{u.id}.jpg' if user.avatar else None
+            usersInfo.append({"id": u.id, "name": u.name, "email": u.email, "image": u.image, "group": u.group,
+                              "reviewGroups": u.reviewGroups, "commentGroups": u.commentGroups, "favorite": u.favorite,
+                              "deniedPermissions": u.deniedPermissions, "descriptions": u.descriptions,
+                              "templates": u.templates, "userInfoGroups": u.userInfoGroups, "avatar": u.avatar})
+
     if meta:  # if the document meta data exists,
         infObj = {  # write author and creation time parameters to the information object
             'owner': meta['uname'],
@@ -243,6 +260,8 @@ def edit(request):
             'uploaded': datetime.today().strftime('%d.%m.%Y %H:%M:%S')
         }
     infObj['favorite'] = user.favorite
+    if user.goback is not None:
+        user.goback['url'] = docManager.getServerUrl(False, request)
     # specify the document config
     edConfig = {
         'type': edType,
@@ -262,7 +281,7 @@ def edit(request):
                 'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter') \
                                    | (edMode == "blockcontent")),
                 'print': 'print' not in user.deniedPermissions,
-                'fillForms': (edMode != 'view') & (edMode != 'comment') & (edMode != 'embedded') \
+                'fillForms': (edMode != 'view') & (edMode != 'comment') \
                 & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
@@ -294,7 +313,9 @@ def edit(request):
             'user': {  # the user currently viewing or editing the document
                 'id': user.id if user.id != 'uid-0' else None,
                 'name': user.name,
-                'group': user.group
+                'group': user.group,
+                'image': docManager.getServerUrl(False, request) + f'/static/images/{user.id}.jpg' if user.avatar
+                else None
             },
             'embedded': {  # the parameters for the embedded document type
                 # the absolute URL that will allow the document to be saved onto the user personal computer
@@ -310,23 +331,20 @@ def edit(request):
                 'feedback': True,  # the Feedback & Support menu button display
                 'forcesave': False,  # adds the request for the forced file saving to the callback handler
                 'submitForm': submitForm,  # if the Submit form button is displayed or not
-                'goback': {  # settings for the Open file location menu button and upper right corner button
-                    # the absolute URL to the website address
-                    # which will be opened when clicking the Open file location menu button
-                    'url': docManager.getServerUrl(False, request)
-                }
+                # settings for the Open file location menu button and upper right corner button
+                'goback':  user.goback if user.goback is not None else '',
             }
         }
     }
 
     # an image which will be inserted into the document
     dataInsertImage = {
-        'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + '/static/images/logo.png',
-        'directUrl': docManager.getServerUrl(False, request) + '/static/images/logo.png'
+        'fileType': 'svg',
+        'url': docManager.getServerUrl(True, request) + '/static/images/logo.svg',
+        'directUrl': docManager.getServerUrl(False, request) + '/static/images/logo.svg'
     } if isEnableDirectUrl else {
-        'fileType': 'png',
-        'url': docManager.getServerUrl(True, request) + '/static/images/logo.png'
+        'fileType': 'svg',
+        'url': docManager.getServerUrl(True, request) + '/static/images/logo.svg'
     }
 
     # a document which will be compared with the current document
@@ -351,6 +369,8 @@ def edit(request):
 
     # users data for mentions
     usersForMentions = users.getUsersForMentions(user.id)
+    # users data for protect
+    usersForProtect = users.getUsersForProtect(user.id)
 
     if jwtManager.isEnabled():  # if the secret key to generate token exists
         edConfig['token'] = jwtManager.encode(edConfig)  # encode the edConfig object into a token
@@ -358,22 +378,17 @@ def edit(request):
         dataDocument['token'] = jwtManager.encode(dataDocument)  # encode the dataDocument object into a token
         dataSpreadsheet['token'] = jwtManager.encode(dataSpreadsheet)  # encode the dataSpreadsheet object into a token
 
-    # get the document history
-    hist = historyManager.getHistoryObject(storagePath, filename, docKey, fileUri, isEnableDirectUrl, request)
-
     context = {  # the data that will be passed to the template
         'cfg': json.dumps(edConfig),  # the document config in json format
-        # the information about the current version
-        'history': json.dumps(hist['history']) if 'history' in hist else None,
-        # the information about the previous document versions if they exist
-        'historyData': json.dumps(hist['historyData']) if 'historyData' in hist else None,
         'fileType': fileType,  # the file type of the document (text, spreadsheet or presentation)
         'apiUrl': config_manager.document_server_api_url().geturl(),  # the absolute URL to the api
         # the image which will be inserted into the document
         'dataInsertImage': json.dumps(dataInsertImage)[1: len(json.dumps(dataInsertImage)) - 1],
         'dataDocument': dataDocument,  # document which will be compared with the current document
         'dataSpreadsheet': json.dumps(dataSpreadsheet),  # recipient data for mail merging
-        'usersForMentions': json.dumps(usersForMentions) if user.id != 'uid-0' else None
+        'usersForMentions': json.dumps(usersForMentions) if user.id != 'uid-0' else None,
+        'usersInfo': json.dumps(usersInfo),
+        'usersForProtect': json.dumps(usersForProtect) if user.id != 'uid-0' else None,
     }
     return render(request, 'editor.html', context)  # execute the "editor.html" template with context data
 
@@ -414,13 +429,19 @@ def track(request):
 
 # remove a file
 def remove(request):
-    filename = fileUtils.getFileName(request.GET['filename'])
-
     response = {}
 
-    docManager.removeFile(filename, request)
+    try:
+        filename = request.GET.get('filename', '')
+        if filename:
+            filename = fileUtils.getFileName(filename)
+            docManager.removeFile(filename, request)
+        else:
+            docManager.removeUserFolder(request)
+        response.setdefault('success', True)
+    except Exception as e:
+        response.setdefault('error', str(e.args[0]))
 
-    response.setdefault('success', True)
     return HttpResponse(json.dumps(response), content_type='application/json')
 
 
@@ -437,6 +458,14 @@ def files(request):
 # download a csv file
 def csv():
     filePath = os.path.join('assets', 'document-templates', 'sample', "csv.csv")
+    response = docManager.download(filePath)
+    return response
+
+
+# download a sample file
+def assets(request):
+    filename = fileUtils.getFileName(request.GET['filename'])
+    filePath = os.path.join('assets', 'document-templates', 'sample', filename)
     response = docManager.download(filePath)
     return response
 
@@ -503,6 +532,27 @@ def downloadhistory(request):
         return HttpResponse(json.dumps(response), content_type='application/json', status=404)
 
 
+def history_obj(request):
+    body = json.loads(request.body)
+    response = {}
+    file_name = None
+
+    try:
+        file_name = body['fileName']
+    except Exception:
+        pass
+
+    if file_name is None:
+        response.setdefault('error', 'File not found')
+        return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+
+    storage_path = docManager.getStoragePath(file_name, request)
+    doc_key = docManager.generateFileKey(file_name, request)
+    file_url = docManager.getDownloadUrl(file_name, request)
+    response = historyManager.getHistoryObject(storage_path, file_name, doc_key, file_url, False, request)
+    return HttpResponse(json.dumps(response), content_type='application/json')
+
+
 # referenceData
 def reference(request):
     response = {}
@@ -524,18 +574,34 @@ def reference(request):
             if userAddress == request.META['REMOTE_ADDR']:
                 fileName = fileKey['fileName']
 
+    link = body.get('link', None)
+    if not fileName and link:
+        if docManager.getServerUrl(False, request) not in link:
+            data = {
+                'url': link,
+                'directUrl': link
+            }
+            return HttpResponse(json.dumps(data), content_type='application/json')
+
+        url_obj = urlparse(link)
+        query = parse_qs(url_obj.query)
+        if 'filename' in query:
+            fileName = query['filename'][0]
+            if not os.path.exists(docManager.getStoragePath(fileName, request)):
+                response.setdefault('error', 'File does not exist')
+                return HttpResponse(json.dumps(response), content_type='application/json', status=404)
+
     if fileName is None:
         try:
             path = fileUtils.getFileName(body['path'])
             if os.path.exists(docManager.getStoragePath(path, request)):
                 fileName = path
+            else:
+                response.setdefault('error', 'File not found')
+                return HttpResponse(json.dumps(response), content_type='application/json', status=404)
         except KeyError:
             response.setdefault('error', 'Path not found')
             return HttpResponse(json.dumps(response), content_type='application/json', status=404)
-
-    if fileName is None:
-        response.setdefault('error', 'File not found')
-        return HttpResponse(json.dumps(response), content_type='application/json', status=404)
 
     data = {
         'fileType': fileUtils.getFileExt(fileName).replace('.', ''),
@@ -603,3 +669,12 @@ def restore(request: HttpRequest) -> HttpResponse:
             message=f'{type(error)}: {error}',
             status=HTTPStatus.INTERNAL_SERVER_ERROR
         )
+
+
+@http.GET()
+def formats(request: HttpRequest) -> HttpResponse:
+    data = {
+        'formats': [msgspec.to_builtins(format) for format in FormatManager().all()]
+    }
+
+    return HttpResponse(json.dumps(data), content_type='application/json')

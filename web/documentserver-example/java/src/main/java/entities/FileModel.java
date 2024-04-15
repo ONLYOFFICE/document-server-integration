@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,10 +111,18 @@ public class FileModel {
         editorConfig.getUser().setId(!user.getId().equals("uid-0") ? user.getId() : null);
         editorConfig.getUser().setName(user.getName());
         editorConfig.getUser().setGroup(user.getGroup());
+        editorConfig.getUser().setImage(user.getAvatar() ? DocumentManager.getServerUrl(false)
+        + "/css/img/" + user.getId() + ".png" : null);
 
-        // write the absolute URL to the file location
-        editorConfig.getCustomization().getGoback()
+        if (user.getGoback() != null) {
+            // write the absolute URL to the file location
+            editorConfig.getCustomization().getGoback()
                 .setUrl(DocumentManager.getServerUrl(false) + "/IndexServlet");
+            editorConfig.getCustomization().getGoback()
+                .setText(user.getGoback().getText());
+            editorConfig.getCustomization().getGoback()
+                .setBlank(user.getGoback().getBlank());
+        }
 
         changeType(mode, type, user, fileName);
     }
@@ -152,7 +160,7 @@ public class FileModel {
         String fileExt = FileUtility.getFileExtension(document.getTitle());
         Boolean canEdit = DocumentManager.getEditedExts().contains(fileExt);
         // check if the Submit form button is displayed or not
-        editorConfig.getCustomization().setSubmitForm(false);
+        editorConfig.getCustomization().setSubmitForm(true);
 
         if ((!canEdit && mode.equals("edit") || mode.equals("fillForms"))
                 && DocumentManager.getFillExts().contains(fileExt)) {
@@ -289,7 +297,7 @@ public class FileModel {
             edit = canEdit && (modeParam.equals("edit") || modeParam.equals("view") || modeParam.equals("filter")
                     || modeParam.equals("blockcontent"));
             print = !user.getDeniedPermissions().contains("print");
-            fillForms = !modeParam.equals("view") && !modeParam.equals("comment") && !modeParam.equals("embedded")
+            fillForms = !modeParam.equals("view") && !modeParam.equals("comment")
                     && !modeParam.equals("blockcontent");
             modifyFilter = !modeParam.equals("filter");
             modifyContentControl = !modeParam.equals("blockcontent");
@@ -521,6 +529,7 @@ public class FileModel {
             private String id;
             private String name;
             private String group;
+            private String image;
 
             public String getId() {
                 return id;
@@ -544,6 +553,10 @@ public class FileModel {
 
             public void setGroup(final String groupParam) {
                 this.group = groupParam;
+            }
+
+            public void setImage(final String imageParam) {
+                this.image = imageParam;
             }
         }
 
@@ -594,6 +607,8 @@ public class FileModel {
 
             public class Goback {
                 private String url;
+                private String text;
+                private Boolean blank;
 
                 public String getUrl() {
                     return url;
@@ -601,6 +616,22 @@ public class FileModel {
 
                 public void setUrl(final String urlParam) {
                     this.url = urlParam;
+                }
+
+                public String getText() {
+                    return text;
+                }
+
+                public void setText(final String textParam) {
+                    this.text = textParam;
+                }
+
+                public Boolean getBlank() {
+                    return blank;
+                }
+
+                public void setBlank(final Boolean blankParam) {
+                    this.blank = blankParam;
                 }
             }
         }

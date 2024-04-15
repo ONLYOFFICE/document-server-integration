@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2023
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -77,9 +77,7 @@ class FormatManager():
         formats = self.all()
         filtered = filter(
             lambda format: (
-                format.type == 'cell' and 'xlsx' in format.convert or
-                format.type == 'slide' and 'pptx' in format.convert or
-                format.type == 'word' and 'docx' in format.convert
+                'auto-convert' in format.actions
             ),
             formats
         )

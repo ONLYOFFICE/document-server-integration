@@ -1,6 +1,6 @@
 <?php
 //
-// (c) Copyright Ascensio System SIA 2023
+// (c) Copyright Ascensio System SIA 2024
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ final class ConfigurationManagerDocumentServerCommandURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerCommandURL();
         $this->assertEquals(
-            'http://document-server/coauthoring/CommandService.ashx',
+            'http://documentserver/coauthoring/CommandService.ashx',
             $url->string()
         );
     }
@@ -53,7 +53,7 @@ final class ConfigurationManagerDocumentServerCommandURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerCommandURL();
         $this->assertEquals(
-            'http://document-server/command',
+            'http://documentserver/command',
             $url->string()
         );
     }

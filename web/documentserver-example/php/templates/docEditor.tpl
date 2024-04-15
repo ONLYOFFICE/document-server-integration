@@ -45,6 +45,7 @@
 
         var docEditor;
         var config;
+        let history;
 
         var innerAlert = function (message, inEditor) {
             if (console && console.log)
@@ -218,6 +219,41 @@
             }
         };
 
+        function onRequestHistory() {
+            const query = new URLSearchParams(window.location.search)
+            const data = {
+                fileName: query.get('fileID')
+            }
+            const req = new XMLHttpRequest()
+            req.open("POST", 'objhistory')
+            req.setRequestHeader('Content-Type', 'application/json')
+            req.send(JSON.stringify(data))
+            req.onload = function () {
+                if (req.status != 200) {
+                    response = JSON.parse(req.response)
+                    innerAlert(response.error)
+                    return
+                }
+                history = JSON.parse(req.response)
+                docEditor.refreshHistory(
+                    {
+                        currentVersion: history[0].currentVersion,
+                        history: history[0].history
+                    }
+                )
+            }
+        }
+
+        function onRequestHistoryData(event) {
+            var ver = event.data;
+            var histData = history[1]
+            docEditor.setHistoryData(histData[ver - 1])
+        }
+
+        function onRequestHistoryClose() {
+            document.location.reload()
+        }
+
         function onRequestRestore(event) {
           const query = new URLSearchParams(window.location.search)
           const config = {config}
@@ -235,9 +271,47 @@
               innerAlert(response.error)
               return
             }
-            document.location.reload();
+            onRequestHistory()
           }
         }
+
+        // add mentions for not anonymous users
+        var onRequestUsers = function (event) {
+            if (event && event.data){
+                var c = event.data.c;
+            }
+
+            switch (c) {
+                case "info":
+                    users = [];
+                    var allUsers = {usersInfo};
+                    for (var i = 0; i < event.data.id.length; i++) {
+                        for (var j = 0; j < allUsers.length; j++) {
+                            if (allUsers[j].id == event.data.id[i]) {
+                                users.push(allUsers[j]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case "protect":
+                    var users = {usersForProtect};
+                    break;
+                default:
+                    users = {usersForMentions};
+            }
+
+            docEditor.setUsers({
+                "c": c,
+                "users": users,
+            });
+        };
+
+        var onRequestSendNotify = function (event) {
+            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+            var data = JSON.stringify(event.data);
+            innerAlert("onRequestSendNotify: " + data);
+        };
 
         var сonnectEditor = function () {
             {fileNotFoundAlert}
@@ -258,7 +332,6 @@
                 'onRequestSelectDocument': onRequestSelectDocument,
                 'onRequestSelectSpreadsheet': onRequestSelectSpreadsheet,
                 'onRequestReferenceData': onRequestReferenceData,
-                'onRequestRestore': onRequestRestore,
                 "onRequestOpen": onRequestOpen,
             };
 
@@ -267,12 +340,6 @@
             if (config.editorConfig.createUrl) {
                 config.events.onRequestSaveAs = onRequestSaveAs;
             };
-
-            if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
-                && DocsAPI.DocEditor.version().split(".")[0] < 7) {
-                innerAlert("Please update ONLYOFFICE Docs to version 7.0 to work on fillable forms online.");
-                return;
-            }
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };

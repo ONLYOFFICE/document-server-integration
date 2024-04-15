@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ using System.Net;
 using System.Collections;
 using System.Net.Sockets;
 using ASC.Api.DocumentConverter;
+using Newtonsoft.Json;
 
 namespace OnlineEditorsExample
 {
@@ -85,6 +86,9 @@ namespace OnlineEditorsExample
                     break;
                 case "reference":
                     Reference(context);
+                    break;
+                case "formats":
+                    Formats(context);
                     break;
             }
         }
@@ -221,12 +225,22 @@ namespace OnlineEditorsExample
             context.Response.ContentType = "text/plain";
             try
             {
-                var fileName = Path.GetFileName(context.Request["fileName"]);
-                var path = _Default.StoragePath(fileName, HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)));
-                var histDir = _Default.HistoryDir(path);
+                string fileName = context.Request["fileName"];
+                string userAddress = HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
 
-                if (File.Exists(path)) File.Delete(path);  // delete file
-                if (Directory.Exists(histDir)) Directory.Delete(histDir, true);  // delete file history
+                if (!String.IsNullOrEmpty(fileName))
+                {
+                    fileName = Path.GetFileName(fileName);
+                    var path = _Default.StoragePath(fileName, userAddress);
+                    var histDir = _Default.HistoryDir(path);
+
+                    if (File.Exists(path)) File.Delete(path);  // delete file
+                    if (Directory.Exists(histDir)) Directory.Delete(histDir, true);  // delete file history
+                } else
+                {
+                    string userDir = _Default.StoragePath("", userAddress);
+                    if (Directory.Exists(userDir)) Directory.Delete(userDir, true);  // delete the user's directory
+                }
 
                 context.Response.Write("{ \"success\": true }");
             }
@@ -275,7 +289,7 @@ namespace OnlineEditorsExample
         private static void Assets(HttpContext context)
         {
             var fileName = Path.GetFileName(context.Request["filename"]);
-            var filePath = HttpRuntime.AppDomainAppPath + "assets/sample/" + fileName;
+            var filePath = HttpRuntime.AppDomainAppPath + "assets/document-templates/sample/" + fileName;
             download(filePath, context);
         }
 
@@ -283,7 +297,7 @@ namespace OnlineEditorsExample
         private static void GetCsv(HttpContext context)
         {
             var fileName = "csv.csv";
-            var filePath = HttpRuntime.AppDomainAppPath + "assets/sample/" + fileName;
+            var filePath = HttpRuntime.AppDomainAppPath + "assets/document-templates/sample/" + fileName;
             download(filePath, context);
         }
 
@@ -622,6 +636,27 @@ namespace OnlineEditorsExample
                 }
             }
 
+            if (fileName == "" && body.ContainsKey("link"))
+            {
+                string link = body["link"].ToString();
+                if (!link.Contains(_Default.GetServerUrl(false)))
+                {
+                    context.Response.Write(jss.Serialize(new Dictionary<string, string>() {
+                        { "url", link },
+                        { "directUrl", link }
+                    }));
+                    return;
+                }
+
+                Uri linkUri = new Uri(link);
+                fileName = HttpUtility.ParseQueryString(linkUri.Query).Get("fileID");
+                if (string.IsNullOrEmpty(fileName) || !File.Exists(_Default.StoragePath(fileName, null)))
+                {
+                    context.Response.Write("{ \"error\": \"File is not exist\"}");
+                    return;
+                }
+            }
+
             if (fileName == "")
             {
                 try
@@ -755,6 +790,26 @@ namespace OnlineEditorsExample
                 + "&ver=" + version + "&file=" + file
                 + userAddress;
             return fileUrl.ToString();
+        }
+
+        // return all the supported formats
+        private static void Formats(HttpContext context)
+        {
+            try
+            {
+                Dictionary<string, object> data = new Dictionary<string, object>
+                {
+                    { "formats", FormatManager.All() }
+                };
+                context.Response.ContentType = "application/json";
+                var jss = new JavaScriptSerializer();
+
+                context.Response.Write(jss.Serialize(data));
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
         }
     }
 }

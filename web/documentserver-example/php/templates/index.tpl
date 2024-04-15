@@ -3,6 +3,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width" />
+    <meta name="server-version" content="{serverVersion}">
     <title>ONLYOFFICE Document Editors</title>
 
     <link rel="icon" href="assets/images/favicon.ico" type="image/x-icon" />
@@ -47,7 +48,7 @@
                                     </li>
                                     <li>
                                         <a class="try-editor form reload-page" target="_blank"
-                                           href="editor?fileExt=docxf&user={user}">Form template</a>
+                                           href="editor?fileExt=docxf&user={user}">PDF form</a>
                                     </li>
                                 </ul>
                                 <label class="side-option">
@@ -139,6 +140,15 @@
             <span id="step1" class="step">1. Loading the file.</span>
             <span class="step-descr">The loading speed depends on file size
                         and additional elements it contains.</span>
+            <div id="select-file-type" class="invisible">
+                <br />
+                <span class="step">Please select the current document type</span>
+                <div class="buttonsMobile indent">
+                    <div class="button file-type document" data="docx">Document</div>
+                    <div class="button file-type spreadsheet" data="xlsx">Spreadsheet</div>
+                    <div class="button file-type presentation" data="pptx">Presentation</div>
+                </div>
+            </div>
             <br />
             <span id="step2" class="step">2. Conversion.</span>
             <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
@@ -210,11 +220,7 @@
 <script type="text/javascript" src="assets/js/jquery.iframe-transport.js"></script>
 <script type="text/javascript" src="assets/js/jquery.fileupload.js"></script>
 <script type="text/javascript" src="assets/js/jquery.dropdownToggle.js"></script>
+<script type="text/javascript" src="assets/js/formats.js"></script>
 <script type="text/javascript" src="assets/js/jscript.js"></script>
-<script type="text/javascript">
-    var FillFormsExtList = '{fillFormsExtList}';
-    var ConverExtList = '{converExtList}';
-    var EditedExtList = '{editedExtList}';
-</script>
 </body>
 </html>

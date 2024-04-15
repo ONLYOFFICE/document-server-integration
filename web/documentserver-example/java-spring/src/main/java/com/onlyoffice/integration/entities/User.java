@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,4 +45,7 @@ public class User extends AbstractEntity {
     @ElementCollection
     @CollectionTable(name = "user_descriptions")
     private List<String> descriptions;
+    private Boolean avatar;
+    private String image;
+    private Goback goback;
 }

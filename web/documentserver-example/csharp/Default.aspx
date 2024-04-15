@@ -13,10 +13,11 @@
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width" />
+    <meta name="server-version" content=<%= GetVersion() %> />
     <title>ONLYOFFICE</title>
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2023
+    * (c) Copyright Ascensio System SIA 2024
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -70,7 +71,7 @@
                                                 <a class="try-editor slide" data-type="slide">Presentation</a>
                                             </li>
                                             <li>
-                                                <a class="try-editor form" data-type="docxf">Form template</a>
+                                                <a class="try-editor form" data-type="docxf">PDF form</a>
                                             </li>
                                         </ul>
                                         <label class="side-option">
@@ -152,7 +153,14 @@
                                 if (storedFiles.Any())
                                 { %>
                                     <div class="stored-list">
-                                        <span class="header-list">Your documents</span>
+                                        <div class="storedHeader">
+                                            <div class="storedHeaderText">
+                                                <span class="header-list">Your documents</span>
+                                            </div>
+                                            <div class="storedHeaderClearAll">
+                                                <div class="clear-all">Clear all</div>
+                                            </div>
+                                        </div>
                                         <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
                                             <thead>
                                                 <tr >
@@ -296,6 +304,15 @@
                 <div class="describeUpload">After these steps are completed, you can work with your document.</div>
                 <span id="step1" class="step">1. Loading the file.</span>
                 <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+                <div id="select-file-type" class="invisible">
+                    <br />
+                    <span class="step">Please select the current document type</span>
+                    <div class="buttonsMobile indent">
+                        <div class="button file-type document" data="docx">Document</div>
+                        <div class="button file-type spreadsheet" data="xlsx">Spreadsheet</div>
+                        <div class="button file-type presentation" data="pptx">Presentation</div>
+                    </div>
+                </div>
                 <br />
                 <span id="step2" class="step">2. Conversion.</span>
                 <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
@@ -363,12 +380,8 @@
     <script language="javascript" type="text/javascript" src="script/jquery.iframe-transport.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery.fileupload.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery.dropdownToggle.js"></script>
+    <script language="javascript" type="text/javascript" src="script/formats.js"></script>
     <script language="javascript" type="text/javascript" src="script/jscript.js"></script>
-    <script language="javascript" type="text/javascript">
-        var FillFormExtList = '<%= string.Join(",", FillFormsExts.ToArray()) %>';
-        var ConverExtList = '<%= string.Join(",", ConvertExts.ToArray()) %>';
-        var EditedExtList = '<%= string.Join(",", EditedExts.ToArray()) %>';
-    </script>
 
 </body>
 </html>

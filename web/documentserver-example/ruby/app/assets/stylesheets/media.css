@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -502,6 +502,17 @@
         flex-wrap: wrap;
         justify-content: space-between;
         align-items: center;
+    }
+    .buttonsMobile.indent {
+        margin-bottom: 0;
+        flex-wrap: nowrap;
+    }
+    .button.file-type:hover,
+    .button.file-type {
+        height: 28px;
+        width: 100px;
+        margin-bottom: 10px !important;
+        font-size: 9px;
     }
     .button.gray{
         margin: 0;

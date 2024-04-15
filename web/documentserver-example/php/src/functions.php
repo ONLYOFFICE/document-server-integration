@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,7 +158,7 @@ function getTemplateImageUrl($filename)
 {
     $formatManager = new FormatManager();
     $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-    $path = serverPath(true) . "/assets/images/";
+    $path = serverPath(false) . "/assets/images/";
 
     foreach ($formatManager->all() as $format) {
         if ($format->name === $ext) {
@@ -353,12 +353,13 @@ function getStoredFiles()
 
     $cdir = scandir($directory);  // get all the files and folders from the directory
     $result = [];
+    $index = 0;
     foreach ($cdir as $key => $fileName) {  // run through all the file and folder names
         if (!in_array($fileName, [".", ".."])) {
             if (!is_dir($directory . DIRECTORY_SEPARATOR . $fileName)) {  // if an element isn't a directory
                 $ext = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
                 $dat = filemtime($directory . DIRECTORY_SEPARATOR . $fileName);  // get the time of element modification
-                $result[$dat] = (object) [  // and write the file to the result
+                $result[$dat + $index++] = (object) [  // and write the file to the result
                     "name" => $fileName,
                     "documentType" => getDocumentType($fileName),
                     "canEdit" => in_array($ext, $formatManager->editableExtensions()),
@@ -552,6 +553,9 @@ function processConvServResponceError($errorCode)
 
     // add the error message to the error message template depending on the error code
     switch ($errorCode) {
+        case -9:
+            $errorMessage = $errorMessageTemplate . "Error conversion output format";
+            break;
         case -8:
             $errorMessage = $errorMessageTemplate . "Error document VKey";
             break;
@@ -950,8 +954,11 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
                     "url" => $prev["url"],
                 ];
 
-                // write the path to the diff.zip archive with differences in this file version
-                $dataObj["changesUrl"] = getHistoryDownloadUrl($filename, $i - 1, "diff.zip");
+                $diffPath = implode(DIRECTORY_SEPARATOR, [$histDir, ($i - 1), "diff.zip"]);
+                if (file_exists($diffPath)) {
+                    // write the path to the diff.zip archive with differences in this file version
+                    $dataObj["changesUrl"] = getHistoryDownloadUrl($filename, $i - 1, "diff.zip");
+                }
             }
 
             $jwtManager = new JwtManager();

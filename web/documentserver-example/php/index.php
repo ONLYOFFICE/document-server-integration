@@ -1,6 +1,6 @@
 <?php // phpcs:ignore PSR1.Files.SideEffects.FoundWithSymbols
 /**
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,21 +74,9 @@ function routers()
         $view->render();
         return;
     }
-    if (str_starts_with($path, '/assets')) {
-        $response = assets();
-        $response['status'] = 'success';
-        echo json_encode($response);
-        return;
-    }
     if (str_starts_with($path, '/convert')) {
         $response = convert();
-        $response['status'] = 'success';
-        echo json_encode($response);
-        return;
-    }
-    if (str_starts_with($path, '/csv')) {
-        $response = csv();
-        $response['status'] = 'success';
+        $response['status'] = isset($response['error']) ? 'error' : 'success';
         echo json_encode($response);
         return;
     }
@@ -112,6 +100,11 @@ function routers()
     if (str_starts_with($path, '/history')) {
         $response = historyDownload();
         $response['status'] = 'success';
+        echo json_encode($response);
+        return;
+    }
+    if (str_starts_with($path, '/objhistory')) {
+        $response = historyObj();
         echo json_encode($response);
         return;
     }
@@ -147,6 +140,11 @@ function routers()
     if (str_starts_with($path, '/upload')) {
         $response = upload();
         $response['status'] = isset($response['error']) ? 'error' : 'success';
+        echo json_encode($response);
+        return;
+    }
+    if (str_starts_with($path, '/formats')) {
+        $response = formats();
         echo json_encode($response);
         return;
     }

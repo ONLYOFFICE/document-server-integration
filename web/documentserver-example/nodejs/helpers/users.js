@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ class User {
     descriptions,
     templates,
     avatar,
+    goback,
+    close,
   ) {
     this.id = id;
     this.name = name;
@@ -43,6 +45,8 @@ class User {
     this.descriptions = descriptions;
     this.templates = templates;
     this.avatar = avatar;
+    this.goback = goback;
+    this.close = close;
   }
 }
 
@@ -80,6 +84,8 @@ const descrUser3 = [
   'Can create new files from the editor',
   'Can see the information about Group2 users',
   'Can’t submit forms',
+  'Can’t close history',
+  'Can’t restore the file version',
 ];
 
 const descrUser0 = [
@@ -99,7 +105,22 @@ const descrUser0 = [
 ];
 
 const users = [
-  new User('uid-1', 'John Smith', 'smith@example.com', null, null, {}, null, null, [], descrUser1, true, true),
+  new User(
+    'uid-1',
+    'John Smith',
+    'smith@example.com',
+    null,
+    null,
+    {},
+    null,
+    null,
+    [],
+    descrUser1,
+    true,
+    true,
+    { blank: false },
+    { visible: false },
+  ),
   new User(
     'uid-2',
     'Mark Pottato',
@@ -117,6 +138,8 @@ const users = [
     descrUser2,
     false,
     true,
+    { text: 'Go to Documents' },
+    {},
   ),
   new User(
     'uid-3',
@@ -135,8 +158,10 @@ const users = [
     descrUser3,
     false,
     false,
+    null,
+    {},
   ),
-  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false),
+  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null),
 ];
 
 // get a list of all the users
@@ -174,10 +199,7 @@ users.getUsersForProtect = function getUsersForProtect(id) {
   const result = [];
   this.forEach((user) => {
     if (user.id !== id && user.name != null) {
-      result.push({
-        id: user.id,
-        name: user.name,
-      });
+      result.push(user);
     }
   });
   return result;

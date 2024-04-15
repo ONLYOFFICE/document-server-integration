@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,10 @@
 const supportedFormats = require('../public/assets/document-formats/onlyoffice-docs-formats.json'); // eslint-disable-line
 
 const fileUtility = {};
+
+fileUtility.getFormats = function getFormats() {
+  return supportedFormats;
+};
 
 // get file name from the given url
 fileUtility.getFileName = function getFileName(url, withoutExtension) {
@@ -54,16 +58,17 @@ fileUtility.getFileType = function getFileType(url) {
   const ext = fileUtility.getFileExtension(url, true); // get the file extension from the given url
 
   for (let i = 0; i < supportedFormats.length; i++) {
-    if (supportedFormats[i].name === ext) return supportedFormats[i].type;
+    if (supportedFormats[i].name === ext && supportedFormats[i].type !== '') return supportedFormats[i].type;
   }
 
-  return fileUtility.fileType.word; // the default file type is word
+  return null; // the default file type is null
 };
 
 fileUtility.fileType = {
   word: 'word',
   cell: 'cell',
   slide: 'slide',
+  pdf: 'pdf',
 };
 
 fileUtility.getSuppotredExtensions = function getSuppotredExtensions() {

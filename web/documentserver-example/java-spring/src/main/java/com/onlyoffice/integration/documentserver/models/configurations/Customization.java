@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,8 +33,6 @@ import org.springframework.stereotype.Component;
   links, change logos and editor owner details. */
 public class Customization {
     @Autowired
-    private Logo logo;  // the image file at the top left corner of the Editor header
-    @Autowired
     private Goback goback;  // the settings for the Open file location menu button and upper right corner button
     private Boolean autosave = true;  // if the Autosave menu option is enabled or disabled
     private Boolean comments = true;  // if the Comments menu button is displayed or hidden
@@ -47,7 +45,7 @@ public class Customization {
     private Boolean help = true;  //  if the Help menu button is displayed or hidden
     private Boolean hideRightMenu = false;  // if the right menu is displayed or hidden on first loading
     private Boolean hideRulers = false;  // if the editor rulers are displayed or hidden
-    private Boolean submitForm = false;  // if the Submit form button is displayed or hidden
+    private Boolean submitForm = true;  // if the Submit form button is displayed or hidden
     private Boolean about = true;
     private Boolean feedback = true;
 }

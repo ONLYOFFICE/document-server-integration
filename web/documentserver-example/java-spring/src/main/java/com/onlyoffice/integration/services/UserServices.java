@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 
 package com.onlyoffice.integration.services;
 
+import com.onlyoffice.integration.entities.Goback;
 import com.onlyoffice.integration.entities.Group;
 import com.onlyoffice.integration.entities.Permission;
 import com.onlyoffice.integration.entities.User;
@@ -58,13 +59,16 @@ public class UserServices {
                            final List<String> removeGroups,
                            final List<String> userInfoGroups, final Boolean favoriteDoc,
                            final Boolean chat,
-                           final Boolean protect) {
+                           final Boolean protect,
+                           final Boolean avatar,
+                           final Goback goback) {
         User newUser = new User();
         newUser.setName(name);  // set the user name
         newUser.setEmail(email);  // set the user email
         newUser.setGroup(groupServices.createGroup(group));  // set the user group
         newUser.setDescriptions(description);  // set the user description
         newUser.setFavorite(favoriteDoc);  // specify if the user has the favorite documents or not
+        newUser.setAvatar(avatar);
 
         List<Group> groupsReview = groupServices
                 .createGroups(reviewGroups);  // define the groups whose changes the user can accept/reject
@@ -85,6 +89,8 @@ public class UserServices {
                         chat,
                         protect);  // specify permissions for the current user
         newUser.setPermissions(permission);
+
+        newUser.setGoback(goback);
 
         userRepository.save(newUser); // save a new user
 

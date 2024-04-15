@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,7 +88,7 @@ namespace OnlineEditorsExampleMVC.Models
                 editorsMode = "fillForms";
                 canEdit = true;
             }
-            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1") && false;  // check if the Submit form button is displayed or not
+            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1");  // check if the Submit form button is displayed or not
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
 
             // favorite icon state
@@ -157,7 +157,7 @@ namespace OnlineEditorsExampleMVC.Models
                                             { "download", !user.deniedPermissions.Contains("download") },
                                             { "edit", canEdit && (editorsMode == "edit" || editorsMode == "view" || editorsMode == "filter" || editorsMode == "blockcontent") },
                                             { "print", !user.deniedPermissions.Contains("print") },
-                                            { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
+                                            { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "blockcontent" },
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
@@ -190,7 +190,8 @@ namespace OnlineEditorsExampleMVC.Models
                                         {
                                             { "id", !user.id.Equals("uid-0") ? user.id : null  },
                                             { "name", user.name },
-                                            { "group", user.group }
+                                            { "group", user.group },
+                                            { "image", user.avatar ? DocManagerHelper.GetServerUrl(false) + "/Content/images/" + user.id + ".png" : null}
                                         }
                                 },
                                 {
@@ -213,10 +214,12 @@ namespace OnlineEditorsExampleMVC.Models
                                             { "forcesave", false },  // adds the request for the forced file saving to the callback handler
                                             { "submitForm", submitForm },  // if the Submit form button is displayed or not
                                             {
-                                                "goback", new Dictionary<string, object>  // settings for the Open file location menu button and upper right corner button
+                                                "goback", user.goback != null ? new Dictionary<string, object>  // settings for the Open file location menu button and upper right corner button
                                                     {
-                                                        { "url", DocManagerHelper.GetServerUrl(false) }  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
-                                                    }
+                                                        { "url", DocManagerHelper.GetServerUrl(false) },  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
+                                                        { "text", user.goback.text },
+                                                        { "blank", user.goback.blank }
+                                                    } : new Dictionary<string, object>{}
                                             }
                                         }
                                 }
@@ -288,20 +291,20 @@ namespace OnlineEditorsExampleMVC.Models
             {
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "Content\\images\\logo.png"
+                    + "Content\\images\\logo.svg"
             };
 
             var directMailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(false))
             {
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "Content\\images\\logo.png"
+                    + "Content\\images\\logo.svg"
             };
 
             // create a logo config
             var logoConfig = new Dictionary<string, object>
             {
-                { "fileType", "png"},
+                { "fileType", "svg"},
                 { "url", mailMergeUrl.ToString()}
             };
 
@@ -371,6 +374,23 @@ namespace OnlineEditorsExampleMVC.Models
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);
             usersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForMentions(user.id)) : null;
+        }
+
+        public void GetUsersInfo(HttpRequest request, out string usersInfo)
+        {
+            var jss = new JavaScriptSerializer();
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);
+            usersInfo = jss.Serialize(Users.getUsersInfo(user.id));
+        }
+
+        //get a users for protect
+        public void GetUsersProtect(HttpRequest request, out string usersForProtect)
+        {
+            var jss = new JavaScriptSerializer();
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);
+            usersForProtect = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForProtect(user.id)) : null;
         }
     }
 }

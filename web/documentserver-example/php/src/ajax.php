@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -228,6 +228,7 @@ function convert()
     $lang = $_COOKIE["ulang"] ?? "";
     $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = "ooxml";
+    $conversionExtension = $post['fileExt'] ?? $internalExtension;
 
     // check if the file with such an extension can be converted
     if (in_array($extension, $formatManager->convertibleExtensions()) &&
@@ -245,7 +246,7 @@ function convert()
             $convertedData = getConvertedData(
                 $fileUri,
                 $extension,
-                $internalExtension,
+                $conversionExtension,
                 $key,
                 true,
                 $newFileUri,
@@ -299,12 +300,15 @@ function convert()
 function delete()
 {
     try {
-        $fileName = basename($_GET["fileName"]);
+        if (isset($_GET["fileName"]) && !empty($_GET["fileName"])) {
+            $fileName = basename($_GET["fileName"]);
+            $filePath = getStoragePath($fileName);
 
-        $filePath = getStoragePath($fileName);
-
-        unlink($filePath);  // delete a file
-        delTree(getHistoryDir($filePath));  // delete all the elements from the history directory
+            unlink($filePath);  // delete a file
+            delTree(getHistoryDir($filePath));  // delete all the elements from the history directory
+        } else {
+            delTree(getStoragePath('')); // delete the user's folder and all the containing files
+        }
     } catch (Exception $e) {
         sendlog("Deletion ".$e->getMessage(), "webedior-ajax.log");
         $result["error"] = "error: " . $e->getMessage();
@@ -331,34 +335,6 @@ function files()
         $result["error"] = "error: " . $e->getMessage();
         return $result;
     }
-}
-
-/**
- * Download assets
- *
- * @return void
- */
-function assets()
-{
-    $fileName = basename($_GET["name"]);
-    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' .
-        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "document-templates"
-        . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
-    downloadFile($filePath);
-}
-
-/**
- * Download a csv file
- *
- * @return void
- */
-function csv()
-{
-    $fileName = "csv.csv";
-    $filePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . '..' .
-        DIRECTORY_SEPARATOR . "assets" . DIRECTORY_SEPARATOR . "document-templates"
-        . DIRECTORY_SEPARATOR . "sample" . DIRECTORY_SEPARATOR . $fileName;
-    downloadFile($filePath);
 }
 
 /**
@@ -406,6 +382,18 @@ function historyDownload()
         $result["error"] = "error: File not found";
         return $result;
     }
+}
+
+function historyObj()
+{
+    $input = file_get_contents('php://input');
+    $body = json_decode($input, true);
+    $fileName = $body['fileName'];
+    $filetype = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
+    $docKey = getDocEditorKey($fileName);
+    $fileuri = fileUri($fileName, true);
+    $historyObject = getHistory($fileName, $filetype, $docKey, $fileuri, false);
+    return $historyObject;
 }
 
 /**
@@ -553,6 +541,20 @@ function reference()
         }
     }
 
+    $link = $post["link"] ?? null;
+    if (!isset($filename) && isset($link)) {
+        if (strpos($link, serverPath()) === false) {
+            return ["url" => $link, "directUrl"=> $link];
+        }
+
+        $urlObj = parse_url($link);
+        parse_str($urlObj["query"], $urlParams);
+        $fileName = $urlParams["fileID"];
+        if (!file_exists(getStoragePath($fileName))) {
+            return ["error" => "File does not exist"];
+        }
+    }
+
     if (!isset($filename) && isset($post["path"])) {
         $path = basename($post["path"]);
         if (file_exists(getStoragePath($path))) {
@@ -654,6 +656,22 @@ function restore()
         return [
             'error' => $message,
             'success' => false
+        ];
+    }
+}
+
+function formats()
+{
+    try {
+        $formatManager = new FormatManager();
+        $formats = $formatManager->all();
+
+        return [
+            'formats' => json_encode($formats)
+        ];
+    } catch (Exception $error) {
+        return [
+            'error' => 'Server error'
         ];
     }
 }

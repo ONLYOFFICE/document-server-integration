@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2023
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@
 require 'pathname'
 require 'sorbet-runtime'
 
+# Struct representing a document format with properties.
 class Format < T::Struct
   extend T::Sig
 
@@ -40,6 +41,7 @@ class Format < T::Struct
   end
 end
 
+# FormatManager is responsible for managing document formats and providing various lists of supported extensions.
 class FormatManager
   extend T::Sig
 
@@ -76,7 +78,7 @@ class FormatManager
   def editable
     all.filter do |format|
       format.actions.include?('edit') ||
-      format.actions.include?('lossy-edit')
+        format.actions.include?('lossy-edit')
     end
   end
 
@@ -88,9 +90,7 @@ class FormatManager
   sig { returns(T::Array[Format]) }
   def convertible
     all.filter do |format|
-      format.type == 'cell' && format.convert.include?('xlsx') ||
-      format.type == 'slide' && format.convert.include?('pptx') ||
-      format.type == 'word' && format.convert.include?('docx')
+      format.actions.include?('auto-convert')
     end
   end
 
@@ -138,6 +138,7 @@ class FormatManager
   sig { returns(T::Array[Format]) }
   def all
     return @all if defined?(@all)
+
     content = file.read
     hash = JSON.parse(content)
     @all ||= hash.map do |item|
@@ -145,15 +146,13 @@ class FormatManager
     end
   end
 
-  private
-
   sig { returns(Pathname) }
-  def file
+  private def file
     directory.join('onlyoffice-docs-formats.json')
   end
 
   sig { returns(Pathname) }
-  def directory
+  private def directory
     current_directory = Pathname(T.must(__dir__))
     directory = current_directory.join('..', '..', 'assets', 'document-formats')
     directory.cleanpath

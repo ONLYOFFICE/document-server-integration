@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,27 @@
 
 var directUrl;
 var userId;
+var formatManager;
+
+window.onload = function () {
+    fetch('formats')
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.formats) {
+                let formats = [];
+                data.formats.forEach(format => {
+                    formats.push(new Format(
+                        format.name,
+                        format.type,
+                        format.actions,
+                        format.convert,
+                        format.mime
+                    ));
+                });
+                formatManager = new FormatManager(formats);
+            }
+        })
+}
 
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
@@ -98,7 +119,7 @@ if (typeof jQuery != "undefined") {
     });
     
     var timer = null;
-    var checkConvert = function (filePass) {
+    var checkConvert = function (filePass, fileType) {
         filePass = filePass ? filePass : null;
         if (timer != null) {
             clearTimeout(timer);
@@ -111,10 +132,10 @@ if (typeof jQuery != "undefined") {
         jq("#filePass").val("");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf('.');
+        var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        if (ConvertExtList.indexOf(posExt) == -1) {
+        if (!formatManager.isAutoConvertible(posExt)) {
             jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
@@ -126,7 +147,7 @@ if (typeof jQuery != "undefined") {
                 contentType: "text/xml",
                 type: "post",
                 dataType: "json",
-                data: JSON.stringify({ filename: fileName, filePass: filePass }),
+                data: JSON.stringify({filename: fileName, filePass: filePass, fileExt: fileType}),
                 url: UrlConverter,
                 complete: function (data) {
                     var responseText = data.responseText;
@@ -142,6 +163,12 @@ if (typeof jQuery != "undefined") {
                             }
                             return;
                         } else {
+                            if (response.error.includes("Error conversion output format")){
+                                jq("#select-file-type").removeClass("invisible");
+                                jq("#step2").removeClass("current");
+                                jq("#hiddenFileName").attr("placeholder",filePass);
+                                return;
+                            }
                             jq(".current").removeClass("current");
                             jq(".step:not(.done)").addClass("error");
                             jq("#mainProgress .error-message").show().find("span").text(response.error);
@@ -153,7 +180,7 @@ if (typeof jQuery != "undefined") {
                     jq("#hiddenFileName").val(response.filename);
 
                     if (response.step && response.step < 100) {
-                        checkConvert(filePass);
+                        checkConvert(filePass, fileType);
                     } else {
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
@@ -188,10 +215,10 @@ if (typeof jQuery != "undefined") {
         jq("#beginView, #beginEmbedded").removeClass("disable");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf('.');
+        var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        if (EditedExtList.indexOf(posExt) != -1 || FillExtList.indexOf(posExt) != -1) {
+        if (formatManager.isEditable(posExt) || formatManager.isFillable(posExt)) {
             jq("#beginEdit").removeClass("disable");
         }
     };
@@ -216,6 +243,15 @@ if (typeof jQuery != "undefined") {
             setCookie("ulang", langSel.val());
         });
     };
+
+    jq(document).on("click", ".file-type:not(.disable)", function () {
+        const currentElement = jq(this);
+        var fileType = currentElement.attr("data");
+        var filePass = jq("#hiddenFileName").attr("placeholder");
+        jq('.file-type').addClass(["disable", "pale"]);
+        currentElement.removeClass("pale");
+        checkConvert(filePass, fileType);
+    });
 
     jq(document).on("click", "#enterPass", function () {
         var filePass = jq("#filePass").val();
@@ -292,11 +328,28 @@ if (typeof jQuery != "undefined") {
         jq.ajax({
             async: true,
             contentType: "text/xml",
+            type: "delete",
             url: requestAddress,
             complete: function (data) {
                 document.location.reload();
             }
         });
+    });
+
+    jq(document).on("click", ".clear-all", function () {
+        if (confirm("Delete all the files?")) {
+            jq.ajax({
+                async: true,
+                contentType: "text/xml",
+                type: "delete",
+                url: "remove",
+                complete: function (data) {
+                    if (JSON.parse(data.responseText).success) {
+                        window.location.reload(true);
+                    }
+                }
+            });
+        }
     });
 
         function showUserTooltip (isMobile) {

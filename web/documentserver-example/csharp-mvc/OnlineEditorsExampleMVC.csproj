@@ -145,7 +145,6 @@
     <Content Include="Content\images\icon_xlsx.svg" />
     <Content Include="Content\images\info.svg" />
     <Content Include="Content\images\loader16.gif" />
-    <Content Include="Content\images\logo.png" />
     <Content Include="Content\images\logo.svg" />
     <Content Include="Content\images\mobile-fill-forms.svg" />
     <Content Include="Content\images\mobile.svg" />
@@ -181,17 +180,23 @@
     <Content Include="WebEditor.ashx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\AUTHORS.md" />
-    <Content Include="assets\LICENSE" />
-    <Content Include="assets\new\new.docx" />
-    <Content Include="assets\new\new.docxf" />
-    <Content Include="assets\new\new.pptx" />
-    <Content Include="assets\new\new.xlsx" />
-    <Content Include="assets\sample\csv.csv" />
-    <Content Include="assets\sample\sample.docx" />
-    <Content Include="assets\sample\sample.docxf" />
-    <Content Include="assets\sample\sample.pptx" />
-    <Content Include="assets\sample\sample.xlsx" />
+    <Content Include="assets\document-templates\AUTHORS.md" />
+    <Content Include="assets\document-templates\LICENSE" />
+    <Content Include="assets\document-templates\new\new.docx" />
+    <Content Include="assets\document-templates\new\new.docxf" />
+    <Content Include="assets\document-templates\new\new.pptx" />
+    <Content Include="assets\document-templates\new\new.xlsx" />
+    <Content Include="assets\document-templates\README.md" />
+    <Content Include="assets\document-templates\sample\csv.csv" />
+    <Content Include="assets\document-templates\sample\sample.docx" />
+    <Content Include="assets\document-templates\sample\sample.docxf" />
+    <Content Include="assets\document-templates\sample\sample.pptx" />
+    <Content Include="assets\document-templates\sample\sample.xlsx" />
+    <Content Include="assets\document-formats\AUTHORS.md" />
+    <Content Include="assets\document-formats\CHANGELOG.md" />
+    <Content Include="assets\document-formats\LICENSE" />
+    <Content Include="assets\document-formats\onlyoffice-docs-formats.json" />
+    <Content Include="assets\document-formats\README.md" />
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>

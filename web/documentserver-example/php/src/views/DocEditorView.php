@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ final class DocEditorView extends View
         $jwtManager = new JwtManager();
         $userList = new ExampleUsers();
         $fileId = $request["fileID"] ?? "";
-        $user = $userList->getUser($request["user"]);
+        $user = $userList->getUser($request["user"] ?? null);
         $isEnableDirectUrl = isset($request["directUrl"]) ? filter_var($request["directUrl"], FILTER_VALIDATE_BOOLEAN)
             : false;
         if (!empty($externalUrl)) {
@@ -85,7 +85,7 @@ final class DocEditorView extends View
         }
 
         // check if the Submit form button is displayed or not
-        $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1" && !1;
+        $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1";
         $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
         $type = empty($request["type"]) ? "desktop" : $request["type"];
 
@@ -103,6 +103,10 @@ final class DocEditorView extends View
                 "url" => $createUrl . "&sample=true",
             ],
         ];
+
+        if ($user->goback !== null) {
+            $user->goback["url"] = serverPath();
+        }
 
         // specify the document config
         $config = [
@@ -128,7 +132,7 @@ final class DocEditorView extends View
                             $editorsMode == "view" || $editorsMode == "filter" || $editorsMode == "blockcontent"),
                     "print" => !in_array("print", $user->deniedPermissions),
                     "fillForms" => $editorsMode != "view" && $editorsMode != "comment"
-                        && $editorsMode != "embedded" && $editorsMode != "blockcontent",
+                        && $editorsMode != "blockcontent",
                     "modifyFilter" => $editorsMode != "filter",
                     "modifyContentControl" => $editorsMode != "blockcontent",
                     "review" => $canEdit && ($editorsMode == "edit" || $editorsMode == "review"),
@@ -161,6 +165,7 @@ final class DocEditorView extends View
                     "id" => $user->id != "uid-0" ? $user->id : null,
                     "name" => $user->name,
                     "group" => $user->group,
+                    "image" => $user->avatar ? serverPath(false) . "/assets/images/" . $user->id . ".png" : null
                 ],
                 "embedded" => [  // the parameters for the embedded document type
                     // the absolute URL that will allow the document to be saved onto the user personal computer
@@ -179,23 +184,20 @@ final class DocEditorView extends View
                     // adds the request for the forced file saving to the callback handler when saving the document
                     "forcesave" => false,
                     "submitForm" => $submitForm,  // if the Submit form button is displayed or not
-                    "goback" => [  // settings for the Open file location menu button and upper right corner button
-                        // the absolute URL to the website address which will be opened
-                        // when clicking the Open file location menu button
-                        "url" => serverPath(),
-                    ],
+                    // settings for the Open file location menu button and upper right corner button
+                    "goback" => $user->goback !== null ? $user->goback : "",
                 ],
             ],
         ];
 
         // an image for inserting
         $dataInsertImage = $isEnableDirectUrl ? [
-            "fileType" => "png",
-            "url" => serverPath(true) . "/assets/images/logo.png",
-            "directUrl" => serverPath(false) . "/assets/images/logo.png",
+            "fileType" => "svg",
+            "url" => serverPath(true) . "/assets/images/logo.svg",
+            "directUrl" => serverPath(false) . "/assets/images/logo.svg",
         ] : [
-            "fileType" => "png",
-            "url" => serverPath(true) . "/assets/images/logo.png",
+            "fileType" => "svg",
+            "url" => serverPath(true) . "/assets/images/logo.svg",
         ];
 
         // a document for comparing
@@ -211,15 +213,27 @@ final class DocEditorView extends View
         // recipients data for mail merging
         $dataSpreadsheet = $isEnableDirectUrl ? [
             "fileType" => "csv",
-            "url" => serverPath(true) . "/csv",
-            "directUrl" => serverPath(false) . "/csv",
+            "url" => serverPath(true) . "/assets/document-templates/sample/csv.csv",
+            "directUrl" => serverPath(false) . "/assets/document-templates/sample/csv.csv",
         ] : [
             "fileType" => "csv",
-            "url" => serverPath(true) . "/csv",
+            "url" => serverPath(true) . "/assets/document-templates/sample/csv.csv",
         ];
 
         // users data for mentions
         $usersForMentions = $user->id != "uid-0" ? $userList->getUsersForMentions($user->id) : null;
+
+        // users data for protect
+        $usersForProtect = $user->id != "uid-0" ? $userList->getUsersForProtect($user->id) : null;
+
+        $usersInfo = [];
+        if ($user->id != 'uid-0') {
+            foreach ($userList->getAllUsers() as $userInfo) {
+                $u = $userInfo;
+                $u->image = $userInfo->avatar ? serverPath(false) . "/assets/images/" . $userInfo->id . ".png" : null;
+                array_push($usersInfo, $u);
+            }
+        }
 
         // check if the secret key to generate token exists
         if ($jwtManager->isJwtEnabled()) {
@@ -231,39 +245,29 @@ final class DocEditorView extends View
             // encode the dataSpreadsheet object into the token
             $dataSpreadsheet["token"] = $jwtManager->jwtEncode($dataSpreadsheet);
         }
-        $out = getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl);
-        $history = $out[0];
-        $historyData = $out[1];
+
         $historyLayout = "";
+
+        if ($user->id == "uid-3") {
+            $historyLayout .= "config.events['onRequestHistoryClose'] = null;
+                config.events['onRequestRestore'] = null;";
+        }
+
         if ($user->id != "uid-0") {
-            if ($history != null && $historyData != null) {
-                $historyLayout .= " config.events['onRequestHistory'] = function () {
-                        // show the document version history
-                        docEditor.refreshHistory(".json_encode($history).");};";
-                $historyLayout .= " config.events['onRequestHistoryData'] = function (event) {
-                        var ver = event.data;
-                        var histData = ".json_encode($historyData).";".
-                    "docEditor.setHistoryData(histData[ver - 1]);};
-                     config.events['onRequestHistoryClose'] = function () {
-                        document.location.reload();
-                    };";
-            }
             $historyLayout .= "// add mentions for not anonymous users
-                config.events['onRequestUsers'] = function () {
-                    docEditor.setUsers({  // set a list of users to mention in the comments
-                        \"users\": {usersForMentions}
-                    });
-                };
+                config.events['onRequestUsers'] = onRequestUsers;
                 // the user is mentioned in a comment
-                config.events['onRequestSendNotify'] = function (event) {
-                    event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-                    var data = JSON.stringify(event.data);
-                    innerAlert(\"onRequestSendNotify: \" + data);
-                };
+                config.events['onRequestSendNotify'] = onRequestSendNotify;
                 // prevent file renaming for anonymous users
                 config.events['onRequestRename'] = onRequestRename;
                 // prevent switch the document from the viewing into the editing mode for anonymous users
-                config.events['onRequestEditRights'] = onRequestEditRights;";
+                config.events['onRequestEditRights'] = onRequestEditRights;
+                config.events['onRequestHistory'] = onRequestHistory;
+                config.events['onRequestHistoryData'] = onRequestHistoryData;";
+            if ($user->id != "uid-3") {
+                $historyLayout .= "config.events['onRequestHistoryClose'] = onRequestHistoryClose;
+                config.events['onRequestRestore'] = onRequestRestore;";
+            }
         }
         $this->tagsValues = [
             "docType" => getDocumentType($filename),
@@ -279,6 +283,8 @@ final class DocEditorView extends View
             "config" => json_encode($config),
             "history" => $historyLayout,
             "usersForMentions" => json_encode($usersForMentions),
+            "usersInfo" => json_encode($usersInfo),
+            "usersForProtect" => json_encode($usersForProtect),
             ];
     }
 }

@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2023
+ (c) Copyright Ascensio System SIA 2024
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -214,8 +214,11 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, isEnableDirectUrl, r
                         'url': prev['url']
                     }
                     dataObj['previous'] = prevInfo  # write information about previous file version to the data object
-                    # write the path to the diff.zip archive with differences in this file version
-                    dataObj['changesUrl'] = getPublicHistUri(filename, i - 1, "diff.zip", req)
+
+                    diffPath = os.path.sep.join([histDir, str(i - 1), "diff.zip"])
+                    if (os.path.exists(diffPath)):
+                        # write the path to the diff.zip archive with differences in this file version
+                        dataObj['changesUrl'] = getPublicHistUri(filename, i - 1, "diff.zip", req)
 
                 if jwtManager.isEnabled():
                     dataObj['token'] = jwtManager.encode(dataObj)

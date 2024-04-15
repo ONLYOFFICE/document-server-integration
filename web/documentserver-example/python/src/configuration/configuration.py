@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2023
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,10 @@ from src.common import string
 
 
 class ConfigurationManager:
-    version = '1.7.0'
+    version = '1.8.0'
+
+    def getVersion(self) -> str:
+        return self.version
 
     def example_url(self) -> Optional[ParseResult]:
         url = environ.get('EXAMPLE_URL')
@@ -33,7 +36,7 @@ class ConfigurationManager:
     def document_server_public_url(self) -> ParseResult:
         url = (
             environ.get('DOCUMENT_SERVER_PUBLIC_URL') or
-            'http://document-server'
+            'http://documentserver'
         )
         return urlparse(url)
 
@@ -121,6 +124,7 @@ class ConfigurationManager:
     def languages(self) -> dict[str, str]:
         return {
             'en': 'English',
+            'ar': 'Arabic',
             'hy': 'Armenian',
             'az': 'Azerbaijani',
             'eu': 'Basque',
@@ -151,6 +155,7 @@ class ConfigurationManager:
             'pt-PT': 'Portuguese (Portugal)',
             'ro': 'Romanian',
             'ru': 'Russian',
+            'sr-Latn-RS': 'Serbian',
             'si': 'Sinhala (Sri Lanka)',
             'sk': 'Slovak',
             'sl': 'Slovenian',

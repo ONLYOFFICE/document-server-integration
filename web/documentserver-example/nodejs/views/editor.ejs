@@ -8,7 +8,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2023
+    * (c) Copyright Ascensio System SIA 2024
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -55,6 +55,11 @@
         var onDocumentStateChange = function (event) {  // the document is modified
             var title = document.title.replace(/\*$/g, "");
             document.title = title + (event.data ? "*" : "");
+        };
+
+        var onRequestClose = function () {  // close editor
+            docEditor.destroyEditor();
+            innerAlert("Document editor closed successfully");
         };
 
         var onMetaChange = function (event) {  // the meta information of the document is changed via the meta command
@@ -349,9 +354,7 @@
         };
 
         var onDocumentReady = function(){
-            if (config.type === "mobile") {
-                document.getElementsByTagName("iframe")[0].style.height = window.innerHeight + "px";
-            }
+            fixSize();
         };
 
         config = {
@@ -372,16 +375,19 @@
         };
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
+            config.events.onRequestClose = onRequestClose;
             config.events.onRequestEditRights = onRequestEditRights;
             config.events.onRequestHistory = onRequestHistory;
             config.events.onRequestHistoryData = onRequestHistoryData;
-            config.events.onRequestHistoryClose = onRequestHistoryClose;
-            config.events.onRequestRestore = onRequestRestore;
             config.events.onRequestRename = onRequestRename;
             config.events.onRequestUsers = onRequestUsers;
             config.events.onRequestSendNotify = onRequestSendNotify;
             config.events.onRequestReferenceData = onRequestReferenceData;
             config.events.onRequestReferenceSource = onRequestReferenceSource;
+            if (<%- JSON.stringify(editor.userid) %> != "uid-3") {
+                config.events.onRequestHistoryClose = onRequestHistoryClose;
+                config.events.onRequestRestore = onRequestRestore;
+            }
         }
 
         if (config.editorConfig.createUrl) {
@@ -397,14 +403,21 @@
         }
 
         var connectEditor = function () {
+            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
+            fixSize();
+        };
 
-            if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
-                && DocsAPI.DocEditor.version().split(".")[0] < 7) {
-                innerAlert("Please update ONLYOFFICE Docs to version 7.0 to work on fillable forms online.");
+        // get the editor sizes
+        var fixSize = function () {
+            if (config.type !== "mobile") {
                 return;
             }
-
-            docEditor = new DocsAPI.DocEditor("iframeEditor", config);
+            var wrapEl = document.getElementsByTagName("iframe");
+            if (wrapEl.length) {
+                wrapEl[0].style.height = screen.availHeight + "px";
+                window.scrollTo(0, -1);
+                wrapEl[0].style.height = window.innerHeight + "px";
+            }
         };
 
         const getFileExt = function (fileName) {
@@ -416,8 +429,12 @@
 
         if (window.addEventListener) {
             window.addEventListener("load", connectEditor);
+            window.addEventListener("resize", fixSize);
+            window.addEventListener("orientationchange", fixSize);
         } else if (window.attachEvent) {
             window.attachEvent("onload", connectEditor);
+            window.attachEvent("onresize", fixSize);
+            window.attachEvent("orientationchange", fixSize);
         }
 
     </script>

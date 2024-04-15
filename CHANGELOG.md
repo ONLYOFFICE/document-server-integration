@@ -1,19 +1,33 @@
 # Change Log
 
+- fill permission in embedded mode
+- delete all files
+- handling conversion -9 error
+- nodejs: wopi formsubmit icon
+- nodejs: tabs menu
+- change insert image
+- different goback for users
+- nodejs: converting function on index page
+- nodejs: close editor
+
+## 1.8.0
+- nodejs: pdf, djvu, xps, oxps as pdf documentType
+- nodejs: filling pdf
+- version number to page meta
+- ar skin languages
+- sr-Latn-RS skin languages
+- getting history via api
+- using a repo with a list of formats
+- convert after uploading only tagged formats
+- link in referenceData
+- setUsers for region protection
 - onRequestOpen method
-- nodejs: user avatar
+- user avatar
 - trimming long name of uploading file
-- nodejs: link in referenceData
 - onRequestSelectDocument method
 - onRequestSelectSpreadsheet method
 - key in referenceData
 - restore from history
-- python: using a repo with a list of formats
-- ruby: using a repo with a list of formats
-- java: using a repo with a list of formats
-- java: getting history by a separate request
-- java-spring: using a repo with a list of formats
-- java-spring: getting history by a separate request
 
 ## 1.7.0
 - nodejs: onRequestSelectDocument method

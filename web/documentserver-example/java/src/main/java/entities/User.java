@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,12 +32,14 @@ public class User {
     private final List<String> descriptions;
     private final Boolean templates;
     private final List<String> userInfoGroups;
+    private final Boolean avatar;
+    private final Goback goback;
 
     public User(final String idParam, final String nameParam, final String emailParam, final String groupParam,
                 final List<String> reviewGroupsParam, final CommentGroups commentGroupsParam,
                 final List<String> userInfoGroupsParam, final Boolean favoriteParam,
                 final List<String> deniedPermissionsParam, final List<String> descriptionsParam,
-                final Boolean templatesParam) {
+                final Boolean templatesParam, final Boolean avatarParam, final Goback gobackParam) {
         this.id = idParam;
         this.name = nameParam;
         this.email = emailParam;
@@ -49,6 +51,8 @@ public class User {
         this.descriptions = descriptionsParam;
         this.templates = templatesParam;
         this.userInfoGroups = userInfoGroupsParam;
+        this.avatar = avatarParam;
+        this.goback = gobackParam;
     }
 
     public String getId() {
@@ -93,5 +97,13 @@ public class User {
 
     public List<String> getUserInfoGroups() {
         return userInfoGroups;
+    }
+
+    public Boolean getAvatar() {
+        return avatar;
+    }
+
+    public Goback getGoback() {
+        return goback;
     }
 }

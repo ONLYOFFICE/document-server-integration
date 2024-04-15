@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -315,6 +315,24 @@ public class DefaultCallbackManager implements CallbackManager {
             String user = action.getUserid();  // get the user ID
             // create meta data for the forcesaved file
             storageMutator.createMeta(fileName, user, "Filling Form");
+
+            try {
+                String formsDataUrl = body.getFormsdataurl();
+
+                if (formsDataUrl != null && !formsDataUrl.isEmpty()) {
+                    String formsName = documentManager.getCorrectName(fileUtility
+                            .getFileNameWithoutExtension(fileName) + ".txt");
+                    String formsPath = storagePathBuilder.getFileLocation(formsName);
+
+                    byte[] byteArrayFormsData = getDownloadFile(formsDataUrl);
+
+                    saveFile(byteArrayFormsData, Paths.get(formsPath));
+                } else {
+                    throw new RuntimeException("Document editing service did not return formsDataUrl");
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         } else {
             if (newFileName) {
                 fileName = documentManager

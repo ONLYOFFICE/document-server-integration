@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 package com.onlyoffice.integration.documentserver.util.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import com.onlyoffice.integration.documentserver.models.Format;
@@ -41,6 +42,7 @@ public class DefaultFormatService implements FormatService {
             final ObjectMapper objectMapper
     ) {
         try {
+            objectMapper.configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true);
             File targetFile = resourceFile.getFile();
             this.formats = objectMapper.readValue(targetFile, new TypeReference<List<Format>>() { });
         } catch (Exception e) {

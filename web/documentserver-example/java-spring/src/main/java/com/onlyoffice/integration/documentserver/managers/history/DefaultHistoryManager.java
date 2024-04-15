@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.nio.file.Paths;
 
 // todo: Rebuild completely
 @Component
@@ -280,8 +281,9 @@ public class DefaultHistoryManager implements HistoryManager {
                 dataObj.put("version", i);
 
                 if (i > 1) {  //check if the version number is greater than 1
+                    Integer verdiff = i - 1;
                     // get the history data from the previous file version
-                    Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(i - 1));
+                    Map<String, Object> prev = (Map<String, Object>) histData.get(Integer.toString(verdiff));
                     Map<String, Object> prevInfo = new HashMap<String, Object>();
                     prevInfo.put("fileType", prev.get("fileType"));
                     prevInfo.put("key", prev.get("key"));  // write key and URL information about previous file version
@@ -292,10 +294,12 @@ public class DefaultHistoryManager implements HistoryManager {
 
                     // write information about previous file version to the data object
                     dataObj.put("previous", prevInfo);
-                    // write the path to the diff.zip archive with differences in this file version
-                    Integer verdiff = i - 1;
-                    dataObj.put("changesUrl", documentManager
-                            .getHistoryFileUrl(fileName, verdiff, "diff.zip", true));
+
+                    if (diffExists(histDir, verdiff)) {
+                        // write the path to the diff.zip archive with differences in this file version
+                        dataObj.put("changesUrl", documentManager
+                                .getHistoryFileUrl(fileName, verdiff, "diff.zip", true));
+                    }
                 }
 
                 if (jwtManager.tokenEnabled()) {
@@ -330,5 +334,12 @@ public class DefaultHistoryManager implements HistoryManager {
         } catch (Exception e) {
         }
         return output;
+    }
+
+    // diff.zip existence check
+    private Boolean diffExists(final String histDir, final Integer verdiff) {
+        String filePath = Paths.get(histDir, String.valueOf(verdiff), "diff.zip").toString();
+        File file = new File(filePath);
+        return file.exists();
     }
 }
