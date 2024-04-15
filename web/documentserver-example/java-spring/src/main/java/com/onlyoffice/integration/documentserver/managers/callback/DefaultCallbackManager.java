@@ -196,7 +196,7 @@ public class DefaultCallbackManager implements CallbackManager {
 
     // todo: Replace (String method) with (Enum method)
     @SneakyThrows
-    public void commandRequest(final String method,
+    public JSONObject commandRequest(final String method,
                                final String key,
                                final HashMap meta) {  // create a command request
         String documentCommandUrl = docserviceUrlSite + docserviceUrlCommand;
@@ -260,6 +260,7 @@ public class DefaultCallbackManager implements CallbackManager {
             default:
                 throw new RuntimeException(response.toJSONString());
             }
+        return response;
         }
 
     @SneakyThrows
