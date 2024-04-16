@@ -114,6 +114,16 @@
                     </td>
                     <td class="section">
                         <div class="main-panel">
+                            <menu class="links">
+                                <li class="home-link active" >
+                                    <a href="./">
+                                        <img src="{% static "images/home.svg" %}" alt="Home"/>
+                                </a>
+                                </li>
+                                <li>
+                                    <a href="forgotten">Forgotten files</a>
+                                </li>
+                            </menu>
                         {% if files %}
                             <div id="portal-info" style="display: none">
                         {% else %}
