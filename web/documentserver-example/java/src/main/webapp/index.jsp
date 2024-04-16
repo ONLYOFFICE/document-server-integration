@@ -125,6 +125,16 @@
                             <% DocumentManager.init(request, response); %>
                             <% File[] files = DocumentManager.getStoredFiles(null); %>
                             <div class="main-panel">
+                                <menu class="links">
+                                    <li class="home-link active" >
+                                      <a href="./">
+                                        <img src="css/img/home.svg" alt="Home"/>
+                                      </a>
+                                    </li>
+                                    <li>
+                                      <a href="/ForgottenServlet">Forgotten files</a>
+                                    </li>
+                                </menu>
                                 <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
