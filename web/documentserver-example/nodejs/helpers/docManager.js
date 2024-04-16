@@ -67,9 +67,6 @@ DocManager.prototype.getCustomParams = function getCustomParams() {
   const { lang } = this.req.query; // language
   params += (lang ? `&lang=${this.getLang()}` : '');
 
-  const { directUrl } = this.req.query; // directUrl
-  params += (directUrl ? `&directUrl=${directUrl === 'true'}` : '');
-
   const { fileName } = this.req.query; // file name
   params += (fileName ? `&fileName=${fileName}` : '');
 
@@ -446,11 +443,10 @@ DocManager.prototype.countVersion = function countVersion(directory) {
   return i;
 };
 
-DocManager.prototype.getHistoryObject = function getHistoryObject(fileName, userAddr = null, userDirectUrl = null) {
+DocManager.prototype.getHistoryObject = function getHistoryObject(fileName, userAddr = null) {
   const userAddress = userAddr || this.curUserHostAddress();
   const historyPath = this.historyPath(fileName, userAddress);
   const key = this.getKey(fileName);
-  const directUrl = this.getDownloadUrl(fileName);
   const fileExt = fileUtility.getFileExtension(fileName);
   const url = this.getDownloadUrl(fileName, true);
   const history = [];
@@ -472,15 +468,12 @@ DocManager.prototype.getHistoryObject = function getHistoryObject(fileName, user
       // write all the file history information
       history.push(this.getHistory(fileName, changes, keyVersion, i));
 
-      const userUrl = i === countVersion ? directUrl : (`${this.getServerUrl(false)}/history?fileName=`
-        + `${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}`);
       const historyD = {
         fileType: fileExt.slice(1),
         version: i,
         key: keyVersion,
         url: i === countVersion ? url : (`${this.getServerUrl(true)}/history?fileName=`
           + `${encodeURIComponent(fileName)}&file=prev${fileExt}&ver=${i}&useraddress=${userAddress}`),
-        directUrl: !userDirectUrl ? null : userUrl,
       };
 
       // check if the path to the file with document versions differences exists
@@ -489,7 +482,6 @@ DocManager.prototype.getHistoryObject = function getHistoryObject(fileName, user
           fileType: historyData[i - 2].fileType,
           key: historyData[i - 2].key,
           url: historyData[i - 2].url,
-          directUrl: !userDirectUrl ? null : historyData[i - 2].directUrl,
         };
         const changesUrl = `${this.getServerUrl(true)}/history?fileName=`
           + `${encodeURIComponent(fileName)}&file=diff.zip&ver=${i - 1}&useraddress=${userAddress}`;
@@ -512,7 +504,6 @@ DocManager.prototype.getHistoryObject = function getHistoryObject(fileName, user
       version: countVersion,
       key,
       url,
-      directUrl: !userDirectUrl ? null : directUrl,
     });
   }
 

@@ -528,7 +528,6 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
     if (req.body.link.indexOf(req.DocManager.getServerUrl()) === -1) {
       result({
         url: req.body.link,
-        directUrl: req.body.link,
       });
       return;
     }
@@ -558,7 +557,6 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
     fileType: fileUtility.getFileExtension(fileName).slice(1),
     key: req.DocManager.getKey(fileName),
     url: req.DocManager.getDownloadUrl(fileName, true),
-    directUrl: req.body.directUrl ? req.DocManager.getDownloadUrl(fileName) : null,
     referenceData: {
       fileKey: JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }),
       instanceId: req.DocManager.getServerUrl(),
@@ -952,7 +950,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     const fileName = fileUtility.getFileName(req.query.fileName);
     const lang = req.DocManager.getLang();
-    const userDirectUrl = req.query.directUrl === 'true';
 
     let actionData = 'null';
     if (req.query.action) {
@@ -1019,7 +1016,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
     const key = req.DocManager.getKey(fileName);
     const url = req.DocManager.getDownloadUrl(fileName, true);
-    const directUrl = req.DocManager.getDownloadUrl(fileName);
     let mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
 
     let canEdit = fileUtility.getEditExtensions().indexOf(fileExt.slice(1)) !== -1; // check if this file can be edited
@@ -1048,8 +1044,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         name: fileName,
         ext: fileUtility.getFileExtension(fileName, true),
         uri: url,
-        directUrl: !userDirectUrl ? null : directUrl,
-        uriUser: directUrl,
+        uriUser: url,
         created: new Date().toDateString(),
         favorite: user.favorite != null ? user.favorite : 'null',
       },
@@ -1097,19 +1092,14 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       dataInsertImage: {
         fileType: 'svg',
         url: `${req.DocManager.getServerUrl(true)}/images/logo.svg`,
-        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.svg`,
       },
       dataDocument: {
         fileType: 'docx',
         url: `${req.DocManager.getServerUrl(true)}/assets/document-templates/sample/sample.docx`,
-        directUrl: !userDirectUrl
-          ? null
-          : `${req.DocManager.getServerUrl()}/assets/document-templates/sample/sample.docx`,
       },
       dataSpreadsheet: {
         fileType: 'csv',
         url: `${req.DocManager.getServerUrl(true)}/csv`,
-        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/csv`,
       },
       usersForMentions: user.id !== 'uid-0' ? users.getUsersForMentions(user.id) : null,
       usersForProtect,
@@ -1178,8 +1168,7 @@ app.post('/rename', (req, res) => { // define a handler for renaming file
 app.post('/historyObj', (req, res) => {
   req.DocManager = new DocManager(req, res);
   const { fileName } = req.body;
-  const { directUrl } = req.body || null;
-  const historyObj = req.DocManager.getHistoryObject(fileName, null, directUrl);
+  const historyObj = req.DocManager.getHistoryObject(fileName, null);
 
   if (cfgSignatureEnable) {
     for (let i = 0; i < historyObj.historyData.length; i++) {

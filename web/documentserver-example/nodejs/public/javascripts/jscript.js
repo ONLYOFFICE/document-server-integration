@@ -18,7 +18,6 @@
 
 var language;
 var userid;
-var directUrl;
 var formatManager;
 
 window.onload = function () {
@@ -46,7 +45,6 @@ if (typeof jQuery != "undefined") {
 
     userid = getUrlVars()["userid"];
     language = getUrlVars()["lang"];
-    directUrl = getUrlVars()["directUrl"] == "true";
 
     mustReload = false;
 
@@ -59,13 +57,6 @@ if (typeof jQuery != "undefined") {
         jq("#user").val(userid);
     else
         userid = jq("#user").val();
-
-
-    if (directUrl)
-        jq("#directUrl").prop("checked", directUrl);
-    else
-        directUrl = jq("#directUrl").prop("checked");
-
 
     jq(function () {
         jq('#fileupload').fileupload({
