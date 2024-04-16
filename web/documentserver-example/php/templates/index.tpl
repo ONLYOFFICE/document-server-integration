@@ -103,6 +103,16 @@
                 </td>
                 <td class="section">
                     <div class="main-panel">
+                        <menu class="links">
+                            <li class="home-link active" >
+                                <a href="./">
+                                    <img src="assets/images/home.svg" alt="Home"/>
+                            </a>
+                            </li>
+                            <li>
+                                <a href="forgotten">Forgotten files</a>
+                            </li>
+                        </menu>
                         <div id="portal-info" style="display: {portalInfoDisplay}">
                             <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                             <span class="portal-descr">
