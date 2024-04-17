@@ -57,7 +57,7 @@ menu.links {
 
 .stored-edit span {
     font-size: 12px;
-    line-height: 12px;
+    line-height: normal;
     position: static;
 }
 

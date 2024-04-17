@@ -298,6 +298,43 @@ label .checkbox {
     border-bottom: 1px solid #D0D5DA;
 }
 
+.links {
+    display: flex;
+    padding: 0;
+    column-gap: 30px;
+    align-items: center;
+    list-style: none;
+    border-bottom: 1px solid #E2E2E2;
+    margin: 0;
+    margin-bottom: 24px;
+}
+
+.links li {
+    padding: 4px;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+}
+
+.links li.active {
+    border-bottom: 2px solid #FF6F3D;
+}
+
+.links li.active a {
+    color: #FF6F3D;
+}
+
+.links li.active a img {
+    filter: invert(55%) sepia(67%) saturate(2727%) hue-rotate(335deg) brightness(104%) contrast(101%);
+}
+
+.links a {
+    display: inline-block;
+    padding: 2px 0;
+    line-height: 20px;
+    font-size: 13px;
+    text-decoration: none;
+}
+
 #mainProgress {
     color: #333333;
     display: none;

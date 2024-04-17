@@ -125,6 +125,16 @@
                     </td>
                     <td class="section">
                         <div class="main-panel">
+                            <menu class="links">
+                                <li class="home-link active" >
+                                  <a href="./">
+                                    <img src="content/images/home.svg" alt="Home"/>
+                                  </a>
+                                </li>
+                                <li>
+                                  <a href="/Forgotten">Forgotten files</a>
+                                </li>
+                            </menu>
                             <% var storedFiles = DocManagerHelper.GetStoredFiles(); %>
                             <div id="portal-info"  style="display: <%= storedFiles.Any() ? "none" : "table-cell" %>">
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
