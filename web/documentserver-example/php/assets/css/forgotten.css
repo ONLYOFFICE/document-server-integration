@@ -69,6 +69,16 @@ menu.links {
     height: calc(100% - 150px)
 }
 
+header {
+    min-width:auto;
+}
+
+header a {
+    display: block;
+    margin: 0 auto;
+    width: 1120px;
+}
+
 @media (max-width: 1279px) and (min-width: 1024px) {
     .left-panel {
         width: 208px;
@@ -76,6 +86,14 @@ menu.links {
 
     .main-panel {
         width: 688px;
+    }
+
+    header a {
+        width: 928px;
+    }
+
+    header img {
+        margin-left: 16px;
     }
 }
 
@@ -99,6 +117,14 @@ menu.links {
 
     .tableHeader td:last-child, .tableRow td:last-child {
         width: 20%;
+    }
+
+    header a {
+        width: 768px;
+    }
+
+    header img {
+        margin-left: 40px;
     }
 }
 
