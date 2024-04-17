@@ -113,8 +113,7 @@ app.get('/forgotten', async (req, res) => {
       documentService.commandRequest('getForgottenList', '', (err, data, ress) => {
         if (err) {
           reject(err);
-        }
-        else {
+        } else {
           resolve(JSON.parse(ress.data));
         }
       });
@@ -141,7 +140,7 @@ app.get('/forgotten', async (req, res) => {
   try {
     const forgottenListResponse = await getForgottenList();
 
-    const keys = forgottenListResponse.keys;
+    const { keys } = forgottenListResponse;
     const forgottenFiles = await Promise.all(keys.map(getForgottenFile));
 
     req.DocManager = new DocManager(req, res);
@@ -154,7 +153,7 @@ app.get('/forgotten', async (req, res) => {
 
 app.delete('/forgotten', (req, res) => { // define a handler for removing forgotten file
   try {
-    let fileName = req.query.filename;
+    const fileName = req.query.filename;
     if (fileName) { // if the forgotten file name is defined
       documentService.commandRequest('deleteForgotten', fileName);
       res.status(204).send();
