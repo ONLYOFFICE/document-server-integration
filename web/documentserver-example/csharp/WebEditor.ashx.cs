@@ -69,6 +69,9 @@ namespace OnlineEditorsExample
                 case "remove":
                     Remove(context);
                     break;
+                case "removeforgotten":
+                    RemoveForgotten(context);
+                    break;
                 case "assets":
                     Assets(context);
                     break;
@@ -805,6 +808,26 @@ namespace OnlineEditorsExample
                 var jss = new JavaScriptSerializer();
 
                 context.Response.Write(jss.Serialize(data));
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
+
+        // delete a forgotten file from the document server
+        private static void RemoveForgotten(HttpContext context)
+        {
+            try
+            {
+                string filename = context.Request["filename"];
+
+                if (!String.IsNullOrEmpty(filename))
+                {
+                    TrackManager.commandRequest("deleteForgotten", filename);
+                }
+
+                context.Response.StatusCode = 204;
             }
             catch (Exception e)
             {
