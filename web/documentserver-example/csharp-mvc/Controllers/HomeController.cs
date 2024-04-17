@@ -17,6 +17,8 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using System.Web.Mvc;
 using OnlineEditorsExampleMVC.Helpers;
@@ -29,6 +31,33 @@ namespace OnlineEditorsExampleMVC.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+
+        public ActionResult Forgotten()
+        {
+            var files = new List<Dictionary<string, string>>();
+
+            var response = TrackManager.commandRequest("getForgottenList", null);
+            ArrayList keys = (ArrayList)response["keys"];
+
+            // fetch forgotten files from the document server
+            foreach (string key in keys)
+            {
+                var file = new Dictionary<string, string>();
+                var fileResult = TrackManager.commandRequest("getForgotten", key);
+                file.Add("key", fileResult["key"].ToString());
+                file.Add("url", fileResult["url"].ToString());
+                file.Add(
+                    "type",
+                    FileUtility.GetFileType(fileResult["url"].ToString())
+                        .ToString()
+                        .ToLower()
+                );
+
+                files.Add(file);
+            }
+
+            return View("Forgotten", new ForgottenFilesModel(files));
         }
 
         // viewing file in the editor
