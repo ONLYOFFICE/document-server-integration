@@ -61,6 +61,14 @@ menu.links {
     position: static;
 }
 
+.scroll-table-body {
+    overflow-y: auto;
+}
+
+.stored-list {
+    height: calc(100% - 150px)
+}
+
 @media (max-width: 1279px) and (min-width: 1024px) {
     .left-panel {
         width: 208px;
