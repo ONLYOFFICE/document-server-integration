@@ -28,6 +28,7 @@
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" />
     <link rel="stylesheet" type="text/css" href="stylesheets/jquery-ui.css" />
     <link rel="stylesheet" type="text/css" href="stylesheets/media.css">
+    <link rel="stylesheet" type="text/css" href="stylesheets/forgotten.css">
 </head>
 <body>
     <header>
@@ -58,16 +59,13 @@
                                 </li>
                             </menu>
                             <div class="stored-list">
-                                <span class="header-list">Forgotten documents</span>
+                                <span class="header-list">Forgotten files</span>
                                 <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
                                     <thead>
-                                    <tr>
-                                        <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
-                                        <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift"></td>
-                                        <td class="tableHeaderCell tableHeaderCellViewers"></td>
-                                        <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
-                                        <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
-                                    </tr>
+                                        <tr>
+                                            <td class="tableHeaderCell">Filename</td>
+                                            <td class="tableHeaderCell">Action</td>
+                                        </tr>
                                     </thead>
                                 </table>
                                 <div class="scroll-table-body">
@@ -75,27 +73,16 @@
                                         <tbody>
                                         <% for (var i = 0; i < forgottenFiles.length; i++) { %>
                                             <tr class="tableRow" title="<%= forgottenFiles[i].name %>">
-                                                <td class="contentCells">
+                                                <td>
                                                     <a class="stored-edit <%= forgottenFiles[i].documentType %> action-link" href="<%=forgottenFiles[i].url%>" target="_blank">
                                                         <span><%= forgottenFiles[i].name %></span>
                                                     </a>
                                                 </td>
-                                                <td class="contentCells contentCells-icon"></td>
-                                                <td class="contentCells contentCells-icon"></td>
-                                                <td class="contentCells contentCells-icon"></td>
-                                                <td class="contentCells contentCells-icon"></td>
-                                                <td class="contentCells contentCells-icon"></td>
-                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
-                                                <td class="contentCells contentCells-icon firstContentCellViewers"></td>
-                                                <td class="contentCells contentCells-icon"></td>
-                                                <td class="contentCells contentCells-icon contentCells-shift"></td>
-                                                <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">
+                                                <td>
                                                     <a href="<%=forgottenFiles[i].url%>">
                                                         <img class="icon-download" src="images/download.svg" alt="Download" title="Download" /></a>
-                                                </td>
-                                                <td class="contentCells contentCells-icon contentCells-shift">
                                                     <a class="delete-file" data="<%= encodeURIComponent(forgottenFiles[i].name) %>">
-                                                        <img class="icon-delete" src="images/delete.svg" alt="Delete" title="Delete" /></a>
+                                                        <img class="icon-action" src="images/delete.svg" alt="Delete" title="Delete" /></a>
                                                 </td>
                                             </tr>
                                         <% } %>
