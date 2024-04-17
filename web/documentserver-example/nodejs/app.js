@@ -154,11 +154,9 @@ app.get('/forgotten', async (req, res) => {
 app.delete('/forgotten', (req, res) => { // define a handler for removing forgotten file
   try {
     const fileName = req.query.filename;
-    if (fileName) { // if the forgotten file name is defined
+    if (fileName && typeof fileName === 'string') { // if the forgotten file name is defined
       documentService.commandRequest('deleteForgotten', fileName);
       res.status(204).send();
-    } else {
-      // TODO: add delete all forgotten files
     }
   } catch (ex) {
     console.log(ex);
