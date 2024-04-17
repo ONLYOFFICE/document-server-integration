@@ -77,7 +77,7 @@ function routers()
     }
     if (str_starts_with($path, '/forgotten')) {
         $method = $_SERVER['REQUEST_METHOD'];
-        switch($method) {
+        switch ($method) {
             case 'GET':
                 header('Content-Type: text/html; charset=utf-8');
                 $view = new ForgottenFilesView($_REQUEST);

@@ -49,7 +49,8 @@ final class ForgottenFilesView extends View
                 </td>
                 <td>
                     <a href="$file->url">
-                        <img class="icon-download" src="assets/images/download.svg" alt="Download" title="Download" /></a>
+                        <img class="icon-download" src="assets/images/download.svg" alt="Download" title="Download" />
+                    </a>
                     <a class="delete-file" data="$file->key">
                         <img class="icon-delete" src="assets/images/delete.svg" alt="Delete" title="Delete" /></a>
                 </td>
