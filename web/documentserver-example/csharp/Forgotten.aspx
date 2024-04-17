@@ -55,6 +55,16 @@
                         <td class="left-panel section"></td>
                         <td class="section">
                             <div class="main-panel">
+                                <menu class="links">
+                                    <li class="home-link" >
+                                    <a href="./">
+                                        <img src="app_themes/images/home.svg" alt="Home"/>
+                                    </a>
+                                    </li>
+                                    <li class="active">
+                                    <a href="/Forgotten.aspx">Forgotten files</a>
+                                    </li>
+                                </menu>
                                 <div class="stored-list">
                                     <div class="storedHeader">
                                         <div class="storedHeaderText">
