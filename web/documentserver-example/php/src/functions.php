@@ -379,13 +379,18 @@ function getStoredFiles()
  */
 function getForgottenFiles()
 {
-    $response = json_decode(commandRequest('getForgottenList', ''));
     $files = [];
-    foreach($response->keys as $key) {
-        $file = json_decode(commandRequest('getForgotten', $key));
-        $file->type = getDocumentType($file->url);
-        $files[] = $file;
+    $response = commandRequest('getForgottenList', '');
+
+    if ($response !== false) {
+        $response = json_decode($response);
+        foreach ($response->keys as $key) {
+            $file = json_decode(commandRequest('getForgotten', $key));
+            $file->type = getDocumentType($file->url);
+            $files[] = $file;
+        }
     }
+    
     return $files;
 }
 
