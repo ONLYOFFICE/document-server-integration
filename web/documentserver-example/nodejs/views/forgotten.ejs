@@ -130,31 +130,6 @@
         </div>
     </footer>
 
-    <script type="text/javascript" src="javascripts/jquery-3.6.4.min.js"></script>
-    <script>
-        jq = jQuery.noConflict();
-
-        jq(document).on("click", ".delete-file", function () {
-            const currentElement = jq(this);
-            var fileName = currentElement.attr("data");
-
-            var requestAddress = "forgotten?filename=" + fileName;
-
-            jq.ajax({
-                async: true,
-                contentType: "text/xml",
-                type: "delete",
-                url: requestAddress,
-                complete: function (data) {
-                    if (JSON.parse(data.responseText).success) {
-                        const parentRow = currentElement.parents('tr')[0];
-                        if (parentRow) {
-                            jq(parentRow).remove();
-                        }
-                    }
-                }
-            });
-        });
-    </script>
+    <script type="text/javascript" src="javascripts/forgotten.js"></script>
 </body>
 </html>
