@@ -709,17 +709,32 @@ app.put('/restore', async (req, res) => { // define a handler for restore file v
   res.end();
 });
 
+app.post('/forcesave', async (req, res) => {
+  req.DocManager = new DocManager(req, res);
+
+  const uAddress = req.query.useraddress;
+  const fName = fileUtility.getFileName(req.query.filename);
+
+  if (req.headers['content-type'] === 'application/octet-stream') {
+    if (!req.body) {
+      res.write('{"error":1, "message":"document data is empty"}');
+      res.end();
+    }
+    await req.DocManager.forcesaveFile(req.body, fName, fileUtility.getFileExtension(fName), uAddress);
+    res.write('{"error":0}');
+    res.end();
+  } else {
+    res.write('{"error":0}');
+    res.end();
+  }
+});
+
 app.post('/track', async (req, res) => { // define a handler for tracking file changes
   req.DocManager = new DocManager(req, res);
 
   let uAddress = req.query.useraddress;
   let fName = fileUtility.getFileName(req.query.filename);
   let version = 0;
-
-  if (req.headers['content-type'] === 'application/octet-stream') {
-    fileSystem.writeFileSync(req.DocManager.storagePath(fName, uAddress), req.body);
-    return;
-  }
 
   // track file changes
   const processTrack = async function processTrack(response, bodyTrack, fileNameTrack, userAddressTrack) {
@@ -863,64 +878,8 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
 
         const downloadExt = `.${body.fileType}`;
         const isSubmitForm = body.forcesavetype === 3; // SubmitForm
-        let correctName = fileName;
-        let forcesavePath = '';
 
-        if (isSubmitForm) {
-          // new file
-          if (newFileName) {
-            correctName = req.DocManager.getCorrectName(
-              `${fileUtility.getFileName(fileName, true)}-form${downloadExt}`,
-              userAddress,
-            );
-          } else {
-            const ext = fileUtility.getFileExtension(fileName);
-            correctName = req.DocManager.getCorrectName(
-              `${fileUtility.getFileName(fileName, true)}-form${ext}`,
-              userAddress,
-            );
-          }
-          forcesavePath = req.DocManager.storagePath(correctName, userAddress);
-        } else {
-          if (newFileName) {
-            correctName = req.DocManager.getCorrectName(fileUtility.getFileName(
-              fileName,
-              true,
-            ) + downloadExt, userAddress);
-          }
-          // create forcesave path if it doesn't exist
-          forcesavePath = req.DocManager.forcesavePath(correctName, userAddress, false);
-          if (forcesavePath === '') {
-            forcesavePath = req.DocManager.forcesavePath(correctName, userAddress, true);
-          }
-        }
-
-        fileSystem.writeFileSync(forcesavePath, data);
-
-        if (isSubmitForm) {
-          const uid = body.actions[0].userid;
-          req.DocManager.saveFileData(correctName, uid, 'Filling Form', userAddress);
-
-          const { formsdataurl } = body;
-          if (formsdataurl) {
-            const formsdataName = req.DocManager.getCorrectName(
-              `${fileUtility.getFileName(correctName, true)}.txt`,
-              userAddress,
-            );
-            // get the path to the file with forms data
-            const formsdataPath = req.DocManager.storagePath(formsdataName, userAddress);
-            const formsdata = await urllib.request(formsdataurl, { method: 'GET' });
-            const statusFormsdata = formsdata.status;
-            const dataFormsdata = formsdata.data;
-            if (statusFormsdata === 200) {
-              fileSystem.writeFileSync(formsdataPath, dataFormsdata); // write the forms data
-            } else {
-              emitWarning(`Document editing service returned status: ${statusFormsdata}`);
-            }
-          } else {
-            emitWarning('Document editing service do not returned formsdataurl');
-          }
-        }
+        await req.DocManager.forcesaveFile(data, fileName, downloadExt, userAddress, body, newFileName, isSubmitForm);
       } catch (ex) {
         console.log(ex);
         response.write(`{"error":1,"message":${JSON.stringify(ex)}}`);
@@ -1100,6 +1059,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     req.DocManager = new DocManager(req, res);
 
     let { fileExt } = req.query;
+    const fromBuffer = req.query.fromBuffer === 'true';
     const user = users.getUser(req.query.userid);
     const userid = user.id;
     const { name } = user;
@@ -1210,12 +1170,14 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     // file config data
     const argss = {
-      documentData: fileSystem.readFileSync(req.DocManager.storagePath(fileName, userAddress)).toString('base64'),
+      documentData: fromBuffer
+        ? fileSystem.readFileSync(req.DocManager.storagePath(fileName, userAddress)).toString('base64')
+        : '',
       apiUrl: siteUrl + configServer.get('apiUrl'),
       file: {
         name: fileName,
         ext: fileUtility.getFileExtension(fileName, true),
-        uri: '_data_',
+        uri: fromBuffer ? '_data_' : url,
         directUrl: !userDirectUrl ? null : directUrl,
         uriUser: directUrl,
         created: new Date().toDateString(),
@@ -1226,7 +1188,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         documentType: fileUtility.getFileType(fileName),
         key,
         token: '',
-        callbackUrl: req.DocManager.getCallback(fileName),
+        callbackUrl: req.DocManager.getCallback(fileName, fromBuffer),
         createUrl: userid !== 'uid-0' ? createUrl : null,
         templates: user.templates ? templates : null,
         isEdit: canEdit && (mode === 'edit' || mode === 'view' || mode === 'filter' || mode === 'blockcontent'),

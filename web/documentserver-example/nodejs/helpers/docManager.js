@@ -18,6 +18,8 @@
 
 const path = require('path');
 const fileSystem = require('fs');
+const urllib = require('urllib');
+const { emitWarning } = require('process');
 const configServer = require('config').get('server');
 const fileUtility = require('./fileUtility');
 const documentService = require('./documentService');
@@ -203,11 +205,12 @@ DocManager.prototype.getProtocol = function getProtocol() {
 };
 
 // get callback url
-DocManager.prototype.getCallback = function getCallback(fileName) {
+DocManager.prototype.getCallback = function getCallback(fileName, fromBuffer = false) {
   const server = this.getServerUrl(true);
   const hostAddress = this.curUserHostAddress();
+  const route = fromBuffer ? '/forcesave' : '/track';
   // get callback handler
-  const handler = `/track?filename=${encodeURIComponent(fileName)}&useraddress=${encodeURIComponent(hostAddress)}`;
+  const handler = `${route}?filename=${encodeURIComponent(fileName)}&useraddress=${encodeURIComponent(hostAddress)}`;
 
   return server + handler;
 };
@@ -267,6 +270,75 @@ DocManager.prototype.forcesavePath = function forcesavePath(fileName, userAddres
     return '';
   }
   return directory;
+};
+
+DocManager.prototype.forcesaveFile = async function forcesaveFile(
+  data,
+  fileName,
+  downloadExt,
+  userAddress,
+  body = null,
+  newFileName = false,
+  isSubmitForm = false,
+) {
+  let correctName = fileName;
+  let forcesavePath = '';
+
+  if (isSubmitForm) {
+    // new file
+    if (newFileName) {
+      correctName = this.getCorrectName(
+        `${fileUtility.getFileName(fileName, true)}-form${downloadExt}`,
+        userAddress,
+      );
+    } else {
+      const ext = fileUtility.getFileExtension(fileName);
+      correctName = this.getCorrectName(
+        `${fileUtility.getFileName(fileName, true)}-form${ext}`,
+        userAddress,
+      );
+    }
+    forcesavePath = this.storagePath(correctName, userAddress);
+  } else {
+    if (newFileName) {
+      correctName = this.getCorrectName(fileUtility.getFileName(
+        fileName,
+        true,
+      ) + downloadExt, userAddress);
+    }
+    // create forcesave path if it doesn't exist
+    forcesavePath = this.forcesavePath(correctName, userAddress, false);
+    if (forcesavePath === '') {
+      forcesavePath = this.forcesavePath(correctName, userAddress, true);
+    }
+  }
+
+  fileSystem.writeFileSync(forcesavePath, data);
+
+  if (isSubmitForm) {
+    const uid = body.actions[0].userid;
+    this.saveFileData(correctName, uid, 'Filling Form', userAddress);
+
+    const { formsdataurl } = body;
+    if (formsdataurl) {
+      const formsdataName = this.getCorrectName(
+        `${fileUtility.getFileName(correctName, true)}.txt`,
+        userAddress,
+      );
+      // get the path to the file with forms data
+      const formsdataPath = this.storagePath(formsdataName, userAddress);
+      const formsdata = await urllib.request(formsdataurl, { method: 'GET' });
+      const statusFormsdata = formsdata.status;
+      const dataFormsdata = formsdata.data;
+      if (statusFormsdata === 200) {
+        fileSystem.writeFileSync(formsdataPath, dataFormsdata); // write the forms data
+      } else {
+        emitWarning(`Document editing service returned status: ${statusFormsdata}`);
+      }
+    } else {
+      emitWarning('Document editing service do not returned formsdataurl');
+    }
+  }
 };
 
 // create the path to the file history
