@@ -14,6 +14,7 @@
     <link rel="stylesheet" type="text/css" href="assets/css/stylesheet.css" />
     <link rel="stylesheet" type="text/css" href="assets/css/media.css">
     <link rel="stylesheet" type="text/css" href="assets/css/jquery-ui.css" />
+    <script type="module" src="assets/components/web-components.js"></script>
 </head>
 <body>
 <form id="form1">
@@ -124,9 +125,8 @@
                                         editing functions.
                                     </span>
                             {userDescr}
-                            </div>
-                            {storedList}
                         </div>
+                        <div id="file-manager" style="height:100%;"></div>
                 </td>
             </tr>
             </tbody>
