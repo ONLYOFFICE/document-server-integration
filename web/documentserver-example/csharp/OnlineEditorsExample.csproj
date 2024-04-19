@@ -77,6 +77,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Themes\forgotten.css" />
     <Content Include="App_Themes\images\block-content.svg" />
     <Content Include="App_Themes\images\cell.ico" />
     <Content Include="App_Themes\images\close.svg" />
@@ -94,6 +95,7 @@
     <Content Include="App_Themes\images\file_xlsx.svg" />
     <Content Include="App_Themes\images\fill-forms.svg" />
     <Content Include="App_Themes\images\filter.svg" />
+    <Content Include="App_Themes\images\home.svg" />
     <Content Include="App_Themes\images\icon_docx.svg" />
     <Content Include="App_Themes\images\icon_pptx.svg" />
     <Content Include="App_Themes\images\icon_xlsx.svg" />
@@ -104,10 +106,16 @@
     <Content Include="App_Themes\images\notdone.svg" />
     <Content Include="App_Themes\images\review.svg" />
     <Content Include="App_Themes\images\slide.ico" />
+    <Content Include="App_Themes\images\uid-1.png" />
+    <Content Include="App_Themes\images\uid-2.png" />
     <Content Include="App_Themes\images\word.ico" />
     <Content Include="App_Themes\media.css" />
+    <Content Include="Forgotten.aspx" />
     <Content Include="LICENSE" />
-    <Content Include="licenses\jquery.license" />
+    <Content Include="script\forgotten.js" />
+    <Content Include="script\formats.js" />
+    <Content Include="script\jquery-3.6.4.min.js" />
+    <Content Include="script\jquery-migrate-3.4.1.min.js" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -119,6 +127,12 @@
       <DependentUpon>DocEditor.aspx</DependentUpon>
     </Compile>
     <Compile Include="DocumentConverter.cs" />
+    <Compile Include="Forgotten.aspx.cs">
+      <DependentUpon>Forgotten.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Forgotten.aspx.designer.cs">
+      <DependentUpon>Forgotten.aspx</DependentUpon>
+    </Compile>
     <Compile Include="FormatManager.cs" />
     <Compile Include="JwtManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
