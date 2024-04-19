@@ -381,6 +381,7 @@
             config.events.onRequestHistoryData = onRequestHistoryData;
             config.events.onRequestRename = onRequestRename;
             config.events.onRequestUsers = onRequestUsers;
+            config.events.onRequestSaveAs = onRequestSaveAs;
             config.events.onRequestSendNotify = onRequestSendNotify;
             config.events.onRequestReferenceData = onRequestReferenceData;
             config.events.onRequestReferenceSource = onRequestReferenceSource;
@@ -388,10 +389,6 @@
                 config.events.onRequestHistoryClose = onRequestHistoryClose;
                 config.events.onRequestRestore = onRequestRestore;
             }
-        }
-
-        if (config.editorConfig.createUrl) {
-            config.events.onRequestSaveAs = onRequestSaveAs;
         }
 
         try {

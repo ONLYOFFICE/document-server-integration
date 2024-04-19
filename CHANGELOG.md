@@ -1,5 +1,6 @@
 # Change Log
 
+- save as for pdf
 - fill permission in embedded mode
 - delete all files
 - handling conversion -9 error
