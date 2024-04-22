@@ -118,8 +118,8 @@
                                 <img src="css/img/home.svg" alt="Home"/>
                               </a>
                             </li>
-                            <li>
-                              <a href="/forgotten">Forgotten files</a>
+                            <li th:if="${enableForgotten}">
+                                <a href="/forgotten">Forgotten files</a>
                             </li>
                         </menu>
                         <div id="portal-info" th:attr="tooltip=${tooltip}" th:style="${not #lists.isEmpty(files)} ? 'display: none' : 'display: table-cell' ">

@@ -47,11 +47,19 @@ public class ForgottenController {
     @Value("${server.version}")
     private String serverVersion;
 
+    @Value("${enable-forgotten}")
+    private String enableForgotten;
+
     @Autowired
     private CallbackManager callbackManager;
 
     @GetMapping("${url.forgotten}")
     public String index(final Model model) {
+        if (!forgottenEnabled()) {
+            model.addAttribute("error", "The forgotten page is disabled");
+            return "error.html";
+        }
+
         model.addAttribute("files", getForgottenFiles());
         model.addAttribute("serverVersion", serverVersion);
 
@@ -83,8 +91,16 @@ public class ForgottenController {
         return files;
     }
 
+    private boolean forgottenEnabled() {
+        return Boolean.valueOf(enableForgotten);
+    }
+
     @DeleteMapping("/forgotten/{filename}")
     public ResponseEntity<String> delete(@PathVariable("filename") final String filename) {
+        if (!forgottenEnabled()) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         try {
             callbackManager.commandRequest("deleteForgotten", filename, null);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
