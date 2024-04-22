@@ -464,7 +464,6 @@
             "onRequestSelectDocument": onRequestSelectDocument,
             "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
             "onRequestOpen": onRequestOpen,
-            "onSaveDocument": onSaveDocument,
         };
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
@@ -487,6 +486,10 @@
                 config.events.onRequestHistoryClose = onRequestHistoryClose;
                 config.events.onRequestRestore = onRequestRestore;
             }
+        }
+
+        if (config.document.url === "_data_") {
+            config.events.onSaveDocument = onSaveDocument;
         }
 
         try {
