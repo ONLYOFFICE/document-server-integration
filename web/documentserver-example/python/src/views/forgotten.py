@@ -20,13 +20,16 @@ from django.shortcuts import render
 
 from src.configuration import ConfigurationManager
 from src.utils import trackManager, fileUtils
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseForbidden
 import json
 
 config_manager = ConfigurationManager()
 
 
 def default(request):  # default parameters that will be passed to the template
+    if not config_manager.enable_forgotten():
+        return HttpResponseForbidden()
+
     context = {
         'files': getForgottenFiles(),  # information about stored files
         'serverVersion': config_manager.getVersion()
@@ -53,6 +56,9 @@ def getForgottenFiles():
 
 # delete a forgotten file from the document server
 def delete(request):
+    if not config_manager.enable_forgotten():
+        return HttpResponseForbidden()
+
     response = {}
     status = 204
 

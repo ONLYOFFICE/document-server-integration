@@ -120,9 +120,11 @@
                                         <img src="{% static "images/home.svg" %}" alt="Home"/>
                                 </a>
                                 </li>
-                                <li>
-                                    <a href="forgotten">Forgotten files</a>
-                                </li>
+                                {% if enableForgotten %}
+                                    <li>
+                                        <a href="forgotten">Forgotten files</a>
+                                    </li>
+                                {% endif %}
                             </menu>
                         {% if files %}
                             <div id="portal-info" style="display: none">

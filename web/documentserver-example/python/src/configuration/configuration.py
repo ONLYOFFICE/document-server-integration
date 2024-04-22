@@ -121,6 +121,9 @@ class ConfigurationManager:
             return int(timeout)
         return 120 * 1000
 
+    def enable_forgotten(self) -> bool:
+        return environ.get('ENABLE_FORGOTTEN', True)
+
     def languages(self) -> dict[str, str]:
         return {
             'en': 'English',
