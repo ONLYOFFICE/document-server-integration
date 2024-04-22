@@ -119,6 +119,8 @@ app.get('/forgotten', async (req, res) => {
     return;
   }
 
+  let forgottenFiles = [];
+
   function getForgottenList() {
     return new Promise((resolve, reject) => {
       documentService.commandRequest('getForgottenList', '', (err, data, ress) => {
@@ -152,14 +154,13 @@ app.get('/forgotten', async (req, res) => {
     const forgottenListResponse = await getForgottenList();
 
     const { keys } = forgottenListResponse;
-    const forgottenFiles = await Promise.all(keys.map(getForgottenFile));
-
-    req.DocManager = new DocManager(req, res);
-    res.render('forgotten', { forgottenFiles });
+    forgottenFiles = await Promise.all(keys.map(getForgottenFile));
   } catch (error) {
     console.error(error);
-    res.status(500).render('error', { message: 'Server error' });
   }
+
+  req.DocManager = new DocManager(req, res);
+  res.render('forgotten', { forgottenFiles });
 });
 
 app.delete('/forgotten', (req, res) => { // define a handler for removing forgotten file
