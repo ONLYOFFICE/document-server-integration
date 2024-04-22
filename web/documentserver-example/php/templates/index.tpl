@@ -109,9 +109,7 @@
                                     <img src="assets/images/home.svg" alt="Home"/>
                             </a>
                             </li>
-                            <li>
-                                <a href="forgotten">Forgotten files</a>
-                            </li>
+                            {forgottenLink}
                         </menu>
                         <div id="portal-info" style="display: {portalInfoDisplay}">
                             <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>

@@ -157,6 +157,12 @@ class ConfigurationManager
         return intval($timeout);
     }
 
+    public function enableForgotten(): bool
+    {
+        $enableForgotten = getenv('ENABLE_FORGOTTEN');
+        return $enableForgotten !== false ? boolval($enableForgotten) : true;
+    }
+
     /**
      * @return string[]
      */

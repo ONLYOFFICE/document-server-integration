@@ -76,6 +76,12 @@ function routers()
         return;
     }
     if (str_starts_with($path, '/forgotten')) {
+        $configManager = new ConfigurationManager();
+        if (!$configManager->enableForgotten()) {
+            http_response_code(403);
+            return;
+        }
+
         $method = $_SERVER['REQUEST_METHOD'];
         switch ($method) {
             case 'GET':
