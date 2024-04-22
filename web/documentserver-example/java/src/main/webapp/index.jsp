@@ -131,9 +131,11 @@
                                         <img src="css/img/home.svg" alt="Home"/>
                                       </a>
                                     </li>
-                                    <li>
-                                      <a href="/ForgottenServlet">Forgotten files</a>
-                                    </li>
+                                    <% if (Boolean.valueOf(ConfigManager.getProperty("enable-forgotten"))) { %>
+                                        <li>
+                                            <a href="/ForgottenServlet">Forgotten files</a>
+                                        </li>
+                                    <% } %>
                                 </menu>
                                 <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>

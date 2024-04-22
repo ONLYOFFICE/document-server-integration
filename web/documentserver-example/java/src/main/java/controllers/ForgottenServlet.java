@@ -24,6 +24,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONArray;
 import entities.ForgottenFile;
 import helpers.FileUtility;
+import helpers.ConfigManager;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -40,6 +41,15 @@ import java.util.ArrayList;
 public class ForgottenServlet extends HttpServlet {
     protected void processRequest(final HttpServletRequest request,
                                   final HttpServletResponse response) throws ServletException, IOException {
+        // create a variable to display information about the application and error messages
+        PrintWriter writer = response.getWriter();
+
+        if (!Boolean.valueOf(ConfigManager.getProperty("enable-forgotten"))) {
+            writer.write("{ \"error\": \"The forgotten page is disabled\"}");
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            return;
+        }
+
         // get the type parameter from the request
         String action = request.getParameter("type");
 
@@ -49,9 +59,6 @@ public class ForgottenServlet extends HttpServlet {
             request.getRequestDispatcher("forgotten.jsp").forward(request, response);
             return;
         }
-
-        // create a variable to display information about the application and error messages
-        PrintWriter writer = response.getWriter();
 
         // define functions for each type of operation
         switch (action.toLowerCase()) {
