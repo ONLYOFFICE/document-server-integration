@@ -82,6 +82,7 @@
         };
 
         var onSaveDocument = function (event) {
+            if (config.document.url !== "_data_") return;
             let xhr = new XMLHttpRequest();
             xhr.open("POST", config.editorConfig.callbackUrl);
             xhr.setRequestHeader('Content-Type', 'application/octet-stream');
