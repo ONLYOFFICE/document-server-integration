@@ -108,9 +108,11 @@
                   <img src="assets/home.svg" alt="Home"/>
                 </a>
               </li>
-              <li>
-                <a href="forgotten">Forgotten files</a>
-              </li>
+              <% if ConfigurationManager.new.enable_forgotten %>
+                <li>
+                  <a href="forgotten">Forgotten files</a>
+                </li>
+              <% end %>
             </menu>
             <div id="portal-info" style="display: <%= docs.length > 0 ? "none" : "table-cell" %>">
               <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
