@@ -19,7 +19,7 @@
 <form id="form1">
     <header>
         <div class="center">
-            <a href="">
+            <a href="./">
                 <img src ="assets/images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>

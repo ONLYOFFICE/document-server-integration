@@ -39,7 +39,7 @@
     <body>
         <header>
             <div class="center">
-                <a href="">
+                <a href="./">
                     <img src ="css/img/logo.svg" alt="ONLYOFFICE" />
                 </a>
             </div>

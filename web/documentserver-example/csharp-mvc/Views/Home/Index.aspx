@@ -42,7 +42,7 @@
 <body>
     <header>
         <div class="center">
-            <a href="">
+            <a href="./">
                 <img src ="content/images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>

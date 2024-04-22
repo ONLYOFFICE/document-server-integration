@@ -46,7 +46,7 @@
     <form id="form1" runat="server">
         <header>
             <div class="center">
-                <a href="">
+                <a href="./">
                     <img src ="app_themes/images/logo.svg" alt="ONLYOFFICE" />
                 </a>
             </div>
