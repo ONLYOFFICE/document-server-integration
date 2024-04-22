@@ -8,8 +8,8 @@
 
 .main-panel {
     width: 832px;
-    padding: 0;
-    margin: 48px 0 48px 32px;
+    margin: 0 32px;
+    padding: 48px 0;
     left: 0;
 }
 
@@ -66,7 +66,7 @@ menu.links {
 }
 
 .stored-list {
-    height: calc(100% - 150px)
+    height: calc(100% - 58px);
 }
 
 header {
@@ -76,7 +76,7 @@ header {
 header a {
     display: block;
     margin: 0 auto;
-    width: 1120px;
+    width: 1152px;
 }
 
 @media (max-width: 1279px) and (min-width: 1024px) {
@@ -139,7 +139,8 @@ header a {
 
     .main-panel {
         width: calc(100% - 32px);
-        margin: 16px;
+        margin: 0 16px;
+        padding: 16px 0;
     }
 
     .tableHeader td:last-child, .tableRow td:last-child {
