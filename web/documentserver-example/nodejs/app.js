@@ -114,7 +114,7 @@ app.get('/forgotten', async (req, res) => {
     res.status(403);
     res.render(
       'error',
-      { message: 'The forgotten page is disabled.' }
+      { message: 'The forgotten page is disabled.' },
     );
     return;
   }

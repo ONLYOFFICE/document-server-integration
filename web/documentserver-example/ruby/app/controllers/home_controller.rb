@@ -75,25 +75,6 @@ class HomeController < ApplicationController
     render(plain: '{"error": "Server error"}')
   end
 
-  def forgotten
-    @files = []
-    files_list = TrackHelper.command_request('getForgottenList', '')
-    (files_list['keys']).each do |key|
-      file = TrackHelper.command_request('getForgotten', key)
-      file['type'] = FileUtility.get_file_type(file['url'])
-      @files.push(file)
-    end
-  end
-
-  def delete_forgotten
-    if params[:filename].present?
-      TrackHelper.command_request('deleteForgotten', params[:filename])
-    end
-    render(status: :no_content)
-  rescue StandardError
-    render(plain: '{"error": "Server error"}')
-  end
-
   # creating a sample document
   def sample
     DocumentHelper.init(request.remote_ip, request.base_url)
