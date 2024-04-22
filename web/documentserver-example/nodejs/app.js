@@ -87,7 +87,6 @@ app.use(favicon(`${__dirname}/public/images/favicon.ico`)); // use favicon
 
 app.use(bodyParser.json()); // connect middleware that parses json
 app.use(bodyParser.urlencoded({ extended: false })); // connect middleware that parses urlencoded bodies
-app.use(bodyParser.raw({ type: '*/*' }));
 
 app.get('/', (req, res) => { // define a handler for default page
   try {
@@ -716,13 +715,20 @@ app.post('/forcesave', async (req, res) => {
   const fName = fileUtility.getFileName(req.query.filename);
 
   if (req.headers['content-type'] === 'application/octet-stream') {
-    if (!req.body) {
-      res.write('{"error":1, "message":"document data is empty"}');
+    const form = new formidable.IncomingForm();
+    form.parse(req, async (err, fields, files) => {
+      if (err) {
+        res.write('{"error":1, "message":"document data is empty"}');
+        res.end();
+        return;
+      }
+      const filePath = files.file.path;
+      const data = fileSystem.readFileSync(filePath);
+      await req.DocManager.forcesaveFile(data, fName, fileUtility.getFileExtension(fName), uAddress);
+      fileSystem.unlinkSync(filePath);
+      res.write('{"error":0}');
       res.end();
-    }
-    await req.DocManager.forcesaveFile(req.body, fName, fileUtility.getFileExtension(fName), uAddress);
-    res.write('{"error":0}');
-    res.end();
+    });
   } else {
     res.write('{"error":0}');
     res.end();
