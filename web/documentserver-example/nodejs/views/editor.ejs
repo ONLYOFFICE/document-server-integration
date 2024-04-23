@@ -83,7 +83,7 @@
 
         var onSaveDocument = function (event) {
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", config.editorConfig.callbackUrl);
+            xhr.open("POST", "<%- bufferCallback %>");
             xhr.setRequestHeader('Content-Type', 'application/octet-stream');
             xhr.send(event.data);
         }
