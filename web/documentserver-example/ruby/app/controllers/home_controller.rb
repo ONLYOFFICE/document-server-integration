@@ -53,11 +53,15 @@ class HomeController < ApplicationController
     end
 
     @files = []
-    files_list = TrackHelper.command_request('getForgottenList', '')
-    (files_list['keys']).each do |key|
-      file = TrackHelper.command_request('getForgotten', key)
-      file['type'] = FileUtility.get_file_type(file['url'])
-      @files.push(file)
+    begin
+      files_list = TrackHelper.command_request('getForgottenList', '')
+      (files_list['keys']).each do |key|
+        file = TrackHelper.command_request('getForgotten', key)
+        file['type'] = FileUtility.get_file_type(file['url'])
+        @files.push(file)
+      end
+    rescue StandardError => e
+      Rails.logger.error(e.message)
     end
   end
 
