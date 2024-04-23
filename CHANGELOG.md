@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: docxf, oform as pdf documentType
 - switching from filling to editing
 - nodejs: creating pdf instead docxf
 - fill permission in embedded mode
