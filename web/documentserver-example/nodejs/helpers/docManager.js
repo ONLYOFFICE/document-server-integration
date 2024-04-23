@@ -341,6 +341,60 @@ DocManager.prototype.forcesaveFile = async function forcesaveFile(
   }
 };
 
+DocManager.prototype.saveFile = async function saveFile(fileName, newFileName, userAddress, body, data = null) {
+  const storagePath = this.storagePath(newFileName, userAddress);
+
+  let historyPath = this.historyPath(newFileName, userAddress); // get the path to the history data
+  if (historyPath === '') { // if the history path doesn't exist
+    historyPath = this.historyPath(newFileName, userAddress, true); // create it
+    this.createDirectory(historyPath); // and create a directory for the history data
+  }
+
+  const countVersion = this.countVersion(historyPath); // get the next file version number
+  const version = countVersion + 1;
+  // get the path to the specified file version
+  const versionPath = this.versionPath(newFileName, userAddress, version);
+  this.createDirectory(versionPath); // create a directory to the specified file version
+
+  const downloadZip = body.changesurl;
+  if (downloadZip) {
+    // get the path to the file with document versions differences
+    const pathChanges = this.diffPath(newFileName, userAddress, version);
+    const zip = await urllib.request(downloadZip, { method: 'GET' });
+    const statusZip = zip.status;
+    const dataZip = zip.data;
+    if (statusZip === 200) {
+      fileSystem.writeFileSync(pathChanges, dataZip); // write the document version differences to the archive
+    } else {
+      emitWarning(`Document editing service returned status: ${statusZip}`);
+    }
+  }
+
+  const changeshistory = body.changeshistory || JSON.stringify(body.history);
+  if (changeshistory) {
+    // get the path to the file with document changes
+    const pathChangesJson = this.changesPath(newFileName, userAddress, version);
+    fileSystem.writeFileSync(pathChangesJson, changeshistory); // and write this data to the path in json format
+  }
+
+  const pathKey = this.keyPath(newFileName, userAddress, version); // get the path to the key.txt file
+  fileSystem.writeFileSync(pathKey, body.key); // write the key value to the key.txt file
+
+  // get the path to the previous file version
+  const pathPrev = path.join(versionPath, `prev${fileUtility.getFileExtension(fileName)}`);
+  // and write it to the current path
+  fileSystem.renameSync(this.storagePath(fileName, userAddress), pathPrev);
+
+  // get the path to the forcesaved file
+  const forcesavePath = this.forcesavePath(newFileName, userAddress, false);
+  if (forcesavePath !== '') { // if this path is not empty
+    if (data === null) fileSystem.writeFileSync(storagePath, fileSystem.readFileSync(forcesavePath));
+    fileSystem.unlinkSync(forcesavePath); // remove it
+  }
+
+  if (data !== null) fileSystem.writeFileSync(storagePath, data);
+};
+
 // create the path to the file history
 DocManager.prototype.historyPath = function historyPath(fileName, userAddress, create) {
   let directory = this.storageRootPath(userAddress);
