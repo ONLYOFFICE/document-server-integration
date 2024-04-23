@@ -131,9 +131,11 @@
                                     <img src="content/images/home.svg" alt="Home"/>
                                   </a>
                                 </li>
-                                <li>
-                                  <a href="/Forgotten">Forgotten files</a>
-                                </li>
+                                <% if (bool.Parse(WebConfigurationManager.AppSettings["enable-forgotten"])) { %>
+                                    <li>
+                                        <a href="/Forgotten">Forgotten files</a>
+                                    </li>
+                                <% } %>
                             </menu>
                             <% var storedFiles = DocManagerHelper.GetStoredFiles(); %>
                             <div id="portal-info"  style="display: <%= storedFiles.Any() ? "none" : "table-cell" %>">

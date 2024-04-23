@@ -23,6 +23,7 @@ using System.IO;
 using System.Web.Mvc;
 using OnlineEditorsExampleMVC.Helpers;
 using OnlineEditorsExampleMVC.Models;
+using System.Web.Configuration;
 
 namespace OnlineEditorsExampleMVC.Controllers
 {
@@ -35,6 +36,12 @@ namespace OnlineEditorsExampleMVC.Controllers
 
         public ActionResult Forgotten()
         {
+            if (!bool.Parse(WebConfigurationManager.AppSettings["enable-forgotten"]))
+            {
+                ViewData["Message"] = "The forgotten page is disabled";
+                return View("~/Views/Shared/Error.aspx");
+            }
+
             var files = new List<Dictionary<string, string>>();
 
             var response = TrackManager.commandRequest("getForgottenList", null);
