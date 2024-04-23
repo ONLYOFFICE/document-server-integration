@@ -134,9 +134,11 @@
                                         <img src="app_themes/images/home.svg" alt="Home"/>
                                       </a>
                                     </li>
-                                    <li>
-                                      <a href="/Forgotten.aspx">Forgotten files</a>
-                                    </li>
+                                    <% if (bool.Parse(WebConfigurationManager.AppSettings["enable-forgotten"])) { %>
+                                        <li>
+                                            <a href="/Forgotten.aspx">Forgotten files</a>
+                                        </li>
+                                    <% } %>
                                 </menu>
                                 <div id="portal-info" style="display: <%= storedFiles.Any() ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>

@@ -53,7 +53,15 @@ namespace OnlineEditorsExample
             return "word";  // the default document type is word
         }
 
-        protected void Page_Load(object sender, EventArgs e) { }
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            if (!bool.Parse(WebConfigurationManager.AppSettings["enable-forgotten"]))
+            {
+                Response.Clear();
+                Response.StatusCode = 403;
+                Response.End();
+            }
+        }
 
         // fetch forgotten files from the document server
         public static List<Dictionary<string, string>> GetForgottenFiles()

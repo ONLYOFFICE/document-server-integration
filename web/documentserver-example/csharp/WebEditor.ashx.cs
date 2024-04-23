@@ -820,6 +820,11 @@ namespace OnlineEditorsExample
         {
             try
             {
+                if (!bool.Parse(WebConfigurationManager.AppSettings["enable-forgotten"]))
+                {
+                    throw new HttpException(403, "The forgotten page is disabled");
+                }
+
                 string filename = context.Request["filename"];
 
                 if (!String.IsNullOrEmpty(filename))
