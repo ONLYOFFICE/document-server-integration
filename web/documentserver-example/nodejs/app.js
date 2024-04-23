@@ -28,7 +28,6 @@ const config = require('config');
 const mime = require('mime');
 const urllib = require('urllib');
 const urlModule = require('url');
-const { emitWarning } = require('process');
 const DocManager = require('./helpers/docManager');
 const documentService = require('./helpers/documentService');
 const fileUtility = require('./helpers/fileUtility');
@@ -740,7 +739,6 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
 
   let uAddress = req.query.useraddress;
   let fName = fileUtility.getFileName(req.query.filename);
-  let version = 0;
 
   // track file changes
   const processTrack = async function processTrack(response, bodyTrack, fileNameTrack, userAddressTrack) {
@@ -765,56 +763,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
 
         if (status !== 200) throw new Error(`Document editing service returned status: ${status}`);
 
-        const storagePath = req.DocManager.storagePath(newFileName, userAddress);
-
-        let historyPath = req.DocManager.historyPath(newFileName, userAddress); // get the path to the history data
-        if (historyPath === '') { // if the history path doesn't exist
-          historyPath = req.DocManager.historyPath(newFileName, userAddress, true); // create it
-          req.DocManager.createDirectory(historyPath); // and create a directory for the history data
-        }
-
-        const countVersion = req.DocManager.countVersion(historyPath); // get the next file version number
-        version = countVersion + 1;
-        // get the path to the specified file version
-        const versionPath = req.DocManager.versionPath(newFileName, userAddress, version);
-        req.DocManager.createDirectory(versionPath); // create a directory to the specified file version
-
-        const downloadZip = body.changesurl;
-        if (downloadZip) {
-          // get the path to the file with document versions differences
-          const pathChanges = req.DocManager.diffPath(newFileName, userAddress, version);
-          const zip = await urllib.request(downloadZip, { method: 'GET' });
-          const statusZip = zip.status;
-          const dataZip = zip.data;
-          if (statusZip === 200) {
-            fileSystem.writeFileSync(pathChanges, dataZip); // write the document version differences to the archive
-          } else {
-            emitWarning(`Document editing service returned status: ${statusZip}`);
-          }
-        }
-
-        const changeshistory = JSON.stringify(body.history);
-        if (changeshistory) {
-          // get the path to the file with document changes
-          const pathChangesJson = req.DocManager.changesPath(newFileName, userAddress, version);
-          fileSystem.writeFileSync(pathChangesJson, changeshistory); // and write this data to the path in json format
-        }
-
-        const pathKey = req.DocManager.keyPath(newFileName, userAddress, version); // get the path to the key.txt file
-        fileSystem.writeFileSync(pathKey, body.key); // write the key value to the key.txt file
-
-        // get the path to the previous file version
-        const pathPrev = path.join(versionPath, `prev${fileUtility.getFileExtension(fileName)}`);
-        // and write it to the current path
-        fileSystem.renameSync(req.DocManager.storagePath(fileName, userAddress), pathPrev);
-
-        fileSystem.writeFileSync(storagePath, data);
-
-        // get the path to the forcesaved file
-        const forcesavePath = req.DocManager.forcesavePath(newFileName, userAddress, false);
-        if (forcesavePath !== '') { // if this path is empty
-          fileSystem.unlinkSync(forcesavePath); // remove it
-        }
+        await req.DocManager.saveFile(fileName, newFileName, userAddress, body, data);
       } catch (ex) {
         console.log(ex);
         response.setHeader('Content-Type', 'application/json');
@@ -946,6 +895,9 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
             console.log(ex);
           }
         }
+      }
+      if (bodyTrack.users.length <= 0 && req.DocManager.forcesavePath(fName, uAddress, false)) {
+        await req.DocManager.saveFile(fName, fName, uAddress, bodyTrack);
       }
     } else if (bodyTrack.status === 2 || bodyTrack.status === 3) { // MustSave, Corrupted
       await processSave(bodyTrack.url, bodyTrack, fileNameTrack, userAddressTrack); // save file
@@ -1179,6 +1131,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       documentData: fromBuffer
         ? fileSystem.readFileSync(req.DocManager.storagePath(fileName, userAddress)).toString('base64')
         : '',
+      bufferCallback: req.DocManager.getCallback(fileName, fromBuffer),
       apiUrl: siteUrl + configServer.get('apiUrl'),
       file: {
         name: fileName,
@@ -1194,7 +1147,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         documentType: fileUtility.getFileType(fileName),
         key,
         token: '',
-        callbackUrl: req.DocManager.getCallback(fileName, fromBuffer),
+        callbackUrl: req.DocManager.getCallback(fileName),
         createUrl: userid !== 'uid-0' ? createUrl : null,
         templates: user.templates ? templates : null,
         isEdit: canEdit && (mode === 'edit' || mode === 'view' || mode === 'filter' || mode === 'blockcontent'),
