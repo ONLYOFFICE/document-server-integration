@@ -68,20 +68,26 @@ namespace OnlineEditorsExample
         {
             var files = new List<Dictionary<string, string>>();
 
-            var response = TrackManager.commandRequest("getForgottenList", null);
-            ArrayList keys = (ArrayList) response["keys"];
-
-            // run through all the files from the directory
-            foreach (string key in keys)
+            try
             {
-                // write file parameters to the file object
-                var file = new Dictionary<string, string>();
-                var fileResult = TrackManager.commandRequest("getForgotten", key);
-                file.Add("key", fileResult["key"].ToString());
-                file.Add("url", fileResult["url"].ToString());
-                file.Add("type", DocumentType(fileResult["url"].ToString()));
+                var response = TrackManager.commandRequest("getForgottenList", null);
+                ArrayList keys = (ArrayList) response["keys"];
 
-                files.Add(file);
+                // fetch all the forgotten files from the document server
+                foreach (string key in keys)
+                {
+                    var file = new Dictionary<string, string>();
+                    var fileResult = TrackManager.commandRequest("getForgotten", key);
+                    file.Add("key", fileResult["key"].ToString());
+                    file.Add("url", fileResult["url"].ToString());
+                    file.Add("type", DocumentType(fileResult["url"].ToString()));
+
+                    files.Add(file);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
             }
 
             return files;
