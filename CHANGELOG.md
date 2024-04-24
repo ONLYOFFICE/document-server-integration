@@ -1,5 +1,6 @@
 # Change Log
 
+- en-GB skin language
 - save as for pdf
 - fill permission in embedded mode
 - delete all files
