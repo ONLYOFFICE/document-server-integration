@@ -211,7 +211,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    const file = files.uploadedFile;
+    const file = files.uploadedFile[0];
 
     if (file === undefined) { // if file parameter is undefined
       res.writeHead(200, { 'Content-Type': 'text/plain' }); // write the error status and message to the response
@@ -220,7 +220,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    file.name = req.DocManager.getCorrectName(file.name);
+    file.originalFilename = req.DocManager.getCorrectName(file.originalFilename);
 
     // check if the file size exceeds the maximum file size
     if (configServer.get('maxFileSize') < file.size || file.size <= 0) {
@@ -232,8 +232,8 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     }
 
     const exts = fileUtility.getSuppotredExtensions(); // all the supported file extensions
-    const curExt = fileUtility.getFileExtension(file.name, true);
-    const documentType = fileUtility.getFileType(file.name);
+    const curExt = fileUtility.getFileExtension(file.originalFilename, true);
+    const documentType = fileUtility.getFileType(file.originalFilename);
 
     if (exts.indexOf(curExt) === -1) { // check if the file extension is supported
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
@@ -243,19 +243,19 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    fileSystem.rename(file.path, `${uploadDir}/${file.name}`, (error) => { // rename a file
+    fileSystem.rename(file.filepath, `${uploadDir}/${file.originalFilename}`, (error) => { // rename a file
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       if (error) { // if an error occurs
         res.write(`{ "error": "${error}"}`); // write an error message to the response
       } else {
         // otherwise, write a new file name to the response
-        res.write(`{ "filename": "${file.name}", "documentType": "${documentType}" }`);
+        res.write(`{ "filename": "${file.originalFilename}", "documentType": "${documentType}" }`);
 
         // get user id and name parameters or set them to the default values
         const user = users.getUser(req.query.userid);
 
-        req.DocManager.saveFileData(file.name, user.id, user.name);
+        req.DocManager.saveFileData(file.originalFilename, user.id, user.name);
       }
       res.end();
     });
