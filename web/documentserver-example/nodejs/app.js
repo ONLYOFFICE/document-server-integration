@@ -235,7 +235,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     const curExt = fileUtility.getFileExtension(file.originalFilename, true);
     const documentType = fileUtility.getFileType(file.originalFilename);
 
-    if (exts.indexOf(curExt) === -1) { // check if the file extension is supported
+    if (exts.indexOf(curExt) === -1 || fileUtility.getFormatActions(curExt).length === 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' }); // and write the error status and message to the response
       res.write('{ "error": "File type is not supported"}');
