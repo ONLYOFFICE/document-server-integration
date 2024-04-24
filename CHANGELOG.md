@@ -1,6 +1,7 @@
 # Change Log
 
 - nodejs: filling by default
+- en-GB skin language
 - nodejs: docxf, oform as pdf documentType
 - switching from filling to editing
 - nodejs: creating pdf instead docxf

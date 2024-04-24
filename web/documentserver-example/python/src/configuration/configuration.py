@@ -136,6 +136,7 @@ class ConfigurationManager:
             'cs': 'Czech',
             'da': 'Danish',
             'nl': 'Dutch',
+            'en-GB': 'English (United Kingdom)',
             'fi': 'Finnish',
             'fr': 'French',
             'gl': 'Galego',
