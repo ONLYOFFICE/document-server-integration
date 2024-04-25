@@ -380,15 +380,18 @@ function getStoredFiles()
 function getForgottenFiles()
 {
     $files = [];
-    $response = commandRequest('getForgottenList', '');
 
-    if ($response !== false) {
-        $response = json_decode($response);
-        foreach ($response->keys as $key) {
-            $file = json_decode(commandRequest('getForgotten', $key));
-            $file->type = getDocumentType($file->url);
-            $files[] = $file;
+    try {
+        $response = json_decode(commandRequest('getForgottenList', ''));
+        if ($response->error === 0) {
+            foreach ($response->keys as $key) {
+                $file = json_decode(commandRequest('getForgotten', $key));
+                $file->type = getDocumentType($file->url);
+                $files[] = $file;
+            }
         }
+    } catch (Exception $e) {
+        sendlog($e->getMessage(), "common.log");
     }
     
     return $files;
