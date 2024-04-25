@@ -356,6 +356,14 @@ function commandRequest($method, $key, $meta = null)
     $context = stream_context_create($opts);
     $responseData = file_get_contents($documentCommandUrl, false, $context);
 
+    if ($responseData === false) {
+        throw new Exception('Document Server connection error.');
+    }
+    $error = json_decode($responseData, true)['error'];
+    if ($error !== 0) {
+        throw new Exception('Command Service Error #'. $error);
+    }
+
     return $responseData;
 }
 
