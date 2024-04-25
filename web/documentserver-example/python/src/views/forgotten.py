@@ -22,6 +22,7 @@ from src.configuration import ConfigurationManager
 from src.utils import trackManager, fileUtils
 from django.http import HttpResponse, HttpResponseForbidden
 import json
+import logging
 
 config_manager = ConfigurationManager()
 
@@ -48,8 +49,8 @@ def getForgottenFiles():
             file = trackManager.commandRequest('getForgotten', key).json()
             file["type"] = fileUtils.getFileType(file["url"])
             files.append(file)
-    except (Exception, ValueError):
-        pass  # TODO: write to logger
+    except (Exception, ValueError) as error:
+        logging.error(error)
 
     return files
 
