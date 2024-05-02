@@ -85,7 +85,7 @@
                                                 <%  foreach (var file in GetForgottenFiles()) { %>
                                                     <tr class="tableRow" title="<%= file["key"] %>">
                                                         <td>
-                                                            <a class="stored-edit <%= file["type"] %>>" href="<%= file["url"] %>" target="_blank">
+                                                            <a class="stored-edit <%= file["type"] %>" href="<%= file["url"] %>" target="_blank">
                                                                 <span><%= file["key"] %></span>
                                                             </a>
                                                         </td>
