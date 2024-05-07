@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,19 +28,21 @@ import javax.servlet.http.HttpServletRequest;
 public class CookieManager {
     private HashMap<String, String> cookiesMap;
 
-    public CookieManager(HttpServletRequest request) throws UnsupportedEncodingException {
+    public CookieManager(final HttpServletRequest request) throws UnsupportedEncodingException {
         cookiesMap = new HashMap<String, String>();
 
         Cookie[] cookies = request.getCookies();  // get all the cookies from the request
         if (cookies != null) {
             for (Cookie cookie : cookies) {  // run through all the cookies
-                cookiesMap.putIfAbsent(cookie.getName(), URLDecoder.decode(cookie.getValue(), "UTF-8"));  // add cookie to the cookies map if its name isn't in the map yet
+
+                // add cookie to the cookies map if its name isn't in the map yet
+                cookiesMap.putIfAbsent(cookie.getName(), URLDecoder.decode(cookie.getValue(), "UTF-8"));
             }
         }
     }
 
     // get cookie by its name
-    public String getCookie(String name) {
+    public String getCookie(final String name) {
         return cookiesMap.get(name);
     }
 }

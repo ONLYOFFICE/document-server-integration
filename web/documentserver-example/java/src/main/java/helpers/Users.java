@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,41 +18,58 @@
 
 package helpers;
 
-import entities.*;
+import entities.CommentGroups;
+import entities.Goback;
+import entities.User;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-public class Users {
+public final class Users {
 
-    static List<String> descr_user_1 = new ArrayList<String>() {{
+    private static List<String> descriptionUserFirst = new ArrayList<String>() {{
         add("File author by default");
         add("Doesn’t belong to any group");
         add("Can review all the changes");
         add("Can perform all actions with comments");
         add("The file favorite state is undefined");
         add("Can create files from templates using data from the editor");
+        add("Can see the information about all users");
+        add("Has an avatar");
+        add("Can submit forms");
     }};
 
-    static List<String> descr_user_2 = new ArrayList<String>() {{
+    private static List<String> descriptionUserSecond = new ArrayList<String>() {{
         add("Belongs to Group2");
         add("Can review only his own changes or changes made by users with no group");
-        add("Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only");
+        add("Can view comments, edit his own comments and comments left by users with no group."
+                + " Can remove his own comments only");
         add("This file is marked as favorite");
         add("Can create new files from the editor");
+        add("Can see the information about users from Group2 and users who don’t belong to any group");
+        add("Has an avatar");
+        add("Can’t submit forms");
     }};
 
-    static List<String> descr_user_3 = new ArrayList<String>() {{
+    private static List<String> descriptionUserThird = new ArrayList<String>() {{
         add("Belongs to Group3");
         add("Can review changes made by Group2 users");
-        add("Can view comments left by Group2 and Group3 users. Can edit comments left by Group2 users");
+        add("Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users");
         add("This file isn’t marked as favorite");
         add("Can’t copy data from the file to clipboard");
         add("Can’t download the file");
         add("Can’t print the file");
         add("Can create new files from the editor");
+        add("Can see the information about Group2 users");
+        add("Can’t submit forms");
+        add("Can't close history");
+        add("Can't restore the file version");
     }};
 
-    static List<String> descr_user_0 = new ArrayList<String>() {{
+    private static List<String> descriptionUserZero = new ArrayList<String>() {{
         add("The name is requested when the editor is opened");
         add("Doesn’t belong to any group");
         add("Can review all the changes");
@@ -60,27 +77,39 @@ public class Users {
         add("The file favorite state is undefined");
         add("Can't mention others in comments");
         add("Can't create new files from the editor");
+        add("Can’t see anyone’s information");
+        add("Can't rename files from the editor");
+        add("Can't view chat");
+        add("Can't protect file");
+        add("View file without collaboration");
+        add("Can’t submit forms");
     }};
 
     private static List<User> users = new ArrayList<User>() {{
-        add(new User("uid-1", "John Smith", "smith@mail.ru",
-                null, null, new CommentGroups(),
-                null, new ArrayList<String>(), descr_user_1, true));
-        add(new User("uid-2", "Mark Pottato", "pottato@mail.ru",
-                "group-2", Arrays.asList("group-2", ""), new CommentGroups(null, Arrays.asList("group-2", ""), Arrays.asList("group-2")),
-                true, new ArrayList<String>(), descr_user_2, false));
-        add(new User("uid-3", "Hamish Mitchell", "mitchell@mail.ru",
-                "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"), Arrays.asList("group-2"), new ArrayList<String>()),
-                false, Arrays.asList("copy", "download", "print"), descr_user_3, false));
+        add(new User("uid-1", "John Smith", "smith@example.com",
+                "", null, new CommentGroups(), null,
+                null, new ArrayList<String>(), descriptionUserFirst, true, true, new Goback(null, false)));
+        add(new User("uid-2", "Mark Pottato", "pottato@example.com",
+                "group-2", Arrays.asList("group-2", ""), new CommentGroups(null,
+                Arrays.asList("group-2", ""), Arrays.asList("group-2")), Arrays.asList("group-2", ""),
+                true, new ArrayList<String>(), descriptionUserSecond, false, true,
+                new Goback("Go to Documents", null)));
+        add(new User("uid-3", "Hamish Mitchell", null,
+                "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"),
+                Arrays.asList("group-2"), null), Arrays.asList("group-2"),
+                false, Arrays.asList("copy", "download", "print"),
+                descriptionUserThird, false, false, null));
         add(new User("uid-0", null, null,
-                null, null, new CommentGroups(),
-                null, new ArrayList<String>(), descr_user_0, false));
+                "", null, null, null,
+                null, Arrays.asList("protect"), descriptionUserZero, false, false, null));
     }};
 
+    private Users() { }
+
     // get a user by id specified
-    public static User getUser (String id) {
+    public static User getUser(final String id) {
         for (User user : users) {
-            if (user.id.equals(id)) {
+            if (user.getId().equals(id)) {
                 return user;
             }
         }
@@ -88,18 +117,49 @@ public class Users {
     }
 
     // get a list of all the users
-    public static List<User> getAllUsers () {
+    public static List<User> getAllUsers() {
         return users;
     }
 
     // get a list of users with their names and emails for mentions
-    public static List<Map<String, Object>> getUsersForMentions (String id) {
+    public static List<Map<String, Object>> getUsersForMentions(final String id) {
         List<Map<String, Object>> usersData = new ArrayList<>();
         for (User user : users) {
-            if (!user.id.equals(id) && user.name != null && user.email != null) {
+            if (!user.getId().equals(id) && user.getName() != null && user.getEmail() != null) {
                 Map<String, Object> data = new HashMap<>();
-                data.put("name", user.name);
-                data.put("email", user.email);
+                data.put("name", user.getName());
+                data.put("email", user.getEmail());
+                usersData.add(data);
+            }
+        }
+        return usersData;
+    }
+
+    public static List<Map<String, Object>> getUsersInfo(final String id) {
+        List<Map<String, Object>> usersData = new ArrayList<>();
+        if (id != "uid-0") {
+            for (User user : users) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("id", user.getId());
+                data.put("name", user.getName());
+                data.put("email", user.getEmail());
+                data.put("image", user.getAvatar() ? DocumentManager.getServerUrl(false)
+                + "/css/img/" + user.getId() + ".png" : null);
+                usersData.add(data);
+            }
+        }
+        return usersData;
+    }
+
+    // get a list of users with their names and emails for protect
+    public static List<Map<String, Object>> getUsersForProtect(final String id) {
+        List<Map<String, Object>> usersData = new ArrayList<>();
+        for (User user : users) {
+            if (!user.getId().equals(id) && user.getName() != null) {
+                Map<String, Object> data = new HashMap<>();
+                data.put("name", user.getName());
+                data.put("email", user.getEmail());
+                data.put("id", user.getId());
                 usersData.add(data);
             }
         }

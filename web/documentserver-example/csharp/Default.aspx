@@ -5,16 +5,19 @@
 <%@ Import Namespace="System.Linq" %>
 <%@ Import Namespace="System.Web.Configuration" %>
 <%@ Import Namespace="OnlineEditorsExample" %>
+<%@ Import Namespace="System.Collections.Generic" %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta name="server-version" content=<%= GetVersion() %> />
     <title>ONLYOFFICE</title>
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2021
+    * (c) Copyright Ascensio System SIA 2024
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -67,8 +70,11 @@
                                             <li>
                                                 <a class="try-editor slide" data-type="slide">Presentation</a>
                                             </li>
+                                            <li>
+                                                <a class="try-editor form" data-type="docxf">PDF form</a>
+                                            </li>
                                         </ul>
-                                        <label class="create-sample">
+                                        <label class="side-option">
                                             <input id="createSample" class="checkbox" type="checkbox" />With sample content
                                         </label>
                                     </div>
@@ -83,19 +89,7 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Username</span>
-                                                <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
-                                                </br>
-                                                <% foreach (User user in Users.getAllUsers())
-                                                   { %>
-                                                       <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
-                                                       <ul>
-                                                       <% foreach (string description in user.descriptions)
-                                                          { %>
-                                                              <li><%= description %></li>
-                                                       <% } %>
-                                                       </ul>
-                                                <% } %>"
-                                                src="app_themes/images/info.svg" />
+                                                <img id="info" class="info" src="app_themes/images/info.svg" />
                                                 <select class="select-user" id="user">
                                                     <% foreach (User user in Users.getAllUsers())
                                                        { %>
@@ -107,61 +101,66 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Language</span>
-                                                <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="app_themes/images/info.svg" />
+                                            <img class="info info-tooltip" data-id="language"
+                                                 data-tooltip="Choose the language for ONLYOFFICE editors interface"
+                                                 src="app_themes/images/info.svg" />
                                                 <select class="select-user" id="language">
-                                                    <option value="en">English</option>
-                                                    <option value="be">Belarusian</option>
-                                                    <option value="bg">Bulgarian</option>
-                                                    <option value="ca">Catalan</option>
-                                                    <option value="zh">Chinese</option>
-                                                    <option value="cs">Czech</option>
-                                                    <option value="da">Danish</option>
-                                                    <option value="nl">Dutch</option>
-                                                    <option value="fi">Finnish</option>
-                                                    <option value="fr">French</option>
-                                                    <option value="de">German</option>
-                                                    <option value="el">Greek</option>
-                                                    <option value="hu">Hungarian</option>
-                                                    <option value="id">Indonesian</option>
-                                                    <option value="it">Italian</option>
-                                                    <option value="ja">Japanese</option>
-                                                    <option value="ko">Korean</option>
-                                                    <option value="lv">Latvian</option>
-                                                    <option value="lo">Lao</option>
-                                                    <option value="nb">Norwegian</option>
-                                                    <option value="pl">Polish</option>
-                                                    <option value="pt">Portuguese</option>
-                                                    <option value="ro">Romanian</option>
-                                                    <option value="ru">Russian</option>
-                                                    <option value="sk">Slovak</option>
-                                                    <option value="sl">Slovenian</option>
-                                                    <option value="sv">Swedish</option>
-                                                    <option value="es">Spanish</option>
-                                                    <option value="tr">Turkish</option>
-                                                    <option value="uk">Ukrainian</option>
-                                                    <option value="vi">Vietnamese</option>
+                                                    <% Dictionary<string, string> languages = GetLanguages(); 
+                                                    foreach (var lang in languages)
+                                                        { %>
+                                                            <option value="<%= lang.Key %>"><%= lang.Value %></option>
+                                                        <% } %>
                                                 </select>
                                             </td>
                                         </tr>
+                                        <tr>
+                                        <td valign="middle">
+                                            <label class="side-option">
+                                                <input id="directUrl" type="checkbox" class="checkbox" />Try opening on client
+                                                <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's browser without connecting to the document server." src="app_themes/images/info.svg" />
+                                            </label>
+                                        </td>
+                                    </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </td>
                         <td class="section">
+                        <% var storedFiles = GetStoredFiles(); %>
                             <div class="main-panel">
-                            <%  var storedFiles = GetStoredFiles();
-                                if (!storedFiles.Any())
-                                { %>
+                                <div id="portal-info" style="display: <%= storedFiles.Any() ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
                                         Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
                                         <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
                                     </span>
-                            <%  }
-                                else
+                                    <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
+                                    <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+                                    <% foreach (User user in Users.getAllUsers())
+                                      { %>
+                                      <div class="user-descr">
+                                       <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
+                                           <ul>
+                                           <% foreach (string description in user.descriptions)
+                                                   { %>
+                                                       <li><%= description %></li>
+                                                <% } %>
+                                           </ul>
+                                       </div>
+                                       <% } %>
+                                </div>
+                            <%
+                                if (storedFiles.Any())
                                 { %>
                                     <div class="stored-list">
-                                        <span class="header-list">Your documents</span>
+                                        <div class="storedHeader">
+                                            <div class="storedHeaderText">
+                                                <span class="header-list">Your documents</span>
+                                            </div>
+                                            <div class="storedHeaderClearAll">
+                                                <div class="clear-all">Clear all</div>
+                                            </div>
+                                        </div>
                                         <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
                                             <thead>
                                                 <tr >
@@ -178,12 +177,15 @@
                                                 <tbody>
                                                 <%  foreach (var storedFile in storedFiles)
                                                     {
-                                                        var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name);
+                                                        var directUrlParam = GetDirectUrlParam();
+                                                        var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name) + directUrlParam;
+                                                        var ext = Path.GetExtension(storedFile.Name).ToLower();
                                                         var docType = DocumentType(storedFile.Name);
-                                                        var canEdit = EditedExts.Contains(Path.GetExtension(storedFile.Name).ToLower());
+                                                        var canEdit = EditedExts.Contains(ext);
+                                                        var isFillFormDoc = FillFormsExts.Contains(ext);
                                                         %>
 
-                                                        <tr class="tableRow" title="<%= storedFile.Name %> [<%= GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress) %>]">
+                                                        <tr class="tableRow" title="<%= storedFile.Name %> [<%= GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress.Replace(':','_')) %>]">
                                                             <td class="contentCells">
                                                                 <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
                                                                     <span><%= storedFile.Name %></span>
@@ -218,30 +220,42 @@
                                                                         </a>
                                                                     </td>
                                                                 <% } %>
-                                                                <%if (docType != "word" && docType != "cell") { %>
-                                                                    <td class="contentCells contentCells-icon contentCellsEmpty"></td>
-                                                                <% } %>
                                                                 <% if (docType == "word") { %>
                                                                     <td class="contentCells contentCells-icon">
-                                                                    <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                                                        <img src="app_themes/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                    </a>
-                                                                </td>
-                                                                <% } else { %>
-                                                                    <td class="contentCells contentCells-icon"></td>
-                                                                <% } %>
-                                                                <% if (docType == "word") { %>
-                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
                                                                             <img src="app_themes/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                         </a>
                                                                     </td>
                                                                 <% } else{%>
-                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                    <td class="contentCells contentCells-icon"></td>
                                                                 <%} %>
                                                                 <%if (docType != "word" && docType != "cell"){%>
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                 <% } %>
+                                                                    <% if (isFillFormDoc) { %>
+                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                            <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                                                                <img src="app_themes/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                            </a>
+                                                                        </td>
+                                                                <% } else { %>
+                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                <% } %>
+                                                                <% } else if (isFillFormDoc) { %>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon">
+                                                                        <a href="<%= editUrl + "&editorsType=mobile&editorsMode=fillForms" %>" target="_blank">
+                                                                           <img src="app_themes/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
+                                                                        </a>
+                                                                    </td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-icon "></td>
+                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                                                            <img src="app_themes/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                        </a>
+                                                                    </td>
                                                             <% } else { %>
                                                                 <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                             <% } %>
@@ -290,6 +304,15 @@
                 <div class="describeUpload">After these steps are completed, you can work with your document.</div>
                 <span id="step1" class="step">1. Loading the file.</span>
                 <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+                <div id="select-file-type" class="invisible">
+                    <br />
+                    <span class="step">Please select the current document type</span>
+                    <div class="buttonsMobile indent">
+                        <div class="button file-type document" data="docx">Document</div>
+                        <div class="button file-type spreadsheet" data="xlsx">Spreadsheet</div>
+                        <div class="button file-type presentation" data="pptx">Presentation</div>
+                    </div>
+                </div>
                 <br />
                 <span id="step2" class="step">2. Conversion.</span>
                 <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
@@ -309,9 +332,7 @@
                 <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
                 <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
                 <br />
-                <br />
                 <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
-                <br />
                 <br />
                 <div class="error-message">
                     <b>Upload error: </b><span></span>
@@ -321,10 +342,12 @@
             </div>
             <iframe id="embeddedView" src="" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>
             <br />
-            <div id="beginEdit" class="button orange disable">Edit</div>
-            <div id="beginView" class="button gray disable">View</div>
-            <div id="beginEmbedded" class="button gray disable">Embedded view</div>
-            <div id="cancelEdit" class="button gray">Cancel</div>
+            <div class="buttonsMobile">
+                <div id="beginEdit" class="button orange disable">Edit</div>
+                <div id="beginView" class="button gray disable">View</div>
+                <div id="beginEmbedded" class="button gray disable">Embedded view</div>
+                <div id="cancelEdit" class="button gray">Cancel</div>
+            </div>
         </div>
 
         <span id="loadScripts" data-docs="<%= UrlPreloadScripts %>"></span>
@@ -350,17 +373,15 @@
         </footer>
     </form>
 
-    <script language="javascript" type="text/javascript" src="script/jquery-1.9.0.min.js"></script>
+    <script language="javascript" type="text/javascript" src="script/jquery-3.6.4.min.js"></script>
+    <script language="javascript" type="text/javascript" src="script/jquery-migrate-3.4.1.min.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery-ui.min.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery.blockUI.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery.iframe-transport.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery.fileupload.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery.dropdownToggle.js"></script>
+    <script language="javascript" type="text/javascript" src="script/formats.js"></script>
     <script language="javascript" type="text/javascript" src="script/jscript.js"></script>
-    <script language="javascript" type="text/javascript">
-        var ConverExtList = '<%= string.Join(",", ConvertExts.ToArray()) %>';
-        var EditedExtList = '<%= string.Join(",", EditedExts.ToArray()) %>';
-    </script>
 
 </body>
 </html>

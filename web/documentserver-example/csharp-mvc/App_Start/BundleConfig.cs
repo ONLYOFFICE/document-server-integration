@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ namespace OnlineEditorsExampleMVC
             // create a jquery script bundle
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                 "~/Scripts/jquery-{version}.js",
+                "~/Scripts/jquery-migrate-{version}.js",
                 "~/Scripts/jquery-ui.js",
                 "~/Scripts/jquery.blockUI.js",
                 "~/Scripts/jquery.iframe-transport.js",

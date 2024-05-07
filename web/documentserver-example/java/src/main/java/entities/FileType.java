@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,17 @@
 
 package entities;
 
-public enum FileType
-{
-    Word,
-    Cell,
-    Slide
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.gson.annotations.SerializedName;
+
+public enum FileType {
+    @JsonProperty("word")
+    @SerializedName("word")
+    WORD,
+    @JsonProperty("cell")
+    @SerializedName("cell")
+    CELL,
+    @JsonProperty("slide")
+    @SerializedName("slide")
+    SLIDE
 }

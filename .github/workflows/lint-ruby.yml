@@ -1,0 +1,37 @@
+name: Rubocop
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, main]
+    paths: ['web/documentserver-example/ruby/**']
+  pull_request:
+    branches: [master, main, develop]
+    paths: ['web/documentserver-example/ruby/**']
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./web/documentserver-example/ruby
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2.2'
+
+    - name: Update Submodules
+      run: |
+        git submodule update --init --recursive
+
+    - name: Install Dependencies
+      run: |
+        bundle update
+
+    - name: Rubocop
+      run: |
+        bundle exec rubocop

@@ -1,9 +1,11 @@
 {
   "name": "OnlineEditorsExampleNodeJS",
-  "version": "4.1.0",
+  "version": "1.6.0",
   "private": false,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "bin": "bin/www",
   "description": "OnlineEditorsExampleNodeJS",
@@ -15,20 +17,19 @@
     "url": "https://github.com/ONLYOFFICE/document-server-integration/issues"
   },
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "config": "^3.3.2",
-    "debug": "^4.2.0",
-    "ejs": "^3.1.5",
-    "express": "^4.17.1",
-    "fast-xml-parser": "^3.19.0",
-    "formidable": "^1.2.2",
+    "body-parser": "^1.20.2",
+    "config": "^3.3.11",
+    "debug": "^4.3.4",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "fast-xml-parser": "^4.3.4",
+    "formidable": "^3.2.4",
     "he": "^1.2.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.2",
     "jwa": "^2.0.0",
-    "log4js": "^6.3.0",
+    "log4js": "^6.9.1",
     "mime": "^2.4.6",
     "serve-favicon": "^2.5.0",
-    "sync-request": "^6.1.0",
     "urllib": "^2.36.1"
   },
   "license": "Apache",
@@ -41,5 +42,18 @@
       "public/**/*",
       "views/*"
     ]
+  },
+  "devDependencies": {
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.1"
+  },
+  "overrides": {
+    "semver": "7.5.2",
+    "word-wrap": "1.2.4",
+    "pac-resolver": "7.0.0",
+    "degenerator": "3.0.1",
+    "qs": "6.7.3",
+    "json5": "2.2.3"
   }
 }

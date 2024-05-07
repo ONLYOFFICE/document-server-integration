@@ -1,32 +1,66 @@
-[submodule "web/documentserver-example/nodejs/public/assets"]
-	path = web/documentserver-example/nodejs/public/assets
+[submodule "web/documentserver-example/nodejs/public/assets/document-templates"]
+	path = web/documentserver-example/nodejs/public/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
-[submodule "web/documentserver-example/java/src/main/resources/assets"]
-	path = web/documentserver-example/java/src/main/resources/assets
+[submodule "web/documentserver-example/nodejs/public/assets/document-formats"]
+	path = web/documentserver-example/nodejs/public/assets/document-formats
+	url = https://github.com/ONLYOFFICE/document-formats
+	branch = feature/v8.0
+[submodule "web/documentserver-example/csharp-mvc/assets/document-templates"]
+	path = web/documentserver-example/csharp-mvc/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
-[submodule "web/documentserver-example/php/assets"]
-	path = web/documentserver-example/php/assets
+[submodule "web/documentserver-example/csharp-mvc/assets/document-formats"]
+	path = web/documentserver-example/csharp-mvc/assets/document-formats
+	url = https://github.com/ONLYOFFICE/document-formats
+[submodule "web/documentserver-example/php/assets/document-templates"]
+	path = web/documentserver-example/php/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
-[submodule "web/documentserver-example/python/assets"]
-	path = web/documentserver-example/python/assets
+[submodule "web/documentserver-example/php/assets/document-formats"]
+	path = web/documentserver-example/php/assets/document-formats
+	url = https://github.com/ONLYOFFICE/document-formats
+	branch = master
+[submodule "web/documentserver-example/python/assets/document-templates"]
+	path = web/documentserver-example/python/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
-[submodule "web/documentserver-example/csharp-mvc/assets"]
-	path = web/documentserver-example/csharp-mvc/assets
+[submodule "web/documentserver-example/java/src/main/resources/assets/document-templates"]
+	path = web/documentserver-example/java/src/main/resources/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
-[submodule "web/documentserver-example/csharp/assets"]
-	path = web/documentserver-example/csharp/assets
+[submodule "web/documentserver-example/ruby/assets/document-templates"]
+	path = web/documentserver-example/ruby/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
-[submodule "web/documentserver-example/ruby/public/assets"]
-	path = web/documentserver-example/ruby/public/assets
+[submodule "web/documentserver-example/java-spring/src/main/resources/assets/document-templates"]
+	path = web/documentserver-example/java-spring/src/main/resources/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
 [submodule "web/documentserver-example/go/static/assets"]
 	path = web/documentserver-example/go/static/assets
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/en
+[submodule "web/documentserver-example/python/assets/document-formats"]
+	path = web/documentserver-example/python/assets/document-formats
+	url = https://github.com/ONLYOFFICE/document-formats
+	branch = master
+[submodule "web/documentserver-example/ruby/assets/document-formats"]
+	path = web/documentserver-example/ruby/assets/document-formats
+	url = https://github.com/ONLYOFFICE/document-formats
+	branch = master
+[submodule "web/documentserver-example/java/src/main/resources/assets/document-formats"]
+	path = web/documentserver-example/java/src/main/resources/assets/document-formats
+	url = https://github.com/ONLYOFFICE/document-formats
+	branch = master
+[submodule "web/documentserver-example/java-spring/src/main/resources/assets/document-formats"]
+	path = web/documentserver-example/java-spring/src/main/resources/assets/document-formats
+	url = https://github.com/ONLYOFFICE/document-formats
+	branch = master
+[submodule "web/documentserver-example/csharp/assets/document-templates"]
+	path = web/documentserver-example/csharp/assets/document-templates
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en
+[submodule "web/documentserver-example/csharp/assets/document-formats"]
+	path = web/documentserver-example/csharp/assets/document-formats
+	url = https://github.com/ONLYOFFICE/document-formats

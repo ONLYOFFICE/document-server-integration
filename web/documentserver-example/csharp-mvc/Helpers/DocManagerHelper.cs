@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,11 +25,18 @@ using System.Web;
 using System.Web.Configuration;
 using System.Web.Script.Serialization;
 using OnlineEditorsExampleMVC.Models;
+using System.Net;
 
 namespace OnlineEditorsExampleMVC.Helpers
 {
     public class DocManagerHelper
     {
+        //get server version
+        public static string GetVersion()
+        {
+            return WebConfigurationManager.AppSettings["version"];
+        }
+
         // get max file size
         public static long MaxFileSize
         {
@@ -44,25 +51,30 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get all the supported file extensions
         public static List<string> FileExts
         {
-            get { return ViewedExts.Concat(EditedExts).Concat(ConvertExts).ToList(); }
+            get { return ViewedExts.Concat(EditedExts).Concat(ConvertExts).Concat(FillFormExts).ToList(); }
         }
 
         // get file extensions that can be viewed
         public static List<string> ViewedExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.viewed-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.ViewableExtensions(); }
+        }
+
+        public static List<string> FillFormExts
+        {
+            get { return FormatManager.FillableExtensions(); }
         }
 
         // get file extensions that can be edited
         public static List<string> EditedExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.edited-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.EditableExtensions(); }
         }
 
         // get file extensions that can be converted
         public static List<string> ConvertExts
         {
-            get { return (WebConfigurationManager.AppSettings["files.docservice.convert-docs"] ?? "").Split(new char[] { '|', ',' }, StringSplitOptions.RemoveEmptyEntries).ToList(); }
+            get { return FormatManager.ConvertibleExtensions(); }
         }
 
         // get current user host address
@@ -74,19 +86,37 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get the storage path of the file
         public static string StoragePath(string fileName, string userAddress = null)
         {
-            var directory = HttpRuntime.AppDomainAppPath + CurUserHostAddress(userAddress) + "\\";
+            var directory = "";
+            if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            }
+            
             if (!Directory.Exists(directory))
             {
                 Directory.CreateDirectory(directory);
             }
-            return directory + Path.GetFileName(fileName);
+            return directory + (fileName.Contains("\\") ? fileName : Path.GetFileName(fileName));
         }
 
         // get the path to the forcesaved file version
         public static string ForcesavePath(string fileName, string userAddress, Boolean create)
         {
             // create the directory to this file version
-            var directory = HttpRuntime.AppDomainAppPath + CurUserHostAddress(userAddress) + "\\";
+            var directory = "";
+            if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(userAddress) + "\\";
+            }
+            
             if (!Directory.Exists(directory))
             {
                 return "";
@@ -153,7 +183,12 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get a file name with an index if the file with such a name already exists
         public static string GetCorrectName(string fileName, string userAddress = null)
         {
+            int maxName;
+            int.TryParse(WebConfigurationManager.AppSettings["filename-max"], out maxName);
             var baseName = Path.GetFileNameWithoutExtension(fileName);
+            if (baseName.Length > maxName){
+                baseName = baseName.Substring(0, maxName) + "[...]";
+            }
             var ext = Path.GetExtension(fileName).ToLower();
             var name = baseName + ext;
 
@@ -167,7 +202,16 @@ namespace OnlineEditorsExampleMVC.Helpers
         // get all the stored files from the user host address
         public static List<FileInfo> GetStoredFiles()
         {
-            var directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+            var directory = "";
+            if (!string.IsNullOrEmpty(WebConfigurationManager.AppSettings["storage-path"]) && Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]))
+            {
+                directory = WebConfigurationManager.AppSettings["storage-path"] + "\\";
+            }
+            else
+            {
+                directory = HttpRuntime.AppDomainAppPath + WebConfigurationManager.AppSettings["storage-path"] + CurUserHostAddress(null) + "\\";
+            }
+            
             if (!Directory.Exists(directory)) return new List<FileInfo>();
 
             var directoryInfo = new DirectoryInfo(directory);
@@ -182,11 +226,12 @@ namespace OnlineEditorsExampleMVC.Helpers
         public static string CreateDemo(string fileExt, bool withContent)
         {
             var demoName = (withContent ? "sample." : "new.") + fileExt;  // create sample or new template file with the necessary extension
-            var demoPath = "assets\\" + (withContent ? "sample\\" : "new\\");  // get the path to the sample document
+            var demoPath = "assets\\document-templates\\" + (withContent ? "sample\\" : "new\\");  // get the path to the sample document
 
             var fileName = GetCorrectName(demoName);  // get a file name with an index if the file with such a name already exists
 
             File.Copy(HttpRuntime.AppDomainAppPath + demoPath + demoName, StoragePath(fileName));  // copy file to the storage directory
+            File.SetLastWriteTime(StoragePath(fileName), DateTime.Now);
 
             return fileName;
         }
@@ -209,7 +254,8 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             var uri = new UriBuilder(GetServerUrl(forDocumentServer))
                 {
-                    Path = HttpRuntime.AppDomainAppVirtualPath + "/"
+                    Path = HttpRuntime.AppDomainAppVirtualPath
+                           + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
                            + CurUserHostAddress() + "/"
                            + fileName,
                     Query = ""
@@ -223,8 +269,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         {
             var uri = new UriBuilder(GetServerUrl(true))
             {
-                Path = HttpRuntime.AppDomainAppVirtualPath + "/"
-                           + path,
+                Path = HttpRuntime.AppDomainAppVirtualPath + "/" + path,
                 Query = ""
             };
 
@@ -260,7 +305,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=track"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
+                        + "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))
             };
             return callbackUrl.ToString();
         }
@@ -279,10 +324,30 @@ namespace OnlineEditorsExampleMVC.Helpers
             return createUrl.ToString();
         }
 
-        // get url to download a file
-        public static string GetDownloadUrl(string fileName)
+        // create the public history url
+        public static string GetHistoryDownloadUrl(string filename, string version, string file, Boolean isServer = true)
         {
-            var downloadUrl = new UriBuilder(GetServerUrl(true))
+            var userAddress = "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
+            var downloadUrl = new UriBuilder(GetServerUrl(isServer))
+            {
+                Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=downloadhistory"
+                        + "&fileName=" + HttpUtility.UrlEncode(filename)
+                        + userAddress
+                        + "&ver=" + version
+                        + "&file="+ file
+            };
+            return downloadUrl.ToString();
+        }
+
+        // get url to download a file
+        public static string GetDownloadUrl(string fileName, Boolean isServer = true)
+        {
+            var userAddress = isServer ? "&userAddress=" + HttpUtility.UrlEncode(CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)) : "";
+            var downloadUrl = new UriBuilder(GetServerUrl(isServer))
             {
                 Path =
                     HttpRuntime.AppDomainAppVirtualPath
@@ -290,7 +355,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                     + "webeditor.ashx",
                 Query = "type=download"
                         + "&fileName=" + HttpUtility.UrlEncode(fileName)
-                        + "&userAddress=" + HttpUtility.UrlEncode(HttpContext.Current.Request.UserHostAddress)
+                        + userAddress
             };
             return downloadUrl.ToString();
         }
@@ -366,6 +431,34 @@ namespace OnlineEditorsExampleMVC.Helpers
             }
 
             return files;
+        }
+
+        // enable certificate ignore
+        public static void VerifySSL()
+        {
+            // hack. http://ubuntuforums.org/showthread.php?t=1841740
+            if(WebConfigurationManager.AppSettings["files.docservice.verify-peer-off"].Equals("true")) {
+                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
+            }
+        }
+
+        public static Dictionary<string, string> GetLanguages()
+        {
+            var languages = new Dictionary<string, string>();
+            String[] couples = (WebConfigurationManager.AppSettings["files.docservice.languages"] ?? "").Split('|');
+            foreach (string couple in couples)
+            {   
+                String[] tmp = couple.Split(':');
+                languages.Add(tmp[0],tmp[1]);
+            }
+            return languages;
+        }
+
+        public static string GetDirectUrl()
+        {
+            string isEnabledDirectUrl = HttpUtility.ParseQueryString(HttpContext.Current.Request.Url.Query).Get("directUrl");
+            return isEnabledDirectUrl != null ? isEnabledDirectUrl : "false";
         }
     }
 }

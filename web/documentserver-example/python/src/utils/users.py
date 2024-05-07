@@ -1,34 +1,28 @@
 """
 
- (c) Copyright Ascensio System SIA 2021
- *
- The MIT License (MIT)
+ (c) Copyright Ascensio System SIA 2024
 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
+     http://www.apache.org/licenses/LICENSE-2.0
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 
 """
 
-from urllib.parse import unquote
+from typing import Optional
+
 
 class User:
-    def __init__(self, id, name, email, group, reviewGroups, commentGroups, favorite, deniedPermissions, descriptions, templates):
-        self.id = id
+    def __init__(self, uid, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
+                 deniedPermissions, descriptions, templates, avatar, goback):
+        self.id = uid
         self.name = name
         self.email = email
         self.group = group
@@ -38,6 +32,10 @@ class User:
         self.deniedPermissions = deniedPermissions
         self.descriptions = descriptions
         self.templates = templates
+        self.userInfoGroups = userInfoGroups
+        self.avatar = avatar
+        self.goback = goback
+
 
 descr_user_1 = [
     "File author by default",
@@ -45,15 +43,22 @@ descr_user_1 = [
     "Can review all the changes",
     "Can perform all actions with comments",
     "The file favorite state is undefined",
-    "Can create files from templates using data from the editor"
+    "Can create files from templates using data from the editor",
+    "Can see the information about all users",
+    "Has an avatar",
+    "Can submit forms"
 ]
 
 descr_user_2 = [
     "Belongs to Group2",
     "Can review only his own changes or changes made by users with no group",
-    "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
+    ("Can view comments, edit his own comments and comments left by users with no group."
+     "Can remove his own comments only"),
     "This file is marked as favorite",
-    "Can create new files from the editor"
+    "Can create new files from the editor",
+    "Can see the information about users from Group2 and users who don’t belong to any group",
+    "Has an avatar",
+    "Can’t submit forms"
 ]
 
 descr_user_3 = [
@@ -64,7 +69,11 @@ descr_user_3 = [
     "Can’t copy data from the file to clipboard",
     "Can’t download the file",
     "Can’t print the file",
-    "Can create new files from the editor"
+    "Can create new files from the editor",
+    "Can see the information about Group2 users",
+    "Can’t submit forms",
+    "Can't close history",
+    "Can't restore the file version"
 ]
 
 descr_user_0 = [
@@ -74,52 +83,82 @@ descr_user_0 = [
     "Can perform all actions with comments",
     "The file favorite state is undefined",
     "Can't mention others in comments",
-    "Can't create new files from the editor"
+    "Can't create new files from the editor",
+    "Can’t see anyone’s information",
+    "Can't rename files from the editor",
+    "Can't view chat",
+    "Can't protect file",
+    "View file without collaboration",
+    "Can’t submit forms"
 ]
 
 USERS = [
-    User('uid-1', 'John Smith', 'smith@mail.ru',
-        None, None, {},
-        None, [], descr_user_1, True),
-    User('uid-2', 'Mark Pottato', 'pottato@mail.ru',
-        'group-2', ['group-2', ''], {
-            'view': "",
-            'edit': ["group-2", ""],
-            'remove': ["group-2"]
-        },
-        True, [], descr_user_2, False),
-    User('uid-3', 'Hamish Mitchell', 'mitchell@mail.ru',
-        'group-3', ['group-2'], {
-            'view': ["group-3", "group-2"],
-            'edit': ["group-2"],
-            'remove': []
-        },
-        False, ["copy", "download", "print"], descr_user_3, False),
+    User('uid-1', 'John Smith', 'smith@example.com',
+         '', None, {}, None,
+         None, [], descr_user_1, True, True, {'blank': False}),
+    User('uid-2', 'Mark Pottato', 'pottato@example.com',
+         'group-2', ['group-2', ''], {
+             'view': "",
+             'edit': ["group-2", ""],
+             'remove': ["group-2"]
+         },
+         ['group-2', ''],
+         True, [], descr_user_2, False, True, {'text': "Go to Documents"}),
+    User('uid-3', 'Hamish Mitchell', None,
+         'group-3', ['group-2'], {
+             'view': ["group-3", "group-2"],
+             'edit': ["group-2"],
+             'remove': []
+         }, ['group-2'],
+         False, ["copy", "download", "print"], descr_user_3, False, False,
+         None),
     User('uid-0', None, None,
-        None, None, {},
-        None, [], descr_user_0, False)
+         '', None, {}, [],
+         None, ["protect"], descr_user_0, False, False, None)
 ]
 
 DEFAULT_USER = USERS[0]
 
+
 # get all users
 def getAllUsers():
     return USERS
+
 
 # get user information from the request
 def getUserFromReq(req):
     uid = req.COOKIES.get('uid')
 
     for user in USERS:
-        if (user.id == uid):
+        if user.id == uid:
             return user
 
     return DEFAULT_USER
+
 
 # get users data for mentions
 def getUsersForMentions(uid):
     usersData = []
     for user in USERS:
-        if(user.id != uid and user.name != None and user.email != None):
-            usersData.append({'name':user.name, 'email':user.email})
+        if (user.id != uid and user.name is not None and user.email is not None):
+            usersData.append({'name': user.name, 'email': user.email})
     return usersData
+
+
+# get users data for protect
+def getUsersForProtect(uid):
+    usersData = []
+    for user in USERS:
+        if (user.id != uid and user.name is not None):
+            usersData.append({'id': user.id, 'name': user.name, 'email': user.email})
+    return usersData
+
+
+def find_user(searchId: Optional[str]) -> User:
+    if searchId is None:
+        return DEFAULT_USER
+    for user in USERS:
+        if not user.id == searchId:
+            continue
+        return user
+    return DEFAULT_USER

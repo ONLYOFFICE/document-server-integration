@@ -1,61 +1,69 @@
-﻿"width": "100%",
-"height": "100%",
-"type": "<%- editor.type %>",
-"documentType": "<%- editor.documentType %>",
-"token": "<%- editor.token %>",
-"document": {
-    "title": "<%- file.name %>",
-    "url": "<%- file.uri %>",
+﻿"document": {
+    "directUrl": "<%- file.directUrl %>",
     "fileType": "<%- file.ext %>",
-    "key": "<%- editor.key %>",
     "info": {
         "owner": "Me",
         "uploaded": "<%- file.created %>",
         "favorite": <%- file.favorite %>
     },
+    "key": "<%- editor.key %>",
     "permissions": {
+        "chat": <%- editor.chat %>,
         "comment": <%- editor.comment %>,
         "copy": <%- editor.copy %>,
         "download": <%- editor.download %>,
         "edit": <%- editor.isEdit %>,
-        "print": <%- editor.print %>,
         "fillForms": <%- editor.fillForms %>,
-        "modifyFilter": <%- editor.modifyFilter %>,
         "modifyContentControl": <%- editor.modifyContentControl %>,
+        "modifyFilter": <%- editor.modifyFilter %>,
+        "print": <%- editor.print %>,
         "review": <%- editor.review %>,
         "reviewGroups": <%- editor.reviewGroups %>,
-        "commentGroups": <%- editor.commentGroups %>
-    }
+        "commentGroups": <%- editor.commentGroups %>,
+        "userInfoGroups": <%- editor.userInfoGroups %>,
+        "protect": <%- editor.protect %>
+    },
+    "referenceData": {
+        "fileKey": <%- JSON.stringify(editor.fileKey) %>,
+        "instanceId": <%- JSON.stringify(editor.instanceId) %>
+    },
+    "title": "<%- file.name %>",
+    "url": "<%- file.uri %>"
 },
+"documentType": "<%- editor.documentType %>",
 "editorConfig": {
     "actionLink": <%- editor.actionData %>,
-    "mode": "<%- editor.mode %>",
-    "lang": "<%- editor.lang %>",
     "callbackUrl": "<%- editor.callbackUrl %>",
+    "coEditing": <%- JSON.stringify(editor.coEditing) %>,
     "createUrl": <%- JSON.stringify(editor.createUrl) %>,
+    "customization": {
+        "about": true,
+        "comments": true,
+        "close": <%- JSON.stringify(editor.close) %>,
+        "feedback": true,
+        "forcesave": false,
+        "goback": <%- JSON.stringify(editor.goback) %>,
+        "submitForm": <%- editor.submitForm %>
+    },
+    "embedded": {
+        "embedUrl": "<%- file.uriUser %>",
+        "saveUrl": "<%- file.uriUser %>",
+        "shareUrl": "<%- file.uriUser %>",
+        "toolbarDocked": "top"
+    },
+    "fileChoiceUrl": "<%- editor.fileChoiceUrl %>",
+    "lang": "<%- editor.lang %>",
+    "mode": "<%- editor.mode %>",
+    "plugins": <%- editor.plugins %>,
     "templates": <%- JSON.stringify(editor.templates) %>,
     "user": {
         "group": "<%- editor.userGroup %>",
         "id": "<%- editor.userid %>",
+        "image": "<%- editor.userImage %>",
         "name": "<%- editor.name %>"
-    },
-    "embedded": {
-        "saveUrl": "<%- file.uriUser %>",
-        "embedUrl": "<%- file.uriUser %>",
-        "shareUrl": "<%- file.uriUser %>",
-        "toolbarDocked": "top"
-    },
-    "customization": {
-        "about": true,
-        "chat": true,
-        "comments": true,
-        "feedback": true,
-        "forcesave": false,
-        "goback": {
-            "url": "<%- editor.backUrl %>"
-        },
-        "submitForm": <%- editor.submitForm %>
-    },
-    "fileChoiceUrl": "<%- editor.fileChoiceUrl %>",
-    "plugins": <%- editor.plugins %>
-}
+    }
+},
+"height": "100%",
+"token": "<%- editor.token %>",
+"type": "<%- editor.type %>",
+"width": "100%"

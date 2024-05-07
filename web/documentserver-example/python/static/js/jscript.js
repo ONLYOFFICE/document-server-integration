@@ -1,33 +1,59 @@
-﻿/*
+﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
- * The MIT License (MIT)
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
+ *     http://www.apache.org/licenses/LICENSE-2.0
  *
- * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
-*/
+ */
+
+var directUrl;
+var formatManager;
+
+window.onload = function () {
+    fetch('formats')
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.formats) {
+                let formats = [];
+                data.formats.forEach(format => {
+                    formats.push(new Format(
+                        format.name,
+                        format.type,
+                        format.actions,
+                        format.convert,
+                        format.mime
+                    ));
+                });
+                formatManager = new FormatManager(formats);
+            }
+        })
+}
 
 if (typeof jQuery !== "undefined") {
     jq = jQuery.noConflict();
 
+    directUrl = getUrlVars()["directUrl"] == "true";
+
     mustReload = false;
+
+    if (directUrl)
+        jq("#directUrl").prop("checked", directUrl);
+    else
+        directUrl = jq("#directUrl").prop("checked");
+
+    jq("#directUrl").change(function() {
+        window.location = "?directUrl=" + jq(this).prop("checked");
+    });
 
     jq(function () {
         jq("#fileupload").fileupload({
@@ -82,7 +108,8 @@ if (typeof jQuery !== "undefined") {
     });
 
     var timer = null;
-    var checkConvert = function (filePass = null) {
+    var checkConvert = function (filePass, fileType) {
+        filePass = filePass ? filePass : null;
         if (timer !== null) {
             clearTimeout(timer);
         }
@@ -97,7 +124,7 @@ if (typeof jQuery !== "undefined") {
         var posExt = fileName.lastIndexOf(".");
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
-        if (ConverExtList.indexOf(posExt) === -1) {
+        if (!formatManager.isAutoConvertible(posExt)) {
             jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
@@ -109,7 +136,7 @@ if (typeof jQuery !== "undefined") {
                 contentType: "text/xml",
                 type: "post",
                 dataType: "json",
-                data: JSON.stringify({ filename: fileName, filePass: filePass }),
+                data: JSON.stringify({ filename: fileName, filePass: filePass, fileExt: fileType }),
                 url: UrlConverter,
                 complete: function (data) {
                     var responseText = data.responseText;
@@ -125,6 +152,12 @@ if (typeof jQuery !== "undefined") {
                             }
                             return;
                         } else {
+                            if (response.error.includes("Error conversion output format")){
+                                jq("#select-file-type").removeClass("invisible");
+                                jq("#step2").removeClass("current");
+                                jq("#hiddenFileName").attr("placeholder",filePass);
+                                return;
+                            }
                             jq(".current").removeClass("current");
                             jq(".step:not(.done)").addClass("error");
                             jq("#mainProgress .error-message").show().find("span").text(response.error);
@@ -136,7 +169,7 @@ if (typeof jQuery !== "undefined") {
                     jq("#hiddenFileName").val(response.filename);
 
                     if (response.step && response.step < 100) {
-                        checkConvert(filePass);
+                        checkConvert(filePass, fileType);
                     } else {
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
@@ -171,10 +204,10 @@ if (typeof jQuery !== "undefined") {
         jq("#beginView, #beginEmbedded").removeClass("disable");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf(".");
+        var posExt = fileName.lastIndexOf(".") + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
-        if (EditedExtList.indexOf(posExt) !== -1) {
+        if (formatManager.isEditable(posExt) || formatManager.isFillable(posExt)) {
             jq("#beginEdit").removeClass("disable");
         }
     };
@@ -206,6 +239,15 @@ if (typeof jQuery !== "undefined") {
         });
     };
 
+    jq(document).on("click", ".file-type:not(.disable)", function () {
+        const currentElement = jq(this);
+        var fileType = currentElement.attr("data");
+        var filePass = jq("#hiddenFileName").attr("placeholder");
+        jq('.file-type').addClass(["disable", "pale"]);
+        currentElement.removeClass("pale");
+        checkConvert(filePass, fileType);
+    });
+
     jq(document).on("click", "#enterPass", function () {
         var filePass = jq("#filePass").val();
         if (filePass) {
@@ -225,23 +267,25 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?mode=edit&filename=" + fileId;
+        var url = UrlEditor + "?mode=edit&filename=" + fileId+ "&directUrl=" + directUrl;
         window.open(url, "_blank");
         jq("#hiddenFileName").val("");
         jq.unblockUI();
+        document.location.reload();
     });
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?mode=view&filename=" + fileId;
+        var url = UrlEditor + "?mode=view&filename=" + fileId+ "&directUrl=" + directUrl;
         window.open(url, "_blank");
         jq("#hiddenFileName").val("");
         jq.unblockUI();
+        document.location.reload();
     });
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?type=embedded&mode=embedded&filename=" + fileId;
+        var url = UrlEditor + "?type=embedded&mode=embedded&filename=" + fileId + "&directUrl=" + directUrl;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -283,30 +327,94 @@ if (typeof jQuery !== "undefined") {
         });
     });
 
-    jq(".info").mouseover(function (event) {
+    jq(document).on("click", ".clear-all", function () {
+        if (confirm("Delete all the files?")) {
+            jq.ajax({
+                async: true,
+                contentType: "text/xml",
+                type: "delete",
+                url: "remove",
+                complete: function (data) {
+                    if (JSON.parse(data.responseText).success) {
+                        window.location.reload(true);
+                    }
+                }
+            });
+        }
+    });
+
+        function showUserTooltip (isMobile) {
+        if ( jq("div#portal-info").is(":hidden") ) {
+            jq("div#portal-info").show();
+            jq("div.stored-list").hide();
+        } else if (isMobile && jq("div#portal-info").is(":visible")) {
+            jq("div#portal-info").hide();
+            jq("div.stored-list").show();
+        }
+    };
+
+    var fileList = jq("tr.tableRow");
+
+    var mouseIsOverTooltip = false;
+    var hideTooltipTimeout = null;
+    if (/android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i
+        .test(navigator.userAgent)) {
+            if (fileList.length > 0) {
+                if (hideTooltipTimeout != null) {
+                    clearTimeout(hideTooltipTimeout);
+                }
+                jq("#info").on("touchend", function () {
+                    showUserTooltip(true);
+                });
+            }
+    } else {
+        jq("#info").mouseover(function (event) {
+            if (fileList.length > 0) {
+                if (hideTooltipTimeout != null) {
+                    clearTimeout(hideTooltipTimeout);
+                }
+                showUserTooltip(false);
+
+                jq("div#portal-info").mouseenter(function () {
+                    mouseIsOverTooltip = true;
+                }).mouseleave(function () {
+                    mouseIsOverTooltip = false;
+                    jq("div.stored-list").show();
+                    jq("div#portal-info").hide();
+                })
+            }
+        }).mouseleave(function () {
+            hideTooltipTimeout = setTimeout(function () {
+                if (mouseIsOverTooltip == false && fileList.length > 0) {
+                    jq("div.stored-list").show();
+                    jq("div#portal-info").hide();
+                }
+            }, 500);
+        });
+    }
+
+    function getUrlVars() {
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
+    };
+
+    jq(".info-tooltip").mouseover(function (event) {
         var target = event.target;
         var id = target.dataset.id ? target.dataset.id : target.id;
         var tooltip = target.dataset.tooltip;
 
-        jq("<div class='tooltip'>" + tooltip + "</div><div class='arrow'></div>").appendTo("body");
+        jq("<div class='tooltip'>" + tooltip + "<div class='arrow'></div></div>").appendTo("body");
 
-        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth();
-
-        var topElement = jq("#" + id).offset().top;
-        var halfHeightElement = jq("#" + id).outerHeight() / 2;
-
-        var heightToFooter = jq("footer").offset().top - (topElement + halfHeightElement);
-        var halfHeightTooltip = jq("div.tooltip").outerHeight() / 2;
-        if (heightToFooter > (halfHeightTooltip + 10)) {
-            var top = topElement + halfHeightElement - halfHeightTooltip;
-        } else {
-            var top = jq("footer").offset().top - jq("div.tooltip").outerHeight() - 10;
-        }
-
-        jq("div.tooltip").css({"top": top, "left": left + 10});
-        jq("div.arrow").css({"top": topElement + halfHeightElement, "left": left + 6});
+        var top = jq("#" + id).offset().top + jq("#" + id).outerHeight() / 2 - jq("div.tooltip").outerHeight() / 2;
+        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth() + 20;
+        jq("div.tooltip").css({"top": top, "left": left});
     }).mouseout(function () {
         jq("div.tooltip").remove();
-        jq("div.arrow").remove();
     });
 }

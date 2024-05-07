@@ -1,0 +1,123 @@
+name: Release
+
+on:
+  push:
+    branches: [master,main]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Clone Submodules
+        run: |
+          cd ${{ github.workspace }}
+          git submodule update --init --recursive
+      - name: Get Info
+        run: |
+          echo "version=$(grep -Eo '[0-9]+(\.[0-9]+)+' CHANGELOG.md | head -n 1)" >> $GITHUB_OUTPUT
+        id: info
+      - name: Generate Changelog
+        run: |
+          awk '/## [0-9]/{p++} p; /## [0-9]/{if (p > 1) exit}' CHANGELOG.md | awk 'NR>2 {print last} {last=$0}' > RELEASE.md
+      - name: Build Csharp MVC Artifact
+        run: |
+          cd ${{ github.workspace }}
+          cd ./web/documentserver-example/csharp-mvc
+          mkdir -p ./'DotNet (Csharp MVC) Example'
+          rsync -av --exclude='DotNet (Csharp MVC) Example' ./ ./'DotNet (Csharp MVC) Example'
+          cd ./'DotNet (Csharp MVC) Example'/assets
+          rm -rf .git
+      - name: Build Csharp Artifact
+        run: |
+          cd ${{ github.workspace }}
+          cd ./web/documentserver-example/csharp
+          mkdir -p ./'DotNet (Csharp) Example'
+          rsync -av --exclude='DotNet (Csharp) Example' ./ ./'DotNet (Csharp) Example'
+          rm -rf ./'DotNet (Csharp) Example'/assets/.git
+      - name: Build Java Artifact
+        run: |
+          cd ${{ github.workspace }}
+          cd ./web/documentserver-example/java
+          mkdir -p ./'Java Example'
+          rsync -av --exclude='Java Example' ./ ./'Java Example'
+          rm -rf ./'Java Example'/src/main/resources/assets/document-formats/.git
+          rm -rf ./'Java Example'/src/main/resources/assets/document-templates/.git
+      - name: Build Nodejs Artifact
+        run: |
+          cd ${{ github.workspace }}
+          cd ./web/documentserver-example/nodejs
+          mkdir -p ./'Node.js Example'
+          rsync -av --exclude='Node.js Example' ./ ./'Node.js Example'
+          rm -rf ./'Node.js Example'/public/assets/document-formats/.git
+          rm -rf ./'Node.js Example'/public/assets/document-templates/.git
+      - name: Build PHP Artifact
+        run: |
+          cd ${{ github.workspace }}
+          cd ./web/documentserver-example/php
+          mkdir -p ./'PHP Example'
+          rsync -av --exclude='PHP Example' ./ ./'PHP Example'
+          rm -rf ./'PHP Example'/assets/document-formats/.git
+          rm -rf ./'PHP Example'/assets/document-templates/.git
+      - name: Build Python Artifact
+        run: |
+          cd ${{ github.workspace }}
+          cd ./web/documentserver-example/python
+          mkdir -p ./'Python Example'
+          rsync -av --exclude='Python Example' ./ ./'Python Example'
+          rm -rf ./'Python Example'/assets/document-formats/.git
+          rm -rf ./'Python Example'/assets/document-templates/.git
+      - name: Build Ruby Artifact
+        run: |
+          cd ${{ github.workspace }}
+          cd ./web/documentserver-example/ruby
+          mkdir -p ./'Ruby Example'
+          rsync -av --exclude='Ruby Example' ./ ./'Ruby Example'
+          rm -rf ./'Ruby Example'/public/assets/document-formats/.git
+          rm -rf ./'Ruby Example'/public/assets/document-templates/.git
+      - name: Build Spring Artifact
+        run: |
+          cd ${{ github.workspace }}
+          cd ./web/documentserver-example/java-spring
+          mkdir -p ./'Java Spring Example'
+          rsync -av --exclude='Java Spring Example' ./ ./'Java Spring Example'
+          rm -rf ./'Java Spring Example'/src/main/resources/assets/document-formats/.git
+          rm -rf ./'Java Spring Example'/src/main/resources/assets/document-templates/.git
+      - name: Pack Artifacts
+        run: |
+          cd ${{ github.workspace }}/web/documentserver-example/csharp-mvc
+          zip -r DotNet.Csharp.MVC.Example.zip ./'DotNet (Csharp MVC) Example'
+          cd ${{ github.workspace }}/web/documentserver-example/csharp
+          zip -r DotNet.Csharp.Example.zip ./'DotNet (Csharp) Example'
+          cd ${{ github.workspace }}/web/documentserver-example/java
+          zip -r Java.Example.zip ./'Java Example'
+          cd ${{ github.workspace }}/web/documentserver-example/nodejs
+          zip -r Node.js.Example.zip ./'Node.js Example'
+          cd ${{ github.workspace }}/web/documentserver-example/php
+          zip -r PHP.Example.zip ./'PHP Example'
+          cd ${{ github.workspace }}/web/documentserver-example/python
+          zip -r Python.Example.zip ./'Python Example'
+          cd ${{ github.workspace }}/web/documentserver-example/ruby
+          zip -r Ruby.Example.zip ./'Ruby Example'
+          cd ${{ github.workspace }}/web/documentserver-example/java-spring
+          zip -r Java.Spring.Example.zip ./'Java Spring Example'
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        id: create_release
+        with:
+          bodyFile: RELEASE.md
+          artifacts: "
+            ${{ github.workspace }}/web/documentserver-example/csharp-mvc/DotNet.Csharp.MVC.Example.zip,
+            ${{ github.workspace }}/web/documentserver-example/csharp/DotNet.Csharp.Example.zip,
+            ${{ github.workspace }}/web/documentserver-example/java/Java.Example.zip,
+            ${{ github.workspace }}/web/documentserver-example/nodejs/Node.js.Example.zip,
+            ${{ github.workspace }}/web/documentserver-example/php/PHP.Example.zip,
+            ${{ github.workspace }}/web/documentserver-example/python/Python.Example.zip,
+            ${{ github.workspace }}/web/documentserver-example/ruby/Ruby.Example.zip,
+            ${{ github.workspace }}/web/documentserver-example/java-spring/Java.Spring.Example.zip
+          "
+          tag: v${{ steps.info.outputs.version }}

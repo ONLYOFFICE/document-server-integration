@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,10 @@ namespace OnlineEditorsExample
             "Can review all the changes",
             "Can perform all actions with comments",
             "The file favorite state is undefined",
-            "Can create files from templates using data from the editor"
+            "Can create files from templates using data from the editor",
+            "Can see the information about all users",
+            "Has an avatar",
+            "Can submit forms"
         };
 
         static List<string> descr_user_2 = new List<string>()
@@ -38,19 +41,26 @@ namespace OnlineEditorsExample
             "Can review only his own changes or changes made by users with no group",
             "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
             "This file is marked as favorite",
-            "Can create new files from the editor"
+            "Can create new files from the editor",
+            "Can see the information about users from Group2 and users who don’t belong to any group",
+            "Has an avatar",
+            "Can’t submit forms"
         };
 
         static List<string> descr_user_3 = new List<string>()
         {
             "Belongs to Group3",
             "Can review changes made by Group2 users",
-            "Can view comments left by Group2 and Group3 users. Can edit comments left by Group2 users",
+            "Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users",
             "This file isn’t marked as favorite",
             "Can’t copy data from the file to clipboard",
             "Can’t download the file",
             "Can’t print the file",
-            "Can create new files from the editor"
+            "Can create new files from the editor",
+            "Can see the information about Group2 users",
+            "Can’t submit forms",
+            "Can't close history",
+            "Can't restore the file version"
         };
 
         static List<string> descr_user_0 = new List<string>()
@@ -61,26 +71,35 @@ namespace OnlineEditorsExample
             "Can perform all actions with comments",
             "The file favorite state is undefined",
             "Can't mention others in comments",
-            "Can't create new files from the editor"
+            "Can't create new files from the editor",
+            "Can’t see anyone’s information",
+            "Can't rename files from the editor",
+            "Can't view chat",
+            "Can't protect file",
+            "View file without collaboration",
+            "Can’t submit forms"
         };
 
         private static List<User> users = new List<User>() {
             new User(
                     "uid-1",
                     "John Smith",
-                    "smith@mail.ru",
-                    null,
+                    "smith@example.com",
+                    "",
                     null,
                     new Dictionary<string, object>(),
                     null,
+                    null,
                     new List<string>(),
                     descr_user_1,
-                    true
+                    true,
+                    true,
+                    new Goback(null, false)
                 ),
             new User(
                     "uid-2",
                     "Mark Pottato",
-                    "pottato@mail.ru",
+                    "pottato@example.com",
                     "group-2",
                     new List<string>() { "group-2", "" },
                     new Dictionary<string, object>()
@@ -89,15 +108,18 @@ namespace OnlineEditorsExample
                         { "edit", new List<string>() { "group-2", "" } },
                         { "remove", new List<string>() { "group-2" } }
                     },
+                    new List<string>() { "group-2", "" },
                     true,
                     new List<string>(),
                     descr_user_2,
-                    false
+                    false,
+                    true,
+                    new Goback("Go to Documents",null)
                 ),
             new User(
                     "uid-3",
                     "Hamish Mitchell",
-                    "mitchell@mail.ru",
+                    null,
                     "group-3",
                     new List<string>() { "group-2" },
                     new Dictionary<string,object>()
@@ -106,22 +128,28 @@ namespace OnlineEditorsExample
                         { "edit", new List<string>() { "group-2" } },
                         { "remove", new List<string>() { } }
                     },
+                    new List<string>() { "group-2" },
                     false,
                     new List<string>() { "copy", "download", "print" },
                     descr_user_3,
-                    false
+                    false,
+                    false,
+                    null
                 ),
             new User(
                     "uid-0",
                     null,
                     null,
-                    null,
+                    "",
                     null,
                     new Dictionary<string, object>(),
-                    null,
                     new List<string>(),
+                    null,
+                    new List<string>() { "protect" },
                     descr_user_0,
-                    false
+                    false,
+                    false,
+                    null
                 )
         };
 
@@ -159,6 +187,44 @@ namespace OnlineEditorsExample
             }
             return usersData;
         }
+
+        public static List<Dictionary<string, object>> getUsersInfo(string id)
+        {
+            List<Dictionary<string, object>> usersData = new List<Dictionary<string, object>>();
+            if(id != "uid-0"){
+                foreach (User user in users)
+                {
+                    usersData.Add(new Dictionary<string, object>()
+                    {
+                        {"id", user.id},
+                        {"name", user.name },
+                        {"email", user.email },
+                        {"image", user.avatar ? _Default.GetServerUrl(false) + "/App_Themes/images/"+ user.id + ".png" : null }
+                    });
+                }
+            }
+            return usersData;
+        }
+
+        // get a list of users with their names and emails for protect
+        public static List<Dictionary<string, object>> getUsersForProtect(string id)
+        {
+            List<Dictionary<string, object>> usersData = new List<Dictionary<string, object>>();
+
+            foreach (User user in users)
+            {
+                if (!user.id.Equals(id) && user.name != null)
+                {
+                    usersData.Add(new Dictionary<string, object>()
+                    {
+                        {"name", user.name },
+                        {"email", user.email },
+                        {"id", user.id}
+                    });
+                }
+            }
+            return usersData;
+        }
     }
 
     public class User
@@ -173,8 +239,11 @@ namespace OnlineEditorsExample
         public List<string> deniedPermissions;
         public List<string> descriptions;
         public bool templates;
+        public List<string> userInfoGroups;
+        public bool avatar;
+        public Goback goback;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates, bool avatar, Goback goback)
         {
             this.id = id;
             this.name = name;
@@ -186,6 +255,23 @@ namespace OnlineEditorsExample
             this.deniedPermissions = deniedPermissions;
             this.descriptions = descriptions;
             this.templates = templates;
+            this.userInfoGroups = userInfoGroups;
+            this.avatar = avatar;
+            this.goback = goback;
+        }
+    }
+
+    public class Goback
+    {
+        public string text;
+        public bool? blank;
+
+        public Goback(){}
+
+        public Goback(string text, bool? blank)
+        {
+            this.text = text;
+            this.blank = blank;
         }
     }
 }

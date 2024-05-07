@@ -1,0 +1,31 @@
+name: Artifact Ruby
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths: ['web/documentserver-example/ruby/**']
+  pull_request:
+    branches: [master]
+    paths: ['web/documentserver-example/ruby/**']
+
+jobs:
+  artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Build Artifact
+        run: |
+          cd ${{ github.workspace }}
+          git submodule update --init --recursive
+          cd ./web/documentserver-example/ruby
+          mkdir -p ./deploy/'Ruby Example'
+          rsync -av --exclude='deploy' ./ ./deploy/'Ruby Example'
+          rm -rf ./deploy/'Ruby Example'/public/assets/document-formats/.git
+          rm -rf ./deploy/'Ruby Example'/public/assets/document-templates/.git
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Ruby.Example
+          path: ${{ github.workspace }}/web/documentserver-example/ruby/deploy

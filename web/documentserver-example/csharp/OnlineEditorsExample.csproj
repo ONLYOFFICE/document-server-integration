@@ -11,7 +11,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>OnlineEditorsExample</RootNamespace>
     <AssemblyName>OnlineEditorsExample</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <UpgradeBackupLocation>
@@ -23,6 +23,8 @@
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
     <TargetFrameworkProfile />
+    <Use64BitIISExpress />
+    <UseGlobalApplicationHostFile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -44,51 +46,66 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="JWT, Version=9.0.0.0, Culture=neutral, PublicKeyToken=6f98bca0f40f2ecf, processorArchitecture=MSIL">
+      <HintPath>packages\JWT.9.0.3\lib\net46\JWT.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
-    <Reference Include="Microsoft.Web.Infrastructure">
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Helpers">
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Razor">
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.Razor.3.2.7\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Services" />
-    <Reference Include="System.Web.WebPages">
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.WebPages.Deployment">
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.WebPages.Razor">
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>packages\Microsoft.AspNet.WebPages.3.2.7\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Themes\images\block-content-24.png" />
+    <Content Include="App_Themes\images\block-content.svg" />
     <Content Include="App_Themes\images\cell.ico" />
-    <Content Include="App_Themes\images\comment-24.png" />
-    <Content Include="App_Themes\images\delete-24.png" />
-    <Content Include="App_Themes\images\desktop-24.png" />
-    <Content Include="App_Themes\images\download-24.png" />
-    <Content Include="App_Themes\images\embeded-24.png" />
-    <Content Include="App_Themes\images\file_docx.png" />
-    <Content Include="App_Themes\images\file_pptx.png" />
-    <Content Include="App_Themes\images\file_upload.png" />
-    <Content Include="App_Themes\images\file_xlsx.png" />
-    <Content Include="App_Themes\images\fill-forms-24.png" />
-    <Content Include="App_Themes\images\filter-24.png" />
-    <Content Include="App_Themes\images\icon_docx.png" />
-    <Content Include="App_Themes\images\icon_pptx.png" />
-    <Content Include="App_Themes\images\icon_xlsx.png" />
-    <Content Include="App_Themes\images\mobile-24.png" />
-    <Content Include="App_Themes\images\review-24.png" />
+    <Content Include="App_Themes\images\close.svg" />
+    <Content Include="App_Themes\images\comment.svg" />
+    <Content Include="App_Themes\images\delete.svg" />
+    <Content Include="App_Themes\images\desktop.svg" />
+    <Content Include="App_Themes\images\done.svg" />
+    <Content Include="App_Themes\images\download.svg" />
+    <Content Include="App_Themes\images\embeded.svg" />
+    <Content Include="App_Themes\images\error.svg" />
+    <Content Include="App_Themes\images\file_docx.svg" />
+    <Content Include="App_Themes\images\file_docxf.svg" />
+    <Content Include="App_Themes\images\file_pptx.svg" />
+    <Content Include="App_Themes\images\file_upload.svg" />
+    <Content Include="App_Themes\images\file_xlsx.svg" />
+    <Content Include="App_Themes\images\fill-forms.svg" />
+    <Content Include="App_Themes\images\filter.svg" />
+    <Content Include="App_Themes\images\icon_docx.svg" />
+    <Content Include="App_Themes\images\icon_pptx.svg" />
+    <Content Include="App_Themes\images\icon_xlsx.svg" />
+    <Content Include="App_Themes\images\info.svg" />
+    <Content Include="App_Themes\images\logo.svg" />
+    <Content Include="App_Themes\images\mobile-fill-forms.svg" />
+    <Content Include="App_Themes\images\mobile.svg" />
+    <Content Include="App_Themes\images\notdone.svg" />
+    <Content Include="App_Themes\images\review.svg" />
     <Content Include="App_Themes\images\slide.ico" />
     <Content Include="App_Themes\images\word.ico" />
+    <Content Include="App_Themes\media.css" />
     <Content Include="LICENSE" />
     <Content Include="licenses\jquery.license" />
     <Content Include="Web.config" />
@@ -102,6 +119,7 @@
       <DependentUpon>DocEditor.aspx</DependentUpon>
     </Compile>
     <Compile Include="DocumentConverter.cs" />
+    <Compile Include="FormatManager.cs" />
     <Compile Include="JwtManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Default.aspx.cs">
@@ -126,17 +144,10 @@
     <Content Include="Default.aspx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Themes\images\alert.png" />
-    <Content Include="App_Themes\images\close.png" />
-    <Content Include="App_Themes\images\corner.png" />
-    <Content Include="App_Themes\images\done.png" />
     <Content Include="App_Themes\images\loader16.gif" />
-    <Content Include="App_Themes\images\logo.png" />
-    <Content Include="App_Themes\images\question_small.png" />
     <Content Include="App_Themes\jquery-ui.css" />
     <Content Include="App_Themes\stylesheet.css" />
     <Content Include="DocEditor.aspx" />
-    <Content Include="script\jquery-1.9.0.min.js" />
     <Content Include="script\jquery-ui.min.js" />
     <Content Include="script\jquery.blockUI.js" />
     <Content Include="script\jquery.dropdownToggle.js" />
@@ -146,15 +157,23 @@
     <Content Include="WebEditor.ashx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="assets\AUTHORS.md" />
-    <Content Include="assets\LICENSE" />
-    <Content Include="assets\new\new.docx" />
-    <Content Include="assets\new\new.pptx" />
-    <Content Include="assets\new\new.xlsx" />
-    <Content Include="assets\sample\csv.csv" />
-    <Content Include="assets\sample\sample.docx" />
-    <Content Include="assets\sample\sample.pptx" />
-    <Content Include="assets\sample\sample.xlsx" />
+    <Content Include="assets\document-formats\AUTHORS.md" />
+    <Content Include="assets\document-formats\CHANGELOG.md" />
+    <Content Include="assets\document-formats\LICENSE" />
+    <Content Include="assets\document-formats\onlyoffice-docs-formats.json" />
+    <Content Include="assets\document-formats\README.md" />
+    <Content Include="assets\document-templates\AUTHORS.md" />
+    <Content Include="assets\document-templates\LICENSE" />
+    <Content Include="assets\document-templates\new\new.docx" />
+    <Content Include="assets\document-templates\new\new.docxf" />
+    <Content Include="assets\document-templates\new\new.pptx" />
+    <Content Include="assets\document-templates\new\new.xlsx" />
+    <Content Include="assets\document-templates\README.md" />
+    <Content Include="assets\document-templates\sample\csv.csv" />
+    <Content Include="assets\document-templates\sample\sample.docx" />
+    <Content Include="assets\document-templates\sample\sample.docxf" />
+    <Content Include="assets\document-templates\sample\sample.pptx" />
+    <Content Include="assets\document-templates\sample\sample.xlsx" />
     <None Include="packages.config" />
   </ItemGroup>
   <PropertyGroup>

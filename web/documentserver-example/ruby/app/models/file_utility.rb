@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 #
-# (c) Copyright Ascensio System SIA 2021
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,39 +16,23 @@
 # limitations under the License.
 #
 
+require_relative '../format/format'
+
+# Determination file type based on extensions, utilizing `@format_manager` for format management.
 class FileUtility
-
-  
-  # the document extension list
-  @@exts_document = %w(.doc .docx .docm .dot .dotx .dotm .odt .fodt .ott .rtf .txt .html .htm .mht .xml .pdf .djvu .fb2 .epub .xps .oxps)
-
-  # the spreadsheet extension list
-  @@exts_spreadsheet = %w(.xls .xlsx .xlsm .xlt .xltx .xltm .ods .fods .ots .csv)
-
-  # the presentation extension list
-  @@exts_presentation = %w(.pps .ppsx .ppsm .ppt .pptx .pptm .pot .potx .potm .odp .fodp .otp)
+  @format_manager = FormatManager.new
 
   class << self
-
-    # get file type by its name
-    def get_file_type(file_name)
-        ext = File.extname(file_name).downcase  # get file extension by its name
-
-        if @@exts_document.include? ext  # word type for document extensions
-          return 'word'
-        end
-
-        if @@exts_spreadsheet.include? ext  # cell type for spreadsheet extensions
-          return 'cell'
-        end
-
-        if @@exts_presentation.include? ext  # slide type for presentation extensions
-          return 'slide'
-        end
-
-        'word'  # the default file type is word
-    end
-
+    attr_reader :format_manager
   end
 
+  def self.get_file_type(file_name)
+    ext = File.extname(file_name).downcase
+
+    return 'word' if FileUtility.format_manager.document_extensinons.include?(ext)
+    return 'cell' if FileUtility.format_manager.spreadsheet_extensinons.include?(ext)
+    return 'slide' if FileUtility.format_manager.presentation_extensinons.include?(ext)
+
+    'word'
+  end
 end

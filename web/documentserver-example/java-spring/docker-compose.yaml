@@ -1,0 +1,15 @@
+version: '3'
+services:
+    java-spring:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        image: maven:3.8.1
+        working_dir: /java-spring
+        volumes:
+            - .:/java-spring
+        ports: 
+            - 4000:4000
+        command: mvn clean spring-boot:run
+            
+            

@@ -1,0 +1,31 @@
+name: Artifact Csharp MVC
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths: ['web/documentserver-example/csharp-mvc/**']
+  pull_request:
+    branches: [master]
+    paths: ['web/documentserver-example/csharp-mvc/**']
+
+jobs:
+  artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Build Artifact
+        run: |
+          cd ${{ github.workspace }}
+          cwd=$(pwd)
+          git submodule update --init --recursive
+          cd ./web/documentserver-example/csharp-mvc
+          mkdir -p ./deploy/'DotNet (Csharp MVC) Example'
+          rsync -av --exclude='deploy' ./ ./deploy/'DotNet (Csharp MVC) Example'
+          rm -rf ./deploy/'DotNet (Csharp MVC) Example'/assets/.git
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: DotNet.Csharp.MVC.Example
+          path: ${{ github.workspace }}/web/documentserver-example/csharp-mvc/deploy

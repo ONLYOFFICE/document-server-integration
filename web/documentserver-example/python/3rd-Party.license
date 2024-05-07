@@ -1,0 +1,61 @@
+ONLYOFFICE Applications example uses code from the following 3rd party projects:
+
+django-stubs  - PEP-484 stubs for Django. (https://github.com/typeddjango/django-stubs/blob/master/LICENSE.md)
+License:        MIT
+License File:   django-stubs.license
+
+Django        - Django is a high-level Python web framework that encourages rapid development and clean, pragmatic design. Thanks for checking it out. (https://github.com/django/django/blob/main/LICENSE)
+License:        BSD-3-Clause
+License File:   Django.license
+
+flake8        - flake8 is a python tool that glues together pycodestyle, pyflakes, mccabe, and third-party plugins to check the style and quality of some python code. (https://github.com/PyCQA/flake8/blob/main/LICENSE)
+License:        MIT
+License File:   flake8.license
+
+jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
+License:        MIT, GPL
+License File:   jQuery.BlockUI.license
+
+jQuery.FileUpload - File Upload widget with multiple file selection, drag&drop support, progress bar, validation and preview images, audio and video for jQuery. Supports cross-domain, chunked and resumable file uploads. Works with any server-side platform (Google App Engine, PHP, Python, Ruby on Rails, Java, etc.) that supports standard HTML form file uploads. (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.FileUpload.license
+
+jQuery.iframe-transport - jQuery Iframe Transport Plugin for File Upload (https://github.com/blueimp/jQuery-File-Upload/blob/master/LICENSE.txt)
+License:        MIT
+License File:   jQuery.iframe-transport.license
+
+jQuery        - jQuery is a new kind of JavaScript Library.        jQuery is a fast and concise JavaScript Library that simplifies HTML document traversing, event handling, animating, and Ajax interactions for rapid web development. jQuery is designed to change the way that you write JavaScript.        NOTE: This package is maintained on behalf of the library owners by the NuGet Community Packages project at https://nugetpackages.codeplex.com/ (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.license
+
+jQuery.Migrate - Upgrading libraries such as jQuery can be a lot of work, when breaking changes have been introduced. jQuery Migrate makes this easier, by restoring the APIs that were removed, and additionally shows warnings in the browser console (development version of jQuery Migrate only) when removed and/or deprecated APIs are used. (https://github.com/jquery/jquery-migrate/blob/main/LICENSE.txt)
+License:        OpenJS
+License File:   jQuery.Migrate.license
+
+jQuery.UI     - jQuery UI is an open source library of interface components — interactions, full-featured widgets, and animation effects — based on the stellar jQuery javascript library . Each component is built according to jQuery's event-driven architecture (find something, manipulate it) and is themeable, making it easy for developers of any skill level to integrate and extend into their own code. (https://jquery.org/license/)
+License:        MIT
+License File:   jQuery.UI.license
+
+msgspec       - A fast serialization and validation library, with builtin support for JSON, MessagePack, YAML, and TOML. (https://github.com/jcrist/msgspec/blob/0.18.1/LICENSE)
+License:        BSD 3-Clause
+License File:   msgspec.license
+
+mypy          - Optional static typing for Python. (https://github.com/python/mypy/blob/master/LICENSE)
+License:        MIT
+License File:   mypy.license
+
+PyJWT         - A Python implementation of RFC 7519. (https://github.com/jpadilla/pyjwt/blob/master/LICENSE)
+License:        MIT
+License File:   PyJWT.license
+
+python-magic  - python-magic is a Python interface to the libmagic file type identification library. (https://github.com/ahupp/python-magic/blob/master/LICENSE)
+License:        MIT
+License File:   python-magic.license
+
+requests      - Requests allows you to send HTTP/1.1 requests extremely easily. There’s no need to manually add query strings to your URLs, or to form-encode your PUT & POST data — but nowadays, just use the json method! (https://github.com/psf/requests/blob/main/LICENSE)
+License:        Apache 2.0
+License File:   requests.license
+
+typeshed      - Collection of library stubs for Python, with static types. (https://github.com/python/typeshed/blob/main/LICENSE)
+License:        Apache 2.0
+License File:   typeshed.license

@@ -8,7 +8,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2021
+    * (c) Copyright Ascensio System SIA 2024
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -38,10 +38,14 @@
     <script type="text/javascript" language="javascript">
 
         var docEditor;
+        var config;
+        let historyObject;
 
-        var innerAlert = function (message) {
+        var innerAlert = function (message, inEditor) {
             if (console && console.log)
                 console.log(message);
+            if (inEditor && docEditor)
+                docEditor.showMessage(message);
         };
 
         var onAppReady = function () {  // the application is loaded into the browser
@@ -53,11 +57,20 @@
             document.title = title + (event.data ? "*" : "");
         };
 
+        var onRequestClose = function () {  // close editor
+            docEditor.destroyEditor();
+            innerAlert("Document editor closed successfully");
+        };
+
         var onMetaChange = function (event) {  // the meta information of the document is changed via the meta command
-            var favorite = !!event.data.favorite;
-            var title = document.title.replace(/^\☆/g, "");
-            document.title = (favorite ? "☆" : "") + title;
-            docEditor.setFavorite(favorite);  // change the Favorite icon state
+            if (event.data.favorite) {
+                var favorite = !!event.data.favorite;
+                var title = document.title.replace(/^\☆/g, "");
+                document.title = (favorite ? "☆" : "") + title;
+                docEditor.setFavorite(favorite);  // change the Favorite icon state
+            }
+
+            innerAlert("onMetaChange: " + JSON.stringify(event.data));
         };
 
         var onRequestEditRights = function () {  // the user is trying to switch the document from the viewing into the editing mode
@@ -65,25 +78,71 @@
         };
 
         var onRequestHistory = function (event) {  // the user is trying to show the document version history
-            var historyObj = <%- JSON.stringify(history) %> || null;
-
-            docEditor.refreshHistory(  // show the document version history
+            const fileName = "<%- file.name %>" || null;
+            const directUrl = "<%- file.directUrl %>" || null;
+            const data = {
+              fileName: fileName,
+              directUrl: directUrl
+            };
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "historyObj");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+              historyObject = JSON.parse(xhr.responseText);
+              docEditor.refreshHistory(  // show the document version history
                 {
-                    currentVersion: "<%- file.version %>",
-                    history: historyObj
+                  currentVersion: historyObject.countVersion,
+                  history: historyObject.history
                 });
+            }
         };
 
-        var onRequestHistoryData = function (data) {  // the user is trying to click the specific document version in the document version history
-            var version = data.data;
-            var historyData = <%- JSON.stringify(historyData) %> || null;
-
-            docEditor.setHistoryData(historyData[version-1]);  // send the link to the document for viewing the version history
+        var onRequestHistoryData = function (event) {  // the user is trying to click the specific document version in the document version history
+          const version = event.data;
+          docEditor.setHistoryData(historyObject.historyData[version-1]);  // send the link to the document for viewing the version history
         };
 
         var onRequestHistoryClose = function (event){  // the user is trying to go back to the document from viewing the document version history
             document.location.reload();
         };
+
+        var onRequestRestore = function (event) { // the user is trying to restore file version
+          const version = event.data.version;
+          const fileName = "<%- file.name %>" || null;
+          const directUrl = "<%- file.directUrl %>" || null;
+          const restoreData = {
+            version: version,
+            fileName: fileName,
+          };
+          let xhr = new XMLHttpRequest();
+          xhr.open("PUT", "restore");
+          xhr.setRequestHeader('Content-Type', 'application/json');
+          xhr.send(JSON.stringify(restoreData));
+          xhr.onload = function () {
+            const response = JSON.parse(xhr.responseText);
+            if (response.success && !response.error) {
+              const dataForHistory = {
+                fileName: fileName,
+                directUrl: directUrl
+              };
+              let xhr = new XMLHttpRequest();
+              xhr.open("POST", "historyObj");
+              xhr.setRequestHeader("Content-Type", "application/json");
+              xhr.send(JSON.stringify(dataForHistory));
+              xhr.onload = function () {
+                historyObject = JSON.parse(xhr.responseText);
+                docEditor.refreshHistory(  // show the document version history
+                  {
+                    currentVersion: historyObject.countVersion,
+                    history: historyObject.history
+                  });
+              }
+            } else {
+              innerAlert(response.error);
+            }
+          }
+        }
 
         var onError = function (event) {  // an error or some other specific event occurs
             if (event)
@@ -118,68 +177,239 @@
         };
 
         var onRequestInsertImage = function(event) {  // the user is trying to insert an image by clicking the Image from Storage button
-            docEditor.insertImage({  // insert an image into the file
-                "c": event.data.c,
-                <%- JSON.stringify(dataInsertImage).substring(1, JSON.stringify(dataInsertImage).length - 1)%>
-            })
+            var data = <%- JSON.stringify(dataInsertImage) %>;
+            data.c = event.data.c;
+            docEditor.insertImage(data);  // insert an image into the file
         };
 
-        var onRequestCompareFile = function() {  // the user is trying to select document for comparing by clicking the Document from Storage button
-            docEditor.setRevisedFile(<%- JSON.stringify(dataCompareFile) %>);  // select a document for comparing
+        var onRequestSelectDocument = function(event) {  // the user is trying to select document by clicking the Document from Storage button
+            var data = <%- JSON.stringify(dataDocument) %>;
+            data.c = event.data.c;
+            docEditor.setRequestedDocument(data);  // select a document
         };
 
-        var onRequestMailMergeRecipients = function (event) {  // the user is trying to select recipients data by clicking the Mail merge button
-            docEditor.setMailMergeRecipients(<%- JSON.stringify(dataMailMergeRecipients) %>);  // insert recipient data for mail merge into the file
+        var onRequestSelectSpreadsheet = function (event) {  // the user is trying to select recipients data by clicking the Mail merge button
+            var data = <%- JSON.stringify(dataSpreadsheet) %>;
+            data.c = event.data.c;
+            docEditor.setRequestedSpreadsheet(data);  // insert recipient data for mail merge into the file
         };
 
-        var onRequestUsers = function () {  // add mentions for not anonymous users
-            docEditor.setUsers({  // set a list of users to mention in the comments
-                "users": <%- JSON.stringify(usersForMentions) %>
+        var onRequestUsers = function (event) {
+            if (event && event.data){
+                var c = event.data.c;
+            }
+
+            switch (c) {
+                case "protect":
+                    var users = <%- JSON.stringify(usersForProtect) %>;
+                    break;
+                case "info":
+                    users = [];
+                    var allUsers = <%- JSON.stringify(usersInfo) %>;
+                    for (var i = 0; i < event.data.id.length; i++) {
+                        for (var j = 0; j < allUsers.length; j++) {
+                            if (allUsers[j].id == event.data.id[i]) {
+                                users.push(allUsers[j]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    users = <%- JSON.stringify(usersForMentions) %>;
+            }
+
+            docEditor.setUsers({
+                "c": c,
+                "users": users,
             });
         };
 
         var onRequestSendNotify = function(event) {  // the user is mentioned in a comment
-            var actionLink = JSON.stringify(event.data.actionLink);
-            console.log("onRequestSendNotify:");
-            console.log(event.data);
-            console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
+            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+            var data = JSON.stringify(event.data);
+            innerAlert("onRequestSendNotify: " + data);
         };
 
-        var events = {
+        var onRequestOpen = function(event) {  // user open external data source
+            innerAlert("onRequestOpen");
+            var windowName = event.data.windowName;
+
+            requestReference(event.data, function (data) {
+                if (data.error) {
+                    var winEditor = window.open("", windowName);
+                    winEditor.close();
+                    innerAlert(data.error, true);
+                    return;
+                }
+
+                var link = data.link;
+                window.open(link, windowName);
+            });
+        };
+
+        var onRequestReferenceData = function(event) {  // user refresh external data source
+            innerAlert("onRequestReferenceData");
+
+            requestReference(event.data, function (data) {
+                docEditor.setReferenceData(data);
+            });
+        };
+
+        var requestReference = function(data, callback) {
+            innerAlert(data);
+
+            data.directUrl = !!config.document.directUrl;
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "reference");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                callback(JSON.parse(xhr.responseText));
+            }
+        };
+
+        var onRequestReferenceSource = function (event) {
+          innerAlert("onRequestReferenceSource");
+          let xhr = new XMLHttpRequest();
+          xhr.open("GET", "files/");
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.send();
+          xhr.onload = function () {
+            if (xhr.status === 200) {
+              innerAlert(JSON.parse(xhr.responseText));
+              let fileList = JSON.parse(xhr.responseText);
+              let firstXlsxName;
+              let file;
+              for (var i = 0; i < fileList.length; i++) {
+                file = fileList[i];
+                if (file["title"]) {
+                  if (getFileExt(file["title"]) === "xlsx")
+                  {
+                    firstXlsxName = file["title"];
+                    break;
+                  }
+                }
+              }
+              if (firstXlsxName) {
+                let data = {
+                  directUrl : "<%- file.directUrl %>" || false,
+                  path : firstXlsxName
+                };
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", "reference");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(data));
+                xhr.onload = function () {
+                  if (xhr.status === 200) {
+                    docEditor.setReferenceSource(JSON.parse(xhr.responseText));
+                  } else {
+                    innerAlert("/reference - bad status");
+                  }
+                }
+              } else {
+                innerAlert("No *.xlsx files");
+              }
+            } else {
+              innerAlert("/files - bad status");
+            }
+          }
+        };
+
+        var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
+            var title = event.data.title;
+            var url = event.data.url;
+            var data = {
+                title: title,
+                url: url
+            }
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "create");
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                innerAlert(JSON.parse(xhr.responseText).file, true);
+            }
+        }
+
+        var onRequestRename = function(event) { //  the user is trying to rename file by clicking Rename... button
+            innerAlert("onRequestRename: " + JSON.stringify(event.data));
+
+            var newfilename = event.data;
+            var data = {
+                newfilename: newfilename,
+                dockey: config.document.key,
+                ext: config.document.fileType
+            };
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "rename");
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+            }
+        };
+
+        var onDocumentReady = function(){
+            fixSize();
+        };
+
+        config = {
+            <%- include("config") %>
+        };
+        config.events = {
             "onAppReady": onAppReady,
+            "onDocumentReady": onDocumentReady,
             "onDocumentStateChange": onDocumentStateChange,
-            "onRequestEditRights": onRequestEditRights,
             "onError": onError,
-            "onRequestHistory":  onRequestHistory,
-            "onRequestHistoryData": onRequestHistoryData,
-            "onRequestHistoryClose": onRequestHistoryClose,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
-            "onRequestCompareFile": onRequestCompareFile,
-            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+            "onRequestSelectDocument": onRequestSelectDocument,
+            "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
+            "onRequestOpen": onRequestOpen,
         };
 
-        var config = {<%- include("config") %>, events: events};
+        if (<%- JSON.stringify(editor.userid) %> != null) {
+            config.events.onRequestClose = onRequestClose;
+            config.events.onRequestEditRights = onRequestEditRights;
+            config.events.onRequestHistory = onRequestHistory;
+            config.events.onRequestHistoryData = onRequestHistoryData;
+            config.events.onRequestRename = onRequestRename;
+            config.events.onRequestUsers = onRequestUsers;
+            config.events.onRequestSaveAs = onRequestSaveAs;
+            config.events.onRequestSendNotify = onRequestSendNotify;
+            config.events.onRequestReferenceData = onRequestReferenceData;
+            config.events.onRequestReferenceSource = onRequestReferenceSource;
+            if (<%- JSON.stringify(editor.userid) %> != "uid-3") {
+                config.events.onRequestHistoryClose = onRequestHistoryClose;
+                config.events.onRequestRestore = onRequestRestore;
+            }
+        }
+
+        try {
+            var oformParam = new URL(window.location).searchParams.get("oform");
+        } catch (e) {}
+        if (oformParam == "false") {
+            config.document.options = config.document.options || {};
+            config.document.options["oform"] = false;
+        }
 
         var connectEditor = function () {
-            addMentions();
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
             fixSize();
         };
 
-        var addMentions = function () {
-            if (<%- JSON.stringify(usersForMentions) %> != null)
-            {
-                events.onRequestUsers = onRequestUsers;
-                events.onRequestSendNotify = onRequestSendNotify;
-            }
-        };
-
         // get the editor sizes
         var fixSize = function () {
-            var wrapEl = document.getElementsByClassName("form");
+            if (config.type !== "mobile") {
+                return;
+            }
+            var wrapEl = document.getElementsByTagName("iframe");
             if (wrapEl.length) {
                 wrapEl[0].style.height = screen.availHeight + "px";
                 window.scrollTo(0, -1);
@@ -187,12 +417,21 @@
             }
         };
 
+        const getFileExt = function (fileName) {
+          if (fileName.indexOf(".")) {
+            return fileName.split('.').reverse()[0];
+          }
+          return false;
+        };
+
         if (window.addEventListener) {
             window.addEventListener("load", connectEditor);
             window.addEventListener("resize", fixSize);
+            window.addEventListener("orientationchange", fixSize);
         } else if (window.attachEvent) {
             window.attachEvent("onload", connectEditor);
             window.attachEvent("onresize", fixSize);
+            window.attachEvent("orientationchange", fixSize);
         }
 
     </script>

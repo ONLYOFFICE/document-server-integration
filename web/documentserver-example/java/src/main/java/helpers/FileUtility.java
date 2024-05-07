@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,69 +19,39 @@
 package helpers;
 
 import entities.FileType;
+import format.Format;
+import format.FormatManager;
+
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FileUtility
-{
-    static {}
+public final class FileUtility {
+    private static FormatManager formatManager = new FormatManager();
+
+    private FileUtility() { }
 
     // get file type
-    public static FileType GetFileType(String fileName)
-    {
-        String ext = GetFileExtension(fileName).toLowerCase();
+    public static FileType getFileType(final String fileName) {
+        String ext = getFileExtension(fileName).toLowerCase();
+        List<Format> formats  = FileUtility.formatManager.getFormats();
 
-        // word type for document extensions
-        if (ExtsDocument.contains(ext))
-            return FileType.Word;
-
-        // cell type for spreadsheet extensions
-        if (ExtsSpreadsheet.contains(ext))
-            return FileType.Cell;
-
-        // slide type for presentation extensions
-        if (ExtsPresentation.contains(ext))
-            return FileType.Slide;
+        for (Format format : formats) {
+            if (format.getName().equals(ext)) {
+                return format.getType();
+            }
+        }
 
         // default file type is word
-        return FileType.Word;
+        return FileType.WORD;
     }
 
-    // document extensions
-    public static List<String> ExtsDocument = Arrays.asList
-            (
-                    ".doc", ".docx", ".docm",
-                    ".dot", ".dotx", ".dotm",
-                    ".odt", ".fodt", ".ott", ".rtf", ".txt",
-                    ".html", ".htm", ".mht", ".xml",
-                    ".pdf", ".djvu", ".fb2", ".epub", ".xps", ".oxps"
-            );
-
-    // spreadsheet extensions
-    public static List<String> ExtsSpreadsheet = Arrays.asList
-            (
-                    ".xls", ".xlsx", ".xlsm",
-                    ".xlt", ".xltx", ".xltm",
-                    ".ods", ".fods", ".ots", ".csv"
-            );
-
-    // presentation extensions
-    public static List<String> ExtsPresentation = Arrays.asList
-            (
-                    ".pps", ".ppsx", ".ppsm",
-                    ".ppt", ".pptx", ".pptm",
-                    ".pot", ".potx", ".potm",
-                    ".odp", ".fodp", ".otp"
-            );
-
-
     // get file name from the url
-    public static String GetFileName(String url)
-    {
-        if (url == null) return "";
+    public static String getFileName(final String url) {
+        if (url == null) {
+            return "";
+        }
 
         // get file name from the last part of url
         String fileName = url.substring(url.lastIndexOf('/') + 1, url.length());
@@ -90,41 +60,39 @@ public class FileUtility
     }
 
     // get file name without extension
-    public static String GetFileNameWithoutExtension(String url)
-    {
-        String fileName = GetFileName(url);
-        if (fileName == null) return null;
+    public static String getFileNameWithoutExtension(final String url) {
+        String fileName = getFileName(url);
+        if (fileName == null) {
+            return null;
+        }
         String fileNameWithoutExt = fileName.substring(0, fileName.lastIndexOf('.'));
         return fileNameWithoutExt;
     }
 
     // get file extension from url
-    public static String GetFileExtension(String url)
-    {
-        String fileName = GetFileName(url);
-        if (fileName == null) return null;
-        String fileExt = fileName.substring(fileName.lastIndexOf("."));
+    public static String getFileExtension(final String url) {
+        String fileName = getFileName(url);
+        if (fileName == null) {
+            return null;
+        }
+        String fileExt = fileName.substring(fileName.lastIndexOf(".") + 1);
         return fileExt.toLowerCase();
     }
 
     // get url parameters
-    public static Map<String, String> GetUrlParams(String url)
-    {
-        try
-        {
-            String query = new URL(url).getQuery();  // take all the parameters which are placed after ? sign in the file url
+    public static Map<String, String> getUrlParams(final String url) {
+        try {
+            // take all the parameters which are placed after ? sign in the file url
+            String query = new URL(url).getQuery();
             String[] params = query.split("&");  // parameters are separated by & sign
             Map<String, String> map = new HashMap<>();
-            for (String param : params)  // write parameters and their values to the map dictionary
-            {
+            for (String param : params) {  // write parameters and their values to the map dictionary
                 String name = param.split("=")[0];
                 String value = param.split("=")[1];
                 map.put(name, value);
             }
             return map;
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             return null;
         }
     }

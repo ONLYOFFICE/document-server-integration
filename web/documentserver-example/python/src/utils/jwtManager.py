@@ -1,40 +1,42 @@
 """
 
- (c) Copyright Ascensio System SIA 2021
- *
- The MIT License (MIT)
+ (c) Copyright Ascensio System SIA 2024
 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
+     http://www.apache.org/licenses/LICENSE-2.0
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 
 """
 
-import config
 import jwt
+from src.configuration import ConfigurationManager
+
+config_manager = ConfigurationManager()
+
 
 # check if a secret key to generate token exists or not
 def isEnabled():
-    return bool(config.DOC_SERV_JWT_SECRET)
+    return bool(config_manager.jwt_secret())
+
+
+# check if a secret key to generate token exists or not
+def useForRequest():
+    return config_manager.jwt_use_for_request()
+
 
 # encode a payload object into a token using a secret key and decodes it into the utf-8 format
 def encode(payload):
-    return jwt.encode(payload, config.DOC_SERV_JWT_SECRET, algorithm='HS256').decode('utf-8')
+    return jwt.encode(payload, config_manager.jwt_secret(), algorithm='HS256')
+
 
 # decode a token into a payload object using a secret key
 def decode(string):
-    return jwt.decode(string, config.DOC_SERV_JWT_SECRET, algorithms=['HS256'])
+    return jwt.decode(string, config_manager.jwt_secret(), algorithms=['HS256'])

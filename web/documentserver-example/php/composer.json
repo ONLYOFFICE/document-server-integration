@@ -1,0 +1,22 @@
+{
+    "require": {
+        "ext-mbstring": "*",
+        "firebase/php-jwt": "^6.8.1",
+        "symfony/serializer": "^6.3",
+        "symfony/property-access": "^6.3"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.7.2",
+        "phpunit/phpunit": "^10.2.6"
+    },
+    "autoload": {
+        "psr-4": {
+            "Example\\Common\\": "src/common/",
+            "Example\\Configuration\\" : "src/configuration/",
+            "Example\\Format\\" : "src/format/",
+            "Example\\Helpers\\" : "src/helpers/",
+            "Example\\Proxy\\": "src/proxy/",
+            "Example\\Views\\" : "src/views/"
+        }
+    }
+}

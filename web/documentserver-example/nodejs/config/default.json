@@ -1,4 +1,5 @@
 {
+  "version": "1.8.0",
   "log": {
     "appenders": [
       {
@@ -12,7 +13,7 @@
   },
   "server": {
     "port": 3000,
-    "siteUrl": "https://documentserver/",
+    "siteUrl": "http://documentserver/",
     "wopi": {
       "discovery": "hosting/discovery"
     },
@@ -21,19 +22,11 @@
     "apiUrl": "web-apps/apps/api/documents/api.js",
     "preloaderUrl": "web-apps/apps/api/documents/cache-scripts.html",
     "exampleUrl": null,
-    "viewedDocs": [".pdf", ".djvu", ".xps", ".oxps"],
-    "editedDocs": [".docx", ".xlsx", ".csv", ".pptx", ".txt"],
-    "convertedDocs": [".docm", ".doc", ".dotx", ".dotm", ".dot", ".odt", ".fodt", ".ott", ".xlsm", ".xls", ".xltx", ".xltm", ".xlt", ".ods", ".fods", ".ots", ".pptm", ".ppt", ".ppsx", ".ppsm", ".pps", ".potx", ".potm", ".pot", ".odp", ".fodp", ".otp", ".rtf", ".mht", ".html", ".htm", ".xml", ".epub", ".fb2"],
     "storageFolder": "./files",
     "storagePath": "/files",
     "maxFileSize": 1073741824,
+    "maxNameLength": 50,
     "mobileRegEx": "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino",
-    "static":[
-      {
-        "name": "/files",
-        "path": "./files"
-      }
-    ],
     "token": {
         "enable": false,
         "useforrequest": true,
@@ -42,6 +35,52 @@
         "authorizationHeaderPrefix": "Bearer ",
         "secret": "secret",
         "expiresIn": "5m"
+    },
+    "verify_peer_off": true,
+    "languages": {
+      "en": "English",
+      "ar": "Arabic",
+      "hy": "Armenian",
+      "az": "Azerbaijani",
+      "eu": "Basque",
+      "be": "Belarusian",
+      "bg": "Bulgarian",
+      "ca": "Catalan",
+      "zh": "Chinese (Simplified)",
+      "zh-TW": "Chinese (Traditional)",
+      "cs": "Czech",
+      "da": "Danish",
+      "nl": "Dutch",
+      "en-GB": "English (United Kingdom)",
+      "fi": "Finnish",
+      "fr": "French",
+      "gl": "Galego",
+      "de": "German",
+      "el": "Greek",
+      "hu": "Hungarian",
+      "id": "Indonesian",
+      "it": "Italian",
+      "ja": "Japanese",
+      "ko": "Korean",
+      "lo": "Lao",
+      "lv": "Latvian",
+      "ms": "Malay (Malaysia)",
+      "no": "Norwegian",
+      "pl": "Polish",
+      "pt": "Portuguese (Brazil)",
+      "pt-PT": "Portuguese (Portugal)",
+      "ro": "Romanian",
+      "ru": "Russian",
+      "sr-Latn-RS": "Serbian",
+      "si": "Sinhala (Sri Lanka)",
+      "sk": "Slovak",
+      "sl": "Slovenian",
+      "es": "Spanish",
+      "sv": "Swedish",
+      "tr": "Turkish",
+      "uk": "Ukrainian",
+      "vi": "Vietnamese",
+      "aa-AA": "Test Language"
     }
   },
   "plugins": {

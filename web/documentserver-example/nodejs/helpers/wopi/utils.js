@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,102 +16,143 @@
  *
  */
 
-const config = require("config");
-const configServer = config.get("server");
-const siteUrl = configServer.get('siteUrl');  // the path to the editors installation
-const syncRequest = require("sync-request");
-const xmlParser = require("fast-xml-parser");
-const he = require("he");
+const config = require('config');
+const urlModule = require('url');
+const urllib = require('urllib');
+const xmlParser = require('fast-xml-parser');
+const he = require('he');
 
-var cache = null;
+const configServer = config.get('server');
+const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
 
-// get the wopi discovery information
-function getDiscoveryInfo(maxTry = 1) {
-    let actions = [];
+let cache = null;
 
-    if (cache) return cache;
+const requestDiscovery = async function requestDiscovery(DocManager) {
+  let absSiteUrl = siteUrl;
+  if (absSiteUrl.indexOf('/') === 0) {
+    absSiteUrl = DocManager.getServerHost() + siteUrl;
+  }
 
-    try {
-        let response = syncRequest("GET", siteUrl + configServer.get("wopi.discovery"));
-        let discovery = xmlParser.parse(response.getBody().toString(), {  // create the discovery XML file with the parameters from the response
-            attributeNamePrefix: "",
+  // eslint-disable-next-line no-unused-vars
+  return new Promise((resolve, reject) => {
+    const uri = absSiteUrl + configServer.get('wopi.discovery');
+    const actions = [];
+
+    // parse url to allow request by relative url after
+    // https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
+    urllib.request(
+      urlModule.parse(uri),
+      {
+        method: 'GET',
+      },
+      (err, data) => {
+        if (data) {
+          // create the discovery XML file with the parameters from the response
+          const xmlParseOptions = {
+            attributeNamePrefix: '',
             ignoreAttributes: false,
             parseAttributeValue: true,
-            attrValueProcessor: (val, attrName) => he.decode(val, { isAttributeValue: true })
-        });
-        for (let app of discovery["wopi-discovery"]["net-zone"].app) {
-            if (!Array.isArray(app.action)) { app.action = [app.action]; }
-            for (let action of app.action) {
-                actions.push({  // write all the parameters to the actions element
-                    app: app.name,
-                    favIconUrl: app.favIconUrl,
-                    checkLicense: app.checkLicense == 'true',
-                    name: action.name,
-                    ext: action.ext || "",
-                    progid: action.progid || "",
-                    isDefault: action.default ? true : false,
-                    urlsrc: action.urlsrc,
-                    requires: action.requires || ""
+            attrValueProcessor: (val) => he.decode(val, { isAttributeValue: true }),
+          };
+          const parser = new xmlParser.XMLParser(xmlParseOptions);
+          // create the discovery XML file with the parameters from the response
+          const discovery = parser.parse(data.toString());
+          if (discovery['wopi-discovery']) {
+            discovery['wopi-discovery']['net-zone'].app.forEach((app) => {
+              let appAction = app.action;
+              if (!Array.isArray(appAction)) {
+                appAction = [appAction];
+              }
+              appAction.forEach((action) => {
+                actions.push({ // write all the parameters to the actions element
+                  app: app.name,
+                  favIconUrl: app.favIconUrl,
+                  checkLicense: app.checkLicense === 'true',
+                  name: action.name,
+                  ext: action.ext || '',
+                  progid: action.progid || '',
+                  isDefault: !!action.default,
+                  urlsrc: action.urlsrc,
+                  requires: action.requires || '',
                 });
-            }
+              });
+            });
+          }
         }
-    } catch (e) {
-        if (--maxTry > 0) {
-            setTimeout(getDiscoveryInfo, 1000, maxTry);
-        }
-        return actions;
-    }
+        resolve(actions);
+      },
+    );
+  });
+};
 
-    cache = actions;
-    setTimeout(() => cache = null, 1000 * 60 * 60); // 1 hour
+// get the wopi discovery information
+const getDiscoveryInfo = async function getDiscoveryInfo(DocManager) {
+  let actions = [];
 
+  if (cache) return cache;
+
+  try {
+    actions = await requestDiscovery(DocManager);
+  } catch (e) {
     return actions;
-}
+  }
+
+  cache = actions;
+  setTimeout(() => {
+    cache = null;
+    return cache;
+  }, 1000 * 60 * 60); // 1 hour
+
+  return actions;
+};
 
 // get actions of the specified extension
-function getActions(ext) {
-    let actions = getDiscoveryInfo();  // get the wopi discovery information
-    let filtered = [];
+const getActions = async function getActions(DocManager, ext) {
+  const actions = await getDiscoveryInfo(DocManager); // get the wopi discovery information
+  const filtered = [];
 
-    for (let action of actions) {  // and filter it by the specified extention
-        if (action.ext == ext) {
-            filtered.push(action);
-        }
+  actions.forEach((action) => { // and filter it by the specified extention
+    if (action.ext === ext) {
+      filtered.push(action);
     }
+  });
 
-    return filtered;
-}
+  return filtered;
+};
 
 // get an action for the specified extension and name
-function getAction(ext, name) {
-    let actions = getDiscoveryInfo();
+const getAction = async function getAction(DocManager, ext, name) {
+  const actions = await getDiscoveryInfo(DocManager);
+  let act = null;
 
-    for (let action of actions) {
-        if (action.ext == ext && action.name == name) {
-            return action;
-        }
+  actions.forEach((action) => {
+    if (action.ext === ext && action.name === name) {
+      act = action;
     }
+  });
 
-    return null;
-}
+  return act;
+};
 
 // get the default action for the specified extension
-function getDefaultAction(ext) {
-    let actions = getDiscoveryInfo();
+const getDefaultAction = async function getDefaultAction(DocManager, ext) {
+  const actions = await getDiscoveryInfo(DocManager);
+  let act = null;
 
-    for (let action of actions) {
-        if (action.ext == ext && action.isDefault) {
-            return action;
-        }
+  actions.forEach((action) => {
+    if (action.ext === ext && action.isDefault) {
+      act = action;
     }
+  });
 
-    return null;
-}
+  return act;
+};
 
 // get the action url
-function getActionUrl(host, userAddress, action, filename) {
-    return action.urlsrc.replace(/<.*&>/g, "") + "WOPISrc=" + host + "/wopi/files/" + filename + "@" + userAddress;
-}
+const getActionUrl = function getActionUrl(host, userAddress, action, filename) {
+  const WOPISrc = `${host}/wopi/files/${filename}@${userAddress}`;
+  return `${action.urlsrc.replace(/<.*&>/g, '')}WOPISrc=${encodeURIComponent(WOPISrc)}`;
+};
 
 exports.getDiscoveryInfo = getDiscoveryInfo;
 exports.getAction = getAction;

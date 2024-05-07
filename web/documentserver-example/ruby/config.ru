@@ -1,15 +1,6 @@
-# This file is used by Rack-based servers to start the application.
+# frozen_string_literal: true
 
-require ::File.expand_path('../config/environment', __FILE__)
+require_relative 'config/application'
+
+Rails.application.initialize!
 run Rails.application
-
-require 'rack/cors'
-use Rack::Cors do
-
- allow do
-   origins '*'
-   resource '*',
-       :headers => :any,
-       :methods => [:get]
- end
-end

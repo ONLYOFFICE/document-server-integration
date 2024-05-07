@@ -4,12 +4,14 @@
   <PropertyGroup>
     <To Condition=" '$(To)' == '' ">..\deploy\</To>
     <RootDir Condition="$(RootDir)==''">..\..\</RootDir>
-    <NameCSharp>$(To).Net (C#) Example</NameCSharp>
+    <NameCSharp>$(To)DotNet (Csharp) Example</NameCSharp>
     <DirCSharp>$(RootDir)web\documentserver-example\csharp\</DirCSharp>
-    <NameMvc>$(To).Net (C# MVC) Example</NameMvc>
+    <NameMvc>$(To)DotNet (Csharp MVC) Example</NameMvc>
     <DirMvc>$(RootDir)web\documentserver-example\csharp-mvc\</DirMvc>
     <NameJava>$(To)Java Example</NameJava>
     <DirJava>$(RootDir)web\documentserver-example\java\</DirJava>
+    <NameSpring>$(To)Java Spring Example</NameSpring>
+    <DirSpring>$(RootDir)web\documentserver-example\java-spring\</DirSpring>
     <NameNodeJS>$(To)Node.js Example</NameNodeJS>
     <DirNodeJS>$(RootDir)web\documentserver-example\nodejs\</DirNodeJS>
     <NamePHP>$(To)PHP Example</NamePHP>
@@ -24,13 +26,13 @@
     <RemoveDir Directories="$(To)" ContinueOnError="true" />
 
     <ItemGroup>
-      <ZipFilesCSharp Include="$(DirCSharp)**" Exclude="$(DirCSharp)obj\**;$(DirCSharp)**\.git" />
+      <ZipFilesCSharp Include="$(DirCSharp)**" Exclude="$(DirCSharp).vs\**;$(DirCSharp)bin\*.pdb;$(DirCSharp)bin\*.xml;$(DirCSharp)obj\**;$(DirCSharp)packages\**;$(DirCSharp)**\.git" />
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesCSharp)" DestinationFiles="@(ZipFilesCSharp->'$(NameCSharp)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameCSharp)" WorkingDirectory="$(To)" ZipFileName="$(NameCSharp).zip" />
 
     <ItemGroup>
-      <ZipFilesMVC Include="$(DirMvc)**" Exclude="$(DirMvc)obj\**;$(DirMvc)**\.git" />
+      <ZipFilesMVC Include="$(DirMvc)**" Exclude="$(DirMvc).vs\**;$(DirMvc)bin\*.pdb;$(DirMvc)bin\*.xml;$(DirMvc)obj\**;$(DirMvc)packages\**;$(DirMvc)**\.git" />
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesMVC)" DestinationFiles="@(ZipFilesMVC->'$(NameMvc)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameMvc)" WorkingDirectory="$(To)" ZipFileName="$(NameMvc).zip" />
@@ -40,6 +42,12 @@
     </ItemGroup>
     <Copy SourceFiles="@(ZipFilesJava)" DestinationFiles="@(ZipFilesJava->'$(NameJava)\%(RecursiveDir)%(Filename)%(Extension)')" />
     <Zip Files="$(NameJava)" WorkingDirectory="$(To)" ZipFileName="$(NameJava).zip" />
+
+    <ItemGroup>
+      <ZipFilesSpring Include="$(DirSpring)**" Exclude="$(DirSpring)**\.git" />
+    </ItemGroup>
+    <Copy SourceFiles="@(ZipFilesSpring)" DestinationFiles="@(ZipFilesSpring->'$(NameSpring)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Zip Files="$(NameSpring)" WorkingDirectory="$(To)" ZipFileName="$(NameSpring).zip" />
 
     <ItemGroup>
       <ZipFilesNodeJS Include="$(DirNodeJS)**" Exclude="$(DirNodeJS)node_modules\**;$(DirNodeJS)**\.git" />

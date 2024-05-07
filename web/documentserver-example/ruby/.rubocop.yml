@@ -1,0 +1,163 @@
+require: rubocop-rails
+
+AllCops:
+  NewCops: enable
+
+# Bundler
+
+Bundler/GemVersion:
+  Enabled: true
+  EnforcedStyle: required
+
+# Layout
+
+Layout/EmptyComment:
+  Enabled: true
+  AllowBorderComment: false
+  AllowMarginComment: true
+
+Layout/EmptyLineAfterGuardClause:
+  Enabled: false
+
+Layout/EndOfLine:
+  Enabled: true
+  EnforcedStyle: lf
+
+Layout/FirstArrayElementLineBreak:
+  Enabled: true
+  AllowMultilineFinalElement: false
+
+Layout/FirstHashElementLineBreak:
+  Enabled: true
+  AllowMultilineFinalElement: false
+
+Layout/FirstMethodArgumentLineBreak:
+  Enabled: true
+  AllowMultilineFinalElement: false
+
+Layout/FirstMethodParameterLineBreak:
+  Enabled: true
+  AllowMultilineFinalElement: false
+
+Layout/LineLength:
+  Enabled: true
+  Max: 120
+
+Layout/MultilineArrayLineBreaks:
+  Enabled: true
+  AllowMultilineFinalElement: false
+
+Layout/MultilineAssignmentLayout:
+  Enabled: true
+  EnforcedStyle: new_line
+  SupportedTypes: []
+
+Layout/MultilineHashKeyLineBreaks:
+  Enabled: true
+  AllowMultilineFinalElement: false
+
+Layout/MultilineMethodArgumentLineBreaks:
+  Enabled: true
+  AllowMultilineFinalElement: false
+
+Layout/MultilineMethodParameterLineBreaks:
+  Enabled: true
+  AllowMultilineFinalElement: false
+
+Layout/SingleLineBlockChain:
+  Enabled: true
+
+# Lint
+
+Lint/NumberConversion:
+  Enabled: true
+
+Lint/DuplicateBranch:
+  Enabled: false
+
+# Metrics
+
+Metrics:
+  Enabled: false
+
+# Naming
+
+Naming/InclusiveLanguage:
+  Enabled: true
+
+# Style
+
+Style/AccessModifierDeclarations:
+  Enabled: true
+  EnforcedStyle: inline
+
+Style/AccessorGrouping:
+  Enabled: true
+  EnforcedStyle: separated
+
+Style/ArrayCoercion:
+  Enabled: true
+
+Style/ClassAndModuleChildren:
+  Enabled: true
+  EnforcedStyle: compact
+
+Style/ClassMethodsDefinitions:
+  Enabled: true
+
+Style/CollectionMethods:
+  Enabled: true
+
+Style/DateTime:
+  Enabled: true
+
+Style/EndlessMethod:
+  Enabled: true
+  EnforcedStyle: disallow
+
+Style/FrozenStringLiteralComment:
+  Enabled: true
+  EnforcedStyle: always
+  Exclude:
+  - "Gemfile"
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/Lambda:
+  Enabled: true
+  EnforcedStyle: lambda
+
+Style/MethodCallWithArgsParentheses:
+  Enabled: true
+  AllowedMethods: []
+  AllowedPatterns: []
+
+Style/MethodCalledOnDoEndBlock:
+  Enabled: true
+
+Style/MissingElse:
+  Enabled: true
+  EnforcedStyle: case
+
+Style/MultipleComparison:
+  Enabled: false
+
+Style/NumberedParameters:
+  Enabled: true
+  EnforcedStyle: disallow
+
+Style/ParenthesesAroundCondition:
+  Enabled: true
+  AllowInMultilineConditions: true
+
+Style/StringHashKeys:
+  Enabled: true
+
+Style/SymbolArray:
+  Enabled: true
+  EnforcedStyle: brackets
+
+Style/WordArray:
+  Enabled: true
+  EnforcedStyle: brackets

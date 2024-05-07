@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ html {
 }
 
 body {
+    display: block;
     background: #FFFFFF;
     color: #333333;
     font-family: Open Sans;
@@ -71,6 +72,7 @@ header img {
 }
 
 .main{
+    display: table;
     height: calc(100% - 112px);
     min-height: 536px;
 }
@@ -95,6 +97,10 @@ header img {
     padding: 48px 32px 24px;
     position: relative;
     width: 896px;
+}
+
+#portal-info {
+    max-width: 65vw;
 }
 
 .portal-name {
@@ -157,7 +163,11 @@ label .checkbox {
     background-image: url("img/file_pptx.svg");
 }
 
-.create-sample {
+.try-editor.form {
+    background-image: url("img/file_docxf.svg");
+}
+
+.side-option {
     color: #666666;
     line-height: 24px;
 }
@@ -218,6 +228,33 @@ label .checkbox {
 .button.gray:not(.disable):hover {
     border: 1px solid #FF6F3D;
     color: #FF6F3D;
+}
+
+.button.file-type {
+    font-size: 11px;
+    color: #FFFFFF;
+    padding: 8px 8px;
+    margin-right: 10px;
+}
+
+.button.file-type.disable {
+    cursor: default;
+}
+
+.button.file-type.pale {
+    opacity: 30%;
+}
+
+.button.file-type.document {
+    background: #446995;
+}
+
+.button.file-type.spreadsheet {
+    background: #40865C;
+}
+
+.button.file-type.presentation {
+    background: #AA5252;
 }
 
 .upload-panel {
@@ -357,7 +394,7 @@ footer {
     color: #AAAAAA;
     height: 64px;
     width: 100%;
-	position: absolute;
+	position: relative;
 	left: 0;
 	bottom: 0;
 }
@@ -585,6 +622,29 @@ footer table tr td:first-child {
     width: 4%;
 }
 
+.storedHeader {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.storedHeaderClearAll {
+    padding-right: 52px;
+}
+
+.clear-all {
+    display: inline-block;
+    width: 100px;
+    padding: 2px;
+    outline: 1px solid #E5E5E5;
+    text-align: center;
+    cursor:pointer;
+    text-transform: uppercase;
+    background-color: #F5F5F5;
+    color: #666666;
+}
+
 .select-user {
     color: #444444;
     font-family: Open Sans;
@@ -596,29 +656,6 @@ footer table tr td:first-child {
 .info{
     cursor: pointer;
     margin: -2px 5px;
-}
-
-.tooltip {
-    background: #FFFFFF;
-    border-radius: 5px;
-    box-shadow: 0px 7px 25px rgba(85, 85, 85, 0.15);
-    color: #666666;
-    line-height: 160%;
-    max-width: 455px;
-    padding: 14px;
-    position: absolute;
-}
-
- .tooltip ul{
-     margin: 0;
-}
-
-.arrow{
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-    border-right: 8px solid #FFFFFF;
-    position: absolute;
-    transform: translate(-50%, -50%);
 }
 
 .user-block-table {
@@ -712,27 +749,6 @@ footer table tr td:first-child {
     word-wrap: break-word;
 }
 
-.menu {
-    cursor: pointer;
-    display: none;
-    flex-wrap: nowrap;
-    flex-direction: column;
-    justify-content: space-between;
-    top: 10px;
-    left: 12px;
-    position: absolute;
-    content: "";
-    height: 26px;
-    width: 30px;
-}
-
-.menu span {
-    content: "";
-    width: 26px;
-    height: 3px;
-    background: rgb(194, 194, 194);
-}
-
 html {
     overflow-x: hidden;
 }
@@ -768,4 +784,51 @@ html {
 
 .firstContentCellViewers {
     margin-left: auto;
+}
+
+.user-descr {
+    display: inline-table;
+    width: 30vw;
+    min-width: 200px;
+    max-width: 400px;
+    margin-top: 20px;
+}
+
+.user-descr > b {
+    margin-left: 25px;
+}
+
+.buttonsMobile.indent{
+    padding-left: 35px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.invisible {
+    display: none;
+}
+
+.tooltip {
+    background: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0px 7px 25px rgba(85, 85, 85, 0.15);
+    color: #666666;
+    line-height: 160%;
+    max-width: 455px;
+    padding: 14px;
+    position: absolute;
+}
+
+.tooltip ul {
+    margin: 0;
+}
+
+.arrow {
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-right: 8px solid #FFFFFF;
+    left: -4px;
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
 }

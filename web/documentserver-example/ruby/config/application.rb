@@ -1,51 +1,51 @@
-require File.expand_path('../boot', __FILE__)
+# frozen_string_literal: true
 
-# Pick the frameworks you want:
-require "active_model/railtie"
-require "active_job/railtie"
-require "active_record/railtie"
-require "action_controller/railtie"
-require "action_mailer/railtie"
-require "action_view/railtie"
-require "sprockets/railtie"
-# require "rails/test_unit/railtie"
+require_relative 'boot'
 
-# Require the gems listed in Gemfile, including any gems
-# you've limited to :test, :development, or :production.
+require 'active_model/railtie'
+require 'action_controller/railtie'
+require 'action_view/railtie'
+require 'sprockets/railtie'
+
 Bundler.require(*Rails.groups)
 
-module OnlineEditorsExampleRuby
-  class Application < Rails::Application
-    # Settings in config/environments/* take precedence over those specified here.
-    # Application configuration should go into files in config/initializers
-    # -- all .rb files in that directory are automatically loaded.
+require 'securerandom'
 
-    # Set Time.zone default to the specified zone and make Active Record auto-convert to this zone.
-    # Run "rake -D time" for a list of tasks for finding time zone names. Default is UTC.
-    # config.time_zone = 'Central Time (US & Canada)'
+# Configuration for the Rails application.
+class Application < Rails::Application
+  config.middleware.insert_before(0, Rack::Cors) do
+    allow do
+      origins '*'
+      resource '*', headers: :any, methods: [:get, :post, :patch, :delete, :put, :options]
+    end
+  end
 
-    # The default locale is :en and all translations from config/locales/*.rb,yml are auto loaded.
-    # config.i18n.load_path += Dir[Rails.root.join('my', 'locales', '*.{rb,yml}').to_s]
-    # config.i18n.default_locale = :de
+  config.assets.debug = true
+  config.assets.digest = false
+  config.eager_load = false
+  config.hosts << /.*/
+  config.require_master_key = false
+  config.secret_key_base = SecureRandom.uuid
 
-    Rails.configuration.fileSizeMax=5242880
-    Rails.configuration.storagePath="app_data"
-    Rails.configuration.timeout=120
-
-    Rails.configuration.viewedDocs=".pdf|.djvu|.xps|.oxps"
-    Rails.configuration.editedDocs=".docx|.xlsx|.csv|.pptx|.txt"
-    Rails.configuration.convertDocs=".docm|.dotx|.dotm|.dot|.doc|.odt|.fodt|.ott|.xlsm|.xltx|.xltm|.xlt|.xls|.ods|.fods|.ots|.pptm|.ppt|.ppsx|.ppsm|.pps|.potx|.potm|.pot|.odp|.fodp|.otp|.rtf|.mht|.html|.htm|.xml|.epub|.fb2"
-
-    Rails.configuration.urlSite="https://documentserver/"
-    Rails.configuration.urlConverter="ConvertService.ashx"
-    Rails.configuration.urlApi="web-apps/apps/api/documents/api.js"
-    Rails.configuration.urlPreloader="web-apps/apps/api/documents/cache-scripts.html"
-    Rails.configuration.commandUrl="coauthoring/CommandService.ashx"
-
-    Rails.configuration.urlExample=""
-
-    Rails.configuration.jwtSecret = ""
-    Rails.configuration.header="Authorization"
-
+  routes.append do
+    root to: 'home#index'
+    match '/convert', to: 'home#convert', via: 'post'
+    match '/csv', to: 'home#csv', via: 'get'
+    match '/asset', to: 'home#assets', via: 'get'
+    match '/download', to: 'home#download', via: 'get'
+    match '/downloadhistory', to: 'home#downloadhistory', via: 'get'
+    match '/historyobj', to: 'home#historyobj', via: 'post'
+    match '/editor', to: 'home#editor', via: 'get'
+    match '/files', to: 'home#files', via: 'get'
+    match '/index', to: 'home#index', via: 'get'
+    match '/reference', to: 'home#reference', via: 'post'
+    match '/remove', to: 'home#remove', via: 'delete'
+    match '/rename', to: 'home#rename', via: 'post'
+    match '/restore', to: 'home#restore', via: 'put'
+    match '/sample', to: 'home#sample', via: 'get'
+    match '/saveas', to: 'home#saveas', via: 'post'
+    match '/track', to: 'home#track', via: 'post'
+    match '/upload', to: 'home#upload', via: 'post'
+    match '/formats', to: 'home#formats', via: 'get'
   end
 end

@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
  */
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using System.Web.Configuration;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using OnlineEditorsExampleMVC.Helpers;
@@ -32,6 +32,7 @@ namespace OnlineEditorsExampleMVC.Models
     {
         public string Mode { get; set; }  // editor mode
         public string Type { get; set; }  // editor type
+        public bool IsEnabledDirectUrl { get; set; }  // is enabled direct url
 
         // get file url for Document Server
         public string FileUri
@@ -42,7 +43,7 @@ namespace OnlineEditorsExampleMVC.Models
         // get file url for user
         public string FileUriUser
         {
-            get { return DocManagerHelper.GetFileUri(FileName, false); }
+            get { return Path.IsPathRooted(WebConfigurationManager.AppSettings["storage-path"]) ? DownloadUrl + "&dmode=emb" : DocManagerHelper.GetFileUri(FileName, false); }
         }
 
         public string FileName { get; set; }  // file name
@@ -79,11 +80,16 @@ namespace OnlineEditorsExampleMVC.Models
             var editorsMode = Mode ?? "edit";  // get editor mode
 
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);  // check if the file with such an extension can be edited
-            var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
-            var submitForm = canEdit && (editorsMode.Equals("edit") || editorsMode.Equals("fillForms"));  // check if the Submit form button is displayed or not
 
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
+            
+            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && DocManagerHelper.FillFormExts.Contains(ext)) {
+                editorsMode = "fillForms";
+                canEdit = true;
+            }
+            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1");  // check if the Submit form button is displayed or not
+            var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
 
             // favorite icon state
             bool? favorite = user.favorite;
@@ -91,6 +97,7 @@ namespace OnlineEditorsExampleMVC.Models
             var actionLink = request.GetOrDefault("actionLink", null);  // get the action link (comment or bookmark) if it exists
             var actionData = string.IsNullOrEmpty(actionLink) ? null : jss.DeserializeObject(actionLink);  // get action data for the action link
 
+            var directUrl = DocManagerHelper.GetDownloadUrl(FileName, false);
             var createUrl = DocManagerHelper.GetCreateUrl(FileUtility.GetFileType(FileName));
             var templatesImageUrl = DocManagerHelper.GetTemplateImageUrl(FileUtility.GetFileType(FileName)); // image url for templates
             var templates = new List<Dictionary<string, string>>
@@ -119,6 +126,7 @@ namespace OnlineEditorsExampleMVC.Models
                             {
                                 { "title", FileName },
                                 { "url", DownloadUrl },
+                                { "directUrl", IsEnabledDirectUrl ? directUrl : "" },
                                 { "fileType", ext.Trim('.') },
                                 { "key", Key },
                                 {
@@ -130,6 +138,17 @@ namespace OnlineEditorsExampleMVC.Models
                                         }
                                 },
                                 {
+                                    "referenceData", new Dictionary<string, string>()
+                                    {
+                                        { "fileKey", !user.id.Equals("uid-0") ?
+                                            jss.Serialize(new Dictionary<string, object>{
+                                                {"fileName", FileName},
+                                                {"userAddress", HttpUtility.UrlEncode(DocManagerHelper.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
+                                        }) : null },
+                                        {"instanceId", DocManagerHelper.GetServerUrl(false) }
+                                    }
+                                },
+                                {
                                     // the permission for the document to be edited and downloaded or not
                                     "permissions", new Dictionary<string, object>
                                         {
@@ -138,12 +157,15 @@ namespace OnlineEditorsExampleMVC.Models
                                             { "download", !user.deniedPermissions.Contains("download") },
                                             { "edit", canEdit && (editorsMode == "edit" || editorsMode == "view" || editorsMode == "filter" || editorsMode == "blockcontent") },
                                             { "print", !user.deniedPermissions.Contains("print") },
-                                            { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "embedded" && editorsMode != "blockcontent" },
+                                            { "fillForms", editorsMode != "view" && editorsMode != "comment" && editorsMode != "blockcontent" },
                                             { "modifyFilter", editorsMode != "filter" },
                                             { "modifyContentControl", editorsMode != "blockcontent" },
                                             { "review", canEdit && (editorsMode == "edit" || editorsMode == "review") },
+                                            { "chat", !user.id.Equals("uid-0") },
                                             { "reviewGroups", user.reviewGroups },
-                                            { "commentGroups", user.commentGroups }
+                                            { "commentGroups", user.commentGroups },
+                                            { "userInfoGroups", user.userInfoGroups },
+                                            { "protect", !user.deniedPermissions.Contains("protect") }
                                         }
                                 }
                             }
@@ -155,24 +177,30 @@ namespace OnlineEditorsExampleMVC.Models
                                 { "mode", mode },
                                 { "lang", request.Cookies.GetOrDefault("ulang", "en") },
                                 { "callbackUrl", CallbackUrl },  // absolute URL to the document storage service
+                                { "coEditing", editorsMode == "view" && user.id.Equals("uid-0") ? 
+                                    new Dictionary<string, object>{
+                                        {"mode", "strict"},
+                                        {"change", false}
+                                    } : null },
                                 { "createUrl", !user.id.Equals("uid-0") ? createUrl : null },
                                 { "templates", user.templates ? templates : null },
                                 {
                                     // the user currently viewing or editing the document
                                     "user", new Dictionary<string, object>
                                         {
-                                            { "id", user.id },
+                                            { "id", !user.id.Equals("uid-0") ? user.id : null  },
                                             { "name", user.name },
-                                            { "group", user.group }
+                                            { "group", user.group },
+                                            { "image", user.avatar ? DocManagerHelper.GetServerUrl(false) + "/Content/images/" + user.id + ".png" : null}
                                         }
                                 },
                                 {
                                     // the parameters for the embedded document type
                                     "embedded", new Dictionary<string, object>
                                         {
-                                            { "saveUrl", FileUriUser },  // the absolute URL that will allow the document to be saved onto the user personal computer
-                                            { "embedUrl", FileUriUser },  // the absolute URL to the document serving as a source file for the document embedded into the web page
-                                            { "shareUrl", FileUriUser },  // the absolute URL that will allow other users to share this document
+                                            { "saveUrl", directUrl },  // the absolute URL that will allow the document to be saved onto the user personal computer
+                                            { "embedUrl", directUrl },  // the absolute URL to the document serving as a source file for the document embedded into the web page
+                                            { "shareUrl", directUrl },  // the absolute URL that will allow other users to share this document
                                             { "toolbarDocked", "top" }  // the place for the embedded viewer toolbar (top or bottom)
                                         }
                                 },
@@ -181,14 +209,17 @@ namespace OnlineEditorsExampleMVC.Models
                                     "customization", new Dictionary<string, object>
                                         {
                                             { "about", true },  // the About section display
+                                            { "comments", true },
                                             { "feedback", true },  // the Feedback & Support menu button display
                                             { "forcesave", false },  // adds the request for the forced file saving to the callback handler
                                             { "submitForm", submitForm },  // if the Submit form button is displayed or not
                                             {
-                                                "goback", new Dictionary<string, object>  // settings for the Open file location menu button and upper right corner button
+                                                "goback", user.goback != null ? new Dictionary<string, object>  // settings for the Open file location menu button and upper right corner button
                                                     {
-                                                        { "url", url.Action("Index", "Home") }  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
-                                                    }
+                                                        { "url", DocManagerHelper.GetServerUrl(false) },  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
+                                                        { "text", user.goback.text },
+                                                        { "blank", user.goback.blank }
+                                                    } : new Dictionary<string, object>{}
                                             }
                                         }
                                 }
@@ -207,100 +238,21 @@ namespace OnlineEditorsExampleMVC.Models
             return jss.Serialize(config);
         }
 
-        // get the document history
-        public void GetHistory(out string history, out string historyData)
-        {
-            var jss = new JavaScriptSerializer();
-            var histDir = DocManagerHelper.HistoryDir(DocManagerHelper.StoragePath(FileName, null));
-
-            history = null;
-            historyData = null;
-
-            if (DocManagerHelper.GetFileVersion(histDir) > 0)  // if the file was modified (the file version is greater than 0)
-            {
-                var currentVersion = DocManagerHelper.GetFileVersion(histDir);
-                var hist = new List<Dictionary<string, object>>();
-                var histData = new Dictionary<string, object>();
-
-                for (var i = 1; i <= currentVersion; i++)  // run through all the file versions
-                {
-                    var obj = new Dictionary<string, object>();
-                    var dataObj = new Dictionary<string, object>();
-                    var verDir = DocManagerHelper.VersionDir(histDir, i);  // get the path to the given file version
-
-                    var key = i == currentVersion ? Key : File.ReadAllText(Path.Combine(verDir, "key.txt"));  // get document key
-
-                    obj.Add("key", key);
-                    obj.Add("version", i);
-
-                    if (i == 1)  // check if the version number is equal to 1
-                    {
-                        var infoPath = Path.Combine(histDir, "createdInfo.json");  // get meta data of this file
-
-                        if (File.Exists(infoPath))
-                        {
-                            var info = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(infoPath));
-                            obj.Add("created", info["created"]);  // write meta information to the object (user information and creation date)
-                            obj.Add("user", new Dictionary<string, object>() {
-                                { "id", info["id"] },
-                                { "name", info["name"] },
-                            });
-                        }
-                    }
-
-                    dataObj.Add("key", key);
-                    // write file url to the data object
-                    dataObj.Add("url", i == currentVersion ? FileUri : DocManagerHelper.GetPathUri(Directory.GetFiles(verDir, "prev.*")[0].Substring(HttpRuntime.AppDomainAppPath.Length)));
-                    dataObj.Add("version", i);
-                    if (i > 1)  // check if the version number is greater than 1 (the file was modified)
-                    {
-                        // get the path to the changes.json file
-                        var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "changes.json")));
-                        var changesArray = (ArrayList)changes["changes"];
-                        var change = changesArray.Count > 0
-                            ? (Dictionary<string, object>)changesArray[0]
-                            : new Dictionary<string, object>();
-
-                        // write information about changes to the object
-                        obj.Add("changes", change.Count > 0 ? changes["changes"] : null);
-                        obj.Add("serverVersion", changes["serverVersion"]);
-                        obj.Add("created", change.Count > 0  ? change["created"] : null);
-                        obj.Add("user", change.Count > 0 ? change["user"] : null);
-
-                        var prev = (Dictionary<string, object>)histData[(i - 2).ToString()];  // get the history data from the previous file version
-                        dataObj.Add("previous", new Dictionary<string, object>() {  // write information about previous file version to the data object
-                            { "key", prev["key"] },  // write key and url information about previous file version
-                            { "url", prev["url"] },
-                        });
-                        // write the path to the diff.zip archive with differences in this file version
-                        dataObj.Add("changesUrl", DocManagerHelper.GetPathUri(Path.Combine(DocManagerHelper.VersionDir(histDir, i - 1), "diff.zip").Substring(HttpRuntime.AppDomainAppPath.Length)));
-                    }
-                    if(JwtManager.Enabled)
-                    {
-                        var token = JwtManager.Encode(dataObj);
-                        dataObj.Add("token", token);
-                    }
-                    hist.Add(obj);  // add object dictionary to the hist list
-                    histData.Add((i - 1).ToString(), dataObj);  // write data object information to the history data
-                }
-
-                // write history information about the current file version to the history object
-                history = jss.Serialize(new Dictionary<string, object>()
-                {
-                    { "currentVersion", currentVersion },
-                    { "history", hist }
-                });
-                historyData = jss.Serialize(histData);
-            }
-        }
-
         // get a document which will be compared with the current document
-        public void GetCompareFileData(out string compareConfig)
+        public void GetDocumentData(out string compareConfig)
         {
             var jss = new JavaScriptSerializer();
 
             // get the path to the compared file
             var compareFileUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
+            {
+                Path = HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=assets&fileName=" + HttpUtility.UrlEncode("sample.docx")
+            };
+
+            var directCompareFileUrl = new UriBuilder(DocManagerHelper.GetServerUrl(false))
             {
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
@@ -314,6 +266,11 @@ namespace OnlineEditorsExampleMVC.Models
                 { "fileType", "docx" },
                 { "url", compareFileUrl.ToString() }
             };
+
+            if (IsEnabledDirectUrl)
+            {
+                dataCompareFile.Add("directUrl", directCompareFileUrl.ToString());
+            }
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {
@@ -334,15 +291,27 @@ namespace OnlineEditorsExampleMVC.Models
             {
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "Content\\images\\logo.png"
+                    + "Content\\images\\logo.svg"
+            };
+
+            var directMailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(false))
+            {
+                Path = HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "Content\\images\\logo.svg"
             };
 
             // create a logo config
             var logoConfig = new Dictionary<string, object>
             {
-                { "fileType", "png"},
+                { "fileType", "svg"},
                 { "url", mailMergeUrl.ToString()}
             };
+
+            if (IsEnabledDirectUrl)
+            {
+                logoConfig.Add("directUrl", directMailMergeUrl.ToString());
+            }
 
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {
@@ -354,12 +323,21 @@ namespace OnlineEditorsExampleMVC.Models
         }
 
         // get a mail merge config
-        public void GetMailMergeConfig(out string dataMailMergeRecipients)
+        public void GetSpreadsheetConfig(out string dataSpreadsheet)
         {
             var jss = new JavaScriptSerializer();
 
             // get the path to the recipients data for mail merging
             var mailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(true))
+            {
+                Path =
+                    HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx",
+                Query = "type=csv"
+            };
+
+            var directMailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(false))
             {
                 Path =
                     HttpRuntime.AppDomainAppVirtualPath
@@ -375,13 +353,18 @@ namespace OnlineEditorsExampleMVC.Models
                 { "url", mailMergeUrl.ToString()}
             };
 
+            if (IsEnabledDirectUrl)
+            {
+                mailMergeConfig.Add("directUrl", directMailMergeUrl.ToString());
+            }
+
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {
                 var mailmergeToken = JwtManager.Encode(mailMergeConfig);  // encode mailMergeConfig into the token
                 mailMergeConfig.Add("token", mailmergeToken);  // and add it to the mail merge config
             }
 
-            dataMailMergeRecipients = jss.Serialize(mailMergeConfig);
+            dataSpreadsheet = jss.Serialize(mailMergeConfig);
         }
 
         //get a users for mentions
@@ -391,6 +374,23 @@ namespace OnlineEditorsExampleMVC.Models
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);
             usersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForMentions(user.id)) : null;
+        }
+
+        public void GetUsersInfo(HttpRequest request, out string usersInfo)
+        {
+            var jss = new JavaScriptSerializer();
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);
+            usersInfo = jss.Serialize(Users.getUsersInfo(user.id));
+        }
+
+        //get a users for protect
+        public void GetUsersProtect(HttpRequest request, out string usersForProtect)
+        {
+            var jss = new JavaScriptSerializer();
+            var id = request.Cookies.GetOrDefault("uid", null);
+            var user = Users.getUser(id);
+            usersForProtect = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForProtect(user.id)) : null;
         }
     }
 }

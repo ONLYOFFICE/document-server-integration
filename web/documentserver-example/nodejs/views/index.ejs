@@ -5,9 +5,10 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width" />
+    <meta name="server-version" content="<%= serverVersion %>">
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2021
+    * (c) Copyright Ascensio System SIA 2024
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -32,12 +33,7 @@
 <body>
     <header>
         <div class="center">
-            <div class="menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-            <a href="">
+            <a href="./">
                 <img src ="images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
@@ -53,23 +49,26 @@
                                 <div class="create-panel clearFix">
                                     <ul class="try-editor-list clearFix">
                                         <li>
-                                            <a class="try-editor word reload-page" target="_blank" href="editor?fileExt=docx<%= params %>" title="Create new document">Document</a>
+                                            <a class="try-editor word reload-page action-link" target="_blank" href="editor?fileExt=docx" title="Create new document">Document</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor cell reload-page" target="_blank" href="editor?fileExt=xlsx<%= params %>" title="Create new spreadsheet">Spreadsheet</a>
+                                            <a class="try-editor cell reload-page action-link" target="_blank" href="editor?fileExt=xlsx" title="Create new spreadsheet">Spreadsheet</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor slide reload-page" target="_blank" href="editor?fileExt=pptx<%= params %>" title="Create new presentation">Presentation</a>
+                                            <a class="try-editor slide reload-page action-link" target="_blank" href="editor?fileExt=pptx" title="Create new presentation">Presentation</a>
+                                        </li>
+                                        <li>
+                                            <a class="try-editor form reload-page action-link" target="_blank" href="editor?fileExt=docxf" title="Create new PDF form">PDF form</a>
                                         </li>
                                     </ul>
-                                    <label class="create-sample">
+                                    <label class="side-option">
                                         <input id="createSample" type="checkbox" class="checkbox" />With sample content
                                     </label>
                                 </div>
 
                                 <div class="upload-panel clearFix">
                                     <a class="file-upload">Upload file
-                                        <input type="file" id="fileupload" name="uploadedFile" data-url="upload?<%= params %>" />
+                                        <input type="file" id="fileupload" name="uploadedFile" data-url="upload" />
                                     </a>
                                 </div>
 
@@ -78,18 +77,8 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Username</span>
-                                                <img class="info" data-id="user" data-tooltip="You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.
-                                                </br>
-                                                <% users.forEach(user => { %>
-                                                    <b><%= user.name == null ? 'Anonymous' : user.name %></b>
-                                                    <ul>
-                                                        <% user.descriptions.forEach(description => { %>
-                                                            <li><%= description %></li>
-                                                        <% }) %>
-                                                    </ul>
-                                                <% }) %>"
-                                                src="images/info.svg" />
-                                                <select class="select-user" id="user">
+                                                <img id="info" class="info" src="images/info.svg" />
+                                                <select class="select-user collectable" name="userid" id="user">
                                                     <% users.forEach(user => { %>
                                                         <option value="<%= user.id %>"><%= user.name == null ? "Anonymous" : user.name %></option>
                                                     <% }) %>
@@ -99,160 +88,182 @@
                                         <tr>
                                             <td valign="middle">
                                                 <span class="select-user">Language</span>
-                                                <img class="info" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="images/info.svg" />
-                                                <select class="select-user" id="language">
-                                                    <option value="en">English</option>
-                                                    <option value="be">Belarusian</option>
-                                                    <option value="bg">Bulgarian</option>
-                                                    <option value="ca">Catalan</option>
-                                                    <option value="zh">Chinese</option>
-                                                    <option value="cs">Czech</option>
-                                                    <option value="da">Danish</option>
-                                                    <option value="nl">Dutch</option>
-                                                    <option value="fi">Finnish</option>
-                                                    <option value="fr">French</option>
-                                                    <option value="de">German</option>
-                                                    <option value="el">Greek</option>
-                                                    <option value="hu">Hungarian</option>
-                                                    <option value="id">Indonesian</option>
-                                                    <option value="it">Italian</option>
-                                                    <option value="ja">Japanese</option>
-                                                    <option value="ko">Korean</option>
-                                                    <option value="lv">Latvian</option>
-                                                    <option value="lo">Lao</option>
-                                                    <option value="nb">Norwegian</option>
-                                                    <option value="pl">Polish</option>
-                                                    <option value="pt">Portuguese</option>
-                                                    <option value="ro">Romanian</option>
-                                                    <option value="ru">Russian</option>
-                                                    <option value="sk">Slovak</option>
-                                                    <option value="sl">Slovenian</option>
-                                                    <option value="sv">Swedish</option>
-                                                    <option value="es">Spanish</option>
-                                                    <option value="tr">Turkish</option>
-                                                    <option value="uk">Ukrainian</option>
-                                                    <option value="vi">Vietnamese</option>
+                                                <img class="info info-tooltip" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="images/info.svg" />
+                                                <select class="select-user collectable" name="lang" id="language">
+                                                    <% Object.keys(languages).forEach(key => { %>
+                                                        <option value="<%= key %>"><%= languages[key] %></option>
+                                                    <% }) %>
                                                 </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td valign="middle">
+                                                <label class="side-option">
+                                                    <input id="directUrl" type="checkbox" class="checkbox collectable" name="directUrl" />Try opening on client
+                                                    <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's browser without connecting to the document server." src="images/info.svg" />
+                                                </label>
                                             </td>
                                         </tr>
                                     </tbody>
                                 </table>
-
-                                <div class="links-panel links-panel-border clearFix">
-                                    <a href="./wopi" class="">Go to WOPI page</a>
-                                </div>
                             </div>
                         </div>
                     </td>
                     <td class="section">
                         <div class="main-panel">
-                            <% if (storedFiles.length <= 0)
-                            { %>
-                            <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
-                            <span class="portal-descr">
-                                Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
-                                <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
-                            </span>
-                            <%} else
-                            { %>
-                            <div class="stored-list">
-                                <span class="header-list">Your documents</span>
-                                <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
-                                    <thead>
+                            <menu class="links">
+                                <li class="home-link active" >
+                                    <a href="./">
+                                        <img src="images/home.svg" alt="Home"/>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="wopi">Wopi</a>
+                                </li>
+                            </menu>
+                            <div id="portal-info" style="display: <%= storedFiles.length > 0 ? "none" : "table-cell" %>">
+                                <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
+                                <span class="portal-descr">
+                                    Get started with a demo-sample of ONLYOFFICE Document Editors, the first html5-based editors.
+                                    <br /> You may upload your own documents for testing using the "<b>Upload file</b>" button and <b>selecting</b> the necessary files on your PC.
+                                </span>
+                                <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
+                                <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
+                                <% users.forEach(user => { %>
+                                    <div class="user-descr">
+                                        <b><%= user.name == null ? 'Anonymous' : user.name %></b>
+                                        <ul>
+                                            <% user.descriptions.forEach(description => { %>
+                                                <li><%= description %></li>
+                                            <% }) %>
+                                        </ul>
+                                    </div>
+                                <% }) %>
+                            </div>
+                            <%if (storedFiles.length > 0)
+                                {%>
+                                <div class="stored-list">
+                                    <div class="storedHeader">
+                                        <div class="storedHeaderText">
+                                            <span class="header-list">Your documents</span>
+                                        </div>
+                                        <div class="storedHeaderClearAll">
+                                            <div class="clear-all">Clear all</div>
+                                        </div>
+                                    </div>
+                                    <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
+                                        <thead>
                                         <tr>
                                             <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
                                             <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
                                             <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
-                                            <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
-                                            <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
+                                            <td class="tableHeaderCell tableHeaderCellAction">Action</td>
                                         </tr>
-                                    </thead>
-                                </table>
-                                <div class="scroll-table-body">
-                                    <table cellspacing="0" cellpadding="0" width="100%">
-                                        <tbody>
+                                        </thead>
+                                    </table>
+                                    <div class="scroll-table-body">
+                                        <table cellspacing="0" cellpadding="0" width="100%">
+                                            <tbody>
                                             <% for (var i = 0; i < storedFiles.length; i++) { %>
                                                 <tr class="tableRow" title="<%= storedFiles[i].name %> [<%= storedFiles[i].version %>]">
                                                     <td class="contentCells">
-                                                        <a class="stored-edit <%= storedFiles[i].documentType %>" href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                        <a class="stored-edit <%= storedFiles[i].documentType %> action-link" href="editor?fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                             <span><%= storedFiles[i].name %></span>
                                                         </a>
                                                     </td>
                                                     <% if (storedFiles[i].canEdit) { %>
                                                         <td class="contentCells contentCells-icon">
-                                                            <a href="editor?type=desktop&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                            <a class="action-link" href="editor?type=desktop&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon">
-                                                            <a href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                                                <img src="images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
-                                                        </td>
-                                                        <td class="contentCells contentCells-icon">
-                                                            <a href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                            <a class="action-link" href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment" /></a>
                                                         </td>
                                                         <% if (storedFiles[i].documentType == "word") { %>
                                                             <td class="contentCells contentCells-icon">
-                                                                <a href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                                <a class="action-link" href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                     <img src="images/review.svg" alt="Open in editor for review" title="Open in editor for review" /></a>
                                                             </td>
                                                         <% } else if (storedFiles[i].documentType == "cell") { %>
                                                             <td class="contentCells contentCells-icon">
-                                                                <a href="editor?type=desktop&mode=filter&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                                <a class="action-link" href="editor?type=desktop&mode=filter&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                     <img src="images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>
                                                             </td>
                                                         <% } %>
-                                                        <% if (storedFiles[i].documentType !== "word" && storedFiles[i].documentType !== "cell") {%>
-                                                            <td class="contentCells contentCells-icon contentCellsEmpty"></td>
-                                                        <% } %>
                                                         <% if (storedFiles[i].documentType == "word") { %>
                                                             <td class="contentCells contentCells-icon">
-                                                                <a href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
-                                                                    <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
-                                                            </td>
-                                                        <% } else { %>
-                                                            <td class="contentCells contentCells-icon "></td>
-                                                        <% } %>
-                                                        <% if (storedFiles[i].documentType == "word") { %>
-                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                                <a href="editor?type=desktop&mode=blockcontent&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                                <a class="action-link" href="editor?type=desktop&mode=blockcontent&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                     <img src="images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>
                                                             </td>
                                                         <% } else { %>
-                                                            <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                            <td class="contentCells contentCells-icon"></td>
                                                         <% } %>
                                                         <% if (storedFiles[i].documentType !== "word" && storedFiles[i].documentType !== "cell") {%>
                                                             <td class="contentCells contentCells-icon "></td>
+                                                        <% } %>
+                                                        <% if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.') + 1).trim().toLowerCase()) !== -1) { %>
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a class="action-link" href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
+                                                                    <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
+                                                            </td>
+                                                        <% } else {%>
+                                                            <td class="contentCells contentCells-icon"></td>
                                                         <%}%>
+                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                            <a class="action-link" href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
+                                                                <img src="images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
+                                                        </td>
+                                                    <% } else if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.') + 1).trim().toLowerCase()) !== -1) { %>
+                                                        <td class="contentCells contentCells-icon "></td>
+                                                        <td class="contentCells contentCells-icon "></td>
+                                                        <td class="contentCells contentCells-icon "></td>
+                                                        <td class="contentCells contentCells-icon "></td>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a class="action-link" href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
+                                                                <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
+                                                        </td>
+                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
+                                                            <a class="action-link" href="editor?type=mobile&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
+                                                                <img src="images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" /></a>
+                                                        </td>
                                                     <% } else { %>
                                                         <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                     <% } %>
                                                     <td class="contentCells contentCells-icon firstContentCellViewers">
-                                                        <a href="editor?type=desktop&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                        <a class="action-link" href="editor?type=desktop&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                             <img src="images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon">
-                                                        <a href="editor?type=mobile&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                        <a class="action-link" href="editor?type=mobile&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                             <img src="images/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" /></a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon contentCells-shift">
-                                                        <a href="editor?type=embedded&mode=embedded&fileName=<%= encodeURIComponent(storedFiles[i].name) + params %>" target="_blank">
+                                                        <a class="action-link" href="editor?type=embedded&mode=embedded&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                             <img src="images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode" /></a>
                                                     </td>
-                                                    <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">
+                                                    <% if (storedFiles[i].documentType != null ) {%>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a class="convert-file" data="<%= encodeURIComponent(storedFiles[i].name) %>" data-type="<%= storedFiles[i].documentType %>">
+                                                                <img class="icon-action" src="images/convert.svg" alt="Convert" title="Convert" /></a>
+                                                        </td>
+                                                    <% } else { %>
+                                                        <td class="contentCells contentCells-icon downloadContentCellShift"></td>
+                                                    <% } %>
+                                                    <td class="contentCells contentCells-icon downloadContentCellShift">
                                                         <a href="download?fileName=<%= encodeURIComponent(storedFiles[i].name) %>">
                                                             <img class="icon-download" src="images/download.svg" alt="Download" title="Download" /></a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon contentCells-shift">
                                                         <a class="delete-file" data="<%= encodeURIComponent(storedFiles[i].name) %>">
-                                                            <img class="icon-delete" src="images/delete.svg" alt="Delete" title="Delete" /></a>
+                                                            <img class="icon-action" src="images/delete.svg" alt="Delete" title="Delete" /></a>
                                                     </td>
                                                 </tr>
                                             <% } %>
-                                        </tbody>
-                                    </table>
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
                             <% } %>
                         </div>
                     </td>
@@ -267,6 +278,15 @@
             <div class="describeUpload">After these steps are completed, you can work with your document.</div>
             <span id="step1" class="step">1. Loading the file.</span>
             <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+            <div id="select-file-type" class="invisible">
+                <br />
+                <span class="step">Please select the current document type</span>
+                <div class="buttonsMobile indent">
+                    <div class="button file-type document" data="docx">Document</div>
+                    <div class="button file-type spreadsheet" data="xlsx">Spreadsheet</div>
+                    <div class="button file-type presentation" data="pptx">Presentation</div>
+                </div>
+            </div>
             <br />
             <span id="step2" class="step">2. Conversion.</span>
             <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
@@ -286,9 +306,7 @@
             <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
             <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
             <br />
-            <br />
             <span class="progress-descr">Note the speed of all operations depends on your connection quality and server location.</span>
-            <br />
             <br />
             <div class="error-message">
                 <b>Upload error: </b><span></span>
@@ -297,10 +315,37 @@
             </div>
         </div>
         <br />
-        <div id="beginEdit" class="button orange disable">Edit</div>
-        <div id="beginView" class="button gray disable">View</div>
-        <div id="beginEmbedded" class="button gray disable">Embedded view</div>
-        <div id="cancelEdit" class="button gray">Cancel</div>
+        <div class="buttonsMobile">
+            <div id="beginEdit" class="button orange disable">Edit</div>
+            <div id="beginView" class="button gray disable">View</div>
+            <div id="beginEmbedded" class="button gray disable">Embedded view</div>
+            <div id="cancelEdit" class="button gray">Cancel</div>
+        </div>
+    </div>
+
+    <div id="convertingProgress">
+        <div id="convertingSteps">
+            <span id="convertFileName" class="convertFileName"></span>
+            <span id="convertStep1" class="step">1. Select a format file to convert</span>
+            <span class="step-descr">The converting speed depends on file size and additional elements it contains.</span>
+            <table cellspacing="0" cellpadding="0" width="100%" class="convertTable">
+                <tbody>
+                    <tr class="typeButtonsRow" id="convTypes"></tr>
+                </tbody>
+            </table>
+            <br />
+            <span id="convertStep2" class="step">2. File conversion</span>
+            <span class="step-descr disable" id="convert-descr">The file is converted <div class="convertPercent" id="convertPercent">0 %</div></span>
+            <div class="describeUpload">Note the speed of all operations depends on your connection quality and server location.</div>
+            <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
+        </div>
+        <br />
+        <div class="buttonsMobile">
+            <div id="downloadConverted" class="button converting orange disable">DOWNLOAD</div>
+            <div id="beginViewConverted" class="button converting wide gray disable">VIEW</div>
+            <div id="beginEditConverted" class="button converting wide gray disable">EDIT</div>
+            <div id="cancelEdit" class="button converting gray">CANCEL</div>
+        </div>
     </div>
 
     <span id="loadScripts" data-docs="<%= preloaderUrl %>"></span>
@@ -317,7 +362,7 @@
                             <a href="mailto:sales@onlyoffice.com">Submit your request</a>
                         </td>
                         <td class="copy">
-                            &copy; Ascensio Systems SIA 2021. All rights reserved.
+                            &copy; Ascensio Systems SIA 2024. All rights reserved.
                         </td>
                     </tr>
                 </tbody>
@@ -325,17 +370,17 @@
         </div>
     </footer>
 
-    <script type="text/javascript" src="javascripts/jquery-1.8.2.js"></script>
+    <script type="text/javascript" src="javascripts/jquery-3.6.4.min.js"></script>
+    <script type="text/javascript" src="javascripts/jquery-migrate-3.4.1.min.js"></script>
     <script type="text/javascript" src="javascripts/jquery-ui.js"></script>
     <script type="text/javascript" src="javascripts/jquery.blockUI.js"></script>
     <script type="text/javascript" src="javascripts/jquery.iframe-transport.js"></script>
     <script type="text/javascript" src="javascripts/jquery.fileupload.js"></script>
     <script type="text/javascript" src="javascripts/jquery.dropdownToggle.js"></script>
+    <script type="text/javascript" src="javascripts/formats.js"></script>
     <script type="text/javascript" src="javascripts/jscript.js"></script>
 
     <script type="text/javascript">
-        var ConverExtList = "<%= convertExts %>";
-        var EditedExtList = "<%= editedExts %>";
         var UrlConverter = "convert";
         var UrlEditor = "editor";
     </script>

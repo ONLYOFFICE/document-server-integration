@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,9 +55,9 @@ namespace OnlineEditorsExample
             var fileData = jss.Deserialize<Dictionary<string, object>>(body);
 
             // check if the document token is enabled
-            if (JwtManager.Enabled)
+            if (JwtManager.Enabled && JwtManager.SignatureUseForRequest)
             {
-                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
 
                 string token = null;
 
@@ -76,9 +76,11 @@ namespace OnlineEditorsExample
                     context.Response.Write("{\"error\":1,\"message\":\"JWT expected\"}");
                 }
 
-                if (token != null && !token.Equals(""))  // invalid signature error
+                if (!string.IsNullOrEmpty(token))  // invalid signature error
                 {
-                    fileData = (Dictionary<string, object>)jss.Deserialize<Dictionary<string, object>>(token)["payload"];
+                    fileData = jss.Deserialize<Dictionary<string, object>>(token);
+                    if (fileData.ContainsKey("payload"))
+                        fileData = (Dictionary<string, object>)fileData["payload"];
                 }
                 else
                 {
@@ -97,7 +99,9 @@ namespace OnlineEditorsExample
             }
             var downloadUri = (string)fileData["url"];
             var curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
-            var downloadExt = Path.GetExtension(downloadUri).ToLower() ?? "";  // get the extension of the downloaded file
+
+            var downloadExt = "." + (string)fileData["filetype"];  // get the extension of the downloaded file
+
             var newFileName = fileName;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -106,8 +110,9 @@ namespace OnlineEditorsExample
                 try
                 {
                     // convert file and give url to a new file
-                    string newFileUri;
-                    ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false, out newFileUri);
+                    Dictionary<string, string> newFileData;
+                    ServiceConverter.GetConvertedData(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false, out newFileData);
+                    var newFileUri = newFileData["fileUrl"];
                     if (string.IsNullOrEmpty(newFileUri))
                     {
                         // get the correct file name if it already exists
@@ -124,43 +129,50 @@ namespace OnlineEditorsExample
                 }
             }
 
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if (_Default.IsMono)
+            _Default.VerifySSL();
+
+            try
             {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
+                var bytesFile = DownloadFile(downloadUri); // download document file
+                var storagePath = _Default.StoragePath(newFileName, userAddress);  // get the file path
+
+                var histDir = _Default.HistoryDir(storagePath);  // get the path to the history directory
+                if (!Directory.Exists(histDir)) Directory.CreateDirectory(histDir);
+
+                var versionDir = _Default.VersionDir(histDir, _Default.GetFileVersion(histDir));  // get the path to the file version
+                if (!Directory.Exists(versionDir)) Directory.CreateDirectory(versionDir);  // if the path doesn't exist, create it
+
+                // get the path to the previous file version and rename the storage path with it
+                File.Copy(_Default.StoragePath(fileName, userAddress), Path.Combine(versionDir, "prev" + curExt));
+
+                SaveFile(bytesFile, storagePath);// save document file
+
+                var bytesChanges = DownloadFile((string)fileData["changesurl"]); // download changes file
+                SaveFile(bytesChanges, Path.Combine(versionDir, "diff.zip")); // save file changes to the diff.zip archive
+
+                var hist = fileData.ContainsKey("changeshistory") ? (string)fileData["changeshistory"] : null;
+                if (string.IsNullOrEmpty(hist) && fileData.ContainsKey("history"))
+                {
+                    var jss = new JavaScriptSerializer();
+                    hist = jss.Serialize(fileData["history"]);
+                }
+
+                if (!string.IsNullOrEmpty(hist))
+                {
+                    File.WriteAllText(Path.Combine(versionDir, "changes.json"), hist);  // write the history changes to the changes.json file
+                }
+
+                File.WriteAllText(Path.Combine(versionDir, "key.txt"), (string)fileData["key"]);  // write the key value to the key.txt file
+
+                string forcesavePath = _Default.ForcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file version
+            if (!string.IsNullOrEmpty(forcesavePath))  // if the forcesaved file version exists
+                {
+                    File.Delete(forcesavePath);  // remove it
+                }
             }
-
-            var storagePath = _Default.StoragePath(newFileName, userAddress);  // get the file path
-            var histDir = _Default.HistoryDir(storagePath);  // get the path to the history directory
-            if (!Directory.Exists(histDir)) Directory.CreateDirectory(histDir);
-
-            var versionDir = _Default.VersionDir(histDir, _Default.GetFileVersion(histDir));  // get the path to the file version
-            if (!Directory.Exists(versionDir)) Directory.CreateDirectory(versionDir);  // if the path doesn't exist, create it
-
-            // get the path to the previous file version and rename the storage path with it
-            File.Copy(_Default.StoragePath(fileName, userAddress), Path.Combine(versionDir, "prev" + curExt));
-
-            DownloadToFile(downloadUri, storagePath);  // save file to the storage directory
-            DownloadToFile((string)fileData["changesurl"], Path.Combine(versionDir, "diff.zip"));  // save file changes to the diff.zip archive
-
-            var hist = fileData.ContainsKey("changeshistory") ? (string)fileData["changeshistory"] : null;
-            if (string.IsNullOrEmpty(hist) && fileData.ContainsKey("history"))
+            catch (Exception)
             {
-                var jss = new JavaScriptSerializer();
-                hist = jss.Serialize(fileData["history"]);
-            }
-
-            if (!string.IsNullOrEmpty(hist))
-            {
-                File.WriteAllText(Path.Combine(versionDir, "changes.json"), hist);  // write the history changes to the changes.json file
-            }
-
-            File.WriteAllText(Path.Combine(versionDir, "key.txt"), (string)fileData["key"]);  // write the key value to the key.txt file
-
-            string forcesavePath = _Default.ForcesavePath(newFileName, userAddress, false);  // get the path to the forcesaved file version
-            if (!forcesavePath.Equals(""))  // if the forcesaved file version exists
-            {
-                File.Delete(forcesavePath);  // remove it
+                return 1;
             }
 
             return 0;
@@ -175,7 +187,9 @@ namespace OnlineEditorsExample
             var downloadUri = (string)fileData["url"];
 
             string curExt = Path.GetExtension(fileName).ToLower();  // get current file extension
-            string downloadExt = Path.GetExtension(downloadUri).ToLower();  // get the extension of the downloaded file
+
+            var downloadExt = "." + (string)fileData["filetype"];  // get the extension of the downloaded file
+
             Boolean newFileName = false;
 
             // convert downloaded file to the file with the current extension if these extensions aren't equal
@@ -184,8 +198,9 @@ namespace OnlineEditorsExample
                 try
                 {
                     // convert file and give url to a new file
-                    string newFileUri;
-                    var result = ServiceConverter.GetConvertedUri(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false, out newFileUri);
+                    Dictionary<string, string> newFileData;
+                    var result = ServiceConverter.GetConvertedData(downloadUri, downloadExt, curExt, ServiceConverter.GenerateRevisionId(downloadUri), false, out newFileData);
+                    var newFileUri = newFileData["fileUrl"];
                     if (string.IsNullOrEmpty(newFileUri))
                     {
                         newFileName = true;
@@ -201,57 +216,79 @@ namespace OnlineEditorsExample
                 }
             }
 
-            // hack. http://ubuntuforums.org/showthread.php?t=1841740
-            if (_Default.IsMono)
-            {
-                ServicePointManager.ServerCertificateValidationCallback += (s, ce, ca, p) => true;
-            }
+            _Default.VerifySSL();
 
-            string forcesavePath = "";
-            Boolean isSubmitForm = fileData["forcesavetype"].ToString().Equals("3");  // SubmitForm
-
-            if (isSubmitForm)  // if the form is submitted
+            try
             {
-                if (newFileName)
+                var bytesFile = DownloadFile(downloadUri); // download document file
+                string forcesavePath = "";
+                Boolean isSubmitForm = fileData["forcesavetype"].ToString().Equals("3");  // SubmitForm
+
+                if (isSubmitForm)  // if the form is submitted
                 {
-                    fileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + downloadExt, userAddress);  // get the correct file name if it already exists
+                    if (newFileName)
+                    {
+                        fileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + downloadExt, userAddress);  // get the correct file name if it already exists
                 } else
-                {
-                    fileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + curExt, userAddress);
+                    {
+                        fileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "-form" + curExt, userAddress);
+                    }
+                    forcesavePath = _Default.StoragePath(fileName, userAddress);
                 }
-                forcesavePath = _Default.StoragePath(fileName, userAddress);
+                else
+                {
+                    if (newFileName)
+                    {
+                        fileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
+                    }
+
+                    forcesavePath = _Default.ForcesavePath(fileName, userAddress, false);
+                if (string.IsNullOrEmpty(forcesavePath))  // create forcesave path if it doesn't exist
+                    {
+                        forcesavePath = _Default.ForcesavePath(fileName, userAddress, true);
+                    }
+                }
+
+                SaveFile(bytesFile, forcesavePath);// save document file
+
+                if (isSubmitForm)
+                {
+                    var jss = new JavaScriptSerializer();
+                    var actions = jss.Deserialize<List<object>>(jss.Serialize(fileData["actions"]));
+                    var action = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(actions[0]));
+                    var user = action["userid"].ToString();  // get the user id
+                    DocEditor.CreateMeta(fileName, user, "Filling Form", userAddress);  // create meta data for the forcesaved file
+
+                    string formsDataUrl = fileData["formsdataurl"].ToString();
+
+                    if (!string.IsNullOrEmpty(formsDataUrl))
+                    {
+                        string formsName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + ".txt", userAddress);
+                        string formsPath = _Default.StoragePath(formsName, userAddress);
+
+                        var bytesForms = DownloadFile(formsDataUrl);
+
+                        SaveFile(bytesForms, formsPath);
+                    }
+                    else
+                    {
+                        throw new Exception("Document editing service did not return formsDataUrl");
+                    }
+                }
             }
-            else
+            catch (Exception)
             {
-                if (newFileName)
-                {
-                    fileName = _Default.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + downloadExt, userAddress);
-                }
-
-                forcesavePath = _Default.ForcesavePath(fileName, userAddress, false);
-                if (forcesavePath.Equals(""))  // create forcesave path if it doesn't exist
-                {
-                    forcesavePath = _Default.ForcesavePath(fileName, userAddress, true);
-                }
-            }
-
-            DownloadToFile(downloadUri, forcesavePath);
-
-            if (isSubmitForm)
-            {
-                var jss = new JavaScriptSerializer();
-                var actions = jss.Deserialize<List<object>>(jss.Serialize(fileData["actions"]));
-                var action = jss.Deserialize<Dictionary<string, object>>(jss.Serialize(actions[0]));
-                var user = action["userid"].ToString();  // get the user id
-                DocEditor.CreateMeta(fileName, user, "Filling Form", userAddress);  // create meta data for the forcesaved file
+                return 1;
             }
 
             return 0;
         }
 
         // create a command request
-        public static void commandRequest(string method, string key)
+        public static void commandRequest(string method, string key, object meta = null)
         {
+            _Default.VerifySSL();
+            
             string documentCommandUrl = WebConfigurationManager.AppSettings["files.docservice.url.site"] + WebConfigurationManager.AppSettings["files.docservice.url.command"];
 
             var request = (HttpWebRequest)WebRequest.Create(documentCommandUrl);
@@ -263,17 +300,22 @@ namespace OnlineEditorsExample
                 { "key", key }
             };
 
+            if (meta != null)
+            {
+                body.Add("meta", meta);
+            }
+
             // check if a secret key to generate token exists or not
-            if (JwtManager.Enabled)
+            if (JwtManager.Enabled && JwtManager.SignatureUseForRequest)
             {
                 var payload = new Dictionary<string, object>
-                    {
-                        { "payload", body }
-                    };
+                {
+                    { "payload", body }
+                };
 
                 var payloadToken = JwtManager.Encode(payload);  // encode a payload object into a header token
                 var bodyToken = JwtManager.Encode(body);  // encode body into a body token
-                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
                 request.Headers.Add(JWTheader, "Bearer " + payloadToken);  // add a header Authorization with a header token and Authorization prefix in it
 
                 body.Add("token", bodyToken);
@@ -308,26 +350,29 @@ namespace OnlineEditorsExample
             }
         }
 
+        private static void SaveFile(byte[] data, string path)
+        {
+            using (var fs = File.Open(path, FileMode.Create))
+            {
+                fs.Write(data, 0, data.Length);
+            }
+        }
+
         // save file information from the url to the file specified
-        private static void DownloadToFile(string url, string path)
+        private static byte[] DownloadFile(string url)
         {
             if (string.IsNullOrEmpty(url)) throw new ArgumentException("url");  // url isn't specified
-            if (string.IsNullOrEmpty(path)) throw new ArgumentException("path");  // file isn't specified
 
             var req = (HttpWebRequest)WebRequest.Create(url);
+            req.Timeout = 5000;
             using (var stream = req.GetResponse().GetResponseStream())  // get input stream of the file information from the url
             {
                 if (stream == null) throw new Exception("stream is null");
-                const int bufferSize = 4096;
 
-                using (var fs = File.Open(path, FileMode.Create))
+                using (MemoryStream memoryStream = new MemoryStream())
                 {
-                    var buffer = new byte[bufferSize];
-                    int readed;
-                    while ((readed = stream.Read(buffer, 0, bufferSize)) != 0)
-                    {
-                        fs.Write(buffer, 0, readed);  // write bytes to the output stream
-                    }
+                    stream.CopyTo(memoryStream);
+                    return memoryStream.ToArray();
                 }
             }
         }

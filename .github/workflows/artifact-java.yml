@@ -1,0 +1,31 @@
+name: Artifact Java
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths: ['web/documentserver-example/java/**']
+  pull_request:
+    branches: [master]
+    paths: ['web/documentserver-example/java/**']
+
+jobs:
+  artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      - name: Build Artifact
+        run: |
+          cd ${{ github.workspace }}
+          git submodule update --init --recursive
+          cd ./web/documentserver-example/java
+          mkdir -p ./deploy/'Java Example'
+          rsync -av --exclude='deploy' ./ ./deploy/'Java Example'
+          rm -rf ./deploy/'Java Example'/src/main/resources/assets/document-formats/.git
+          rm -rf ./deploy/'Java Example'/src/main/resources/assets/document-templates/.git
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: Java.Example
+          path: ${{ github.workspace }}/web/documentserver-example/java/deploy

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,35 +21,30 @@ package helpers;
 import java.io.InputStream;
 import java.util.Properties;
 
-public class ConfigManager
-{
+public final class ConfigManager {
     private static Properties properties;
 
-    static
-    {
-        Init();
+    private ConfigManager() { }
+
+    static {
+        init();
     }
 
-    private static void Init()
-    {
-        try
-        {
+    private static void init() {
+        try {
             // get stream from the settings.properties resource and load it
             properties = new Properties();
-            InputStream stream = Thread.currentThread().getContextClassLoader().getResourceAsStream("settings.properties");
+            InputStream stream = Thread.currentThread().getContextClassLoader()
+                    .getResourceAsStream("settings.properties");
             properties.load(stream);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             properties = null;
         }
     }
 
     // get name from the settings.properties file
-    public static String GetProperty(String name)
-    {
-        if (properties == null)
-        {
+    public static String getProperty(final String name) {
+        if (properties == null) {
             return "";
         }
 

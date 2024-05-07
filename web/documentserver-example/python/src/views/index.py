@@ -1,44 +1,45 @@
 """
 
- (c) Copyright Ascensio System SIA 2021
- *
- The MIT License (MIT)
+ (c) Copyright Ascensio System SIA 2024
 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
+     http://www.apache.org/licenses/LICENSE-2.0
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 
 """
 
-import config
-import json
-
 from django.shortcuts import render
 
+from src.configuration import ConfigurationManager
 from src.utils import users
 from src.utils import docManager
+
+config_manager = ConfigurationManager()
+
+
+def getDirectUrlParam(request):
+    if 'directUrl' in request.GET:
+        return request.GET['directUrl'].lower() in ("true")
+
+    return False
+
 
 def default(request):  # default parameters that will be passed to the template
     context = {
         'users': users.USERS,
-        'languages': docManager.LANGUAGES,
-        'preloadurl': config.DOC_SERV_SITE_URL + config.DOC_SERV_PRELOADER_URL,
-        'editExt': json.dumps(config.DOC_SERV_EDITED),  # file extensions that can be edited
-        'convExt': json.dumps(config.DOC_SERV_CONVERT),  # file extensions that can be converted
-        'files': docManager.getStoredFiles(request)  # information about stored files
+        'languages': config_manager.languages(),
+        'preloadurl': config_manager.document_server_preloader_url().geturl(),
+        'files': docManager.getStoredFiles(request),  # information about stored files
+        'directUrl': str(getDirectUrlParam(request)).lower,
+        'serverVersion': config_manager.getVersion()
     }
-    return render(request, 'index.html', context)  # execute the "index.html" template with context data and return http response in json format
+    # execute the "index.html" template with context data and return http response in json format
+    return render(request, 'index.html', context)

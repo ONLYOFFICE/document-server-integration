@@ -2,78 +2,84 @@
 
 This example will help you integrate ONLYOFFICE Docs into your web application written on Ruby.
 
-It is aimed at testing the editors. Please, do not use it for production without proper modifications. 
+> [!WARNING]  
+> It is intended for testing purposes and demonstrating functionality of the editors. **DO NOT** use this integration example on your own server without proper code modifications. In case you enabled the test example, disable it before going for production.
 
-## Step 1. Install ONLYOFFICE Docs
+## Installation
 
-Download and install ONLYOFFICE Docs (packaged as Document Server).
+The Ruby example offers various installation options, but we highly recommend using Docker for this purpose.
 
-See the detailed guide to learn how to install Document Server [for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx), [for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx), or [for Docker](https://helpcenter.onlyoffice.com/server/developer-edition/docker/docker-installation.aspx).
+### Using Docker
 
-## Step 2. Install the prerequisites and run the website with the editors
+To run the example using [Docker](https://docker.com), you will need [Docker Desktop 4.17.0](https://docs.docker.com/desktop) or [Docker Engine 20.10.23](https://docs.docker.com/engine) with [Docker Compose 2.15.1](https://docs.docker.com/compose). Additionally, you might want to consider installing [GNU Make 4.4.1](https://gnu.org/software/make), although it is optional. These are the minimum versions required for the tools.
 
-1. Install **Ruby Version Manager (RVM)** and the stable 2.7 **Ruby** version:
+Once you have everything installed, download the release archive and unarchive it.
 
-    ```
-    gpg --keyserver "hkp://keys.gnupg.net" --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3
-    ```
+```sh
+$ curl --output Ruby.Example.zip --location https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/Ruby.Example.zip
+$ unzip Ruby.Example.zip
+```
 
-    ```
-    \curl -sSL https://get.rvm.io | bash -s stable --ruby=2.7.0
-    ```
+Then open the example directory and [up containers](./Makefile#L46).
 
-2. Download the archive with the Ruby example and unpack the archive:
+```sh
+$ cd "Ruby Example"
+$ make compose-prod
+```
 
-    ```
-    wget "https://api.onlyoffice.com/app_data/editor/Ruby%20Example.zip"
-    ```
+By default, the server starts at `localhost:80`.
 
-    ```
-    unzip Ruby\ Example.zip
-    ```
+To configure the example, you can edit the environment variables in [`compose-base.yml`](./compose-base.yml). See [below](#configuration) for more information about environment variables.
 
-3. Change the current directory for the project directory:
+### On Local Machine
 
-    ```
-    cd Ruby\ Example
-    ```
+Before diving into the example, you will need to install ONLYOFFICE Document Server (also known as Docs). Check the detailed guide to learn how to install it on [Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx), [Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx), or [Docker](https://helpcenter.onlyoffice.com/installation/docs-developer-install-docker.aspx).
 
-4. Install the dependencies:
+To run the example on your local machine, you will need [Ruby 3.2.2](https://ruby-lang.org) with [Bundler 2.4.10](https://bundler.io). Additionally, you might want to consider installing [GNU Make 4.4.1](https://gnu.org/software/make), although it is optional. These are the minimum versions required for the tools.
 
-    ```
-    bundle install
-    ```
+Once you have everything installed, download the release archive and unarchive it.
 
-5. Edit the *application.rb* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
+```sh
+$ curl --output Ruby.Example.zip --location https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/Ruby.Example.zip
+$ unzip Ruby.Example.zip
+```
 
-    ```
-    nano config/application.rb
-    ```
+Then open the example directory, [install dependencies](./Makefile#L33), and [start the server](./Makefile#L42).
 
-	Edit the following line:
+```sh
+$ cd "Ruby Example"
+$ make prod
+$ make server-prod
+```
 
-    ```
-    Rails.configuration.urlSite="https://documentserver/"
-    ```
+By default, the server starts at `0.0.0.0:3000`.
 
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
+To configure the example, you can pass the environment variables before the command that starts the server. See [below](#configuration) for more information about environment variables.
 
-6. Run the **Rails** application:
-
-    ```
-    rails s -b 0.0.0.0 -p 80
-    ```
-
-7. See the result in your browser using the address:
-
-    ```
-    http://localhost
-    ```
-
-	If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *views\home\editor.html.erb* file.
-
-## Step 3. Check accessibility
+## Post Installation
 
 In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
 
 Make sure that the Document Server has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
+
+## Configuration
+
+The example is configured by changing environment variables.
+
+| Name | Description | Example |
+| ------------- | ------------- | ------------- |
+| `BINDING` | The address where the server should be started. | `0.0.0.0` |
+| `DOCUMENT_SERVER_PRIVATE_URL` | The URL through which the server will communicate with Document Server. | `http://proxy:8080` |
+| `DOCUMENT_SERVER_PUBLIC_URL` | The URL through which a user will communicate with Document Server. | `http://localhost:8080` |
+| `EXAMPLE_URL` | The URL through which Document Server will communicate with the server. | `http://proxy` |
+| `JWT_SECRET` | JWT authorization secret. Leave blank to disable authorization. | `your-256-bit-secret` |
+| `PORT` | The port on which the server should be running. | `80` |
+
+## Security Info
+
+Please keep in mind the following security aspects when you are using test examples:
+
+- There is no protection of the storage from unauthorized access since there is no need for authorization.
+- There are no checks against parameter substitution in links, since the parameters are generated by the code according to the pre-arranged scripts.
+- There are no data checks in requests of saving the file after editing, since each test example is intended for requests only from ONLYOFFICE Document Server.
+- There are no prohibitions on using test examples from other sites, since they are intended to interact with ONLYOFFICE Document Server from another domain.

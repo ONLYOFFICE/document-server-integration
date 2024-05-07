@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2021
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,23 +68,24 @@ namespace OnlineEditorsExampleMVC.Helpers
         /// <param name="toExtension">Extension to which to convert</param>
         /// <param name="documentRevisionId">Key for caching on service</param>
         /// <param name="isAsync">Perform conversions asynchronously</param>
-        /// <param name="convertedDocumentUri">Uri to the converted document</param>
+        /// <param name="convertedDocumentData">Uri and file type of the converted document</param>
         /// <returns>The percentage of conversion completion</returns>
         /// <example>
-        /// string convertedDocumentUri;
-        /// GetConvertedUri("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentUri);
+        /// Dictionary<string, string> convertedDocumentData;
+        /// GetConvertedData("http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", ".pdf", ".docx", "http://helpcenter.onlyoffice.com/content/GettingStarted.pdf", false, out convertedDocumentData);
         /// </example>
         /// <exception>
         /// </exception>
-        public static int GetConvertedUri(string documentUri,
+        public static int GetConvertedData(string documentUri,
                                           string fromExtension,
                                           string toExtension,
                                           string documentRevisionId,
                                           bool isAsync,
-                                          out string convertedDocumentUri,
-                                          string filePass = null)
+                                          out Dictionary<string, string> convertedDocumentData,
+                                          string filePass = null,
+                                          string lang = null)
         {
-            convertedDocumentUri = string.Empty;
+            convertedDocumentData = new Dictionary<string, string>();
 
             // check if the fromExtension parameter is defined; if not, get it from the document url
             fromExtension = string.IsNullOrEmpty(fromExtension) ? Path.GetExtension(documentUri).ToLower() : fromExtension;
@@ -114,10 +115,11 @@ namespace OnlineEditorsExampleMVC.Helpers
                 { "outputtype", toExtension.Trim('.') },
                 { "title", title },
                 { "url", documentUri },
-                { "password", filePass }
+                { "password", filePass },
+                { "region", lang }
             };
 
-            if (JwtManager.Enabled)
+            if (JwtManager.Enabled && JwtManager.SignatureUseForRequest)
             {
                 // create payload object
                 var payload = new Dictionary<string, object>
@@ -128,7 +130,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 var payloadToken = JwtManager.Encode(payload);  // encode the payload object to the payload token
                 var bodyToken = JwtManager.Encode(body);  // encode the body object to the body token
                 // create header token
-                string JWTheader = WebConfigurationManager.AppSettings["files.docservice.header"].Equals("") ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
+                string JWTheader = string.IsNullOrEmpty(WebConfigurationManager.AppSettings["files.docservice.header"]) ? "Authorization" : WebConfigurationManager.AppSettings["files.docservice.header"];
                 request.Headers.Add(JWTheader, "Bearer " + payloadToken);
 
                 body.Add("token", bodyToken);
@@ -140,6 +142,8 @@ namespace OnlineEditorsExampleMVC.Helpers
             {
                 requestStream.Write(bytes, 0, bytes.Length);  // and write the serialized body object to it
             }
+
+            DocManagerHelper.VerifySSL();
 
             string dataResponse;
             using (var response = request.GetResponse())
@@ -153,7 +157,7 @@ namespace OnlineEditorsExampleMVC.Helpers
                 }
             }
 
-            return GetResponseUri(dataResponse, out convertedDocumentUri);
+            return GetResponseData(dataResponse, out convertedDocumentData);
         }
 
         /// <summary>
@@ -177,9 +181,9 @@ namespace OnlineEditorsExampleMVC.Helpers
         /// Processing document received from the editing service
         /// </summary>
         /// <param name="jsonDocumentResponse">The resulting json from editing service</param>
-        /// <param name="responseUri">Uri to the converted document</param>
+        /// <param name="responseData">Uri and file type of the converted document</param>
         /// <returns>The percentage of conversion completion</returns>
-        private static int GetResponseUri(string jsonDocumentResponse, out string responseUri)
+        private static int GetResponseData(string jsonDocumentResponse, out Dictionary<string, string> responseData)
         {
             if (string.IsNullOrEmpty(jsonDocumentResponse)) throw new ArgumentException("Invalid param", "jsonDocumentResponse");
 
@@ -193,14 +197,20 @@ namespace OnlineEditorsExampleMVC.Helpers
             var isEndConvert = responseFromService.endConvert;
 
             int resultPercent;
-            responseUri = string.Empty;
+            responseData = new Dictionary<string, string>(); 
+            var responseUri = string.Empty;
+            var responseFileType = string.Empty;
             if (isEndConvert)  // if the conversion is completed
             {
                 responseUri = responseFromService.fileUrl;  // get the file url
+                responseFileType = responseFromService.fileType;  // get the file type
+                responseData.Add("fileUrl", responseUri);
+                responseData.Add("fileType", responseFileType);
                 resultPercent = 100;
             }
             else  // if the conversion isn't completed
             {
+                responseData.Add("fileUrl", "");
                 resultPercent = responseFromService.percent;  // get the percentage value
                 if (resultPercent >= 100) resultPercent = 99;
             }
@@ -219,6 +229,10 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             switch (errorCode)
             {
+                case -9:
+                    // public const int c_nErrorConversionOutputFormatError = -9;
+                    errorMessage = String.Format(errorMessageTemplate, "Error conversion output format");
+                    break;
                 case -8:
                     // public const int c_nErrorFileVKey = -8;
                     errorMessage = String.Format(errorMessageTemplate, "Error document VKey");

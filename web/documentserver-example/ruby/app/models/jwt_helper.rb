@@ -1,5 +1,7 @@
+# frozen_string_literal: true
+
 #
-# (c) Copyright Ascensio System SIA 2021
+# (c) Copyright Ascensio System SIA 2024
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,49 +16,38 @@
 # limitations under the License.
 #
 
+require 'jwt'
+require_relative '../configuration/configuration'
+
+# Helper class for JSON Web Token (JWT) operations, including encoding and decoding.
 class JwtHelper
+  @jwt_secret = ConfigurationManager.new.jwt_secret
+  @token_use_for_request = ConfigurationManager.new.jwt_use_for_request
 
-    @jwt_secret = Rails.configuration.jwtSecret
-  
-    class << self
-        # check if a secret key to generate token exists or not
-        def is_enabled
-            return @jwt_secret && !@jwt_secret.empty? ? true : false
-        end
+  # check if a secret key to generate token exists or not
+  def self.enabled?
+    @jwt_secret.present?
+  end
 
-        # encode a payload object into a token using a secret key
-        def encode(payload)
-            header = { :alg => "HS256", :typ => "JWT" }  # define the hashing algorithm and the token type
-            # three parts of token
-            enc_header = Base64.urlsafe_encode64(header.to_json).remove("=")  # header
-            enc_payload = Base64.urlsafe_encode64(payload.to_json).remove("=")  # payload
-            hash = Base64.urlsafe_encode64(calc_hash(enc_header, enc_payload)).remove("=")  # signature
+  # check if a secret key used for request
+  def self.use_for_request
+    @token_use_for_request
+  end
 
-            return "#{enc_header}.#{enc_payload}.#{hash}"
-        end
+  # encode a payload object into a token using a secret key
+  def self.encode(payload)
+    JWT.encode(payload, @jwt_secret, 'HS256') # define the hashing algorithm and get token
+  end
 
-        # decode a token into a payload object using a secret key
-        def decode(token)
-            if !is_enabled
-                return ""
-            end
-
-            split = token.split(".")
-
-            hash = Base64.urlsafe_encode64(calc_hash(split[0], split[1])).remove("=")
-
-            if !hash.eql?(split[2])
-                return ""
-            end
-
-            return Base64.urlsafe_decode64(split[1])
-        end
-
-        private
-
-        # generate a hash code based on a key using the HMAC method
-        def calc_hash(header, payload)
-            return OpenSSL::HMAC.digest("SHA256", @jwt_secret, "#{header}.#{payload}")
-        end
+  # decode a token into a payload object using a secret key
+  def self.decode(token)
+    begin
+      decoded = JWT.decode(token, @jwt_secret, true, { algorithm: 'HS256' })
+    rescue StandardError
+      return ''
     end
+    # decoded = Array [ {"data"=>"test"}, # payload
+    #                   {"alg"=>"HS256"} # header   ]
+    decoded[0].to_json # get json payload
+  end
 end

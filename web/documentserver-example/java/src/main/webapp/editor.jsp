@@ -12,7 +12,7 @@
         <meta name="mobile-web-app-capable" content="yes" />
         <!--
         *
-        * (c) Copyright Ascensio System SIA 2021
+        * (c) Copyright Ascensio System SIA 2024
         *
         * Licensed under the Apache License, Version 2.0 (the "License");
         * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@
         *
         -->
         <title>ONLYOFFICE</title>
-        <link rel="icon" href="css/img/<%= Model.documentType %>.ico" type="image/x-icon" />
+        <link rel="icon" href="css/img/<%= Model.getDocumentType() %>.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
 
         <script type="text/javascript" src="${docserviceApiUrl}"></script>
@@ -36,10 +36,13 @@
         <script type="text/javascript" language="javascript">
 
         var docEditor;
+        var config;
 
-        var innerAlert = function (message) {
+        var innerAlert = function (message, inEditor) {
             if (console && console.log)
                 console.log(message);
+            if (inEditor && docEditor)
+                docEditor.showMessage(message);
         };
 
         // the application is loaded into the browser
@@ -95,10 +98,14 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
-            var favorite = !!event.data.favorite;
-            var title = document.title.replace(/^\☆/g, "");
-            document.title = (favorite ? "☆" : "") + title;
-            docEditor.setFavorite(favorite);  // change the Favorite icon state
+            if (event.data.favorite) {
+                var favorite = !!event.data.favorite;
+                var title = document.title.replace(/^\☆/g, "");
+                document.title = (favorite ? "☆" : "") + title;
+                docEditor.setFavorite(favorite);  // change the Favorite icon state
+            }
+
+            innerAlert("onMetaChange: " + JSON.stringify(event.data));
         };
 
         // the user is trying to insert an image by clicking the Image from Storage button
@@ -110,70 +117,222 @@
         };
 
         // the user is trying to select document for comparing by clicking the Document from Storage button
-        var onRequestCompareFile = function() {
-            docEditor.setRevisedFile(${dataCompareFile});  // select a document for comparing
+        var onRequestSelectDocument = function(event) {
+            var data = ${dataDocument};
+            data.c = event.data.c;
+            docEditor.setRequestedDocument(data);  // select a document for comparing
         };
 
         // the user is trying to select recipients data by clicking the Mail merge button
-        var onRequestMailMergeRecipients = function (event) {
-            docEditor.setMailMergeRecipients(${dataMailMergeRecipients});  // insert recipient data for mail merge into the file
+        var onRequestSelectSpreadsheet = function (event) {
+            var data = ${dataSpreadsheet};
+            data.c = event.data.c;
+            docEditor.setRequestedSpreadsheet(data);  // insert recipient data for mail merge into the file
         };
 
-        var config = JSON.parse('<%= FileModel.Serialize(Model) %>');
+        var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
+            var title = event.data.title;
+            var url = event.data.url;
+            var data = {
+                title: title,
+                url: url
+            };
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "IndexServlet?type=saveas");
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                innerAlert(JSON.parse(xhr.responseText).file, true);
+            }
+        };
+
+        var onRequestRename = function(event) { //  the user is trying to rename file by clicking Rename... button
+            innerAlert("onRequestRename: " + JSON.stringify(event.data));
+
+            var newfilename = event.data;
+            var data = {
+                newfilename: newfilename,
+                dockey: config.document.key,
+                ext: config.document.fileType
+            };
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "IndexServlet?type=rename");
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+            }
+        };
+
+        var onRequestOpen = function(event) {  // user open external data source
+            innerAlert("onRequestOpen");
+            var windowName = event.data.windowName;
+
+            requestReference(event.data, function (data) {
+                if (data.error) {
+                    var winEditor = window.open("", windowName);
+                    winEditor.close();
+                    innerAlert(data.error, true);
+                    return;
+                }
+
+                var link = data.link;
+                window.open(link, windowName);
+            });
+        };
+
+        var onRequestReferenceData = function(event) {  // user refresh external data source
+            innerAlert("onRequestReferenceData");
+            requestReference(event.data, function (data) {
+                docEditor.setReferenceData(data);
+            });
+        };
+
+        var requestReference = function(data, callback) {
+            innerAlert(data);
+            data.directUrl = !!config.document.directUrl;
+
+            let xhr = new XMLHttpRequest();
+            xhr.open("POST", "IndexServlet?type=reference");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(data));
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                callback(JSON.parse(xhr.responseText));
+            }
+        };
+
+        function onRequestRestore(event) {
+          const query = new URLSearchParams(window.location.search)
+          const payload = {
+            fileName: query.get('fileName'),
+            version: event.data.version,
+            userId: config.editorConfig.user.id
+          }
+          const request = new XMLHttpRequest()
+          request.open('PUT', 'IndexServlet?type=restore')
+          request.send(JSON.stringify(payload))
+          request.onload = function () {
+            const response = JSON.parse(request.responseText);
+            if (response.success && !response.error) {
+              var historyInfoUri = "IndexServlet?type=history&filename=" + config.document.title;
+              var xhr = new XMLHttpRequest();
+              xhr.open("GET", historyInfoUri, false);
+              xhr.send();
+
+              if (xhr.status == 200) {
+                  var historyInfo = JSON.parse(xhr.responseText);
+                  docEditor.refreshHistory(historyInfo);
+              }
+            } else {
+              innerAlert(response.error);
+            }
+          }
+        }
+
+        var onRequestHistory = function () {
+            var historyInfoUri = "IndexServlet?type=history&filename=" + config.document.title;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", historyInfoUri, false);
+            xhr.send();
+
+            if (xhr.status == 200) {
+                var historyInfo = JSON.parse(xhr.responseText);
+                docEditor.refreshHistory(historyInfo);
+            }
+        };
+
+        var onRequestHistoryData = function (event) {
+            var version = event.data;
+            var historyDataUri = "IndexServlet?type=historyData&filename=" + config.document.title
+                + "&version=" + version
+                + "&directUrl=" + !!config.document.directUrl;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", historyDataUri, false);
+            xhr.send();
+
+            if (xhr.status == 200) {
+                var historyData = JSON.parse(xhr.responseText);
+                docEditor.setHistoryData(historyData);
+            }
+        };
+
+        var onRequestHistoryClose = function() {
+            document.location.reload();
+        };
+
+        var onRequestUsers = function (event) {
+            if (event && event.data) {
+                var c = event.data.c;
+            }
+
+            switch (c) {
+                case "info":
+                    users = [];
+                    var allUsers = <%=(String) request.getAttribute("usersInfo")%>;
+                    for (var i = 0; i < event.data.id.length; i++) {
+                        for (var j = 0; j < allUsers.length; j++) {
+                            if (allUsers[j].id == event.data.id[i]) {
+                                users.push(allUsers[j]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case "protect":
+                    var users = <%=(String) request.getAttribute("usersForProtect")%>;
+                    break;
+                default:
+                    users = <%=(String) request.getAttribute("usersForMentions")%>;
+            }
+
+            docEditor.setUsers({
+                "c": c,
+                "users": users,
+            });
+        };
+
+        var onRequestSendNotify = function(event) {  // the user is mentioned in a comment
+            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+            var data = JSON.stringify(event.data);
+            innerAlert("onRequestSendNotify: " + data);
+        };
+
+        config = JSON.parse('<%= FileModel.serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
         config.events = {
             "onAppReady": onAppReady,
             "onDocumentStateChange": onDocumentStateChange,
-            'onRequestEditRights': onRequestEditRights,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
-            "onRequestCompareFile": onRequestCompareFile,
-            "onRequestMailMergeRecipients": onRequestMailMergeRecipients,
+            "onRequestSelectDocument": onRequestSelectDocument,
+            "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet
         };
 
-        <%
-            String[] histArray = Model.GetHistory();
-            String history = histArray[0];
-            String historyData = histArray[1];
-            String usersForMentions = (String) request.getAttribute("usersForMentions");
-        %>
-
-        <% if (!history.isEmpty() && !historyData.isEmpty()) { %>
-            // the user is trying to show the document version history
-            config.events['onRequestHistory'] = function () {
-                docEditor.refreshHistory(<%= history %>);  // show the document version history
-            };
-            // the user is trying to click the specific document version in the document version history
-            config.events['onRequestHistoryData'] = function (event) {
-                var ver = event.data;
-                var histData = <%= historyData %>;
-                docEditor.setHistoryData(histData[ver - 1]);  // send the link to the document for viewing the version history
-            };
-            // the user is trying to go back to the document from viewing the document version history
-            config.events['onRequestHistoryClose'] = function () {
-                document.location.reload();
-            };
-        <% } %>
-
-        <% if (usersForMentions != null) { %>
+        if (config.editorConfig.user.id) {
             // add mentions for not anonymous users
-            config.events['onRequestUsers'] = function () {
-                docEditor.setUsers({  // set a list of users to mention in the comments
-                    "users": ${usersForMentions}
-                });
-            };
+            config.events['onRequestUsers'] = onRequestUsers;
+            config.events['onRequestSaveAs'] = onRequestSaveAs;
             // the user is mentioned in a comment
-            config.events['onRequestSendNotify'] = function (event) {
-                var actionLink = JSON.stringify(event.data.actionLink);
-                console.log("onRequestSendNotify:");
-                console.log(event.data);
-                console.log("Link to comment: " + replaceActionLink(location.href, actionLink));
-            };
-        <% } %>
+            config.events['onRequestSendNotify'] = onRequestSendNotify;
+            // prevent file renaming for anonymous users
+            config.events['onRequestRename'] = onRequestRename;
+            config.events['onRequestReferenceData'] = onRequestReferenceData;
+            // prevent switch the document from the viewing into the editing mode for anonymous users
+            config.events['onRequestEditRights'] = onRequestEditRights;
+            config.events['onRequestOpen'] = onRequestOpen;
+            config.events['onRequestHistory'] = onRequestHistory;
+            config.events['onRequestHistoryData'] = onRequestHistoryData;
+            if (config.editorConfig.user.id != "uid-3") {
+                config.events['onRequestHistoryClose'] = onRequestHistoryClose;
+                config.events['onRequestRestore'] = onRequestRestore;
+            }
+        }
 
         var сonnectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);

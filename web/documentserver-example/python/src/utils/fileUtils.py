@@ -1,56 +1,56 @@
 """
 
- (c) Copyright Ascensio System SIA 2021
- *
- The MIT License (MIT)
+ (c) Copyright Ascensio System SIA 2024
 
- Permission is hereby granted, free of charge, to any person obtaining a copy
- of this software and associated documentation files (the "Software"), to deal
- in the Software without restriction, including without limitation the rights
- to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- copies of the Software, and to permit persons to whom the Software is
- furnished to do so, subject to the following conditions:
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
 
- The above copyright notice and this permission notice shall be included in all
- copies or substantial portions of the Software.
+     http://www.apache.org/licenses/LICENSE-2.0
 
- THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- SOFTWARE.
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
 
 """
 
-import config
+from src.configuration import ConfigurationManager
+from src.format import FormatManager
+
+config_manager = ConfigurationManager()
+format_manager = FormatManager()
+
 
 # get file name from the document url
-def getFileName(str):
-    ind = str.rfind('/')
-    return str[ind+1:]
+def getFileName(uri):
+    ind = uri.rfind('/')
+    return uri[ind+1:]
+
 
 # get file name without extension from the document url
-def getFileNameWithoutExt(str):
-    fn = getFileName(str)
+def getFileNameWithoutExt(uri):
+    fn = getFileName(uri)
     ind = fn.rfind('.')
     return fn[:ind]
 
+
 # get file extension from the document url
-def getFileExt(str):
-    fn = getFileName(str)
+def getFileExt(uri):
+    fn = getFileName(uri)
     ind = fn.rfind('.')
     return fn[ind:].lower()
 
+
 # get file type
-def getFileType(str):
-    ext = getFileExt(str)
-    if ext in config.EXT_DOCUMENT:
+def getFileType(uri):
+    ext = getFileExt(uri)
+    if ext in format_manager.document_extensions():
         return 'word'
-    if ext in config.EXT_SPREADSHEET:
+    if ext in format_manager.spreadsheet_extensions():
         return 'cell'
-    if ext in config.EXT_PRESENTATION:
+    if ext in format_manager.presentation_extensions():
         return 'slide'
 
-    return 'word' # default file type is word
+    return 'word'  # default file type is word
