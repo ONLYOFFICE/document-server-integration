@@ -18,9 +18,12 @@
 
 package com.onlyoffice.integration.documentserver.storage;
 
+import java.nio.file.Path;
+
 // specify the file storage path builder functions
 public interface FileStoragePathBuilder {
     void configure(String address);  // create a new storage folder
+    String getFileName(String url); // get file name from its URL
     String getStorageLocation();  // get the storage directory
     String getFileLocation(String fileName);  // get the directory of the specified file
     String getServerUrl(Boolean forDocumentServer);  // get the server URL
@@ -28,4 +31,6 @@ public interface FileStoragePathBuilder {
     int getFileVersion(String historyPath, Boolean ifIndexPage);  // get the file version
     String getForcesavePath(String fileName, Boolean create);  /* get the path where all the
     forcely saved file versions are saved or create it */
+    Path generateFilepath(String directory, String fullFileName);  /* generate the file path
+    from file directory and name */
 }

@@ -16,25 +16,15 @@
  *
  */
 
-package com.onlyoffice.integration.dto;
+package com.onlyoffice.integration.sdk.manager;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.util.ArrayList;
+import java.util.Map;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-public class Convert {
-    private String url;
-    private String outputtype;
-    private String filetype;
-    private String title;
-    private String key;
-    private String filePass;
-    private Boolean async;
-    private String token;
-    private String lang;
+public interface DocumentManager extends com.onlyoffice.manager.document.DocumentManager {
+    String getCorrectName(String fileName);
+    ArrayList<Map<String, Object>> getFilesInfo();
+    ArrayList<Map<String, Object>> getFilesInfo(String fileId);
+    String createDemo(String fileExt, Boolean sample, String uid, String uname) throws Exception;
+    String generateRevisionId(String expectedKey);
 }

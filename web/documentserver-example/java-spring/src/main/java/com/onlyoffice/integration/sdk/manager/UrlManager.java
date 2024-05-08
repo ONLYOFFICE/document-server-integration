@@ -16,16 +16,10 @@
  *
  */
 
-package com.onlyoffice.integration.dto;
+package com.onlyoffice.integration.sdk.manager;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ReferenceData {
-    private String fileKey;
-    private String instanceId;
+public interface UrlManager extends com.onlyoffice.manager.url.UrlManager {
+    String getCreateSampleUrl(String fileId);
+    String getHistoryFileUrl(String fileName, Integer version, String file, Boolean forDocumentServer);
+    String getTemplateImageUrl(String fileName);
 }

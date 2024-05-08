@@ -16,16 +16,12 @@
  *
  */
 
-package com.onlyoffice.integration.dto;
+package com.onlyoffice.integration.sdk.service;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.onlyoffice.integration.documentserver.models.enums.Action;
+import com.onlyoffice.model.documenteditor.Config;
+import com.onlyoffice.model.documenteditor.config.document.Type;
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
-public class ChangesUser {
-    private String id;
-    private String name;
+public interface ConfigService extends com.onlyoffice.service.documenteditor.config.ConfigService {
+    Config createConfig(String fileId, Action action, Type type);
 }
