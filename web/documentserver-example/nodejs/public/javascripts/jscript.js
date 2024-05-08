@@ -19,13 +19,25 @@
 var language;
 var userid;
 var directUrl;
-var Formats;
+var formatManager;
 
 window.onload = function () {
     fetch('formats')
         .then((response) => response.json())
         .then((data) => {
-            Formats = data;
+            if (data.formats) {
+                let formats = [];
+                data.formats.forEach(format => {
+                    formats.push(new Format(
+                        format.name,
+                        format.type,
+                        format.actions,
+                        format.convert,
+                        format.mime
+                    ));
+                });
+                formatManager = new FormatManager(formats);
+            }
         })
 }
 
@@ -109,7 +121,7 @@ if (typeof jQuery != "undefined") {
     });
 
     var timer = null;
-    var checkConvert = function (filePass, forceConvert) {
+    var checkConvert = function (filePass, fileType) {
         filePass = filePass ? filePass : null;
         if (timer != null) {
             clearTimeout(timer);
@@ -125,14 +137,11 @@ if (typeof jQuery != "undefined") {
         var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        if (ConverExtList.indexOf(posExt) == -1) {
+        if (!formatManager.isAutoConvertible(posExt)) {
             jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
         }
-
-        var convData = {filename: fileName, filePass: filePass, lang: language};
-        if (forceConvert) convData.forceConv = forceConvert;
 
         timer = setTimeout(function () {
             jq.ajaxSetup({ cache: false });
@@ -140,7 +149,7 @@ if (typeof jQuery != "undefined") {
                 async: true,
                 type: "post",
                 dataType: "json",
-                data: convData,
+                data: {filename: fileName, filePass: filePass, lang: language, fileExt: fileType},
                 url: UrlConverter,
                 complete: function (data) {
                     var responseText = data.responseText;
@@ -161,7 +170,7 @@ if (typeof jQuery != "undefined") {
                             return;
                         } else {
                             if (response.error.includes("-9")){
-                                jq("#xmlError").removeClass("invisible");
+                                jq("#select-file-type").removeClass("invisible");
                                 jq("#step2").removeClass("current");
                                 jq("#hiddenFileName").attr("placeholder",filePass);
                                 return;
@@ -177,7 +186,7 @@ if (typeof jQuery != "undefined") {
                     jq("#hiddenFileName").val(response.filename);
 
                     if (typeof response.step != "undefined" && response.step < 100) {
-                        checkConvert(filePass, forceConvert);
+                        checkConvert(filePass, fileType);
                     } else {
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
@@ -215,19 +224,16 @@ if (typeof jQuery != "undefined") {
         var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        var checkEdited = EditedExtList.split(",").filter(function(ext) { return ext == posExt;});
-        var checkFilled = FilledExtList.split(",").filter(function(ext) { return ext == posExt;});
-
-        if (checkEdited != "" || checkFilled != "") {
+        if (formatManager.isEditable(posExt) || formatManager.isFillable(posExt)) {
             jq("#beginEdit").removeClass("disable");
         }
     };
 
-    jq(document).on("click", "#forceConvert:not(.disable)", function () {
+    jq(document).on("click", ".file-type:not(.disable)", function () {
         const currentElement = jq(this);
         var fileType = currentElement.attr("data");
         var filePass = jq("#hiddenFileName").attr("placeholder");
-        jq("div[id='forceConvert']").addClass("disable, pale");
+        jq(".file-type").addClass(["disable", "pale"]);
         currentElement.removeClass("pale");
         checkConvert(filePass, fileType);
     });
@@ -369,10 +375,14 @@ if (typeof jQuery != "undefined") {
         jq("#convertFileName").removeClass("word slide cell");
         jq("#convertFileName").addClass(type);
         jq("#convTypes").empty();
-        let convExtensions = Formats.find(format => {return format.name == fileName.split('.').pop()}).convert;
-        convExtensions.forEach(ext => {
-            jq("#convTypes").append(jq(`<td name="convertingTypeButton" id="wordTo${ext}" class="button hoar" data="${ext}">${ext}</td>`));
-        });
+
+        let format = formatManager.findByExtension(fileName.split('.').pop());
+        if (format) {
+            format.convert.forEach(ext => {
+                jq("#convTypes").append(jq(`<td name="convertingTypeButton" id="wordTo${ext}" class="button hoar" data="${ext}">${ext}</td>`));
+            });
+        }
+
         jq("#hiddenFileName").val(fileName);
         jq("#convertStep1").addClass("done");
         jq("#convertStep2").addClass("waiting");
@@ -410,7 +420,7 @@ if (typeof jQuery != "undefined") {
                 async: true,
                 type: "post",
                 dataType: "json",
-                data: {filename: fileName, filePass: filePass, lang: language, fileExt: fileExt},
+                data: {filename: fileName, filePass: filePass, lang: language, fileExt: fileExt, keepOriginal: true},
                 url: UrlConverter,
                 complete: function (data) {
                     try {

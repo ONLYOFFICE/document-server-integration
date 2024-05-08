@@ -93,8 +93,6 @@ app.get('/', (req, res) => { // define a handler for default page
 
     res.render('index', { // render index template with the parameters specified
       preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-      convertExts: fileUtility.getConvertExtensions(),
-      editedExts: fileUtility.getEditExtensions(),
       fillExts: fileUtility.getFillExtensions(),
       storedFiles: req.DocManager.getStoredFiles(),
       params: req.DocManager.getCustomParams(),
@@ -213,7 +211,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    const file = files.uploadedFile;
+    const file = files.uploadedFile[0];
 
     if (file === undefined) { // if file parameter is undefined
       res.writeHead(200, { 'Content-Type': 'text/plain' }); // write the error status and message to the response
@@ -222,7 +220,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    file.name = req.DocManager.getCorrectName(file.name);
+    file.originalFilename = req.DocManager.getCorrectName(file.originalFilename);
 
     // check if the file size exceeds the maximum file size
     if (configServer.get('maxFileSize') < file.size || file.size <= 0) {
@@ -234,8 +232,8 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     }
 
     const exts = fileUtility.getSuppotredExtensions(); // all the supported file extensions
-    const curExt = fileUtility.getFileExtension(file.name, true);
-    const documentType = fileUtility.getFileType(file.name);
+    const curExt = fileUtility.getFileExtension(file.originalFilename, true);
+    const documentType = fileUtility.getFileType(file.originalFilename);
 
     if (exts.indexOf(curExt) === -1) { // check if the file extension is supported
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
@@ -245,19 +243,19 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    fileSystem.rename(file.path, `${uploadDir}/${file.name}`, (error) => { // rename a file
+    fileSystem.rename(file.filepath, `${uploadDir}/${file.originalFilename}`, (error) => { // rename a file
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       if (error) { // if an error occurs
         res.write(`{ "error": "${error}"}`); // write an error message to the response
       } else {
         // otherwise, write a new file name to the response
-        res.write(`{ "filename": "${file.name}", "documentType": "${documentType}" }`);
+        res.write(`{ "filename": "${file.originalFilename}", "documentType": "${documentType}" }`);
 
         // get user id and name parameters or set them to the default values
         const user = users.getUser(req.query.userid);
 
-        req.DocManager.saveFileData(file.name, user.id, user.name);
+        req.DocManager.saveFileData(file.originalFilename, user.id, user.name);
       }
       res.end();
     });
@@ -333,8 +331,8 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const fileUri = req.DocManager.getDownloadUrl(fileName, true);
   const fileExt = fileUtility.getFileExtension(fileName, true);
   const internalFileExt = 'ooxml';
-  let convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
-  if (req.body.forceConv) convExt = req.body.forceConv;
+  const convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
+  const { keepOriginal } = req.body;
   const response = res;
 
   const writeResult = function writeResult(filename, step, error) {
@@ -389,14 +387,14 @@ app.post('/convert', (req, res) => { // define a handler for converting files
         return;
       }
       // remove file with the origin extension
-      if (!('fileExt' in req.body)) fileSystem.unlinkSync(req.DocManager.storagePath(fileName));
+      if (!keepOriginal) fileSystem.unlinkSync(req.DocManager.storagePath(fileName));
 
       const userAddress = req.DocManager.curUserHostAddress();
       const historyPath = req.DocManager.historyPath(fileName, userAddress, true);
       // get the history path to the file with a new extension
       const correctHistoryPath = req.DocManager.historyPath(correctName, userAddress, true);
 
-      if (!('fileExt' in req.body)) {
+      if (!keepOriginal) {
         fileSystem.renameSync(historyPath, correctHistoryPath); // change the previous history path
 
         fileSystem.renameSync(
@@ -1201,7 +1199,9 @@ app.post('/historyObj', (req, res) => {
 app.get('/formats', (req, res) => {
   try {
     const formats = fileUtility.getFormats();
-    res.json(formats);
+    res.json({
+      formats,
+    });
   } catch (ex) {
     console.log(ex); // display error message in the console
     res.status(500); // write status parameter to the response

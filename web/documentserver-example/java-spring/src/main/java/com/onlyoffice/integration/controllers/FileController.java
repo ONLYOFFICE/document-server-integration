@@ -21,32 +21,38 @@ package com.onlyoffice.integration.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.onlyoffice.integration.documentserver.callbacks.CallbackHandler;
 import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
-import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.dto.Converter;
-import com.onlyoffice.integration.dto.ConvertedData;
 import com.onlyoffice.integration.dto.Reference;
-import com.onlyoffice.integration.dto.ReferenceData;
 import com.onlyoffice.integration.dto.Rename;
 import com.onlyoffice.integration.dto.Restore;
 import com.onlyoffice.integration.dto.SaveAs;
-import com.onlyoffice.integration.dto.Track;
 import com.onlyoffice.integration.entities.User;
-import com.onlyoffice.integration.documentserver.models.enums.DocumentType;
+import com.onlyoffice.integration.sdk.manager.DocumentManager;
 import com.onlyoffice.integration.services.UserServices;
-import com.onlyoffice.integration.documentserver.util.file.FileUtility;
-import com.onlyoffice.integration.documentserver.util.service.ServiceConverter;
-import com.onlyoffice.integration.documentserver.managers.document.DocumentManager;
-import com.onlyoffice.integration.documentserver.managers.callback.CallbackManager;
 
+import com.onlyoffice.manager.request.RequestManager;
+import com.onlyoffice.manager.security.JwtManager;
+import com.onlyoffice.manager.settings.SettingsManager;
+import com.onlyoffice.manager.url.UrlManager;
+import com.onlyoffice.model.commandservice.CommandRequest;
+import com.onlyoffice.model.commandservice.CommandResponse;
+import com.onlyoffice.model.commandservice.commandrequest.Command;
+import com.onlyoffice.model.commandservice.commandrequest.Meta;
+import com.onlyoffice.model.convertservice.ConvertRequest;
+import com.onlyoffice.model.convertservice.ConvertResponse;
+import com.onlyoffice.model.documenteditor.Callback;
+import com.onlyoffice.model.documenteditor.config.document.ReferenceData;
+import com.onlyoffice.service.command.CommandService;
+import com.onlyoffice.service.convert.ConvertService;
+import com.onlyoffice.service.documenteditor.callback.CallbackService;
+import org.apache.http.HttpEntity;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -74,7 +80,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -91,22 +96,6 @@ import java.util.Optional;
 @Controller
 public class FileController {
 
-    @Value("${files.docservice.header}")
-    private String documentJwtHeader;
-
-    @Value("${filesize-max}")
-    private String filesizeMax;
-
-    @Value("${files.docservice.url.site}")
-    private String docserviceUrlSite;
-
-    @Value("${files.docservice.url.command}")
-    private String docserviceUrlCommand;
-
-    @Autowired
-    private FileUtility fileUtility;
-    @Autowired
-    private DocumentManager documentManager;
     @Autowired
     private JwtManager jwtManager;
     @Autowired
@@ -116,20 +105,29 @@ public class FileController {
     @Autowired
     private UserServices userService;
     @Autowired
-    private CallbackHandler callbackHandler;
-    @Autowired
     private ObjectMapper objectMapper;
     @Autowired
-    private ServiceConverter serviceConverter;
-    @Autowired
-    private CallbackManager callbackManager;
-    @Autowired
     private HistoryManager historyManager;
+    @Autowired
+    private DocumentManager documentManager;
+    @Autowired
+    private ConvertService convertService;
+    @Autowired
+    private RequestManager requestManager;
+    @Autowired
+    private SettingsManager settingsManager;
+    @Autowired
+    private CallbackService callbackService;
+    @Autowired
+    private CommandService commandService;
+    @Autowired
+    private UrlManager urlManager;
 
     // create user metadata
     private String createUserMetadata(final String uid, final String fullFileName) {
         Optional<User> optionalUser = userService.findUserById(Integer.parseInt(uid));  // find a user by their ID
-        String documentType = fileUtility.getDocumentType(fullFileName).toString().toLowerCase();  // get document type
+        // get document type
+        String documentType = documentManager.getDocumentType(fullFileName).toString().toLowerCase();
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             storageMutator.createMeta(fullFileName,  // create meta information with the user ID and name specified
@@ -196,17 +194,17 @@ public class FileController {
                              @CookieValue("uid") final String uid) {
         try {
             String fullFileName = file.getOriginalFilename();  // get file name
-            String fileExtension = fileUtility.getFileExtension(fullFileName);  // get file extension
+            String fileExtension = documentManager.getExtension(fullFileName);  // get file extension
             long fileSize = file.getSize();  // get file size
             byte[] bytes = file.getBytes();  // get file in bytes
 
             // check if the file size exceeds the maximum file size or is less than 0
-            if (fileUtility.getMaxFileSize() < fileSize || fileSize <= 0) {
+            if (documentManager.getMaxFileSize() < fileSize || fileSize <= 0) {
                 return "{ \"error\": \"File size is incorrect\"}";  // if so, write an error message to the response
             }
 
             // check if file extension is supported by the editor
-            if (!fileUtility.getFileExts().contains(fileExtension)) {
+            if (documentManager.getDocumentType(fullFileName) == null) {
 
                 // if not, write an error message to the response
                 return "{ \"error\": \"File type is not supported\"}";
@@ -217,7 +215,7 @@ public class FileController {
                 throw new IOException("Could not update a file");  // if the file cannot be updated, an error occurs
             }
 
-            fullFileName = fileUtility.getFileNameWithoutExtension(fileNamePath)
+            fullFileName = documentManager.getBaseName(fileNamePath)
                     + "." + fileExtension;  // get full file name
 
             return createUserMetadata(uid, fullFileName);  // create user metadata and return it
@@ -235,56 +233,54 @@ public class FileController {
                           @CookieValue("uid") final String uid, @CookieValue("ulang") final String lang) {
         // get file name
         String fileName = body.getFileName();
-
-        // get URL for downloading a file with the specified name
-        String fileUri = documentManager.getDownloadUrl(fileName, true);
-
         // get file password if it exists
         String filePass = body.getFilePass() != null ? body.getFilePass() : null;
-
-        // get file extension
-        String fileExt = fileUtility.getFileExtension(fileName);
-
-        // get document type (word, cell or slide)
-        DocumentType type = fileUtility.getDocumentType(fileName);
-
         // get an auto-conversion extension from the request body or set it to the ooxml extension
         String conversionExtension = body.getFileExt() != null ? body.getFileExt() : "ooxml";
 
         try {
             // check if the file with such an extension can be converted
-            if (fileUtility.getConvertExts().contains(fileExt)) {
-                String key = serviceConverter.generateRevisionId(fileUri);  // generate document key
-                ConvertedData response = serviceConverter  // get the URL to the converted file
-                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang);
+            if (documentManager.getDefaultConvertExtension(fileName) != null) {
+                ConvertRequest convertRequest = ConvertRequest.builder()
+                        .password(filePass)
+                        .outputtype(conversionExtension)
+                        .region(lang)
+                        .async(true)
+                        .build();
 
-                String newFileUri = response.getUri();
-                String newFileType = "." + response.getFileType();
+                ConvertResponse convertResponse = convertService.processConvert(convertRequest, fileName);
 
-                if (newFileUri.isEmpty()) {
-                    return "{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}";
+                if (convertResponse.getError() != null || convertResponse.getFileUrl()  == null) {
+                    return objectMapper.writeValueAsString(convertResponse);
                 }
+
+                String newFileUri = convertResponse.getFileUrl();
+                String newFileType = convertResponse.getFileType();
 
                 /* get a file name of an internal file extension with an index if the file
                  with such a name already exists */
-                String nameWithInternalExt = fileUtility.getFileNameWithoutExtension(fileName) + newFileType;
+                final String oldFileName = fileName;
+                String nameWithInternalExt = documentManager.getBaseName(fileName) + "." + newFileType;
                 String correctedName = documentManager.getCorrectName(nameWithInternalExt);
 
-                URL url = new URL(newFileUri);
-                java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
-                InputStream stream = connection.getInputStream();  // get input stream of the converted file
+                fileName = requestManager.executeGetRequest(newFileUri, new RequestManager.Callback<String>() {
+                    public String doWork(final Object response) throws IOException {
+                        InputStream stream = ((HttpEntity) response).getContent(); // get input stream of the converted
+                        // file
 
-                if (stream == null) {
-                    connection.disconnect();
-                    throw new RuntimeException("Input stream is null");
-                }
+                        if (stream == null) {
+                            throw new RuntimeException("Input stream is null");
+                        }
 
-                // remove source file
-                storageMutator.deleteFile(fileName);
 
-                // create the converted file with input stream
-                storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(correctedName)), stream);
-                fileName = correctedName;
+                        // remove source file
+                        storageMutator.deleteFile(oldFileName);
+
+                        // create the converted file with input stream
+                        storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(correctedName)), stream);
+                        return correctedName;
+                    }
+                });
             }
 
             // create meta information about the converted file with the user ID and name specified
@@ -305,7 +301,7 @@ public class FileController {
             boolean success = false;
 
             if (filename != null) {
-                String fullFileName = fileUtility.getFileName(filename);  // get full file name
+                String fullFileName = documentManager.getDocumentName(filename);  // get full file name
 
                 // delete a file from the storage and return the status of this operation (true or false)
                 boolean fileSuccess = storageMutator.deleteFile(fullFileName);
@@ -331,13 +327,12 @@ public class FileController {
                                              @RequestParam("file") final String file) { // history file
         try {
             // check if a token is enabled or not
-            if (jwtManager.tokenEnabled() && jwtManager.tokenUseForRequest()) {
-                String header = request.getHeader(documentJwtHeader == null  // get the document JWT header
-                        || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
+            if (settingsManager.isSecurityEnabled()) {
+                String header = request.getHeader(settingsManager.getSecurityHeader());
                 if (header != null && !header.isEmpty()) {
                     String token = header
                             .replace("Bearer ", "");  // token is the header without the Bearer prefix
-                    jwtManager.readToken(token);  // read the token
+                    jwtManager.verify(token);  // read the token
                 } else {
                     return null;
                 }
@@ -355,13 +350,12 @@ public class FileController {
                                                  final String userAddress) {
         try {
             // check if a token is enabled or not
-            if (jwtManager.tokenEnabled() && userAddress != null && jwtManager.tokenUseForRequest()) {
-                String header = request.getHeader(documentJwtHeader == null // get the document JWT header
-                        || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
+            if (settingsManager.isSecurityEnabled() && userAddress != null) {
+                String header = request.getHeader(settingsManager.getSecurityHeader());
                 if (header != null && !header.isEmpty()) {
                     String token = header
                             .replace("Bearer ", "");  // token is the header without the Bearer prefix
-                    jwtManager.readToken(token);  // read the token
+                    jwtManager.verify(token);  // read the token
                 } else {
                     return null;
                 }
@@ -427,28 +421,26 @@ public class FileController {
     public String track(final HttpServletRequest request,  // track file changes
                         @RequestParam("fileName") final String fileName,
                         @RequestParam("userAddress") final String userAddress,
-                        @RequestBody final Track body) {
-        Track track;
+                        @RequestBody final Callback body) {
+        Callback callback;
         try {
             String bodyString = objectMapper
                     .writeValueAsString(body);  // write the request body to the object mapper as a string
-            String header = request.getHeader(documentJwtHeader == null  // get the request header
-                    || documentJwtHeader.isEmpty() ? "Authorization" : documentJwtHeader);
 
             if (bodyString.isEmpty()) {  // if the request body is empty, an error occurs
                 throw new RuntimeException("{\"error\":1,\"message\":\"Request payload is empty\"}");
             }
 
-            JSONObject bodyCheck = jwtManager.parseBody(bodyString, header);  // parse the request body
-            track = objectMapper.readValue(bodyCheck.toJSONString(), Track.class);  // read the request body
+            String authorizationHeader = request.getHeader(settingsManager.getSecurityHeader());
+            callback = callbackService.verifyCallback(body, authorizationHeader);
+
+            callbackService.processCallback(callback, fileName);
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
         }
 
-        int error = callbackHandler.handle(track, fileName);
-
-        return "{\"error\":" + error + "}";
+        return "{\"error\":\"0\"}";
     }
 
     @PostMapping("/saveas")
@@ -456,24 +448,30 @@ public class FileController {
     public String saveAs(@RequestBody final SaveAs body, @CookieValue("uid") final String uid) {
         try {
             String fileName = documentManager.getCorrectName(body.getTitle());
-            String curExt = fileUtility.getFileExtension(fileName);
 
-            if (!fileUtility.getFileExts().contains(curExt)) {
+            if (documentManager.getDocumentType(fileName) == null) {
                 return "{\"error\":\"File type is not supported\"}";
             }
 
-            URL url = new URL(body.getUrl());
-            java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
-            InputStream stream = connection.getInputStream();
+            String url = body.getUrl();
 
-            if (Integer.parseInt(filesizeMax) < stream.available() || stream.available() <= 0) {
-                return "{\"error\":\"File size is incorrect\"}";
-            }
-            storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(fileName)), stream);
-            createUserMetadata(uid, fileName);
+            url = urlManager.replaceToInnerDocumentServerUrl(url);
 
-            return "{\"file\":  \"" + fileName + "\"}";
-        } catch (IOException e) {
+            return requestManager.executeGetRequest(url, new RequestManager.Callback<String>() {
+                @Override
+                public String doWork(final Object response) throws Exception {
+                    InputStream stream = ((HttpEntity) response).getContent();
+
+                    if (documentManager.getMaxFileSize() < stream.available() || stream.available() <= 0) {
+                        return "{\"error\":\"File size is incorrect\"}";
+                    }
+                    storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(fileName)), stream);
+                    createUserMetadata(uid, fileName);
+
+                    return "{\"file\":  \"" + fileName + "\"}";
+                }
+            });
+        } catch (Exception e) {
             e.printStackTrace();
             return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
         }
@@ -482,14 +480,18 @@ public class FileController {
     @PostMapping("/rename")
     @ResponseBody
     public String rename(@RequestBody final Rename body) {
-        String fileName = body.getFileName();
-
-        HashMap<String, String> meta = new HashMap<>();
-        meta.put("title", fileName + "." + body.getFileType());
+        CommandRequest commandRequest = CommandRequest.builder()
+                .key(body.getFileKey())
+                .c(Command.META)
+                .meta(Meta.builder()
+                        .title(body.getFileName() + "." + body.getFileType())
+                        .build())
+                .build();
 
         try {
-            callbackManager.commandRequest("meta", body.getFileKey(), meta);
-            return "result ok";
+
+            CommandResponse commandResponse = commandService.processCommand(commandRequest, body.getFileName());
+            return commandResponse.getError().getDescription();
         } catch (Exception e) {
             e.printStackTrace();
             return e.getMessage();
@@ -538,7 +540,8 @@ public class FileController {
             if (fileName.equals("")) {
                 try {
                     String path = (String) body.getPath();
-                    path = fileUtility.getFileName(path);
+                    path = path.substring(path.lastIndexOf('/') + 1);
+                    path = path.split("\\?")[0];
                     File f = new File(storagePathBuilder.getFileLocation(path));
                     if (f.exists()) {
                         fileName = path;
@@ -561,19 +564,19 @@ public class FileController {
             referenceData.put("fileKey", gson.toJson(fileKey));
 
             HashMap<String, Object> data = new HashMap<>();
-            data.put("fileType", fileUtility.getFileExtension(fileName));
-            data.put("key", serviceConverter.generateRevisionId(
+            data.put("fileType", documentManager.getDocumentName(fileName));
+            data.put("key", documentManager.generateRevisionId(
                 storagePathBuilder.getStorageLocation()
                 + "/" + fileName + "/"
                 + new File(storagePathBuilder.getFileLocation(fileName)).lastModified()
                 ));
-            data.put("url", documentManager.getDownloadUrl(fileName, true));
-            data.put("directUrl", body.getDirectUrl() ? documentManager.getDownloadUrl(fileName, false) : null);
+            data.put("url", urlManager.getFileUrl(fileName));
+            data.put("directUrl", body.getDirectUrl() ? urlManager.getDirectFileUrl(fileName) : null);
             data.put("referenceData", referenceData);
             data.put("path", fileName);
             data.put("link", storagePathBuilder.getServerUrl(true) + "/editor?fileName=" + fileName);
 
-            if (jwtManager.tokenEnabled()) {
+            if (settingsManager.isSecurityEnabled()) {
                 String token = jwtManager.createToken(data);
                 data.put("token", token);
             }
@@ -608,7 +611,7 @@ public class FileController {
             String historyDirectory = storagePathBuilder.getHistoryDir(sourcePathFile.toString());
 
             Integer bumpedVersion = storagePathBuilder.getFileVersion(historyDirectory, false);
-            String bumpedVersionStringDirectory = documentManager.versionDir(historyDirectory, bumpedVersion, true);
+            String bumpedVersionStringDirectory = historyManager.versionDir(historyDirectory, bumpedVersion, true);
             File bumpedVersionDirectory = new File(bumpedVersionStringDirectory);
             if (!bumpedVersionDirectory.exists()) {
                 bumpedVersionDirectory.mkdir();
@@ -617,7 +620,7 @@ public class FileController {
             Path bumpedKeyPathFile = Paths.get(bumpedVersionStringDirectory, "key.txt");
             String bumpedKeyStringFile = bumpedKeyPathFile.toString();
             File bumpedKeyFile = new File(bumpedKeyStringFile);
-            String bumpedKey = serviceConverter.generateRevisionId(
+            String bumpedKey = documentManager.generateRevisionId(
                 storagePathBuilder.getStorageLocation()
                 + "/"
                 + body.getFileName()
@@ -651,13 +654,13 @@ public class FileController {
             bumpedChangesFileWriter.write(bumpedChangesContent);
             bumpedChangesFileWriter.close();
 
-            String sourceExtension = fileUtility.getFileExtension(body.getFileName());
+            String sourceExtension = documentManager.getExtension(body.getFileName());
             String previousBasename = "prev." + sourceExtension;
 
             Path bumpedFile = Paths.get(bumpedVersionStringDirectory, previousBasename);
             Files.move(sourcePathFile, bumpedFile);
 
-            String recoveryVersionStringDirectory = documentManager.versionDir(
+            String recoveryVersionStringDirectory = historyManager.versionDir(
                     historyDirectory,
                     body.getVersion(),
                     true

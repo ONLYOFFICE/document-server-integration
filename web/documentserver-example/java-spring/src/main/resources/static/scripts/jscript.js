@@ -17,6 +17,27 @@
  */
 
 var directUrl;
+var formatManager;
+
+window.onload = function () {
+    fetch('/formats')
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.formats) {
+                let formats = [];
+                data.formats.forEach(format => {
+                    formats.push(new Format(
+                        format.name,
+                        format.type,
+                        format.actions,
+                        format.convert,
+                        format.mime
+                    ));
+                });
+                formatManager = new FormatManager(formats);
+            }
+        })
+}
 
 if (typeof jQuery !== "undefined") {
     jq = jQuery.noConflict();
@@ -103,7 +124,7 @@ if (typeof jQuery !== "undefined") {
         var posExt = fileName.lastIndexOf(".") + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
-        if (ConverExtList.includes(posExt) === -1) {
+        if (!formatManager.isAutoConvertible(posExt)) {
             jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
@@ -121,7 +142,7 @@ if (typeof jQuery !== "undefined") {
                     var responseText = data.responseText;
                     var response = jq.parseJSON(responseText);
                     if (response.error) {
-                        if (response.error.includes("Incorrect password")) {
+                        if (response.error == "PASSWORD") {
                             jq(".current").removeClass("current");
                             jq("#step2").addClass("error");
                             jq("#blockPassword").show();
@@ -131,7 +152,7 @@ if (typeof jQuery !== "undefined") {
                             }
                             return;
                         } else {
-                            if (response.error.includes("Error conversion output format")){
+                            if (response.error == "OOXML_OUTPUT_TYPE"){
                                 jq("#select-file-type").removeClass("invisible");
                                 jq("#step2").removeClass("current");
                                 jq("#hiddenFileName").attr("placeholder",filePass);
@@ -139,17 +160,16 @@ if (typeof jQuery !== "undefined") {
                             }
                             jq(".current").removeClass("current");
                             jq(".step:not(.done)").addClass("error");
-                            jq("#mainProgress .error-message").show().find("span").text(response.error);
+                            jq("#mainProgress .error-message").show().find("span").text("Error automatically determine the output file format");
                             jq('#hiddenFileName').val("");
                             return;
                         }
                     }
 
-                    jq("#hiddenFileName").val(response.filename);
-
-                    if (response.step && response.step < 100) {
+                    if (response.hasOwnProperty("percent") && response.percent < 100) {
                         checkConvert(filePass, fileType);
                     } else {
+                        jq("#hiddenFileName").val(response.filename);
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
                     }
@@ -186,7 +206,7 @@ if (typeof jQuery !== "undefined") {
         var posExt = fileName.lastIndexOf(".") + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
-        if (EditedExtList.includes(posExt) !== -1 || FillExtList.includes(posExt) !== -1) {
+        if (formatManager.isEditable(posExt) || formatManager.isFillable(posExt)) {
             jq("#beginEdit").removeClass("disable");
         }
     };

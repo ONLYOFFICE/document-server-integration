@@ -337,10 +337,6 @@
 
                 {history}
 
-            if (config.editorConfig.createUrl) {
-                config.events.onRequestSaveAs = onRequestSaveAs;
-            };
-
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 

@@ -67,11 +67,13 @@ exports.registerRoutes = function registerRoutes(app) {
       // run through all the files and write the corresponding information to each file
       // eslint-disable-next-line no-restricted-syntax
       for (const file of files) {
+        const mobile = new RegExp(configServer.get('mobileRegEx'), 'i').test(req.get('User-Agent'));
         const ext = fileUtility.getFileExtension(file.name, true); // get an extension of each file
         // eslint-disable-next-line no-await-in-loop
         file.actions = await utils.getActions(req.DocManager, ext); // get actions of the specified extension
         // eslint-disable-next-line no-await-in-loop
-        file.defaultAction = await utils.getDefaultAction(req.DocManager, ext);// get the default action of the specified extension
+        file.defaultAction = await utils.getDefaultAction(req.DocManager, ext);// get the default action for extension
+        if (mobile) file.actions.forEach((act) => { if (act.name === 'mobileEdit') file.defaultAction = act; });
       }
 
       // render wopiIndex template with the parameters specified

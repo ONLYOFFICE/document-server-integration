@@ -1,5 +1,8 @@
 # Change Log
 
+- java-spring: using java docs-integration-sdk
+- en-GB skin language
+- save as for pdf
 - fill permission in embedded mode
 - delete all files
 - handling conversion -9 error

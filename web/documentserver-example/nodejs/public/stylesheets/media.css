@@ -84,7 +84,8 @@
     }
 
     .tableRow,
-    .storedHeader {
+    .storedHeader,
+    menu.links {
         width: 90%;
     }
 
@@ -128,7 +129,8 @@
     .contentCells-icon{
         width: 5%;
     }
-    .tableRow {
+    .tableRow,
+    menu.links {
         width: 55%;
     }
 
@@ -144,7 +146,7 @@
     }
 
     .scroll-table-body {
-        top: 88px;
+        top: 33px;
     }
 
     footer {
@@ -185,7 +187,8 @@
 
 @media (max-width: 715px) {
     .tableRow,
-    .storedHeader {
+    .storedHeader,
+    menu.links {
         width: 45%;
     }
 }
@@ -284,7 +287,8 @@
     }
 
     .tableRow,
-    .storedHeader {
+    .storedHeader,
+    menu.links {
         width: 75%;
     }
 
@@ -324,7 +328,8 @@
     }
 
     .tableRow,
-    .storedHeader {
+    .storedHeader,
+    menu.links {
         width: 95%;
     }
 
@@ -411,7 +416,7 @@
     }
 
     .scroll-table-body {
-        top: 88px;
+        top: 33px;
     }
 
     footer table tr {
@@ -452,7 +457,8 @@
     }
 
     .tableRow,
-    .storedHeader {
+    .storedHeader,
+    menu.links {
         width: 40%;
     }
 
@@ -551,8 +557,8 @@
         margin-bottom: 0;
         flex-wrap: nowrap;
     }
-    .button.forceConvert:hover,
-    .button.forceConvert {
+    .button.file-type:hover,
+    .button.file-type {
         height: 28px;
         width: 100px;
         margin-bottom: 10px !important;
@@ -593,7 +599,8 @@
 
 @media (max-width: 510px)  and (min-width: 470px) {
     .tableRow,
-    .storedHeader {
+    .storedHeader,
+    menu.links {
         width: 35%;
     }
 
@@ -620,7 +627,8 @@
 
 @media (max-width: 470px)  and (min-width: 420px) {
     .tableRow,
-    .storedHeader {
+    .storedHeader,
+    menu.links {
         width: 30%;
     }
     .tableRow td:first-child{
@@ -656,7 +664,8 @@
 
 @media (max-width: 420px) and (min-width: 320px) {
     .tableRow,
-    .storedHeader {
+    .storedHeader,
+    menu.links {
         width: 25%;
     }
 
@@ -711,7 +720,8 @@
 }
 @media (max-width: 769px) and (min-width: 715px){
     .tableRow,
-    .storedHeader {
+    .storedHeader,
+    menu.links {
         width: 50%;
     }
 }

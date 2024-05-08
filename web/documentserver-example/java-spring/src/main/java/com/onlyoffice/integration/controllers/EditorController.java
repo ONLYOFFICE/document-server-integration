@@ -20,19 +20,22 @@ package com.onlyoffice.integration.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
-import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.dto.Mentions;
-import com.onlyoffice.integration.dto.UserInfo;
 import com.onlyoffice.integration.dto.Protect;
-import com.onlyoffice.integration.documentserver.models.enums.Type;
-import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
+import com.onlyoffice.integration.dto.UserInfo;
+import com.onlyoffice.integration.entities.User;
+import com.onlyoffice.integration.sdk.manager.UrlManager;
+import com.onlyoffice.integration.sdk.service.ConfigService;
 import com.onlyoffice.integration.services.UserServices;
-import com.onlyoffice.integration.services.configurers.FileConfigurer;
-import com.onlyoffice.integration.services.configurers.wrappers.DefaultFileWrapper;
+import com.onlyoffice.manager.security.JwtManager;
+import com.onlyoffice.manager.settings.SettingsManager;
+import com.onlyoffice.model.documenteditor.Config;
+import com.onlyoffice.model.documenteditor.config.document.Type;
+import com.onlyoffice.model.settings.SettingsConstants;
 import lombok.SneakyThrows;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -56,12 +59,6 @@ import static com.onlyoffice.integration.documentserver.util.Constants.ANONYMOUS
 @Controller
 public class EditorController {
 
-    @Value("${files.docservice.url.site}")
-    private String docserviceSite;
-
-    @Value("${files.docservice.url.api}")
-    private String docserviceApiUrl;
-
     @Value("${files.docservice.languages}")
     private String langs;
 
@@ -78,7 +75,13 @@ public class EditorController {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private FileConfigurer<DefaultFileWrapper> fileConfigurer;
+    private SettingsManager settingsManager;
+
+    @Autowired
+    private ConfigService configService;
+
+    @Autowired
+    private UrlManager urlManager;
 
     @GetMapping(path = "${url.editor}")
     // process request to open the editor page
@@ -92,15 +95,17 @@ public class EditorController {
                         @CookieValue(value = "ulang") final String lang,
                         final Model model) throws JsonProcessingException {
         Action action = Action.edit;
-        Type type = Type.desktop;
+        Type type = Type.DESKTOP;
         Locale locale = new Locale("en");
 
         if (actionParam != null) {
             action = Action.valueOf(actionParam);
         }
         if (typeParam != null) {
-            type = Type.valueOf(typeParam);
+            type = Type.valueOf(typeParam.toUpperCase());
         }
+
+        settingsManager.setSetting(SettingsConstants.DIRECT_URL, String.valueOf(directUrl));
 
         List<String> langsAndKeys = Arrays.asList(langs.split("\\|"));
         for (String langAndKey : langsAndKeys) {
@@ -118,30 +123,25 @@ public class EditorController {
             return "index.html";
         }
 
-        User user = optionalUser.get();
-        user.setImage(user.getAvatar() ? storagePathBuilder.getServerUrl(true) + "/css/img/uid-"
-                + user.getId() + ".png" : null);
-
-        // get file model with the default file parameters
-        FileModel fileModel = fileConfigurer.getFileModel(
-                DefaultFileWrapper
-                        .builder()
-                        .fileName(fileName)
-                        .type(type)
-                        .lang(locale.toLanguageTag())
-                        .action(action)
-                        .user(user)
-                        .actionData(actionLink)
-                        .isEnableDirectUrl(directUrl)
-                        .build()
+        Config config = configService.createConfig(
+                fileName,
+                action,
+                type
         );
 
-        // add attributes to the specified model
-        // add file model with the default parameters to the original model
-        model.addAttribute("model", fileModel);
+        JSONObject actionData = null;
+
+        if (actionLink != null && !actionLink.isEmpty()) {
+            actionData = new JSONObject(actionLink);
+        }
+
+        config.getEditorConfig().setActionLink(actionData);
+        config.getEditorConfig().setLang(locale.toLanguageTag());
+
+        model.addAttribute("model", config);
 
         // create the document service api URL and add it to the model
-        model.addAttribute("docserviceApiUrl", docserviceSite + docserviceApiUrl);
+        model.addAttribute("docserviceApiUrl", urlManager.getDocumentServerApiUrl());
 
         // get an image and add it to the model
         model.addAttribute("dataInsertImage",  getInsertImage(directUrl));
@@ -220,7 +220,7 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if (jwtManager.tokenEnabled()) {
+        if (settingsManager.isSecurityEnabled()) {
 
             // create token from the dataInsertImage object
             dataInsertImage.put("token", jwtManager.createToken(dataInsertImage));
@@ -242,7 +242,7 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if (jwtManager.tokenEnabled()) {
+        if (settingsManager.isSecurityEnabled()) {
 
             // create token from the dataDocument object
             dataDocument.put("token", jwtManager.createToken(dataDocument));
@@ -261,7 +261,7 @@ public class EditorController {
         }
 
         // check if the document token is enabled
-        if (jwtManager.tokenEnabled()) {
+        if (settingsManager.isSecurityEnabled()) {
 
             // create token from the dataSpreadsheet object
             dataSpreadsheet.put("token", jwtManager.createToken(dataSpreadsheet));

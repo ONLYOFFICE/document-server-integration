@@ -220,11 +220,7 @@
 <script type="text/javascript" src="assets/js/jquery.iframe-transport.js"></script>
 <script type="text/javascript" src="assets/js/jquery.fileupload.js"></script>
 <script type="text/javascript" src="assets/js/jquery.dropdownToggle.js"></script>
+<script type="text/javascript" src="assets/js/formats.js"></script>
 <script type="text/javascript" src="assets/js/jscript.js"></script>
-<script type="text/javascript">
-    var FillFormsExtList = '{fillFormsExtList}';
-    var ConverExtList = '{converExtList}';
-    var EditedExtList = '{editedExtList}';
-</script>
 </body>
 </html>
