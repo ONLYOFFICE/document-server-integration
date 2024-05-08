@@ -58,12 +58,12 @@ server-prod: #   Start the production server on 0.0.0.0 at $PORT (default: 9000)
 
 .PHONY: compose-prod
 compose-prod: #  Up containers in a production environment.
-	@docker-compose build
-	@docker-compose up --detach
+	@docker compose build
+	@docker compose up --detach
 
 .PHONY: restart
 restart: #       Restart containers replacing volume files.
-	@docker-compose rm --stop --force proxy example
+	@docker compose rm --stop --force proxy example
 	@docker volume rm php_example
 	@docker compose up --detach --build
 
