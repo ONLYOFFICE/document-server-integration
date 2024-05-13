@@ -49,9 +49,11 @@ exports.registerRoutes = function registerRoutes(app) {
     const actions = await utils.getDiscoveryInfo(req.DocManager);
     const wopiEnable = actions.length !== 0;
     const docsExtEdit = []; // Supported extensions for WOPI
+    const editNewExts = [];
 
     actions.forEach((el) => {
       if (el.name === 'edit') docsExtEdit.push(`${el.ext}`);
+      if (el.name === 'editnew') editNewExts.push({ ext: el.ext, text: utils.getEditNewText(el.ext) });
     });
 
     // Checking supported extensions
@@ -86,6 +88,7 @@ exports.registerRoutes = function registerRoutes(app) {
         fillExts,
         languages: configServer.get('languages'),
         enableForgotten: configServer.get('enableForgotten'),
+        editNewExts,
       });
     } catch (ex) {
       console.log(ex); // display error message in the console

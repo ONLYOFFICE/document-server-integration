@@ -317,6 +317,7 @@
         if (config.editorConfig.user.id) {
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = onRequestUsers;
+            config.events['onRequestSaveAs'] = onRequestSaveAs;
             // the user is mentioned in a comment
             config.events['onRequestSendNotify'] = onRequestSendNotify;
             // prevent file renaming for anonymous users
@@ -332,10 +333,6 @@
                 config.events['onRequestRestore'] = onRequestRestore;
             }
         }
-
-        if (config.editorConfig.createUrl) {
-            config.events.onRequestSaveAs = onRequestSaveAs;
-        };
 
         var сonnectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);

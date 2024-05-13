@@ -21,7 +21,7 @@ package com.onlyoffice.integration.dto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import com.onlyoffice.integration.documentserver.models.Format;
+import com.onlyoffice.model.common.Format;
 import java.util.List;
 
 @Getter

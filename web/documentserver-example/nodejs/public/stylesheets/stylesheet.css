@@ -149,18 +149,22 @@ label .checkbox {
     text-decoration: none;
 }
 
+.try-editor.docx,
 .try-editor.word {
     background-image: url("../images/file_docx.svg");
 }
 
+.try-editor.xlsx,
 .try-editor.cell {
     background-image: url("../images/file_xlsx.svg");
 }
 
+.try-editor.pptx,
 .try-editor.slide {
     background-image: url("../images/file_pptx.svg");
 }
 
+.try-editor.docxf,
 .try-editor.form {
     background-image: url("../images/file_docxf.svg");
 }

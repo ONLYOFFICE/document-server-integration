@@ -21,9 +21,9 @@ package com.onlyoffice.integration.controllers;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.Misc;
-import com.onlyoffice.integration.documentserver.util.file.FileUtility;
-import com.onlyoffice.integration.documentserver.util.service.FormatService;
 import com.onlyoffice.integration.entities.User;
+import com.onlyoffice.integration.sdk.manager.DocumentManager;
+import com.onlyoffice.integration.sdk.manager.UrlManager;
 import com.onlyoffice.integration.services.UserServices;
 import com.onlyoffice.integration.dto.FormatsList;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,22 +56,16 @@ public class IndexController {
     private FileStoragePathBuilder storagePathBuilder;
 
     @Autowired
-    private FileUtility fileUtility;
-
-    @Autowired
     private Misc mistUtility;
 
     @Autowired
     private UserServices userService;
 
     @Autowired
-    private FormatService formatService;
+    private DocumentManager documentManager;
 
-    @Value("${files.docservice.url.site}")
-    private String docserviceSite;
-
-    @Value("${files.docservice.url.preloader}")
-    private String docservicePreloader;
+    @Autowired
+    private UrlManager urlManager;
 
     @Value("${url.converter}")
     private String urlConverter;
@@ -114,15 +108,14 @@ public class IndexController {
 
         for (java.io.File file:files) {  // run through all the files
             String fileName = file.getName();  // get file name
-            docTypes.add(fileUtility
+            docTypes.add(documentManager
                     .getDocumentType(fileName)
                     .toString()
                     .toLowerCase());  // add a document type of each file to the list
-            filesEditable.add(fileUtility.getEditedExts()
-                    .contains(fileUtility.getFileExtension(fileName)));  // specify if a file is editable or not
+            filesEditable.add(documentManager.isEditable(fileName));  // specify if a file is editable or not
             versions.add(" [" + storagePathBuilder.
                     getFileVersion(fileName, true) + "]");  // add a file version to the list
-            isFillFormDoc.add(fileUtility.getFillExts().contains(fileUtility.getFileExtension(fileName)));
+            isFillFormDoc.add(documentManager.isFillable(fileName));
         }
 
         // add all the parameters to the model
@@ -131,7 +124,7 @@ public class IndexController {
         model.addAttribute("files", files);
         model.addAttribute("docTypes", docTypes);
         model.addAttribute("filesEditable", filesEditable);
-        model.addAttribute("datadocs", docserviceSite + docservicePreloader);
+        model.addAttribute("datadocs", urlManager.getDocumentServerPreloaderApiUrl());
         model.addAttribute("tooltip", tooltip);
         model.addAttribute("users", users);
         model.addAttribute("languages", languages);
@@ -155,7 +148,7 @@ public class IndexController {
     @GetMapping("/formats")
     @ResponseBody
     public ResponseEntity<FormatsList> formats() {  // return all the supported formats
-        FormatsList list = new FormatsList(formatService.getFormats());
+        FormatsList list = new FormatsList(documentManager.getFormats());
         return ResponseEntity.ok(list);
     }
 }

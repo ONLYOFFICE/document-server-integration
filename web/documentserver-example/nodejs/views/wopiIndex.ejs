@@ -50,18 +50,11 @@
                             <div class="clearFix">
                                 <div class="create-panel clearFix">
                                     <ul class="try-editor-list clearFix">
-                                        <li>
-                                            <a class="try-editor word reload-page action-link" target="_blank" href="wopi-new?fileExt=docx" title="Create new document">Document</a>
-                                        </li>
-                                        <li>
-                                            <a class="try-editor cell reload-page action-link" target="_blank" href="wopi-new?fileExt=xlsx" title="Create new spreadsheet">Spreadsheet</a>
-                                        </li>
-                                        <li>
-                                            <a class="try-editor slide reload-page action-link" target="_blank" href="wopi-new?fileExt=pptx" title="Create new presentation">Presentation</a>
-                                        </li>
-                                        <li>
-                                            <a class="try-editor form reload-page action-link" target="_blank" href="wopi-new?fileExt=docxf" title="Create new PDF form">PDF form</a>
-                                        </li>
+                                        <% editNewExts.forEach( type => { %>
+                                            <li>
+                                                <a class="try-editor <%= type.ext %> reload-page action-link" target="_blank" href="wopi-new?fileExt=<%= type.ext %>" title="Create new <%= type.text %>"><%= type.text %></a>
+                                            </li>
+                                        <% }) %>
                                     </ul>
                                 </div>
                             </div>
