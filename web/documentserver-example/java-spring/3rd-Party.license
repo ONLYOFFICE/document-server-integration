@@ -1,6 +1,5 @@
 ONLYOFFICE Applications example uses code from the following 3rd party projects:
 
-
 Gson          - Gson is a Java library that can be used to convert Java Objects into their JSON representation. (https://github.com/google/gson/blob/master/LICENSE)
 License:        Apache 2.0
 License File:   gson.license
