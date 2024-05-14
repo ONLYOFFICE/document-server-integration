@@ -71,6 +71,10 @@ fileUtility.fileType = {
   pdf: 'pdf',
 };
 
+fileUtility.getFormatActions = function getExtensionActions(ext) {
+  return supportedFormats.filter((format) => format.name === ext)[0]?.actions || [];
+};
+
 fileUtility.getSuppotredExtensions = function getSuppotredExtensions() {
   return supportedFormats.reduce((extensions, format) => [...extensions, format.name], []);
 };
