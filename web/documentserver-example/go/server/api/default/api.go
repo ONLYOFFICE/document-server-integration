@@ -305,7 +305,7 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 	}
 
 	fileUrl := srv.StorageManager.GeneratePublicFileUri(filename, remoteAddr, managers.FileMeta{})
-	fileExt := utils.GetFileExt(filename)
+	fileExt := utils.GetFileExt(filename, true)
 	fileType := srv.ConversionManager.GetFileType(filename)
 	newExt := srv.ConversionManager.GetInternalExtension(fileType)
 
@@ -392,7 +392,7 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 	query := r.URL.Query()
 	fileExt, isSample := query.Get("fileExt"), query.Get("sample")
 
-	if strings.TrimSpace(fileExt) == "" || !utils.IsInList("."+fileExt, srv.specification.Extensions.Edited) {
+	if strings.TrimSpace(fileExt) == "" || !utils.IsInList(fileExt, srv.specification.Extensions.Edited) {
 		srv.logger.Errorf("%s extension is not supported", fileExt)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -419,7 +419,7 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 	}
 
 	filename := fmt.Sprintf("%s.%s", sampleType, fileExt)
-	file, err := os.Open(path.Join("static/assets", sampleType, filename))
+	file, err := os.Open(path.Join("static/assets/document-templates", sampleType, filename))
 	if err != nil {
 		srv.logger.Errorf("could not create a new file: %s", err.Error())
 		http.Redirect(w, r, "/", http.StatusSeeOther)

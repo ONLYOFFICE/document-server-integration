@@ -21,6 +21,7 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/ONLYOFFICE/document-server-integration/utils"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
@@ -69,26 +70,25 @@ func NewConfiguration() (app_config ApplicationConfig, err error) {
 }
 
 func NewSpecification() (specification SpecificationConfig, err error) {
-	_, b, _, _ := runtime.Caller(0)
-	basepath := filepath.Dir(b)
-
-	viper.AddConfigPath(basepath)
-	viper.SetConfigName("specification")
-	viper.SetConfigType("json")
-
-	viper.AutomaticEnv()
-	err = viper.ReadInConfig()
-
+	fm, err := utils.NewFormatManager()
 	if err != nil {
 		return SpecificationConfig{}, err
 	}
 
-	err = viper.Unmarshal(&specification)
-
-	if err != nil {
-		return SpecificationConfig{}, err
+	exts := Extensions{
+		fm.GetViewedExtensions(),
+		fm.GetEditedExtensions(),
+		fm.GetConvertedExtensions(),
 	}
-
+	extTypes := ExtensionTypes{
+		fm.GetSpreadsheetExtensions(),
+		fm.GetPresentationExtensions(),
+		fm.GetDocumentExtensions(),
+	}
+	specification = SpecificationConfig{
+		exts,
+		extTypes,
+	}
 	return
 }
 

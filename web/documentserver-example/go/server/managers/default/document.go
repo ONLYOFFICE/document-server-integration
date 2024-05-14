@@ -73,7 +73,7 @@ func (dm DefaultDocumentManager) sanitizeEditorParameters(parameters *managers.E
 		parameters.PermissionsMode = "edit"
 	}
 
-	parameters.CanEdit = utils.IsInList(utils.GetFileExt(parameters.Filename), dm.specification.Extensions.Edited)
+	parameters.CanEdit = utils.IsInList(utils.GetFileExt(parameters.Filename, true), dm.specification.Extensions.Edited)
 
 	if parameters.CanEdit && parameters.PermissionsMode != "view" {
 		parameters.Mode = "edit"
@@ -104,7 +104,7 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 		Document: models.Document{
 			Title:    parameters.Filename,
 			Url:      furi,
-			FileType: strings.ReplaceAll(utils.GetFileExt(parameters.Filename), ".", ""),
+			FileType: utils.GetFileExt(parameters.Filename, true),
 			Key:      docKey,
 			Info: models.MetaInfo{
 				Author:  user.Username,
@@ -154,7 +154,7 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 }
 
 func (dm DefaultDocumentManager) IsDocumentConvertable(filename string) bool {
-	ext := utils.GetFileExt(filename)
+	ext := utils.GetFileExt(filename, true)
 
 	return utils.IsInList(ext, dm.specification.Extensions.Viewed) ||
 		utils.IsInList(ext, dm.specification.Extensions.Edited) || utils.IsInList(ext, dm.specification.Extensions.Converted)

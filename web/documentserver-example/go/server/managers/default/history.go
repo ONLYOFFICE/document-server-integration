@@ -130,7 +130,7 @@ func (hm DefaultHistoryManager) fetchNextHistoryEntry(remoteAddress, filename st
 	var hset managers.HistorySet
 	url := hm.StorageManager.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{
 		Version:         version,
-		DestinationPath: "prev" + utils.GetFileExt(filename),
+		DestinationPath: "prev" + utils.GetFileExt(filename, false),
 	})
 
 	if version > 1 {
@@ -142,7 +142,7 @@ func (hm DefaultHistoryManager) fetchNextHistoryEntry(remoteAddress, filename st
 
 		prevUrl := hm.StorageManager.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{
 			Version:         version - 1,
-			DestinationPath: "prev" + utils.GetFileExt(filename),
+			DestinationPath: "prev" + utils.GetFileExt(filename, false),
 		})
 
 		changesUrl := hm.StorageManager.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{
@@ -305,7 +305,7 @@ func (hm DefaultHistoryManager) CreateHistory(cbody models.Callback) error {
 
 			hm.StorageManager.CreateFile(bytes.NewReader(cbytes), path.Join(hdir, cbody.Filename+".json"))
 			hm.StorageManager.CreateFile(bytes.NewReader([]byte(cbody.Key)), path.Join(histDirVersion, "key.txt"))
-			hm.StorageManager.MoveFile(prevFilePath, path.Join(histDirVersion, "prev"+utils.GetFileExt(cbody.Filename)))
+			hm.StorageManager.MoveFile(prevFilePath, path.Join(histDirVersion, "prev"+utils.GetFileExt(cbody.Filename, false)))
 			resp, err := http.Get(cbody.ChangesUrl)
 			if err != nil {
 				return err

@@ -98,7 +98,7 @@ func (sm DefaultStorageManager) GetStoredFiles(remoteAddress string) ([]models.D
 			FileType: sm.ConversionManager.GetFileType(filename),
 			Title:    filename,
 			Url:      sm.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{}),
-			CanEdit:  !sm.ConversionManager.IsCanConvert(utils.GetFileExt(filename)),
+			CanEdit:  !sm.ConversionManager.IsCanConvert(utils.GetFileExt(filename, true)),
 		})
 	}
 
@@ -161,7 +161,7 @@ func (sm DefaultStorageManager) GeneratePublicFileUri(originalName string, remot
 
 func (sm DefaultStorageManager) GenerateVersionedFilename(filename string) (string, error) {
 	basename := utils.GetFileNameWithoutExt(filename)
-	ext := utils.GetFileExt(filename)
+	ext := utils.GetFileExt(filename, false)
 	name := fmt.Sprintf("%s%s", basename, ext)
 
 	i := 1

@@ -32,8 +32,12 @@ func GetFileNameWithoutExt(str string) string {
 	return fn[:ind]
 }
 
-func GetFileExt(str string) string {
+func GetFileExt(str string, withoutdot bool) string {
+	pos := 0
+	if withoutdot {
+		pos = 1
+	}
 	fn := GetFileName(str)
 	ind := strings.LastIndex(fn, ".")
-	return strings.ToLower(fn[ind:])
+	return strings.ToLower(fn[ind+pos:])
 }
