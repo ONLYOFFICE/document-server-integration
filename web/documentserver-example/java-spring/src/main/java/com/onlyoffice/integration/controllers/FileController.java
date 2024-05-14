@@ -385,7 +385,7 @@ public class FileController {
                         sampleData,
                         uid,
                         user.get().getName());  // create a demo document with the sample data
-                if (fileName.isBlank() || fileName == null) {
+                if (fileName == null || fileName.isBlank()) {
                     throw new RuntimeException("You must have forgotten to add asset files");
                 }
                 return "redirect:editor?fileName=" + URLEncoder
