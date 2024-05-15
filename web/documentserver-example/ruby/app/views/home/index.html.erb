@@ -16,7 +16,7 @@
 
 <header>
   <div class="center">
-    <a href="">
+    <a href="./">
         <img src ="assets/logo.svg" alt="ONLYOFFICE" />
     </a>
   </div>
@@ -102,6 +102,18 @@
             userId = request.params[:userId]
           %>
           <div class="main-panel">
+            <menu class="links">
+              <li class="home-link active" >
+                <a href="./">
+                  <img src="assets/home.svg" alt="Home"/>
+                </a>
+              </li>
+              <% if ConfigurationManager.new.enable_forgotten %>
+                <li>
+                  <a href="forgotten">Forgotten files</a>
+                </li>
+              <% end %>
+            </menu>
             <div id="portal-info" style="display: <%= docs.length > 0 ? "none" : "table-cell" %>">
               <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
               <span class="portal-descr">

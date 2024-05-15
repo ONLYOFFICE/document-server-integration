@@ -36,6 +36,8 @@ class Application < Rails::Application
     match '/downloadhistory', to: 'home#downloadhistory', via: 'get'
     match '/historyobj', to: 'home#historyobj', via: 'post'
     match '/editor', to: 'home#editor', via: 'get'
+    match '/forgotten', to: 'home#forgotten', via: 'get'
+    match '/forgotten', to: 'home#delete_forgotten', via: 'delete'
     match '/files', to: 'home#files', via: 'get'
     match '/index', to: 'home#index', via: 'get'
     match '/reference', to: 'home#reference', via: 'post'

@@ -285,7 +285,7 @@ namespace OnlineEditorsExample
         }
 
         // create a command request
-        public static void commandRequest(string method, string key, object meta = null)
+        public static Dictionary<string, object> commandRequest(string method, string key, object meta = null)
         {
             _Default.VerifySSL();
             
@@ -348,6 +348,7 @@ namespace OnlineEditorsExample
             {
                 throw new Exception(dataResponse);
             }
+            return responseObj;
         }
 
         private static void SaveFile(byte[] data, string path)

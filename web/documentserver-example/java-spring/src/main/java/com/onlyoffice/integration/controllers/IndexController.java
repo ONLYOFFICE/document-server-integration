@@ -79,6 +79,9 @@ public class IndexController {
     @Value("${server.version}")
     private String serverVersion;
 
+    @Value("${enable-forgotten}")
+    private String enableForgotten;
+
     @GetMapping("${url.index}")
     public String index(@RequestParam(value = "directUrl", required = false) final Boolean directUrl,
                         final Model model) {
@@ -127,6 +130,7 @@ public class IndexController {
         model.addAttribute("languages", languages);
         model.addAttribute("directUrl", directUrl);
         model.addAttribute("serverVersion", serverVersion);
+        model.addAttribute("enableForgotten", Boolean.valueOf(enableForgotten));
 
         return "index.html";
     }

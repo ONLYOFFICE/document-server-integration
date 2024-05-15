@@ -9,7 +9,7 @@ from django.core.management.commands.runserver import Command as RunServer
 from django.conf.urls.static import static
 from django.urls import path
 from src.common import string
-from src.views import actions, index
+from src.views import actions, index, forgotten
 
 
 def debug():
@@ -65,6 +65,8 @@ def configuration():
 def routers():
     main = [
         path('', index.default),
+        path('forgotten', forgotten.default),
+        path('deleteforgotten', forgotten.delete),
         path('convert', actions.convert),
         path('create', actions.createNew),
         path('csv', actions.csv),

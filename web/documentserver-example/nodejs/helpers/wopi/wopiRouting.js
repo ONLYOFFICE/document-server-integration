@@ -87,6 +87,7 @@ exports.registerRoutes = function registerRoutes(app) {
         editedExts,
         fillExts,
         languages: configServer.get('languages'),
+        enableForgotten: configServer.get('enableForgotten'),
         editNewExts,
       });
     } catch (ex) {

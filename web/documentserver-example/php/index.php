@@ -25,6 +25,7 @@ require_once __DIR__ . '/src/trackmanager.php';
 use Example\Common\HTTPStatus;
 use Example\Common\URL;
 use Example\Configuration\ConfigurationManager;
+use Example\Views\ForgottenFilesView;
 use Example\Views\DocEditorView;
 use Example\Views\IndexView;
 
@@ -72,6 +73,28 @@ function routers()
         header('Content-Type: text/html; charset=utf-8');
         $view = new DocEditorView($_REQUEST);
         $view->render();
+        return;
+    }
+    if (str_starts_with($path, '/forgotten')) {
+        $configManager = new ConfigurationManager();
+        if (!$configManager->enableForgotten()) {
+            http_response_code(403);
+            return;
+        }
+
+        $method = $_SERVER['REQUEST_METHOD'];
+        switch ($method) {
+            case 'GET':
+                header('Content-Type: text/html; charset=utf-8');
+                $view = new ForgottenFilesView($_REQUEST);
+                $view->render();
+                break;
+            case 'DELETE':
+                $response = deleteForgotten();
+                $response['status'] = isset($response['error']) ? 'error' : 'success';
+                echo json_encode($response);
+                break;
+        }
         return;
     }
     if (str_starts_with($path, '/convert')) {

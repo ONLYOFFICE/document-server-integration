@@ -19,7 +19,7 @@
 <form id="form1">
     <header>
         <div class="center">
-            <a href="">
+            <a href="./">
                 <img src ="assets/images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
@@ -103,6 +103,14 @@
                 </td>
                 <td class="section">
                     <div class="main-panel">
+                        <menu class="links">
+                            <li class="home-link active" >
+                                <a href="./">
+                                    <img src="assets/images/home.svg" alt="Home"/>
+                            </a>
+                            </li>
+                            {forgottenLink}
+                        </menu>
                         <div id="portal-info" style="display: {portalInfoDisplay}">
                             <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                             <span class="portal-descr">

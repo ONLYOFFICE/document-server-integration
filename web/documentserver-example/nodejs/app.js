@@ -37,6 +37,7 @@ const users = require('./helpers/users');
 
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl');
+const enableForgotten = configServer.get('enableForgotten');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : '';
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
@@ -99,11 +100,85 @@ app.get('/', (req, res) => { // define a handler for default page
       users,
       languages: configServer.get('languages'),
       serverVersion: config.get('version'),
+      enableForgotten,
     });
   } catch (ex) {
     console.log(ex); // display error message in the console
     res.status(500); // write status parameter to the response
     res.render('error', { message: 'Server error' }); // render error template with the message parameter specified
+  }
+});
+
+app.get('/forgotten', async (req, res) => {
+  if (!enableForgotten) {
+    res.status(403);
+    res.render(
+      'error',
+      { message: 'The forgotten page is disabled.' },
+    );
+    return;
+  }
+
+  let forgottenFiles = [];
+
+  function getForgottenList() {
+    return new Promise((resolve, reject) => {
+      documentService.commandRequest('getForgottenList', '', (err, data, ress) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(JSON.parse(ress.data));
+        }
+      });
+    });
+  }
+
+  function getForgottenFile(key) {
+    return new Promise((resolve, reject) => {
+      documentService.commandRequest('getForgotten', key, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          const parsedData = JSON.parse(data);
+          resolve({
+            name: parsedData.key,
+            documentType: fileUtility.getFileType(parsedData.url),
+            url: parsedData.url,
+          });
+        }
+      });
+    });
+  }
+
+  try {
+    const forgottenListResponse = await getForgottenList();
+
+    const { keys } = forgottenListResponse;
+    forgottenFiles = await Promise.all(keys.map(getForgottenFile));
+  } catch (error) {
+    console.error(error);
+  }
+
+  req.DocManager = new DocManager(req, res);
+  res.render('forgotten', { forgottenFiles });
+});
+
+app.delete('/forgotten', (req, res) => { // define a handler for removing forgotten file
+  if (!enableForgotten) {
+    res.sendStatus(403);
+    return;
+  }
+
+  try {
+    const fileName = req.query.filename;
+    if (fileName && typeof fileName === 'string') { // if the forgotten file name is defined
+      documentService.commandRequest('deleteForgotten', fileName);
+      res.status(204).send();
+    }
+  } catch (ex) {
+    console.log(ex);
+    res.write('Server error');
+    res.status(500).send();
   }
 });
 

@@ -46,7 +46,7 @@
     <form id="form1" runat="server">
         <header>
             <div class="center">
-                <a href="">
+                <a href="./">
                     <img src ="app_themes/images/logo.svg" alt="ONLYOFFICE" />
                 </a>
             </div>
@@ -128,6 +128,18 @@
                         <td class="section">
                         <% var storedFiles = GetStoredFiles(); %>
                             <div class="main-panel">
+                                <menu class="links">
+                                    <li class="home-link active" >
+                                      <a href="./">
+                                        <img src="app_themes/images/home.svg" alt="Home"/>
+                                      </a>
+                                    </li>
+                                    <% if (bool.Parse(WebConfigurationManager.AppSettings["enable-forgotten"])) { %>
+                                        <li>
+                                            <a href="/Forgotten.aspx">Forgotten files</a>
+                                        </li>
+                                    <% } %>
+                                </menu>
                                 <div id="portal-info" style="display: <%= storedFiles.Any() ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">

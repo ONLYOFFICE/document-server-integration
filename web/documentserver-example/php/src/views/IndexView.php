@@ -45,6 +45,7 @@ final class IndexView extends View
             "dataDocs" => $this->getPreloaderUrl(),
             "date" => date("Y"),
             "serverVersion" => $configManager -> getVersion(),
+            "forgottenLink" => $this->getForgottenLink($configManager->enableForgotten()),
         ];
     }
 
@@ -108,5 +109,15 @@ final class IndexView extends View
     private function getEditButton()
     {
         return '<div id="beginEdit" class="button orange disable">Edit</div>';
+    }
+
+    private function getForgottenLink($forgottenEnabled)
+    {
+        $link = <<<EOT
+        <li>
+            <a href="forgotten">Forgotten files</a>
+        </li>
+        EOT;
+        return $forgottenEnabled ? $link : '';
     }
 }

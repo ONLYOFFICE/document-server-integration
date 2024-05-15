@@ -44,7 +44,7 @@
     <body>
         <header>
             <div class="center">
-                <a href="">
+                <a href="./">
                     <img src ="css/img/logo.svg" alt="ONLYOFFICE" />
                 </a>
             </div>
@@ -125,6 +125,18 @@
                             <% DocumentManager.init(request, response); %>
                             <% File[] files = DocumentManager.getStoredFiles(null); %>
                             <div class="main-panel">
+                                <menu class="links">
+                                    <li class="home-link active" >
+                                      <a href="./">
+                                        <img src="css/img/home.svg" alt="Home"/>
+                                      </a>
+                                    </li>
+                                    <% if (Boolean.valueOf(ConfigManager.getProperty("enable-forgotten"))) { %>
+                                        <li>
+                                            <a href="/ForgottenServlet">Forgotten files</a>
+                                        </li>
+                                    <% } %>
+                                </menu>
                                 <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">

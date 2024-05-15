@@ -39,7 +39,8 @@ def default(request):  # default parameters that will be passed to the template
         'preloadurl': config_manager.document_server_preloader_url().geturl(),
         'files': docManager.getStoredFiles(request),  # information about stored files
         'directUrl': str(getDirectUrlParam(request)).lower,
-        'serverVersion': config_manager.getVersion()
+        'serverVersion': config_manager.getVersion(),
+        'enableForgotten': config_manager.enable_forgotten(),
     }
     # execute the "index.html" template with context data and return http response in json format
     return render(request, 'index.html', context)

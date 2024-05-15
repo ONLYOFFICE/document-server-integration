@@ -114,6 +114,14 @@ class ConfigurationManager
     false
   end
 
+  sig { returns(T::Boolean) }
+  def enable_forgotten
+    env = ENV.fetch('ENABLE_FORGOTTEN', nil)
+    return ActiveModel::Type::Boolean.new.cast(env) if env
+
+    true
+  end
+
   sig { returns(Pathname) }
   def storage_path
     storage_path = ENV['STORAGE_PATH'] || 'storage'

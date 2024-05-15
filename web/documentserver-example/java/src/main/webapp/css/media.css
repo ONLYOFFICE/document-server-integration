@@ -78,7 +78,8 @@
         margin-left: 0;
     }
 
-    .tableRow {
+    .tableRow,
+    menu.links {
         width: 90%;
     }
 
@@ -118,7 +119,8 @@
     .contentCells-icon{
         width: 5%;
     }
-    .tableRow {
+    .tableRow,
+    menu.links {
         width: 55%;
     }
 
@@ -174,7 +176,8 @@
 }
 
 @media (max-width: 715px) {
-    .tableRow {
+    .tableRow,
+    menu.links {
         width: 45%;
     }
 }
@@ -253,7 +256,8 @@
         padding-left: 0;
     }
 
-    .tableRow {
+    .tableRow,
+    menu.links {
         width: 75%;
     }
 
@@ -280,7 +284,8 @@
         width: 580px;
     }
 
-    .tableRow {
+    .tableRow,
+    menu.links {
         width: 95%;
     }
 
@@ -393,7 +398,8 @@
         padding: 16px 0 6px;
     }
 
-    .tableRow {
+    .tableRow,
+    menu.links {
         width: 40%;
     }
 
@@ -524,7 +530,8 @@
 }
 
 @media (max-width: 510px)  and (min-width: 470px) {
-    .tableRow {
+    .tableRow,
+    menu.links {
         width: 35%;
     }
 
@@ -550,7 +557,8 @@
 }
 
 @media (max-width: 470px)  and (min-width: 420px) {
-    .tableRow {
+    .tableRow,
+    menu.links {
         width: 30%;
     }
     .tableRow td:first-child{
@@ -585,7 +593,8 @@
 }
 
 @media (max-width: 420px) and (min-width: 320px) {
-    .tableRow {
+    .tableRow,
+    menu.links {
         width: 25%;
     }
 
@@ -635,7 +644,8 @@
     }
 }
 @media (max-width: 769px) and (min-width: 715px){
-    .tableRow{
+    .tableRow,
+    menu.links {
         width: 50%;
     }
 }

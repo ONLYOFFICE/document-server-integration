@@ -26,7 +26,7 @@ body {
     color: #333333;
     font-family: Open Sans;
     font-size: 12px;
-    font-style: normal; 
+    font-style: normal;
     font-weight: normal;
     height: 100%;
     margin: 0;
@@ -174,9 +174,9 @@ label .checkbox {
     line-height: 24px;
 }
 
-.button, 
-.button:visited, 
-.button:hover, 
+.button,
+.button:visited,
+.button:hover,
 .button:active {
     align-items: center;
     border-radius: 3px;
@@ -558,12 +558,12 @@ footer table td {
     padding-left: 32px;
 }
 
-footer a, 
-footer a:hover, 
+footer a,
+footer a:hover,
 footer a:visited {
     color: #FF6F3D;
     font-size: 14px;
-    line-height: 120%; 
+    line-height: 120%;
 }
 
 footer a:hover {
@@ -625,7 +625,7 @@ footer table tr td:first-child {
 }
 
 .convertFileName.slide,
-.stored-edit.slide, 
+.stored-edit.slide,
 .uploadFileName.slide {
     background-image: url("../images/icon_pptx.svg");
 }
@@ -956,7 +956,7 @@ html {
 .tableRow td:first-child {
     display: flex;
     flex-grow: 1;
-    max-width: 25%;
+    max-width: 24%;
 }
 
 .tableHeaderCellFileName {

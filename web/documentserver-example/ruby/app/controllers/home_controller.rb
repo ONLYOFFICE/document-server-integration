@@ -46,6 +46,39 @@ class HomeController < ApplicationController
     )
   end
 
+  def forgotten
+    unless HomeController.config_manager.enable_forgotten
+      render(status: :forbidden, plain: '{"error": "The forgotten page is disabled"}')
+      return
+    end
+
+    @files = []
+    begin
+      files_list = TrackHelper.command_request('getForgottenList', '')
+      (files_list['keys']).each do |key|
+        file = TrackHelper.command_request('getForgotten', key)
+        file['type'] = FileUtility.get_file_type(file['url'])
+        @files.push(file)
+      end
+    rescue StandardError => e
+      Rails.logger.error(e.message)
+    end
+  end
+
+  def delete_forgotten
+    unless HomeController.config_manager.enable_forgotten
+      render(status: :forbidden)
+      return
+    end
+
+    if params[:filename].present?
+      TrackHelper.command_request('deleteForgotten', params[:filename])
+    end
+    render(status: :no_content)
+  rescue StandardError
+    render(plain: '{"error": "Server error"}')
+  end
+
   # creating a sample document
   def sample
     DocumentHelper.init(request.remote_ip, request.base_url)
