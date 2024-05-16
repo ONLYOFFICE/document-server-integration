@@ -55,6 +55,10 @@ type StorageManager interface {
 type UserManager interface {
 	GetUsers() []models.User
 	GetUserById(uid string) (models.User, error)
+	GetUserInfoById(uid string, serverAddress string) models.UserInfo
+	GetUsersForMentions(uid string) []models.UserInfo
+	GetUsersForProtect(uid string, serverAddress string) []models.UserInfo
+	GetUsersInfo(serverAddress string) []models.UserInfo
 }
 
 type JwtManager interface {

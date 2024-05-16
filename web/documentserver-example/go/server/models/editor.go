@@ -35,7 +35,7 @@ type Embedded struct {
 }
 
 type EditorConfig struct {
-	User          User          `json:"user"`
+	User          UserInfo      `json:"user"`
 	CallbackUrl   string        `json:"callbackUrl"`
 	Customization Customization `json:"customization,omitempty"`
 	Embedded      Embedded      `json:"embedded,omitempty"`

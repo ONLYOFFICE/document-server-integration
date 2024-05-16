@@ -127,7 +127,7 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 			Mode:        parameters.Mode,
 			Lang:        parameters.Language,
 			CallbackUrl: dm.generateCallbackUrl(parameters.Filename, remoteAddress),
-			User:        user,
+			User:        dm.GetUserInfoById(user.Id, remoteAddress),
 			Embedded: models.Embedded{
 				SaveUrl:       furi,
 				EmbedUrl:      furi,
