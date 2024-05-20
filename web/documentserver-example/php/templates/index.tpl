@@ -18,11 +18,23 @@
 <body>
 <form id="form1">
     <header>
-        <div class="center">
+        <div class="center main-nav">
             <a href="./">
                 <img src ="assets/images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
+        <menu class="responsive-nav">
+            <li>
+                <a href="#" onclick="toggleSidePanel(event)">
+                    <img src ="assets/images/mobile-menu.svg" alt="ONLYOFFICE" />
+                </a>
+            </li>
+            <li>
+                <a href="./">
+                    <img src ="assets/images/mobile-logo.svg" alt="ONLYOFFICE" />
+                </a>
+            </li>
+        </menu>
     </header>
     <div class="center main">
         <table class="table-main">
@@ -100,6 +112,9 @@
                             </table>
                         </div>
                     </div>
+                    <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                        <img src="assets/images/close.svg" alt="">
+                    </button>
                 </td>
                 <td class="section">
                     <div class="main-panel">
