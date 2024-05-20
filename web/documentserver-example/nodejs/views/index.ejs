@@ -32,11 +32,23 @@
 </head>
 <body>
     <header>
-        <div class="center">
+        <div class="center main-nav">
             <a href="./">
                 <img src ="images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
+        <menu class="responsive-nav">
+            <li>
+                <a href="#" onclick="toggleSidePanel(event)">
+                    <img src ="images/mobile-menu.svg" alt="ONLYOFFICE" />
+                </a>
+            </li>
+            <li>
+                <a href="./">
+                    <img src ="images/mobile-logo.svg" alt="ONLYOFFICE" />
+                </a>
+            </li>
+        </menu>
     </header>
     <div class="center main">
         <table class="table-main">
@@ -108,6 +120,9 @@
                                 </table>
                             </div>
                         </div>
+                        <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                            <img src="images/close.svg" alt="">
+                        </button>
                     </td>
                     <td class="section">
                         <div class="main-panel">
@@ -135,7 +150,7 @@
                                 <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                 <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                 <% users.forEach(user => { %>
-                                    <div class="user-descr">
+                                    <div class="user-descr" onclick="toggleUserDescr(event)">
                                         <b><%= user.name == null ? 'Anonymous' : user.name %></b>
                                         <ul>
                                             <% user.descriptions.forEach(description => { %>
