@@ -1014,7 +1014,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     let submitForm = false;
-    if (mode === 'fillForms') {
+    if (mode === 'fillForms' || mode === "embedded") {
       submitForm = userid === 'uid-1';
     }
 
