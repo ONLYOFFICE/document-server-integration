@@ -347,7 +347,7 @@ function files()
     try {
         @header("Content-Type", "application/json");
 
-        $fileId = $_GET["fileId"];
+        $fileId = isset($_GET["fileId"]) && !empty($_GET["fileId"]) ? $_GET["fileId"] : null;
         $result = getFileInfo($fileId);
 
         return $result;
