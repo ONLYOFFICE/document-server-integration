@@ -65,6 +65,14 @@ header img {
     margin: 10px 0 22px 32px;
 }
 
+.responsive-nav {
+    display: none;
+}
+
+.mobile-close-btn {
+    display: none;
+}
+
 .center {
     position:relative;
     margin: 0 auto 0;
