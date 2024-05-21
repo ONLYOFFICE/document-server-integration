@@ -45,11 +45,23 @@
 <body>
     <form id="form1" runat="server">
         <header>
-            <div class="center">
+            <div class="center main-nav">
                 <a href="./">
                     <img src ="app_themes/images/logo.svg" alt="ONLYOFFICE" />
                 </a>
             </div>
+            <menu class="responsive-nav">
+                <li>
+                  <a href="#" onclick="toggleSidePanel(event)">
+                    <img src="app_themes/images/mobile-menu.svg" alt="ONLYOFFICE" />
+                  </a>
+                </li>
+                <li>
+                  <a href="./">
+                    <img src ="app_themes/images/mobile-logo.svg" alt="ONLYOFFICE" />
+                  </a>
+                </li>
+            </menu>
         </header>
         <div class="center main">
             <table class="table-main">
@@ -124,6 +136,9 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                                <img src="app_themes/images/close.svg" alt="">
+                            </button>
                         </td>
                         <td class="section">
                         <% var storedFiles = GetStoredFiles(); %>
@@ -150,7 +165,7 @@
                                     <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                     <% foreach (User user in Users.getAllUsers())
                                       { %>
-                                      <div class="user-descr">
+                                      <div class="user-descr" onclick="toggleUserDescr(event)">
                                        <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
                                            <ul>
                                            <% foreach (string description in user.descriptions)
