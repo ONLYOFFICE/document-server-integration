@@ -115,7 +115,7 @@ if (typeof jQuery != "undefined") {
         var posExt = fileName.lastIndexOf('.');
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        if (ConverExtList.indexOf(posExt) == -1) {
+        if (ConverExtList.indexOf(posExt.replace(".","")) == -1) {
             jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
