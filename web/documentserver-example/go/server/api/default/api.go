@@ -155,6 +155,18 @@ func (srv *DefaultServerEndpointsHandler) Index(w http.ResponseWriter, r *http.R
 	indexTemplate.Execute(w, data)
 }
 
+func (srv *DefaultServerEndpointsHandler) Files(w http.ResponseWriter, r *http.Request) {
+	srv.logger.Debug("A new files call")
+	files, err := srv.Managers.StorageManager.GetStoredFiles(r.Host)
+	if err != nil {
+		srv.logger.Errorf("could not fetch files: %s", err.Error())
+		shared.SendCustomErrorResponse(w, fmt.Sprintf("could not fetch files: %s", err.Error()))
+		return
+	}
+
+	shared.SendResponse(w, files)
+}
+
 func (srv *DefaultServerEndpointsHandler) Download(w http.ResponseWriter, r *http.Request) {
 	filename := r.URL.Query().Get("fileName")
 
