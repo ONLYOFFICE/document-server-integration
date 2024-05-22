@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"strconv"
@@ -231,6 +232,80 @@ func (srv *DefaultServerEndpointsHandler) Editor(w http.ResponseWriter, r *http.
 	}
 
 	editorTemplate.Execute(w, data)
+}
+
+func (srv *DefaultServerEndpointsHandler) Reference(w http.ResponseWriter, r *http.Request) {
+	var body models.Reference
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		srv.logger.Error("Reference body decoding error")
+		shared.SendDocumentServerRespose(w, true)
+		return
+	}
+
+	remoteAddr := generateUrl(r)
+	var fileName /*, userAddress*/ string
+
+	var fileKey map[string]string
+	json.Unmarshal([]byte(body.ReferenceData.FileKey), &fileKey)
+	path, _ := srv.GenerateFilePath(fileKey["fileName"])
+	if body.ReferenceData.InstanceId == remoteAddr && srv.PathExists(path) {
+		fileName = fileKey["fileName"]
+	}
+
+	if fileName == "" && body.Link != "" {
+		if strings.Contains(body.Link, remoteAddr) {
+			res := map[string]interface{}{
+				"url": body.Link,
+			}
+			shared.SendResponse(w, res)
+			return
+		}
+
+		urlObj, _ := url.Parse(body.Link)
+		params, _ := url.ParseQuery(urlObj.RawQuery)
+		if len(params["filename"]) != 0 {
+			fileName = params["filename"][0]
+		}
+		path, _ := srv.GenerateFilePath(fileName)
+		if !srv.PathExists(path) {
+			shared.SendCustomErrorResponse(w, "File is not exist")
+			return
+		}
+	}
+
+	if fileName == "" && body.Path != "" {
+		filePath := utils.GetFileName(body.Path)
+		path, _ := srv.GenerateFilePath(filePath)
+		if srv.PathExists(path) {
+			fileName = filePath
+		}
+	}
+
+	if fileName == "" {
+		shared.SendCustomErrorResponse(w, "File is not found")
+		return
+	}
+
+	docKey, _ := srv.GenerateFileHash(fileName)
+	data := models.Reference{
+		FileType: srv.GetFileType(fileName),
+		Key:      docKey,
+		Url:      srv.GeneratePublicFileUri(fileName, remoteAddr, managers.FileMeta{}),
+		ReferenceData: models.ReferenceData{
+			FileKey:    fmt.Sprintf("{\"fileName\":\"%s\"}", fileName),
+			InstanceId: remoteAddr,
+		},
+		Link: remoteAddr + "/editor?filename=" + url.QueryEscape(fileName),
+		Path: fileName,
+	}
+
+	secret := strings.TrimSpace(srv.config.JwtSecret)
+	if secret != "" && srv.config.JwtEnabled {
+		token, _ := srv.JwtSign(data, []byte(secret))
+		data.Token = token
+	}
+
+	shared.SendResponse(w, data)
 }
 
 func (srv *DefaultServerEndpointsHandler) History(w http.ResponseWriter, r *http.Request) {

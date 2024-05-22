@@ -31,6 +31,7 @@ type ServerEndpointsHandler interface {
 	Convert(w http.ResponseWriter, r *http.Request)
 	Callback(w http.ResponseWriter, r *http.Request)
 	Create(w http.ResponseWriter, r *http.Request)
+	Reference(w http.ResponseWriter, r *http.Request)
 }
 
 type ServerAPI struct {
