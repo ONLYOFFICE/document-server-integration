@@ -234,13 +234,35 @@ func (srv *DefaultServerEndpointsHandler) Editor(w http.ResponseWriter, r *http.
 		srv.logger.Warnf("could not get file history: %s", err.Error())
 	}
 
+	var usersForMentions, usersForProtect, usersInfo []models.UserInfo
+	if config.EditorConfig.User.Id != "uid-0" {
+		usersForMentions = srv.GetUsersForMentions(config.EditorConfig.User.Id)
+		usersForProtect = srv.GetUsersForProtect(config.EditorConfig.User.Id, remoteAddr)
+		usersInfo = srv.GetUsersInfo(remoteAddr)
+	}
+
 	data := map[string]interface{}{
-		"apijs":      srv.config.DocumentServerHost + srv.config.DocumentServerApi,
-		"config":     config,
-		"actionLink": editorParameters.ActionLink,
-		"docType":    config.DocumentType,
-		"refHist":    refHist,
-		"setHist":    setHist,
+		"apijs":            srv.config.DocumentServerHost + srv.config.DocumentServerApi,
+		"config":           config,
+		"actionLink":       editorParameters.ActionLink,
+		"docType":          config.DocumentType,
+		"refHist":          refHist,
+		"setHist":          setHist,
+		"usersForProtect":  usersForProtect,
+		"usersForMentions": usersForMentions,
+		"usersInfo":        usersInfo,
+		"dataInsertImage": map[string]interface{}{
+			"fileType": "svg",
+			"url":      remoteAddr + "/static/images/logo.svg",
+		},
+		"dataDocument": map[string]interface{}{
+			"fileType": "docx",
+			"url":      remoteAddr + "/static/assets/document-templates/sample/sample.docx",
+		},
+		"dataSpreadsheet": map[string]interface{}{
+			"fileType": "csv",
+			"url":      remoteAddr + "/static/assets/document-templates/sample/csv.csv",
+		},
 	}
 
 	editorTemplate.Execute(w, data)
