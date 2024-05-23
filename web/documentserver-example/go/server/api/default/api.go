@@ -498,6 +498,64 @@ func (srv *DefaultServerEndpointsHandler) Callback(w http.ResponseWriter, r *htt
 }
 
 func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		var body map[string]string
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			srv.logger.Error("Reference body decoding error")
+			shared.SendDocumentServerRespose(w, true)
+			return
+		}
+
+		fileName, url := body["title"], body["url"]
+		if fileName == "" || url == "" {
+			srv.logger.Error("empty url or title")
+			shared.SendCustomErrorResponse(w, "empty url or title")
+			return
+		}
+
+		_, uid := shared.GetCookiesInfo(r.Cookies())
+		user, err := srv.UserManager.GetUserById(uid)
+		if err != nil {
+			srv.logger.Errorf("could not find user with id: %s", uid)
+			shared.SendCustomErrorResponse(w, err.Error())
+			return
+		}
+
+		fileExt := utils.GetFileExt(fileName, true)
+		if strings.TrimSpace(fileExt) == "" || !utils.IsInList(fileExt, srv.specification.Extensions.Viewed) {
+			srv.logger.Errorf("%s extension is not supported", fileExt)
+			shared.SendCustomErrorResponse(w, "extension is not supported")
+			return
+		}
+
+		correctName, err := srv.StorageManager.GenerateVersionedFilename(fileName)
+		if err != nil {
+			srv.logger.Errorf("file saving error: ", err)
+			shared.SendCustomErrorResponse(w, "file saving error")
+			return
+		}
+
+		srv.StorageManager.SaveFileFromUri(models.Callback{
+			Url:         url,
+			Filename:    correctName,
+			UserAddress: r.Host,
+		})
+		srv.HistoryManager.CreateMeta(correctName, models.History{
+			ServerVersion: "0.0.0",
+			Changes: []models.Changes{
+				{
+					Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
+					User: models.User{
+						Id:       user.Id,
+						Username: user.Username,
+					},
+				},
+			},
+		})
+
+		return
+	}
+
 	query := r.URL.Query()
 	fileExt, isSample := query.Get("fileExt"), query.Get("sample")
 
