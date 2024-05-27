@@ -2,7 +2,7 @@
 
 - forgotten files
 - java-spring: using java docs-integration-sdk
-- en-GB skin language
+- en-GB, sr-Cyrl-RS skin languages
 - save as for pdf
 - fill permission in embedded mode
 - delete all files
