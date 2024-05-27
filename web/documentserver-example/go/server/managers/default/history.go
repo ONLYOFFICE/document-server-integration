@@ -224,15 +224,15 @@ func (hm DefaultHistoryManager) GetHistory(filename, remoteAddress string) (mana
 		}),
 	}
 
+	rhist.History = append(rhist.History, models.History{
+		Changes:       currMeta.Changes,
+		User:          &currMeta.Changes[len(currMeta.Changes)-1].User,
+		Created:       currMeta.Changes[len(currMeta.Changes)-1].Created,
+		Key:           docKey,
+		Version:       version,
+		ServerVersion: currMeta.ServerVersion,
+	})
 	if version > 1 {
-		rhist.History = append(rhist.History, models.History{
-			Changes:       currMeta.Changes,
-			User:          &currMeta.Changes[len(currMeta.Changes)-1].User,
-			Created:       currMeta.Changes[len(currMeta.Changes)-1].Created,
-			Key:           docKey,
-			Version:       version,
-			ServerVersion: currMeta.ServerVersion,
-		})
 		currSet.Previous = &managers.HistoryPrevious{
 			Key: setHist[len(setHist)-1].Key,
 			Url: setHist[len(setHist)-1].Url,
