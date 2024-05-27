@@ -229,11 +229,6 @@ func (srv *DefaultServerEndpointsHandler) Editor(w http.ResponseWriter, r *http.
 		return
 	}
 
-	refHist, setHist, err := srv.Managers.HistoryManager.GetHistory(config.Document.Title, remoteAddr)
-	if err != nil {
-		srv.logger.Warnf("could not get file history: %s", err.Error())
-	}
-
 	var usersForMentions, usersForProtect, usersInfo []models.UserInfo
 	if config.EditorConfig.User.Id != "uid-0" {
 		usersForMentions = srv.GetUsersForMentions(config.EditorConfig.User.Id)
@@ -246,8 +241,6 @@ func (srv *DefaultServerEndpointsHandler) Editor(w http.ResponseWriter, r *http.
 		"config":           config,
 		"actionLink":       editorParameters.ActionLink,
 		"docType":          config.DocumentType,
-		"refHist":          refHist,
-		"setHist":          setHist,
 		"usersForProtect":  usersForProtect,
 		"usersForMentions": usersForMentions,
 		"usersInfo":        usersInfo,
@@ -412,6 +405,32 @@ func (srv *DefaultServerEndpointsHandler) History(w http.ResponseWriter, r *http
 	}
 
 	http.Redirect(w, r, fileUrl, http.StatusSeeOther)
+}
+
+func (srv *DefaultServerEndpointsHandler) HistoryObj(w http.ResponseWriter, r *http.Request) {
+	var body map[string]string
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		srv.logger.Error("HistoryObj body decoding error")
+		shared.SendCustomErrorResponse(w, err.Error())
+		return
+	}
+
+	fileName := body["fileName"]
+	if fileName == "" {
+		srv.logger.Error("No filename in historyObj request")
+		shared.SendCustomErrorResponse(w, "No filename")
+		return
+	}
+
+	remoteAddr := generateUrl(r)
+	refHist, setHist, err := srv.Managers.HistoryManager.GetHistory(fileName, remoteAddr)
+	if err != nil {
+		srv.logger.Warnf("could not get file history: %s", err.Error())
+		shared.SendCustomErrorResponse(w, err.Error())
+	}
+
+	refHist.HistoryData = setHist
+	shared.SendResponse(w, refHist)
 }
 
 func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http.Request) {
