@@ -1,0 +1,54 @@
+services:
+  example:
+    build:
+      args:
+        user: ${USER}
+        uid: ${UID}
+      context: ./docker/php-fpm/
+      dockerfile: Dockerfile
+    container_name: example
+    working_dir: /var/www/
+    volumes:
+      - ./:/var/www
+    networks:
+      - example
+
+  documentserver:
+    container_name: documentserver
+    image: onlyoffice/documentserver:8.0
+    expose:
+      - "80"
+    environment:
+      JWT_SECRET: ${JWT_SECRET}
+    networks:
+      - example
+
+  proxy:
+    container_name: proxy
+    image: nginx:alpine
+    build:
+      context: ./docker/proxy/
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - ./:/var/www
+    networks:
+      - example
+
+  node:
+    container_name: node
+    image: node:alpine
+    working_dir: /var/www/
+    tty: true
+    expose:
+      - "5173"
+    volumes:
+      - ./:/var/www
+    networks:
+      - example
+
+networks:
+  example:
+    driver: bridge
