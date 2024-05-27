@@ -26,4 +26,5 @@ var DefaultManagersModule = fx.Options(
 	fx.Provide(NewDefaultUserManager),
 	fx.Provide(NewDefaultJwtManager),
 	fx.Provide(NewDefaultConversionManager),
+	fx.Provide(NewDefaultCommandManager),
 )

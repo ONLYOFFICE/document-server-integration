@@ -19,6 +19,7 @@ package managers
 
 import (
 	"io"
+	"net/http"
 
 	"github.com/ONLYOFFICE/document-server-integration/server/models"
 	"github.com/golang-jwt/jwt"
@@ -74,6 +75,10 @@ type ConversionManager interface {
 	GetConverterUri(docUri, fromExt, toExt, docKey string, isAsync bool) (string, error)
 }
 
+type CommandManager interface {
+	CommandRequest(method string, docKey string, meta interface{}) (*http.Response, error)
+}
+
 type Managers struct {
 	DocumentManager
 	HistoryManager
@@ -81,11 +86,13 @@ type Managers struct {
 	UserManager
 	JwtManager
 	ConversionManager
+	CommandManager
 }
 
 func New(umanager UserManager, smanager StorageManager,
 	hmanager HistoryManager, dmanager DocumentManager,
-	jmanager JwtManager, cmanager ConversionManager) *Managers {
+	jmanager JwtManager, cmanager ConversionManager,
+	commanager CommandManager) *Managers {
 	return &Managers{
 		HistoryManager:    hmanager,
 		StorageManager:    smanager,
@@ -93,5 +100,6 @@ func New(umanager UserManager, smanager StorageManager,
 		UserManager:       umanager,
 		JwtManager:        jmanager,
 		ConversionManager: cmanager,
+		CommandManager:    commanager,
 	}
 }
