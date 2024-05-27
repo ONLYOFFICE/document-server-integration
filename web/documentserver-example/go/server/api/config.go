@@ -33,6 +33,7 @@ type ServerEndpointsHandler interface {
 	Create(w http.ResponseWriter, r *http.Request)
 	Reference(w http.ResponseWriter, r *http.Request)
 	Files(w http.ResponseWriter, r *http.Request)
+	Rename(w http.ResponseWriter, r *http.Request)
 }
 
 type ServerAPI struct {
