@@ -18,6 +18,7 @@
 package dapi
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -524,6 +525,64 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 			})
 		}
 	}
+}
+
+func (srv *DefaultServerEndpointsHandler) Restore(w http.ResponseWriter, r *http.Request) {
+	result := map[string]interface{}{
+		"success": false,
+	}
+	var body map[string]interface{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		srv.logger.Error("Restore body decoding error")
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
+
+	fileName := fmt.Sprintf("%v", body["fileName"])
+	if fileName == "" {
+		srv.logger.Error("Restore filename is empty")
+		result["error"] = "Empty filename"
+		shared.SendResponse(w, result)
+		return
+	}
+
+	version := fmt.Sprintf("%v", body["version"])
+	key, err := srv.GenerateFileHash(fileName)
+	if err != nil {
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
+	filePath, err := srv.GenerateFilePath(fileName)
+	if err != nil {
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
+	rootPath, _ := srv.GetRootFolder()
+	historyPath := path.Join(rootPath, fileName+shared.ONLYOFFICE_HISTORY_POSTFIX)
+	newVersion := srv.HistoryManager.CountVersion(historyPath)
+	versionPath := path.Join(historyPath, version, "prev"+utils.GetFileExt(fileName, false))
+	newVersionPath := path.Join(historyPath, fmt.Sprint(newVersion))
+
+	if !srv.Managers.StorageManager.PathExists(versionPath) {
+		result["error"] = "Version path does not exist"
+		shared.SendResponse(w, result)
+		return
+	}
+
+	srv.Managers.StorageManager.CreateDirectory(newVersionPath)
+	currFile, _ := srv.Managers.StorageManager.ReadFile(filePath)
+	srv.Managers.StorageManager.CreateFile(
+		bytes.NewBuffer(currFile),
+		path.Join(newVersionPath, "prev"+utils.GetFileExt(fileName, false)))
+	srv.Managers.StorageManager.CreateFile(bytes.NewBuffer([]byte(key)), path.Join(newVersionPath, "key.txt"))
+	verFile, _ := srv.Managers.StorageManager.ReadFile(versionPath)
+	srv.Managers.StorageManager.CreateFile(bytes.NewBuffer(verFile), filePath)
+
+	result["success"] = true
+	shared.SendResponse(w, result)
 }
 
 func (srv *DefaultServerEndpointsHandler) Callback(w http.ResponseWriter, r *http.Request) {

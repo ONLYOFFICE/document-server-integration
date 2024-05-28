@@ -35,6 +35,7 @@ type ServerEndpointsHandler interface {
 	Files(w http.ResponseWriter, r *http.Request)
 	Rename(w http.ResponseWriter, r *http.Request)
 	HistoryObj(w http.ResponseWriter, r *http.Request)
+	Restore(w http.ResponseWriter, r *http.Request)
 }
 
 type ServerAPI struct {

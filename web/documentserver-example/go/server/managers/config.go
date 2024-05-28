@@ -34,6 +34,8 @@ type HistoryManager interface {
 	GetHistory(filename, storageAddress string) (HistoryRefresh, []HistorySet, error)
 	CreateMeta(filename string, history models.History) error
 	CreateHistory(cbody models.Callback) error
+	CountVersion(directory string) int
+	GetFileData(filename string) map[string]string
 }
 
 type StorageManager interface {
@@ -47,6 +49,7 @@ type StorageManager interface {
 	CreateFile(stream io.Reader, path string) error
 	CreateDirectory(path string) error
 	PathExists(path string) bool
+	DirExists(path string) bool
 	RemoveFile(filename string) error
 	ReadFile(filePath string) ([]byte, error)
 	MoveFile(from, to string) error

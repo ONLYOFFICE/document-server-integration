@@ -100,6 +100,7 @@ func (srv *Server) configureRouter() *mux.Router {
 	r.HandleFunc("/files", srv.ServerAPI.Files).Methods(http.MethodGet)
 	r.HandleFunc("/rename", srv.ServerAPI.Rename).Methods(http.MethodPost)
 	r.HandleFunc("/historyObj", srv.ServerAPI.HistoryObj).Methods(http.MethodPost)
+	r.HandleFunc("/restore", srv.ServerAPI.Restore).Methods(http.MethodPut)
 
 	return r
 }

@@ -214,6 +214,13 @@ func (sm DefaultStorageManager) PathExists(path string) bool {
 	return false
 }
 
+func (sm DefaultStorageManager) DirExists(path string) bool {
+	if stat, err := os.Stat(path); err == nil && stat.IsDir() {
+		return true
+	}
+	return false
+}
+
 func (sm DefaultStorageManager) RemoveFile(filename string) error {
 	fpath, err := sm.GenerateFilePath(filename)
 	if err != nil {
