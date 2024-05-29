@@ -18,30 +18,37 @@
 package models
 
 type MetaInfo struct {
-	Author  string `json:"author"`
-	Created string `json:"created"`
+	Author   string      `json:"owner"`
+	Created  string      `json:"uploaded"`
+	Favorite interface{} `json:"favorite"`
 }
 
 type Permissions struct {
-	Comment                 bool `json:"comment,omitempty"`
-	Copy                    bool `json:"copy,omitempty"`
-	DeleteCommentAuthorOnly bool `json:"deleteCommentAuthorOnly,omitempty"`
-	Download                bool `json:"download,omitempty"`
-	Edit                    bool `json:"edit"`
-	EditCommentAuthorOnly   bool `json:"editCommentAuthorOnly,omitempty"`
-	FillForms               bool `json:"fillForms,omitempty"`
-	ModifyContentControl    bool `json:"modifyContentControl,omitempty"`
-	ModifyFilter            bool `json:"modifyFilter,omitempty"`
-	Print                   bool `json:"print,omitempty"`
-	Review                  bool `json:"review,omitempty"`
+	Chat                    bool                   `json:"chat,omitempty"`
+	Comment                 bool                   `json:"comment,omitempty"`
+	Copy                    bool                   `json:"copy,omitempty"`
+	DeleteCommentAuthorOnly bool                   `json:"deleteCommentAuthorOnly,omitempty"`
+	Download                bool                   `json:"download,omitempty"`
+	Edit                    bool                   `json:"edit"`
+	EditCommentAuthorOnly   bool                   `json:"editCommentAuthorOnly,omitempty"`
+	FillForms               bool                   `json:"fillForms,omitempty"`
+	ModifyContentControl    bool                   `json:"modifyContentControl,omitempty"`
+	ModifyFilter            bool                   `json:"modifyFilter,omitempty"`
+	Print                   bool                   `json:"print,omitempty"`
+	Review                  bool                   `json:"review,omitempty"`
+	Protect                 bool                   `json:"protect,omitempty"`
+	RewiewGroups            []string               `json:"reviewGroups,omitempty"`
+	UserInfoGroups          []string               `json:"userInfoGroups,omitempty"`
+	CommentGroups           map[string]interface{} `json:"commentGroups,omitempty"`
 }
 
 type Document struct {
-	FileType    string      `json:"fileType"`
-	Key         string      `json:"key,omitempty"`
-	Title       string      `json:"title"`
-	Url         string      `json:"url"`
-	Info        MetaInfo    `json:"info"`
-	Permissions Permissions `json:"permissions,omitempty"`
-	CanEdit     bool
+	FileType      string        `json:"fileType"`
+	Key           string        `json:"key,omitempty"`
+	Title         string        `json:"title"`
+	Url           string        `json:"url"`
+	Info          MetaInfo      `json:"info"`
+	Permissions   Permissions   `json:"permissions,omitempty"`
+	ReferenceData ReferenceData `json:"referenceData"`
+	CanEdit       bool
 }

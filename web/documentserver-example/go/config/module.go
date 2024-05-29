@@ -38,6 +38,7 @@ type ApplicationConfig struct {
 	JwtHeader                string `mapstructure:"JWT_HEADER"`
 	JwtSecret                string `mapstructure:"JWT_SECRET"`
 	StoragePath              string `mapstructure:"STORAGE_PATH"`
+	Plugins                  string `mapstructure:"PLUGINS"`
 	LoggerDebug              bool   `mapstructure:"LOGGER_DEBUG"`
 }
 

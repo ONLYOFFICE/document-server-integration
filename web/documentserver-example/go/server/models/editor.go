@@ -22,9 +22,19 @@ type Goback struct {
 }
 
 type Customization struct {
-	About    bool   `json:"about"`
-	Feedback bool   `json:"feedback"`
-	Goback   Goback `json:"goback,omitempty"`
+	About      bool                   `json:"about"`
+	Comments   bool                   `json:"comments,omitempty"`
+	Feedback   bool                   `json:"feedback"`
+	Forcesave  bool                   `json:"forcesave,omitempty"`
+	SubmitForm bool                   `json:"submitForm,omitempty"`
+	Goback     Goback                 `json:"goback,omitempty"`
+	Close      map[string]interface{} `json:"close,omitempty"`
+}
+
+type Template struct {
+	Image string `json:"image,omitempty"`
+	Title string `json:"title,omitempty"`
+	Url   string `json:"url,omitempty"`
 }
 
 type Embedded struct {
@@ -35,11 +45,16 @@ type Embedded struct {
 }
 
 type EditorConfig struct {
-	User          UserInfo      `json:"user"`
-	CallbackUrl   string        `json:"callbackUrl"`
-	Customization Customization `json:"customization,omitempty"`
-	Embedded      Embedded      `json:"embedded,omitempty"`
-	Lang          string        `json:"lang,omitempty"`
-	Mode          string        `json:"mode,omitempty"`
-	ActionLink    string        `json:"actionLink,omitempty"`
+	User          UserInfo               `json:"user"`
+	CallbackUrl   string                 `json:"callbackUrl"`
+	Customization Customization          `json:"customization,omitempty"`
+	Embedded      Embedded               `json:"embedded,omitempty"`
+	Lang          string                 `json:"lang,omitempty"`
+	Mode          string                 `json:"mode,omitempty"`
+	ActionLink    string                 `json:"actionLink,omitempty"`
+	CreateUrl     string                 `json:"createUrl,omitempty"`
+	FileChoiceUrl string                 `json:"fileChoiceUrl,omitempty"`
+	CoEditing     map[string]interface{} `json:"coEditing,omitempty"`
+	Plugins       map[string]interface{} `json:"plugins,omitempty"`
+	Templates     []Template             `json:"templates,omitempty"`
 }
