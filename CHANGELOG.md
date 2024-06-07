@@ -1,13 +1,14 @@
 # Change Log
 
+## 1.9.0
 - nodejs: filling by default
-- en-GB, sr-Cyrl-RS skin languages
 - nodejs: docxf, oform as pdf documentType
-- switching from filling to editing
-- nodejs: creating pdf instead docxf
-- fill permission in embedded mode
+- nodejs: creating and editing pdf instead docxf
 - nodejs: wopi formsubmit icon
 - nodejs: close editor
+- en-GB, sr-Cyrl-RS skin languages
+- switching from filling to editing
+- fill permission in embedded mode
 
 ## 1.8.0
 - nodejs: pdf, djvu, xps, oxps as pdf documentType
