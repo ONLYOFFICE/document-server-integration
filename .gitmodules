@@ -1,7 +1,7 @@
 [submodule "web/documentserver-example/nodejs/public/assets/document-templates"]
 	path = web/documentserver-example/nodejs/public/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
-	branch = main/en-8.1
+	branch = main/en
 [submodule "web/documentserver-example/nodejs/public/assets/document-formats"]
 	path = web/documentserver-example/nodejs/public/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
