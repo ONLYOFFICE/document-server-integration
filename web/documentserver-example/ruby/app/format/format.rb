@@ -32,7 +32,7 @@ class Format < T::Struct
 
   sig { params(hash: T.untyped, strict: T.untyped).returns(Format) }
   def self.from_hash(hash, strict = nil)
-    super(hash, strict)
+    super
   end
 
   sig { returns(String) }
