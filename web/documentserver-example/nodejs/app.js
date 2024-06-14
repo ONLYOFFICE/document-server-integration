@@ -1000,7 +1000,8 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const url = req.DocManager.getDownloadUrl(fileName, true);
     const directUrl = req.DocManager.getDownloadUrl(fileName);
 
-    let canFill = fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1 // check if this file can be filled
+    // check if this file can be filled
+    const canFill = fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1;
     let mode = req.query.mode || (canFill ? 'fillForms' : 'edit'); // mode: view/edit/review/comment/fillForms/embedded
 
     let canEdit = fileUtility.getEditExtensions().indexOf(fileExt.slice(1)) !== -1; // check if this file can be edited
@@ -1014,7 +1015,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     let submitForm = false;
-    if (mode === 'fillForms' || mode === "embedded") {
+    if (mode === 'fillForms' || mode === 'embedded') {
       submitForm = userid === 'uid-1';
     }
 
