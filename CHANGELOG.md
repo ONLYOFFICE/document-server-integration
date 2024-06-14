@@ -2,17 +2,23 @@
 
 - forgotten files
 - java-spring: using java docs-integration-sdk
-- en-GB skin language
 - save as for pdf
-- fill permission in embedded mode
 - delete all files
 - handling conversion -9 error
-- nodejs: wopi formsubmit icon
 - nodejs: tabs menu
 - change insert image
 - different goback for users
 - nodejs: converting function on index page
+
+## 1.9.0
+- nodejs: filling by default
+- nodejs: docxf, oform as pdf documentType
+- nodejs: creating and editing pdf instead docxf
+- nodejs: wopi formsubmit icon
 - nodejs: close editor
+- en-GB, sr-Cyrl-RS skin languages
+- switching from filling to editing
+- fill permission in embedded mode
 
 ## 1.8.0
 - nodejs: pdf, djvu, xps, oxps as pdf documentType

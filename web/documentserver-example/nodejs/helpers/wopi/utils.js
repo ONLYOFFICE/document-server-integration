@@ -163,7 +163,7 @@ const getEditNewText = function getEditNewText(ext) {
       return 'Spreadsheet';
     case 'pptx':
       return 'Presentation';
-    case 'docxf':
+    case 'pdf':
       return 'PDF form';
     default:
       return ext.toUpperCase();

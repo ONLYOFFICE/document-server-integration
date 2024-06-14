@@ -70,7 +70,7 @@
                                             <a class="try-editor slide reload-page action-link" target="_blank" href="editor?fileExt=pptx" title="Create new presentation">Presentation</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor form reload-page action-link" target="_blank" href="editor?fileExt=docxf" title="Create new PDF form">PDF form</a>
+                                            <a class="try-editor form reload-page action-link" target="_blank" href="editor?fileExt=pdf" title="Create new PDF form">PDF form</a>
                                         </li>
                                     </ul>
                                     <label class="side-option">
@@ -193,13 +193,17 @@
                                                     </td>
                                                     <% if (storedFiles[i].canEdit) { %>
                                                         <td class="contentCells contentCells-icon">
-                                                            <a class="action-link" href="editor?type=desktop&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
+                                                            <a class="action-link" href="editor?type=desktop&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
                                                         </td>
+                                                        <% if (storedFiles[i].documentType !== "pdf") { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment" /></a>
                                                         </td>
+                                                        <% } else { %>
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                        <% } %>
                                                         <% if (storedFiles[i].documentType == "word") { %>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a class="action-link" href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
