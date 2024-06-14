@@ -38,6 +38,7 @@ namespace OnlineEditorsExampleMVC
 
             // create the main script bundle
             bundles.Add(new ScriptBundle("~/bundles/scripts").Include(
+                "~/Scripts/formats.js",
                 "~/Scripts/jscript.js"
                             ));
 
