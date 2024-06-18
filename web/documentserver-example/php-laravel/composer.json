@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.2",
+        "firebase/php-jwt": "^6.10",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9"
     },
