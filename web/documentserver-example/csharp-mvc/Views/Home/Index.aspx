@@ -41,11 +41,23 @@
 </head>
 <body>
     <header>
-        <div class="center">
+        <div class="center main-nav">
             <a href="./">
                 <img src ="content/images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
+        <menu class="responsive-nav">
+            <li>
+              <a href="#" onclick="toggleSidePanel(event)">
+                <img src="content/images/mobile-menu.svg" alt="ONLYOFFICE" />
+              </a>
+            </li>
+            <li>
+              <a href="./">
+                <img src ="content/images/mobile-logo.svg" alt="ONLYOFFICE" />
+              </a>
+            </li>
+        </menu>
     </header>
 
     <div class="center main">
@@ -122,6 +134,9 @@
                                 </tbody>
                             </table>
                         </div>
+                        <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                            <img src="content/images/close.svg" alt="">
+                        </button>
                     </td>
                     <td class="section">
                         <div class="main-panel">
@@ -148,7 +163,7 @@
                                 <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                 <% foreach (User user in Users.getAllUsers())
                                   { %>
-                                  <div class="user-descr">
+                                  <div class="user-descr" onclick="toggleUserDescr(event)">
                                    <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
                                        <ul>
                                        <% foreach (string description in user.descriptions)
