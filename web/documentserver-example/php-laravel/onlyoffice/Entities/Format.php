@@ -1,0 +1,93 @@
+<?php
+//
+// (c) Copyright Ascensio System SIA 2024
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//     http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+//
+
+namespace OnlyOffice\Entities;
+
+final class Format
+{
+    const TYPE_WORD = "word";
+    const TYPE_CELL = "cell";
+    const TYPE_SLIDE = "slide";
+
+    public string $name;
+
+    public string $type;
+
+    /**
+     * @var string[]
+     */
+    public array $actions;
+
+    /**
+     * @var string[]
+     */
+    public array $convert;
+
+    /**
+     * @var string[]
+     */
+    public array $mime;
+
+    public function __construct(
+        string $name,
+        string $type,
+        array $actions,
+        array $convert,
+        array $mime
+    ) {
+        $this->name = $name;
+        $this->type = $type;
+        $this->actions = $actions;
+        $this->convert = $convert;
+        $this->mime = $mime;
+    }
+
+    public function extension(): string
+    {
+        return $this->name;
+    }
+
+    public function convertible(): bool
+    {
+        return in_array('auto-convert', $this->actions);
+    }
+
+    public function editable(): bool
+    {
+        return array_intersect(['lossy-edit', 'edit'], $this->actions) !== [];
+    }
+
+    public function fillable(): bool
+    {
+        return in_array('fill', $this->actions);
+    }
+
+    public function isWord(): bool
+    {
+        return $this->type === static::TYPE_WORD;
+    }
+
+    public function isCell(): bool
+    {
+        return $this->type === static::TYPE_CELL;
+    }
+
+    public function isSlide(): bool
+    {
+        return $this->type === static::TYPE_SLIDE;
+    }
+}
