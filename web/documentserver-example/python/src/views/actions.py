@@ -265,14 +265,14 @@ def edit(request):
             'key': docKey,
             'info': infObj,
             'permissions': {  # the permission for the document to be edited and downloaded or not
-                'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded') \
+                'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded')
                 & (edMode != "blockcontent"),
                 'copy': 'copy' not in user.deniedPermissions,
                 'download': 'download' not in user.deniedPermissions,
-                'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter') \
+                'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter')
                                    | (edMode == "blockcontent")),
                 'print': 'print' not in user.deniedPermissions,
-                'fillForms': (edMode != 'view') & (edMode != 'comment') \
+                'fillForms': (edMode != 'view') & (edMode != 'comment')
                 & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",
