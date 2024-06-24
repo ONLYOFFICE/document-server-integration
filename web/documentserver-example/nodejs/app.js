@@ -598,6 +598,14 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
     }
   }
 
+  if (!fileName && !!req.body.path) {
+    const filePath = fileUtility.getFileName(req.body.path);
+
+    if (req.DocManager.existsSync(req.DocManager.storagePath(filePath))) {
+      fileName = filePath;
+    }
+  }
+
   if (!fileName && !!req.body.link) {
     if (req.body.link.indexOf(req.DocManager.getServerUrl()) === -1) {
       result({
@@ -612,14 +620,6 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
     if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName))) {
       result({ error: 'File is not exist' });
       return;
-    }
-  }
-
-  if (!fileName && !!req.body.path) {
-    const filePath = fileUtility.getFileName(req.body.path);
-
-    if (req.DocManager.existsSync(req.DocManager.storagePath(filePath))) {
-      fileName = filePath;
     }
   }
 
