@@ -497,16 +497,15 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
   const { referenceData } = req.body;
   let fileName = '';
-  let userAddress = '';
   if (referenceData) {
     const { instanceId } = referenceData;
 
     if (instanceId === req.DocManager.getInstanceId()) {
       const fileKey = JSON.parse(referenceData.fileKey);
-      ({ userAddress } = fileKey);
+      const { userAddress } = fileKey;
 
       if (userAddress === req.DocManager.curUserHostAddress()
-                && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName, userAddress))) {
+                && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName))) {
         ({ fileName } = fileKey);
       }
     }
@@ -523,7 +522,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
     const urlObj = urlModule.parse(req.body.link, true);
     fileName = urlObj.query.fileName;
-    if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
+    if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName))) {
       result({ error: 'File is not exist' });
       return;
     }
@@ -532,7 +531,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
   if (!fileName && !!req.body.path) {
     const filePath = fileUtility.getFileName(req.body.path);
 
-    if (req.DocManager.existsSync(req.DocManager.storagePath(filePath, userAddress))) {
+    if (req.DocManager.existsSync(req.DocManager.storagePath(filePath))) {
       fileName = filePath;
     }
   }
