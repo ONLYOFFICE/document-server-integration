@@ -14,6 +14,9 @@ Route::prefix('files')->name('files.')->group(function() {
     Route::delete('/delete', [FileController::class, 'destroy'])->name('delete');
     Route::get('/download', [FileController::class, 'download'])->name('download');
 });
+Route::prefix('api')->group(function() {
+    Route::get('/formats', [FormatController::class, 'index']);
+});
 Route::prefix('editor')->name('editor.')->group(function () {
     Route::get('/', [EditorController::class, 'index'])->name('index');
     Route::middleware(EnsureJWTTokenIsPresent::class)
