@@ -14,7 +14,7 @@ class IndexController extends Controller
         return view('index', [
             'users' => $users->getAll(),
             'languages' => $languages->get(),
-            'files' => $storage->all(),
+            'files' => $storage->all($request->ip()),
             'user' => $request->user ?? cache('user'),
             'directUrlArg' => $request->input('directUrl', false),
         ]);
