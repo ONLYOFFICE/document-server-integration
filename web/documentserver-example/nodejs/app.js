@@ -704,6 +704,13 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       newFileName,
     ) {
       try {
+        if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
+          console.log(`callbackProcessSave error: name = ${fileName} userAddress = ${userAddress} is not exist`);
+          response.write('{"error":1, "message":"file is not exist"}');
+          response.end();
+          return;
+        }
+
         const { status, data } = await urllib.request(downloadUri, { method: 'GET' });
 
         if (status !== 200) throw new Error(`Document editing service returned status: ${status}`);
