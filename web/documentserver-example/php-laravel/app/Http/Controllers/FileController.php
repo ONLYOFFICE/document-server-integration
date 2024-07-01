@@ -3,25 +3,27 @@
 namespace App\Http\Controllers;
 
 use OnlyOffice\Helpers\Path;
-use OnlyOffice\Storage;
-use OnlyOffice\Document;
+use OnlyOffice\DocumentServer;
 use OnlyOffice\Entities\File;
 use Exception;
 use Illuminate\Http\Request;
 use OnlyOffice\Config;
+use OnlyOffice\DocumentStorage;
+use OnlyOffice\Editor\Key;
 use OnlyOffice\Exceptions\Conversion\ConversionNotComplete;
 use OnlyOffice\Exceptions\Conversion\ConversionError;
 use OnlyOffice\Formats;
 use OnlyOffice\Helpers\URL\URL;
 use OnlyOffice\JWT;
+use Illuminate\Support\Str;
 use OnlyOffice\Users;
 
 class FileController extends Controller
 {
     public function __construct(
         private Config $config,
-        private Storage $storage,
-        private Document $document,
+        private DocumentStorage $documentStorage,
+        private DocumentServer $document,
         private Formats $formats,
         private Users $users
     ) {
@@ -45,7 +47,7 @@ class FileController extends Controller
             $file->author = $this->users->find($request->user);
             $file->path = Path::join($request->ip(), $file->basename);
 
-            $this->storage->save($file);
+            $this->documentStorage->create($file);
         } catch (Exception $e) {
             return response()
                 ->json([
@@ -68,7 +70,7 @@ class FileController extends Controller
             'fileExt' => 'nullable|string',
         ]);
 
-        $file = $this->storage->find(Path::join($request->ip(), $request->filename));
+        $file = $this->documentStorage->find(Path::join($request->ip(), $request->filename));
 
         $url = $request->fileUri;
 
@@ -85,14 +87,22 @@ class FileController extends Controller
             'outputtype' => $request->input('fileExt', 'ooxml'),
             'password' => $request->password,
             'url' => $url,
-            'key' => $file->key,
+            'key' => Key::generate($file->filename, $file->lastModified),
             'user' => $request->user,
             'lang' => cache('lang', default: 'en'),
         ];
         try {
-            $file = $this->document->convert($data);
-            $file->path = $request->ip() . '/' . $file->basename;
-            $this->storage->save($file);
+            $result = $this->document->convert($data);
+            $convertedFile = new File();
+            $convertedFile->basename = Str::of(Path::filename($data['filename']))->append('.' . $result['fileType']);
+            $convertedFile->author = $this->users->find($data['user']);
+            $convertedFile->format = $this->formats->find($result['fileType']);
+            $convertedFile->content = $this->document->download($result['fileUrl']);
+            $convertedFile->size = 0;
+            $convertedFile->path = Path::join($request->ip(), $convertedFile->basename);
+            $this->documentStorage->create($convertedFile);
+            $this->documentStorage->deleteFile($file);
+            $this->documentStorage->deleteHistory($file);
         } catch (ConversionNotComplete $e) {
             return response()
                 ->json([
@@ -109,7 +119,7 @@ class FileController extends Controller
         }
 
         return response()->json([
-            'filename' => $file->basename
+            'filename' => $convertedFile->basename
         ]);
     }
 
@@ -135,9 +145,9 @@ class FileController extends Controller
         // todo get force save file path
 
         $path = Path::join($ip, $filename);
-        $file = $this->storage->find($path, true);
+        $file = $this->documentStorage->find($path, true);
 
-        return response()->streamDownload(function() use ($file) {
+        return response()->streamDownload(function () use ($file) {
             echo $file->content;
         }, $filename, [
             'Content-Length' => $file->size,
@@ -153,11 +163,15 @@ class FileController extends Controller
             'filename' => 'nullable|string'
         ]);
 
-        $file = new File();
-        $file->basename = $request->input('filename', '');
-
         try {
-            $this->storage->delete($file);
+            if ($request->filename) {
+                $file = new File();
+                $file->path = Path::join($request->ip(), $request->filename);
+                $this->documentStorage->deleteFile($file);
+                $this->documentStorage->deleteHistory($file);
+            } else {
+                $this->documentStorage->deleteDirectory($request->ip());
+            }
         } catch (Exception $e) {
             return response()
                 ->json([
