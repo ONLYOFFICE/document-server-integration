@@ -15,7 +15,7 @@ class URL
 
         if ($params) {
             $url = Str::finish($url, '?');
-            foreach($params as $key => $value) {
+            foreach ($params as $key => $value) {
                 $param = Arr::join([$key, urlencode($value)], '=');
                 $url = Str::of($url)->append($param . '&');
             }
@@ -23,5 +23,14 @@ class URL
         }
 
         return $url;
+    }
+
+    public static function origin(string $url): string
+    {
+        $scheme = parse_url($url, PHP_URL_SCHEME);
+        $host = parse_url($url, PHP_URL_HOST);
+        $port = parse_url($url, PHP_URL_PORT);
+
+        return "{$scheme}://{$host}:{$port}";
     }
 }
