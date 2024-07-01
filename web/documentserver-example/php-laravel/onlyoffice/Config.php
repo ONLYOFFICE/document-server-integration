@@ -37,7 +37,6 @@ class Config
         $jwtSecret = env('JWT_SECRET', '');
         $jwtUseForRequest = env('JWT_USE_FOR_REQUEST', true);
 
-
         $this->config = [
             'conversion' => [
                 'timeout' => env('CONVERSION_TIMEOUT', 120 * 1000),
@@ -64,6 +63,9 @@ class Config
                     'private' => $privateStorageUrl,
                     'public' => $publicStorageUrl,
                 ],
+            ],
+            'path' => [
+                'template' => env('TEMPLATE_PATH'),
             ],
             'file' => [
                 'max_size' => env('MAXIMUM_FILE_SIZE', 5 * 1024 * 1024),
