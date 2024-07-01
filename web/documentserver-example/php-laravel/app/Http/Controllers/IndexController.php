@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use OnlyOffice\Storage;
 use OnlyOffice\Languages;
 use Illuminate\Http\Request;
+use OnlyOffice\DocumentStorage;
 use OnlyOffice\Users;
 
 class IndexController extends Controller
 {
-    public function index(Request $request, Storage $storage, Users $users, Languages $languages)
+    public function index(Request $request, DocumentStorage $storage, Users $users, Languages $languages)
     {
         return view('index', [
             'users' => $users->getAll(),
