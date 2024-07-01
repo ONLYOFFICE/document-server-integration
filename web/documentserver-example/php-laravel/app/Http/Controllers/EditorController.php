@@ -10,7 +10,7 @@ use OnlyOffice\Exceptions\Conversion\ConversionNotComplete;
 use OnlyOffice\Services\Editor;
 use Illuminate\Support\Str;
 use OnlyOffice\Config;
-use OnlyOffice\Document;
+use OnlyOffice\DocumentServer;
 use OnlyOffice\Editor\Key;
 use OnlyOffice\Entities\File;
 use OnlyOffice\Helpers\Path;
@@ -297,7 +297,7 @@ class EditorController extends Controller
         return view('editor', $editorConfig);
     }
 
-    public function track(Request $request, Document $document)
+    public function track(Request $request, DocumentServer $document)
     {
         $request->validate([
             'fileName' => 'required|string',
