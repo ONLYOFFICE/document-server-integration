@@ -3,11 +3,10 @@
 namespace OnlyOffice\Document\Convert;
 
 use Illuminate\Support\Facades\Http;
-use App\Exceptions\ConversionNotComplete;
-use App\Services\ConvertResponse;
+use OnlyOffice\Exceptions\Conversion\ConversionNotComplete;
+use OnlyOffice\Document\Convert\ConvertResponse;
 use Exception;
 use Illuminate\Support\Str;
-use App\Helpers\URL\DocumentServer;
 use Illuminate\Support\Arr;
 use OnlyOffice\Config;
 use OnlyOffice\Exceptions\Conversion\ConversionError;
