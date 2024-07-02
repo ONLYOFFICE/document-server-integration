@@ -31,7 +31,7 @@ class ConfigurationManager
 
   sig { void }
   def initialize
-    @version = '1.8.0'
+    @version = '1.9.0'
   end
 
   sig { returns(T.nilable(URI::Generic)) }
@@ -154,6 +154,7 @@ class ConfigurationManager
       cs: 'Czech',
       da: 'Danish',
       nl: 'Dutch',
+      'en-GB': 'English (United Kingdom)',
       fi: 'Finnish',
       fr: 'French',
       gl: 'Galego',
@@ -173,7 +174,8 @@ class ConfigurationManager
       'pt-PT': 'Portuguese (Portugal)',
       ro: 'Romanian',
       ru: 'Russian',
-      'sr-Latn-CS': 'Serbian',
+      'sr-Cyrl-RS': 'Serbian (Cyrillic)',
+      'sr-Latn-RS': 'Serbian (Latin)',
       si: 'Sinhala (Sri Lanka)',
       sk: 'Slovak',
       sl: 'Slovenian',

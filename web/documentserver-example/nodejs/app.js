@@ -984,7 +984,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
 
       // get the redirect path
-      const redirectPath = `${req.DocManager.getServerUrl()}/editor?fileName=`
+      const redirectPath = `${req.DocManager.getServerUrl()}/editor?mode=edit&fileName=`
       + `${encodeURIComponent(fName)}${req.DocManager.getCustomParams()}`;
       res.redirect(redirectPath);
       return;
@@ -999,11 +999,14 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const key = req.DocManager.getKey(fileName);
     const url = req.DocManager.getDownloadUrl(fileName, true);
     const directUrl = req.DocManager.getDownloadUrl(fileName);
-    let mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
+
+    // check if this file can be filled
+    const canFill = fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1;
+    let mode = req.query.mode || (canFill ? 'fillForms' : 'edit'); // mode: view/edit/review/comment/fillForms/embedded
 
     let canEdit = fileUtility.getEditExtensions().indexOf(fileExt.slice(1)) !== -1; // check if this file can be edited
     if (((!canEdit && mode === 'edit') || mode === 'fillForms')
-      && fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1) {
+      && canFill) {
       mode = 'fillForms';
       canEdit = true;
     }
@@ -1012,7 +1015,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     let submitForm = false;
-    if (mode === 'fillForms') {
+    if (mode === 'fillForms' || mode === 'embedded') {
       submitForm = userid === 'uid-1';
     }
 
@@ -1041,7 +1044,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         chat: userid !== 'uid-0',
         coEditing: mode === 'view' && userid === 'uid-0' ? { mode: 'strict', change: false } : null,
         comment: mode !== 'view' && mode !== 'fillForms' && mode !== 'embedded' && mode !== 'blockcontent',
-        fillForms: mode !== 'view' && mode !== 'comment' && mode !== 'embedded' && mode !== 'blockcontent',
+        fillForms: mode !== 'view' && mode !== 'comment' && mode !== 'blockcontent',
         modifyFilter: mode !== 'filter',
         modifyContentControl: mode !== 'blockcontent',
         copy: !user.deniedPermissions.includes('copy'),
@@ -1067,6 +1070,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
           ? JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }) : null,
         instanceId: userid !== 'uid-0' ? req.DocManager.getInstanceId() : null,
         protect: !user.deniedPermissions.includes('protect'),
+        close: user.close,
       },
       dataInsertImage: {
         fileType: 'png',

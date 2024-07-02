@@ -291,7 +291,7 @@ public class FileModel {
             edit = canEdit && (modeParam.equals("edit") || modeParam.equals("view") || modeParam.equals("filter")
                     || modeParam.equals("blockcontent"));
             print = !user.getDeniedPermissions().contains("print");
-            fillForms = !modeParam.equals("view") && !modeParam.equals("comment") && !modeParam.equals("embedded")
+            fillForms = !modeParam.equals("view") && !modeParam.equals("comment")
                     && !modeParam.equals("blockcontent");
             modifyFilter = !modeParam.equals("filter");
             modifyContentControl = !modeParam.equals("blockcontent");

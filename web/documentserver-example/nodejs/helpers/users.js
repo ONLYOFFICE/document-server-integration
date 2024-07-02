@@ -30,6 +30,7 @@ class User {
     descriptions,
     templates,
     avatar,
+    close,
   ) {
     this.id = id;
     this.name = name;
@@ -43,6 +44,7 @@ class User {
     this.descriptions = descriptions;
     this.templates = templates;
     this.avatar = avatar;
+    this.close = close;
   }
 }
 
@@ -99,7 +101,21 @@ const descrUser0 = [
 ];
 
 const users = [
-  new User('uid-1', 'John Smith', 'smith@example.com', null, null, {}, null, null, [], descrUser1, true, true),
+  new User(
+    'uid-1',
+    'John Smith',
+    'smith@example.com',
+    null,
+    null,
+    {},
+    null,
+    null,
+    [],
+    descrUser1,
+    true,
+    true,
+    { visible: false },
+  ),
   new User(
     'uid-2',
     'Mark Pottato',
@@ -117,6 +133,7 @@ const users = [
     descrUser2,
     false,
     true,
+    {},
   ),
   new User(
     'uid-3',
@@ -135,8 +152,9 @@ const users = [
     descrUser3,
     false,
     false,
+    {},
   ),
-  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false),
+  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null),
 ];
 
 // get a list of all the users

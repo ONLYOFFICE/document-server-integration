@@ -86,7 +86,7 @@
 
         // the user is trying to switch the document from the viewing into the editing mode
         var onRequestEditRights = function () {
-            location.href = location.href.replace(RegExp("editorsMode=view\&?", "i"), "");
+            location.href = location.href.replace(RegExp("editorsMode=\\w+\&?", "i"), "") + "&editorsMode=edit";
         };
 
         // an error or some other specific event occurs

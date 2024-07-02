@@ -57,6 +57,11 @@
             document.title = title + (event.data ? "*" : "");
         };
 
+        var onRequestClose = function () {  // close editor
+            docEditor.destroyEditor();
+            innerAlert("Document editor closed successfully");
+        };
+
         var onMetaChange = function (event) {  // the meta information of the document is changed via the meta command
             if (event.data.favorite) {
                 var favorite = !!event.data.favorite;
@@ -69,7 +74,7 @@
         };
 
         var onRequestEditRights = function () {  // the user is trying to switch the document from the viewing into the editing mode
-            location.href = location.href.replace(RegExp("mode=view\&?", "i"), "");
+            location.href = location.href.replace(RegExp("mode=\\w+\&?", "i"), "") + "&mode=edit";
         };
 
         var onRequestHistory = function (event) {  // the user is trying to show the document version history
@@ -372,6 +377,7 @@
         };
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
+            config.events.onRequestClose = onRequestClose;
             config.events.onRequestEditRights = onRequestEditRights;
             config.events.onRequestHistory = onRequestHistory;
             config.events.onRequestHistoryData = onRequestHistoryData;
