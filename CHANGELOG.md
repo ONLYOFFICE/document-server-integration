@@ -1,14 +1,14 @@
 # Change Log
 
-- forgotten files
-- java-spring: using java docs-integration-sdk
-- save as for pdf
-- delete all files
-- handling conversion -9 error
 - nodejs: tabs menu
+- nodejs: converting function on index page
+- java-spring: using java docs-integration-sdk
+- forgotten files
+- delete all files
+- save as for pdf
+- handling conversion -9 error
 - change insert image
 - different goback for users
-- nodejs: converting function on index page
 
 ## 1.9.0
 - nodejs: filling by default
