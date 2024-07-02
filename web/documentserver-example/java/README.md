@@ -145,7 +145,7 @@ See the detailed guide to learn how to [install Document Server for Linux](https
 2. Download the archive with the Java example and unpack the archive:
 
     ```
-    wget https://api.onlyoffice.com/app_data/editor/Java.Example.zip
+    wget https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/Java.Example.zip
     ```
     
     ```
