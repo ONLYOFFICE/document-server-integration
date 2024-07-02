@@ -172,8 +172,7 @@ label .checkbox {
     background-image: url("../images/file_pptx.svg");
 }
 
-.try-editor.pdf,
-.try-editor.form {
+.try-editor.pdf {
     background-image: url("../images/file_pdf.svg");
 }
 
