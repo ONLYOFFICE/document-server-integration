@@ -13,6 +13,7 @@ Route::prefix('files')->name('files.')->group(function() {
     Route::post('/convert', [FileController::class, 'convert'])->name('convert');
     Route::delete('/delete', [FileController::class, 'destroy'])->name('delete');
     Route::get('/download', [FileController::class, 'download'])->name('download');
+    Route::post('/saveas', [FileController::class, 'saveAs'])->name('saveas');
 });
 Route::prefix('api')->group(function() {
     Route::get('/formats', [FormatController::class, 'index']);

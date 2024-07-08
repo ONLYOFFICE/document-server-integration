@@ -13,6 +13,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
             '/editor/track',
+            '/files/saveas',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {

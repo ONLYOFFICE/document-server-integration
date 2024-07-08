@@ -73,6 +73,12 @@ class DocumentServer
     {
         $response = Http::get($url);
 
+        $size = $response->header('Content-Length');
+
+        if ($size <= 0) {
+            throw new Exception('The file has incorrect size.');
+        }
+
         if (!$response->ok()) {
             throw new Exception('Could not download the file.');
         }

@@ -61,6 +61,34 @@ class FileController extends Controller
         ]);
     }
 
+    public function saveAs(Request $request)
+    {
+        $request->validate([
+            'url' => 'required|string',
+            'title' => 'required|string',
+            'user' => 'nullable|string',
+        ]);
+
+        $url = $request->url;
+        $url = Str::replace(URL::origin($url), $this->config->get('url.server.private'), $url);
+        $extension = Path::extension($request->url);
+
+        $content = $this->document->download($url);        
+
+        $file = new File();
+        $file->basename = $request->title;
+        $file->size = 0;
+        $file->content = $content;
+        $file->format = $this->formats->find($extension);
+        $file->author = $this->users->find($request->input('user', ''));
+        $file->path = Path::join($request->ip(), $file->basename);
+
+        $this->documentStorage->create($file);
+
+        return response()
+                ->json(['filename' => $file->basename]);
+    }
+
     public function convert(Request $request)
     {
         $request->validate([
