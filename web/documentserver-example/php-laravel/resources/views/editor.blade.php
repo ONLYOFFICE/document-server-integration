@@ -190,7 +190,7 @@
                 url: url
             };
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "saveas");
+            xhr.open("POST", "/files/saveas");
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function() {
