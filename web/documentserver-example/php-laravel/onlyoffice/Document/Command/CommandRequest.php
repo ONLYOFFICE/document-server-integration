@@ -25,34 +25,29 @@ class CommandRequest
         $this->headers = [$this->config->get('jwt.header') => 'Bearer ' . $token];
     }
 
-    public function send(string $type, string $key, mixed $meta = null): mixed
+    public function send(array $content, ?string $key = null): mixed
     {
-        $content = [
-            "c" => $type,
-            "key" => $key,
-        ];
-    
-        if ($meta) {
-            $content["meta"] = $meta;
-        }
-
         if ($this->config->get('jwt.enabled')) {
             $this->withJWTHeader($content);
             $content['token'] = $this->jwt->encode($content);
         }
         
         $client = Http::withHeaders($this->headers)
-            ->timeout($this->config->get('conversion.timeout'))
             ->asJson()
             ->acceptJson();
 
+        $url = $this->config->get('url.server.command');
 
-        if (Str::of($this->config->get('conversion.url'))->isUrl(['https'])
+        if (Str::of($url)->isUrl(['https'])
             && !$this->config->get('ssl_verify')) {
             $client = $client->withoutVerifying();
         }
 
-        $response = $client->post($this->config->get('url.server.command'), $content);
+        if ($key) {
+            $url = "$url?" . urlencode($key);
+        }        
+
+        $response = $client->post($url, $content);
 
         if (!$response->ok()) {
             throw new Exception('Could not execute the command.');

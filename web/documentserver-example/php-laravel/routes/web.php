@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\FormatController;
 use App\Http\Controllers\EditorController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\ForgottenController;
 use App\Http\Controllers\IndexController;
 use App\Http\Middleware\EnsureJWTTokenIsPresent;
 use Illuminate\Support\Facades\Route;
@@ -14,6 +15,11 @@ Route::prefix('files')->name('files.')->group(function() {
     Route::delete('/delete', [FileController::class, 'destroy'])->name('delete');
     Route::get('/download', [FileController::class, 'download'])->name('download');
     Route::post('/saveas', [FileController::class, 'saveAs'])->name('saveas');
+
+    Route::prefix('forgotten')->name('forgotten.')->group(function() {
+        Route::get('/', [ForgottenController::class, 'index'])->name('index');
+        Route::delete('/{key}/delete', [ForgottenController::class, 'destroy'])->name('delete');
+    });
 });
 Route::prefix('api')->group(function() {
     Route::get('/formats', [FormatController::class, 'index']);

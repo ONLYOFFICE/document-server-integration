@@ -9,6 +9,9 @@ use OnlyOffice\Document\Convert\ConvertRequest;
 use OnlyOffice\Entities\File;
 use Illuminate\Support\Str;
 use OnlyOffice\Document\Command\CommandRequest;
+use OnlyOffice\Document\Command\ForgottenDeleteRequest;
+use OnlyOffice\Document\Command\ForgottenFileRequest;
+use OnlyOffice\Document\Command\ForgottenListRequest;
 use OnlyOffice\Exceptions\Conversion\ConversionError;
 use OnlyOffice\Exceptions\Conversion\ConversionNotComplete;
 
@@ -90,5 +93,26 @@ class DocumentServer
     {
         $request = app()->make(CommandRequest::class);
         $request->send('forcesave', $key);
+    }
+
+    public function getForgottenFiles(): array
+    {
+        $files = [];
+
+        $request = app()->make(ForgottenListRequest::class);
+        $keys = $request->get();
+
+        foreach ($keys as $key) {
+            $request = app()->make(ForgottenFileRequest::class);
+            $files[] = $request->get($key);
+        }
+
+        return $files;
+    }
+
+    public function deleteForgotten(string $key): string
+    {
+        $request = app()->make(ForgottenDeleteRequest::class);
+        return $request->delete($key);
     }
 }

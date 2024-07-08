@@ -107,7 +107,9 @@
                                             <img src="{{ Vite::asset('resources/images/home.svg') }}" alt="Home" />
                                         </a>
                                     </li>
-                                    {forgottenLink}
+                                    <li>
+                                        <a href="{{ route('files.forgotten.index') }}">Forgotten files</a>
+                                    </li>
                                 </menu>
                                 @if($files)
                                 <div class="stored-list">
@@ -331,7 +333,7 @@
             <iframe id="embeddedView" src="" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>
             <br />
             <div class="buttonsMobile">
-                {editButton}
+                <div id="beginEdit" class="button orange disable">Edit</div>
                 <div id="beginView" class="button gray disable">View</div>
                 <div id="beginEmbedded" class="button gray disable">Embedded view</div>
                 <div id="cancelEdit" class="button gray">Cancel</div>
@@ -354,7 +356,7 @@
                                 <a href="mailto:sales@onlyoffice.com">Submit your request</a>
                             </td>
                             <td class="copy">
-                                &copy; Ascensio Systems SIA {date}. All rights reserved.
+                                &copy; Ascensio Systems SIA {{ now()->year }}. All rights reserved.
                             </td>
                         </tr>
                     </tbody>

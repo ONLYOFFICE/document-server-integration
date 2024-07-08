@@ -7,8 +7,10 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/css/media.css',
-                'resources/js/formats.js',
+                'resources/js/forgotten.css',
+                'resources/css/formats.js',
                 'resources/js/app.js',
+                'resources/js/forgotten.js',
             ],
             refresh: true,
         }),
