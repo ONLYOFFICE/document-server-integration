@@ -36,7 +36,7 @@ class EditorController extends Controller
         $request->validate([
             'fileUrl' => 'nullable|string',
             'fileID' => 'nullable|string',
-            'directUrl' => 'nullable|boolean',
+            'directUrl' => 'nullable|string',
             'user' => 'nullable|string',
             'fileExt' => 'nullable|string',
             'action' => 'nullable|string',
@@ -46,7 +46,7 @@ class EditorController extends Controller
 
         $externalUrl = $request->input('fileUrl');
         $fileId = urldecode($request->input('fileID'));
-        $directUrlEnabled = $request->input('directUrl', false);
+        $directUrlEnabled = $request->has('directUrl') && $request->directUrl === 'true';
         $user = $this->users->find($request->user ?? 'uid-1');
         $mode = $request->action ?? 'edit';
         $type = $request->type ?? 'desktop';
