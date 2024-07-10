@@ -1,5 +1,7 @@
 # Change Log
 
+- ruby: filling by default
+- ruby: creating and editing pdf instead docxf
 - nodejs: tabs menu
 - nodejs: converting function on index page
 - java-spring: using java docs-integration-sdk

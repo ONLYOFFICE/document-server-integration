@@ -95,6 +95,18 @@ class FormatManager
   end
 
   sig { returns(T::Array[String]) }
+  def pdf_extensions
+    pdf.map(&:extension)
+  end
+
+  sig { returns(T::Array[Format]) }
+  def pdf
+    all.filter do |format|
+      format.type == 'pdf'
+    end
+  end
+
+  sig { returns(T::Array[String]) }
   def spreadsheet_extensinons
     spreadsheets.map(&:extension)
   end

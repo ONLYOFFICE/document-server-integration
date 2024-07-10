@@ -173,7 +173,7 @@ label .checkbox {
 }
 
 .try-editor.form {
-  background-image: url("file_docxf.svg");
+  background-image: url("file_pdf.svg");
 }
 
 .side-option {
@@ -536,6 +536,11 @@ footer table tr td:first-child {
 .stored-edit.slide, 
 .uploadFileName.slide {
     background-image: url("icon_pptx.svg");
+}
+
+.stored-edit.pdf, 
+.uploadFileName.pdf {
+    background-image: url("icon_pdf.svg");
 }
 
 .stored-edit span {
