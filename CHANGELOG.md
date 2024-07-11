@@ -1,6 +1,8 @@
 # Change Log
 
+- python: filling by default
 - ruby: filling by default
+- python: creating and editing pdf instead docxf
 - ruby: creating and editing pdf instead docxf
 - nodejs: tabs menu
 - nodejs: converting function on index page
