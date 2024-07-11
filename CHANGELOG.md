@@ -1,7 +1,9 @@
 # Change Log
 
+- php: filling by default
 - python: filling by default
 - ruby: filling by default
+- php: creating and editing pdf instead docxf
 - python: creating and editing pdf instead docxf
 - ruby: creating and editing pdf instead docxf
 - nodejs: tabs menu
