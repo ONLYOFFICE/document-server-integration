@@ -94,7 +94,7 @@ public class EditorController {
                         @CookieValue(value = "uid") final String uid,
                         @CookieValue(value = "ulang") final String lang,
                         final Model model) throws JsonProcessingException {
-        Action action = Action.edit;
+        Action action = null;
         Type type = Type.DESKTOP;
         Locale locale = new Locale("en");
 
