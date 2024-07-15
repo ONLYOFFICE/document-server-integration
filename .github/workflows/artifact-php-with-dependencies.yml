@@ -1,0 +1,39 @@
+name: Artifact PHP with dependencies
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths: ['web/documentserver-example/php/**']
+  pull_request:
+    branches: [master]
+    paths: ['web/documentserver-example/php/**']
+
+jobs:
+  artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+
+      - name: Build Artifact
+        run: |
+          cd ${{ github.workspace }}
+          git submodule update --init --recursive
+          cd ./web/documentserver-example/php
+          composer install --no-dev
+          mkdir -p ./deploy/'PHP Example'
+          rsync -av --exclude='deploy' ./ ./deploy/'PHP Example'
+          rm -rf ./deploy/'PHP Example'/assets/document-formats/.git
+          rm -rf ./deploy/'PHP Example'/assets/document-templates/.git
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: PHP.Example-with-dependencies
+          path: ${{ github.workspace }}/web/documentserver-example/php/deploy
