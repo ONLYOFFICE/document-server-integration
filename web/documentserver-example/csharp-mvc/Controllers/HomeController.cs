@@ -95,7 +95,7 @@ namespace OnlineEditorsExampleMVC.Controllers
             var id = Request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);
             DocManagerHelper.CreateMeta(fileName, user.id, user.name);  // create meta information for the sample document
-            Response.Redirect(Url.Action("Editor", "Home", new { fileName = fileName }));
+            Response.Redirect(Url.Action("Editor", "Home", new { fileName = fileName, editorsMode="edit" }));
             return null;
         }
     }

@@ -77,18 +77,19 @@ namespace OnlineEditorsExampleMVC.Models
             var jss = new JavaScriptSerializer();
 
             var ext = Path.GetExtension(FileName).ToLower();  // get file extension
-            var editorsMode = Mode ?? "edit";  // get editor mode
+            var canFill = DocManagerHelper.FillFormExts.Contains(ext);
+            var editorsMode = Mode ?? (canFill ? "fillForms" : "edit");  // get editor mode
 
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);  // check if the file with such an extension can be edited
 
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
             
-            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && DocManagerHelper.FillFormExts.Contains(ext)) {
+            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && canFill) {
                 editorsMode = "fillForms";
                 canEdit = true;
             }
-            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1");  // check if the Submit form button is displayed or not
+            var submitForm = (editorsMode.Equals("fillForms") || editorsMode.Equals("embedded")) && user.id.Equals("uid-1");  // check if the Submit form button is displayed or not
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
 
             // favorite icon state
