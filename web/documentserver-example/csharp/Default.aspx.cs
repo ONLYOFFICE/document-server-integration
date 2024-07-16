@@ -250,6 +250,7 @@ namespace OnlineEditorsExample
         {
             var ext = Path.GetExtension(fileName).ToLower();
 
+            if (FormatManager.PdfExtensions().Contains(ext)) return "pdf";  // pdf for pdf extensions
             if (FormatManager.DocumentExtensions().Contains(ext)) return "word";  // word for text document extensions
             if (FormatManager.SpreadsheetExtensions().Contains(ext)) return "cell";  // cell for spreadsheet extensions
             if (FormatManager.PresentationExtensions().Contains(ext)) return "slide";  // slide for presentation extensions

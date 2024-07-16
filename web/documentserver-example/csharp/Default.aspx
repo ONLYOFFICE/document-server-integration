@@ -83,7 +83,7 @@
                                                 <a class="try-editor slide" data-type="slide">Presentation</a>
                                             </li>
                                             <li>
-                                                <a class="try-editor form" data-type="docxf">PDF form</a>
+                                                <a class="try-editor form" data-type="pdf">PDF form</a>
                                             </li>
                                         </ul>
                                         <label class="side-option">
@@ -229,11 +229,13 @@
                                                                         <img src="app_themes/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                     </a>
                                                                 </td>
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="<%= editUrl + "&editorsType=desktop&editorsMode=comment" %>" target="_blank">
-                                                                         <img src="app_themes/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
-                                                                    </a>
-                                                                </td>
+                                                                <% if (docType != "pdf") { %>
+                                                                    <td class="contentCells contentCells-icon">
+                                                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=comment" %>" target="_blank">
+                                                                            <img src="app_themes/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                        </a>
+                                                                    </td>
+                                                                <% } %>
                                                                 <% if (docType == "word") { %>
                                                                     <td class="contentCells contentCells-icon">
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=review" %>" target="_blank">

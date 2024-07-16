@@ -135,14 +135,14 @@ namespace OnlineEditorsExample
             {
                 // create demo document of a specified file type
                 Try(type, Request["sample"], Request);
-                Response.Redirect("doceditor.aspx?fileID=" + HttpUtility.UrlEncode(FileName));
+                Response.Redirect("doceditor.aspx?editorsMode=edit&fileID=" + HttpUtility.UrlEncode(FileName));
             }
 
             // get file extension
             var ext = Path.GetExtension(FileName).ToLower();
-
+            var canFill = _Default.FillFormsExts.Contains(ext);
             // get editor mode or set the default one (edit)
-            var editorsMode = Request.GetOrDefault("editorsMode", "edit");
+            var editorsMode = Request.GetOrDefault("editorsMode", canFill ? "fillForms" : "edit");
 
             var canEdit = _Default.EditedExts.Contains(ext);  // check if this file can be edited
             var editorsType = Request.GetOrDefault("editorsType", "desktop");
@@ -150,11 +150,11 @@ namespace OnlineEditorsExample
             var id = Request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
             
-            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && _Default.FillFormsExts.Contains(ext)) {
+            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && canFill) {
                 editorsMode = "fillForms";
                 canEdit = true;
             }            
-            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1");  // check if the Submit form button is displayed or hidden
+            var submitForm = (editorsMode.Equals("fillForms") || editorsMode.Equals("embedded")) && user.id.Equals("uid-1");  // check if the Submit form button is displayed or hidden
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // get the editor opening mode (edit or view)
 
             var jss = new JavaScriptSerializer();
@@ -489,8 +489,8 @@ namespace OnlineEditorsExample
                 case "slide":
                     ext = ".pptx";  // .pptx for slide document type
                     break;
-                case "docxf":
-                    ext = ".docxf";
+                case "pdf":
+                    ext = ".pdf";
                     break;
                 default:
                     return;
