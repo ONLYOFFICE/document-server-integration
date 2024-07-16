@@ -2,12 +2,14 @@
 
 - csharp: filling by default
 - csharp-mvc: filling by default
+- java: filling by default
 - java-spring: filling by default
 - php: filling by default
 - python: filling by default
 - ruby: filling by default
 - csharp: creating and editing pdf instead docxf
 - csharp-mvc: creating and editing pdf instead docxf
+- java: creating and editing pdf instead docxf
 - java-spring: creating and editing pdf instead docxf
 - php: creating and editing pdf instead docxf
 - python: creating and editing pdf instead docxf
