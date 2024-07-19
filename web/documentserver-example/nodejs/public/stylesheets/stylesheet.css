@@ -506,14 +506,18 @@ label .checkbox {
     display: inline;
 }
 
-.step-descr {
+.step-descr, .step-error {
     display: block;
     margin-left: 35px;
     font-size: 11px;
     line-height: 188%;
 }
 
-.step-descr.disable {
+.step-error {
+    color: #CB0000;
+}
+
+.step-descr.disable, .step-error.hidden {
     display: none;
 }
 
