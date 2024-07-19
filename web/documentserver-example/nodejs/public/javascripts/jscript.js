@@ -428,7 +428,15 @@ if (typeof jQuery != "undefined") {
                     } catch (e)	{
                         response = { error: e };
                     }
-                    if(response.step !==100) {
+                    if (!response.filename && !response.step && response.error) {
+                        jq("#convertStep2").removeClass("current").addClass("error");
+                        jq("#convertStep2").text(`2. File conversion to ${fileExt}`);
+                        jq("#convert-error").removeClass("hidden");
+                        jq("#convert-error").text(`${response.error}`);
+                        jq("td[name='convertingTypeButton']").removeClass("disable orange");
+                        return;
+                    }
+                    if(response.step && response.step !==100) {
                         jq("#convertPercent").text(`${response.step} %`);
                         convertFile();
                     } else {
