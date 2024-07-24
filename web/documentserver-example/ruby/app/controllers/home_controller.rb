@@ -84,7 +84,7 @@ class HomeController < ApplicationController
     DocumentHelper.init(request.remote_ip, request.base_url)
     user = Users.get_user(params[:userId])
     file_name = DocumentHelper.create_demo(params[:fileExt], params[:sample], user)
-    redirect_to(controller: 'home', action: 'editor', fileName: file_name, userId: user.id)
+    redirect_to(controller: 'home', action: 'editor', fileName: file_name, userId: user.id, editorsMode: 'edit')
   end
 
   # uploading a file

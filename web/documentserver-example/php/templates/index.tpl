@@ -60,7 +60,7 @@
                                     </li>
                                     <li>
                                         <a class="try-editor form reload-page" target="_blank"
-                                           href="editor?fileExt=docxf&user={user}">PDF form</a>
+                                           href="editor?fileExt=pdf&user={user}">PDF form</a>
                                     </li>
                                 </ul>
                                 <label class="side-option">

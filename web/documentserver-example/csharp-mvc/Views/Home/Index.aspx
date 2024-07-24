@@ -80,7 +80,7 @@
                                             <a class="try-editor slide" data-type="pptx">Presentation</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor form" data-type="docxf">PDF form</a>
+                                            <a class="try-editor form" data-type="pdf">PDF form</a>
                                         </li>
                                     </ul>
                                     <label class="side-option">
@@ -227,11 +227,13 @@
                                                                             <img src="content/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                         </a>
                                                                     </td>
-                                                                    <td class="contentCells contentCells-icon">
-                                                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "comment", directUrl = isEnabledDirectUrl }) %>" target="_blank">
-                                                                            <img src="content/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
-                                                                        </a>
-                                                                    </td>
+                                                                    <% if (docType != "pdf") { %>
+                                                                        <td class="contentCells contentCells-icon">
+                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "comment", directUrl = isEnabledDirectUrl }) %>" target="_blank">
+                                                                                <img src="content/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                            </a>
+                                                                        </td>
+                                                                    <% } %>
                                                                     <% if (docType == "word") { %>
                                                                         <td class="contentCells contentCells-icon">
                                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review", directUrl = isEnabledDirectUrl }) %>" target="_blank">

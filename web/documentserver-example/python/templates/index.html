@@ -73,7 +73,7 @@
                                             <a class="try-editor slide reload-page" target="_blank" data-type="slide">Presentation</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor form reload-page" target="_blank" data-type="docxf">PDF form</a>
+                                            <a class="try-editor form reload-page" target="_blank" data-type="pdf">PDF form</a>
                                         </li>
                                     </ul>
                                     <label class="side-option">
@@ -206,11 +206,13 @@
                                                                     <img src="{% static "images/mobile.svg" %}" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                 </a>
                                                             </td>
-                                                            <td class="contentCells contentCells-icon">
-                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=comment&directUrl={{ directUrl }}" target="_blank">
-                                                                    <img src="{% static "images/comment.svg" %}" alt="Open in editor for comment" title="Open in editor for comment"/>
-                                                                </a>
-                                                            </td>
+                                                            {% if file.type != 'pdf' %}
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=comment&directUrl={{ directUrl }}" target="_blank">
+                                                                        <img src="{% static "images/comment.svg" %}" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                    </a>
+                                                                </td>
+                                                            {% endif %}
                                                             {% if file.type == 'word' %}
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="edit?filename={{ file.title }}&type=desktop&mode=review&directUrl={{ directUrl }}" target="_blank">

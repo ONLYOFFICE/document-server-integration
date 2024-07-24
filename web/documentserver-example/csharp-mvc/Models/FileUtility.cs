@@ -33,7 +33,8 @@ namespace OnlineEditorsExampleMVC.Models
         {
             Word,
             Cell,
-            Slide
+            Slide,
+            Pdf
         }
 
         // get file type
@@ -41,6 +42,7 @@ namespace OnlineEditorsExampleMVC.Models
         {
             var ext = Path.GetExtension(fileName).ToLower();
 
+            if (FormatManager.PdfExtensions().Contains(ext)) return FileType.Pdf;  // pdf type for document extensions
             if (FormatManager.DocumentExtensions().Contains(ext)) return FileType.Word;  // word type for document extensions
             if (FormatManager.SpreadsheetExtensions().Contains(ext)) return FileType.Cell;  // cell type for spreadsheet extensions
             if (FormatManager.PresentationExtensions().Contains(ext)) return FileType.Slide;  // slide type for presentation extensions
@@ -182,6 +184,20 @@ namespace OnlineEditorsExampleMVC.Models
         {
             return All()
                 .Where(format => format.Type == FileType.Word)
+                .ToList();
+        }
+
+        public static List<string> PdfExtensions()
+        {
+            return Pdfs()
+                .Select(format => format.Extension())
+                .ToList();
+        }
+
+        public static List<Format> Pdfs()
+        {
+            return All()
+                .Where(format => format.Type == FileType.Pdf)
                 .ToList();
         }
 

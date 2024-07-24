@@ -81,7 +81,7 @@
                                                 <a class="try-editor slide" data-type="pptx">Presentation</a>
                                             </li>
                                             <li>
-                                                <a class="try-editor form" data-type="docxf">PDF form</a>
+                                                <a class="try-editor form" data-type="pdf">PDF form</a>
                                             </li>
                                         </ul>
                                         <label class="create-sample">
@@ -218,11 +218,13 @@
                                                                         <img src="css/img/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                     </a>
                                                                 </td>
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=comment" target="_blank">
-                                                                        <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
-                                                                    </a>
-                                                                </td>
+                                                                <% if (!docType.equals("pdf")) { %>
+                                                                    <td class="contentCells contentCells-icon">
+                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=comment" target="_blank">
+                                                                            <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                        </a>
+                                                                    </td>
+                                                                <% } %>
                                                                 <% if (docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=review" target="_blank">
