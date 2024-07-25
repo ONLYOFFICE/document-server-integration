@@ -1,27 +1,15 @@
 # Change Log
 
-- csharp: filling by default
-- csharp-mvc: filling by default
-- java: filling by default
-- java-spring: filling by default
-- php: filling by default
-- python: filling by default
-- ruby: filling by default
-- csharp: creating and editing pdf instead docxf
-- csharp-mvc: creating and editing pdf instead docxf
-- java: creating and editing pdf instead docxf
-- java-spring: creating and editing pdf instead docxf
-- php: creating and editing pdf instead docxf
-- python: creating and editing pdf instead docxf
-- ruby: creating and editing pdf instead docxf
 - nodejs: tabs menu
 - nodejs: converting function on index page
 - java-spring: using java docs-integration-sdk
+- creating and editing pdf instead docxf
+- filling by default
 - forgotten files
 - delete all files
 - save as for pdf
 - handling conversion -9 error
-- change insert image
+- change inserted image
 - different goback for users
 
 ## 1.9.0
