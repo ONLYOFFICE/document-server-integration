@@ -102,10 +102,11 @@ if (typeof jQuery != "undefined") {
                     return;
                 }
                 var response = data.result;
-                if (response.hasOwnProperty("error")) {
+                let errorMessage = data.jqXHR.responseJSON.error;
+                if (errorMessage) {
                     jq(".current").removeClass("current");
                     jq(".step:not(.done)").addClass("error");
-                    jq("#mainProgress .error-message").show().find("span").text(response.error);
+                    jq("#mainProgress .error-message").show().find("span").text(errorMessage);
                     jq('#hiddenFileName').val("");
                     return;
                 }
