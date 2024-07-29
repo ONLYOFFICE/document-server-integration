@@ -5,28 +5,40 @@ use App\Http\Controllers\EditorController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\ForgottenController;
 use App\Http\Controllers\IndexController;
+use App\Http\Controllers\VersionController;
+use App\Http\Middleware\CheckAndDecodeJWTPayload;
 use App\Http\Middleware\EnsureJWTTokenIsPresent;
+use App\Http\Middleware\EnsureUserDirectoryExists;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', [IndexController::class, 'index'])->name('home');
-Route::prefix('files')->name('files.')->group(function() {
-    Route::post('/upload', [FileController::class, 'upload'])->name('upload');
-    Route::post('/convert', [FileController::class, 'convert'])->name('convert');
-    Route::delete('/delete', [FileController::class, 'destroy'])->name('delete');
-    Route::get('/download', [FileController::class, 'download'])->name('download');
-    Route::post('/saveas', [FileController::class, 'saveAs'])->name('saveas');
+Route::middleware(EnsureUserDirectoryExists::class)->group(function () {
+    Route::get('/', [IndexController::class, 'index'])->name('home');
+    Route::prefix('files')->name('files.')->group(function () {
+        Route::post('/upload', [FileController::class, 'upload'])->name('upload');
+        Route::post('/convert', [FileController::class, 'convert'])->name('convert');
+        Route::delete('/delete', [FileController::class, 'destroy'])->name('delete');
+        Route::post('/saveas', [FileController::class, 'saveAs'])->name('saveas');
+        Route::get('/history', [FileController::class, 'history'])->name('history');
 
-    Route::prefix('forgotten')->name('forgotten.')->group(function() {
-        Route::get('/', [ForgottenController::class, 'index'])->name('index');
-        Route::delete('/{key}/delete', [ForgottenController::class, 'destroy'])->name('delete');
+        Route::middleware(EnsureJWTTokenIsPresent::class)->group(function () {
+            Route::get('/download', [FileController::class, 'download'])->name('download');
+
+            Route::get('/versions/changes', [VersionController::class, 'changes'])->name('versions.changes');
+            Route::get('/versions/previous', [VersionController::class, 'previous'])->name('versions.previous');
+        });
+
+        Route::prefix('forgotten')->name('forgotten.')->group(function () {
+            Route::get('/', [ForgottenController::class, 'index'])->name('index');
+            Route::delete('/{key}/delete', [ForgottenController::class, 'destroy'])->name('delete');
+        });
     });
-});
-Route::prefix('api')->group(function() {
-    Route::get('/formats', [FormatController::class, 'index']);
-});
-Route::prefix('editor')->name('editor.')->group(function () {
-    Route::get('/', [EditorController::class, 'index'])->name('index');
-    Route::middleware(EnsureJWTTokenIsPresent::class)
-        ->post('/track', [EditorController::class, 'track'])
-        ->name('track');
+    Route::prefix('api')->group(function () {
+        Route::get('/formats', [FormatController::class, 'index']);
+    });
+    Route::prefix('editor')->name('editor.')->group(function () {
+        Route::get('/', [EditorController::class, 'index'])->name('index');
+        Route::middleware(CheckAndDecodeJWTPayload::class)
+            ->post('/track', [EditorController::class, 'track'])
+            ->name('track');
+    });
 });

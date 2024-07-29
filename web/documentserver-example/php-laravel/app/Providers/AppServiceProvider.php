@@ -2,12 +2,8 @@
 
 namespace App\Providers;
 
-use App\OnlyOffice\Storage\LocalStorage;
-use OnlyOffice\Repositories\Files\FileRepository;
-use OnlyOffice\Repositories\Files\LocalFileRepository;
+use App\Repositories\FormatRepository;
 use Illuminate\Support\ServiceProvider;
-use OnlyOffice\Config;
-use OnlyOffice\Storage\Storage;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,11 +12,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(Config::class, function () {
-            return new Config();
+        $this->app->singleton(FormatRepository::class, function () {
+            $path = public_path('assets/document-formats/onlyoffice-docs-formats.json');
+
+            return new FormatRepository($path);
         });
-        $this->app->bind(FileRepository::class, LocalFileRepository::class);
-        $this->app->bind(Storage::class, LocalStorage::class);
     }
 
     /**

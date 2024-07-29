@@ -2,30 +2,35 @@
 
 namespace App\Http\Controllers;
 
-use OnlyOffice\Helpers\Path;
-use OnlyOffice\DocumentServer;
-use OnlyOffice\Entities\File;
+use App\Helpers\Path\Path;
+use App\Helpers\Path\PathInfo;
+use App\Helpers\URL\URL;
+use App\Services\ServerConfig;
+use App\Services\StorageConfig;
+use App\UseCases\Common\Http\DownloadFileCommand;
+use App\UseCases\Common\Http\DownloadFileRequest;
+use App\UseCases\Docs\Conversion\ConvertCommand;
+use App\UseCases\Docs\Conversion\ConvertRequest;
+use App\UseCases\Document\Create\CreateDocumentCommand;
+use App\UseCases\Document\Create\CreateDocumentRequest;
+use App\UseCases\Document\Delete\DeleteAllDocumentsCommand;
+use App\UseCases\Document\Delete\DeleteAllDocumentsRequest;
+use App\UseCases\Document\Delete\DeleteDocumentCommand;
+use App\UseCases\Document\Delete\DeleteDocumentRequest;
+use App\UseCases\Document\Find\FindDocumentHistoryQuery;
+use App\UseCases\Document\Find\FindDocumentHistoryQueryHandler;
+use App\UseCases\Document\Find\FindDocumentQuery;
+use App\UseCases\Document\Find\FindDocumentQueryHandler;
 use Exception;
 use Illuminate\Http\Request;
-use OnlyOffice\Config;
-use OnlyOffice\DocumentStorage;
-use OnlyOffice\Editor\Key;
-use OnlyOffice\Exceptions\Conversion\ConversionNotComplete;
-use OnlyOffice\Exceptions\Conversion\ConversionError;
-use OnlyOffice\Formats;
-use OnlyOffice\Helpers\URL\URL;
-use OnlyOffice\JWT;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
-use OnlyOffice\Users;
 
 class FileController extends Controller
 {
     public function __construct(
-        private Config $config,
-        private DocumentStorage $documentStorage,
-        private DocumentServer $document,
-        private Formats $formats,
-        private Users $users
+        private ServerConfig $serverConfig,
+        private StorageConfig $storageConfig,
     ) {
     }
 
@@ -33,22 +38,26 @@ class FileController extends Controller
     {
         $request->validate([
             'file' => 'required|file',
-            'user' => 'nullable|string'
+            'user' => 'nullable|string',
         ]);
 
         $uploadedFile = $request->file('file');
+        $fileType = $uploadedFile->getClientOriginalExtension();
 
         try {
-            $file = new File();
-            $file->basename = $uploadedFile->getClientOriginalName();
-            $file->size = $uploadedFile->getSize();
-            $file->content = $uploadedFile->getContent();
-            $file->format = $this->formats->find($uploadedFile->getClientOriginalExtension());
-            $file->author = $this->users->find($request->user);
-            $file->path = Path::join($request->ip(), $file->basename);
-
-            $this->documentStorage->create($file);
+            $file = app(CreateDocumentCommand::class)->__invoke(
+                new CreateDocumentRequest(
+                    $uploadedFile->getClientOriginalName(),
+                    $request->ip(),
+                    $fileType,
+                    $uploadedFile->getSize(),
+                    $uploadedFile->getContent(),
+                    $request->user,
+                )
+            );
         } catch (Exception $e) {
+            Log::error($e->getMessage());
+
             return response()
                 ->json([
                     'error' => $e->getMessage(),
@@ -56,8 +65,8 @@ class FileController extends Controller
         }
 
         return response()->json([
-            'filename' => $file->basename,
-            'documentType' => $file->format->type
+            'filename' => $file['filename'],
+            'documentType' => $fileType,
         ]);
     }
 
@@ -69,24 +78,26 @@ class FileController extends Controller
             'user' => 'nullable|string',
         ]);
 
-        $url = $request->url;
-        $url = Str::replace(URL::origin($url), $this->config->get('url.server.private'), $url);
-        $extension = Path::extension($request->url);
+        $user = $request->input('user', '');
 
-        $content = $this->document->download($url);        
+        $url = Str::replace(URL::origin($request->url), $this->serverConfig->get('url.private'), $request->url);
 
-        $file = new File();
-        $file->basename = $request->title;
-        $file->size = 0;
-        $file->content = $content;
-        $file->format = $this->formats->find($extension);
-        $file->author = $this->users->find($request->input('user', ''));
-        $file->path = Path::join($request->ip(), $file->basename);
+        $downloadedFile = app(DownloadFileCommand::class)
+            ->__invoke(new DownloadFileRequest(url: $url));
 
-        $this->documentStorage->create($file);
+        $file = app(CreateDocumentCommand::class)->__invoke(
+            new CreateDocumentRequest(
+                $request->title,
+                $request->ip(),
+                PathInfo::extension($request->url),
+                $downloadedFile['size'],
+                $downloadedFile['content'],
+                $user,
+            )
+        );
 
         return response()
-                ->json(['filename' => $file->basename]);
+            ->json(['filename' => $file['filename']]);
     }
 
     public function convert(Request $request)
@@ -98,60 +109,64 @@ class FileController extends Controller
             'fileExt' => 'nullable|string',
         ]);
 
-        $file = $this->documentStorage->find(Path::join($request->ip(), $request->filename));
-
-        $url = $request->fileUri;
-
-        if (!$url) {
-            $url = URL::build($this->config->get('url.storage.private'), 'files.download', [
-                'fileName' => urlencode($request->filename),
-                'userAddress' => request()->ip()
-            ]);
-        }
-
-        $data = [
-            'filename' => $request->filename,
-            'filetype' => Path::extension($request->filename),
-            'outputtype' => $request->input('fileExt', 'ooxml'),
-            'password' => $request->password,
-            'url' => $url,
-            'key' => Key::generate($file->filename, $file->lastModified),
-            'user' => $request->user,
-            'lang' => cache('lang', default: 'en'),
-        ];
         try {
-            $result = $this->document->convert($data);
-            $convertedFile = new File();
-            $convertedFile->basename = Str::of(Path::filename($data['filename']))->append('.' . $result['fileType']);
-            $convertedFile->author = $this->users->find($data['user']);
-            $convertedFile->format = $this->formats->find($result['fileType']);
-            $convertedFile->content = $this->document->download($result['fileUrl']);
-            $convertedFile->size = 0;
-            $convertedFile->path = Path::join($request->ip(), $convertedFile->basename);
-            $this->documentStorage->create($convertedFile);
-            $this->documentStorage->deleteFile($file);
-            $this->documentStorage->deleteHistory($file);
-        } catch (ConversionNotComplete $e) {
-            return response()
-                ->json([
-                    'step' => $e->step,
-                    'filename' => $e->filename,
-                    'fileUri' => $e->url,
-                ], 500);
-        } catch (ConversionError $e) {
-            return response()
-                ->json([
-                    'error' => $e->getMessage(),
-                    'code' => $e->getCode(),
-                ], 500);
+            $result = app(ConvertCommand::class)
+                ->__invoke(new ConvertRequest(
+                    filename: $request->filename,
+                    fileType: PathInfo::extension($request->filename),
+                    outputType: $request->input('fileExt', 'ooxml'),
+                    url: $request->fileUri,
+                    password: $request->password,
+                    user: $request->user,
+                    userAddress: $request->ip(),
+                    lang: cache('lang', default: 'en'),
+                ));
+
+            if (array_key_exists('step', $result)) {
+                return response()
+                    ->json([
+                        'step' => $result['step'],
+                        'filename' => $result['filename'],
+                        'fileUri' => $result['url'],
+                    ], 500);
+            } else if (array_key_exists('error', $result)) {
+                return response()
+                    ->json([
+                        'error' => $result['error'],
+                        'code' => $result['code'],
+                    ], 500);
+            }
+
+            $convertedFileContent = app(DownloadFileCommand::class)
+                ->__invoke(new DownloadFileRequest($result['fileUrl']));
+
+            $file = app(CreateDocumentCommand::class)->__invoke(
+                new CreateDocumentRequest(
+                    filename: $result['filename'],
+                    userDirectory: $request->ip(),
+                    fileType: $result['fileType'],
+                    fileSize: $convertedFileContent['size'],
+                    fileContent: $convertedFileContent['content'],
+                    user: $request->user,
+                )
+            );
+
+            app(DeleteDocumentCommand::class)->__invoke(
+                new DeleteDocumentRequest(
+                    filename: $request->filename,
+                    userDirectory: $request->ip(),
+                )
+            );
+        } catch (Exception $e) {
+            abort(500, $e->getMessage());
         }
 
         return response()->json([
-            'filename' => $convertedFile->basename
+            'filename' => $file['filename'],
         ]);
     }
 
-    public function download(Request $request, JWT $jwt)
+    public function download(Request $request)
     {
         $request->validate([
             'fileName' => 'required|string',
@@ -159,46 +174,50 @@ class FileController extends Controller
         ]);
         $filename = urldecode($request->fileName);
         $ip = $request->input('userAddress', $request->ip());
-        $isEmbedded = $request->input('dmode');
 
-        if ($this->config->get('jwt.enabled') && !$isEmbedded && $request->input('userAddress')) {
-            if ($request->hasHeader($this->config->get('jwt.header'))) {
-                $token = $jwt->decode($request->bearerToken());
-                if (empty($token)) {
-                    return abort(500, 'Invalid JWT signature');
-                }
-            }
-        }
-
-        // todo get force save file path
-
-        $path = Path::join($ip, $filename);
-        $file = $this->documentStorage->find($path, true);
+        $file = app(FindDocumentQueryHandler::class)
+            ->__invoke(new FindDocumentQuery($filename, $ip));
 
         return response()->streamDownload(function () use ($file) {
-            echo $file->content;
+            echo $file['content'];
         }, $filename, [
-            'Content-Length' => $file->size,
-            'Content-Type' => $file->mime,
-            'Content-Disposition' => 'attachment; filename*=UTF-8\'\'' . str_replace("+", "%20", urlencode($filename)),
-            'Access-Control-Allow-Origin' => '*'
+            'Content-Length' => $file['size'],
+            'Content-Type' => $file['mimeType'],
+            'Content-Disposition' => 'attachment; filename*=UTF-8\'\'' . str_replace('+', '%20', urlencode($filename)),
+            'Access-Control-Allow-Origin' => '*',
         ]);
+    }
+
+    public function history(Request $request)
+    {
+        $filename = $request->filename;
+        $filename = Path::join($request->ip(), $filename);
+        $address = $request->ip();
+
+        $history = app(FindDocumentHistoryQueryHandler::class)
+            ->__invoke(new FindDocumentHistoryQuery($filename, $address));
+
+        return response()->json($history);
     }
 
     public function destroy(Request $request)
     {
         $request->validate([
-            'filename' => 'nullable|string'
+            'filename' => 'nullable|string',
         ]);
 
         try {
             if ($request->filename) {
-                $file = new File();
-                $file->path = Path::join($request->ip(), $request->filename);
-                $this->documentStorage->deleteFile($file);
-                $this->documentStorage->deleteHistory($file);
+                app(DeleteDocumentCommand::class)->__invoke(
+                    new DeleteDocumentRequest(
+                        filename: $request->filename,
+                        userDirectory: $request->ip(),
+                    )
+                );
             } else {
-                $this->documentStorage->deleteDirectory($request->ip());
+                app(DeleteAllDocumentsCommand::class)->__invoke(
+                    new DeleteAllDocumentsRequest(userDirectory: $request->ip())
+                );
             }
         } catch (Exception $e) {
             return response()

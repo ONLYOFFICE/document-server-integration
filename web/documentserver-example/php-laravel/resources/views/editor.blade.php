@@ -7,7 +7,7 @@
             maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <link rel="icon" href="{{ Vite::asset('resources/images/favicon.ico') }}" type="image/x-icon" />
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
     <title>ONLYOFFICE</title>
 
     <style>
@@ -66,7 +66,7 @@
 
         // the user is trying to switch the document from the viewing into the editing mode
         var onRequestEditRights = function() {
-            location.href = location.href.replace(RegExp("action=view\&?", "i"), "");
+            location.href = location.href.replace(RegExp("action=\\w+\&?", "i"), "") + "&action=edit";
         };
 
         // an error or some other specific event occurs
@@ -219,32 +219,32 @@
         };
 
         function onRequestHistory() {
-            const query = new URLSearchParams(window.location.search)
-            const data = {
-                fileName: query.get('fileID')
-            }
-            const req = new XMLHttpRequest()
-            req.open("POST", 'objhistory')
-            req.setRequestHeader('Content-Type', 'application/json')
-            req.send(JSON.stringify(data))
+            const query = new URLSearchParams(window.location.search);
+            const filename = encodeURIComponent(query.get('fileID'));
+
+            const req = new XMLHttpRequest();
+            req.open("GET", `/files/history?filename=${filename}`);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.send();
             req.onload = function() {
                 if (req.status != 200) {
                     response = JSON.parse(req.response)
                     innerAlert(response.error)
                     return
                 }
-                history = JSON.parse(req.response)
+                history = JSON.parse(req.response);
                 docEditor.refreshHistory({
-                    currentVersion: history[0].currentVersion,
-                    history: history[0].history
+                    currentVersion: history.currentVersion,
+                    history: history.history
                 })
             }
         }
 
         function onRequestHistoryData(event) {
             var ver = event.data;
-            var histData = history[1]
-            docEditor.setHistoryData(histData[ver - 1])
+            var histData = history.history;
+            console.log(histData[ver - 1]);
+            docEditor.setHistoryData(histData[ver - 1]) 
         }
 
         function onRequestHistoryClose() {
@@ -311,8 +311,6 @@
         };
 
         var сonnectEditor = function() {
-            {!! $fileNotFoundAlert !!}
-
             config = {!! $config !!}
 
             config.width = "100%";
@@ -323,7 +321,7 @@
                 'onDocumentStateChange': onDocumentStateChange,
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
-                'onMakeActionLink': onMakeActionLink,
+                // 'onMakeActionLink': onMakeActionLink,
                 'onMetaChange': onMetaChange,
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestSelectDocument': onRequestSelectDocument,

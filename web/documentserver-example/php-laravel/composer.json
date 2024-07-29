@@ -28,8 +28,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/",
-            "OnlyOffice\\": "onlyoffice/"
+            "Tests\\": "tests/"
         }
     },
     "scripts": {

@@ -2,40 +2,25 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use OnlyOffice\DocumentServer;
-use OnlyOffice\Entities\File;
-use OnlyOffice\Formats;
-use OnlyOffice\Helpers\Path;
+use App\UseCases\Forgotten\Delete\DeleteForgottenFileCommand;
+use App\UseCases\Forgotten\Delete\DeleteForgottenFileRequest;
+use App\UseCases\Forgotten\Find\FindAllForgottenFilesQuery;
+use App\UseCases\Forgotten\Find\FindAllForgottenFilesQueryHandler;
 
 class ForgottenController extends Controller
 {
-    public function __construct(private DocumentServer $documentServer, private Formats $formats)
-    {
-
-    }
-
     public function index()
     {
-        $filesArray = $this->documentServer->getForgottenFiles();
-        $files = [];
-        
-        foreach ($filesArray as $fileItem) {
-            $file = new File();
-            $file->key = $fileItem['key'];
-            $file->basename = $fileItem['url'];
-            $file->extension = Path::extension($file->basename);
-            $file->format = $this->formats->find($file->extension);
-
-            $files[] = $file;
-        }
+        $files = app(FindAllForgottenFilesQueryHandler::class)
+            ->__invoke(new FindAllForgottenFilesQuery());
 
         return view('forgotten', compact('files'));
     }
 
     public function destroy(string $key)
     {
-        $this->documentServer->deleteForgotten($key);
+        app(DeleteForgottenFileCommand::class)
+            ->__invoke(new DeleteForgottenFileRequest($key));
 
         return response(status: 204);
     }

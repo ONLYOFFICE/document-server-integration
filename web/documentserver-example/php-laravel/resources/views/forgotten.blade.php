@@ -8,7 +8,7 @@
     <meta name="server-version" content="{{ env('SERVER_VERSION') }}">
     <title>ONLYOFFICE Document Editors</title>
 
-    <link rel="icon" href="{{ Vite::asset('resources/images/favicon.ico') }}" type="image/x-icon" />
+    <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
 
     <!-- Fonts -->
     <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,
@@ -16,7 +16,9 @@
 
     <!-- Styles -->
     <link rel="stylesheet" type="text/css" href="/css/jquery-ui.css" />
-    @vite(['resources/css/app.css', 'resources/css/media.css', 'resources/css/forgotten.css', 'resources/js/static.js'])
+    <link rel="stylesheet" type="text/css" href="/css/app.css" />
+    <link rel="stylesheet" type="text/css" href="/css/media.css" />
+    <link rel="stylesheet" type="text/css" href="/css/forgotten.css" />
 </head>
 
 <body>
@@ -24,7 +26,7 @@
         <header>
             <div class="center">
                 <a href="./">
-                    <img src="{{ Vite::asset('resources/images/logo.svg') }}" alt="ONLYOFFICE" />
+                    <img src="/images/logo.svg" alt="ONLYOFFICE" />
                 </a>
             </div>
         </header>
@@ -38,7 +40,7 @@
                                 <menu class="links">
                                     <li class="home-link">
                                         <a href="{{ route('home') }}">
-                                            <img src="{{ Vite::asset('resources/images/home.svg') }}" alt="Home" />
+                                            <img src="/images/home.svg" alt="Home" />
                                         </a>
                                     </li>
                                     <li class="active">
@@ -63,18 +65,18 @@
                                         <table cellspacing="0" cellpadding="0" width="100%">
                                             <tbody>
                                                 @foreach ($files as $file)
-                                                <tr class="tableRow" title="{{ $file->key }}">
+                                                <tr class="tableRow" title="{{ $file['key'] }}">
                                                     <td>
-                                                        <a class="stored-edit action-link {{ $file->format->type }}" href="{{ $file->basename }}" target="_blank">
-                                                            <span>{{ $file->key }}</span>
+                                                        <a class="stored-edit action-link {{ $file['format']->type }}" href="{{ $file['filename'] }}" target="_blank">
+                                                            <span>{{ $file['key'] }}</span>
                                                         </a>
                                                     </td>
                                                     <td>
-                                                        <a href="{{ $file->basename }}">
-                                                            <img class="icon-download" src="{{ Vite::asset('resources/images/download.svg') }}" alt="Download" title="Download" />
+                                                        <a href="{{ $file['filename'] }}">
+                                                            <img class="icon-download" src="/images/download.svg" alt="Download" title="Download" />
                                                         </a>
-                                                        <a class="delete-file" data="{{ $file->key }}">
-                                                            <img class="icon-delete" src="{{ Vite::asset('resources/images/delete.svg') }}" alt="Delete" title="Delete" /></a>
+                                                        <a class="delete-file" data="{{ $file['key'] }}">
+                                                            <img class="icon-delete" src="/images/delete.svg" alt="Delete" title="Delete" /></a>
                                                     </td>
                                                 </tr>
                                                 @endforeach

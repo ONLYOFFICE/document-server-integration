@@ -3,15 +3,14 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use OnlyOffice\Formats;
-use Illuminate\Http\Request;
+use App\Repositories\FormatRepository;
 
 class FormatController extends Controller
 {
-    public function index(Formats $formats)
+    public function index(FormatRepository $formats)
     {
         return response()->json([
-            'formats' => $formats->all()
+            'formats' => $formats->all(),
         ]);
     }
 }
