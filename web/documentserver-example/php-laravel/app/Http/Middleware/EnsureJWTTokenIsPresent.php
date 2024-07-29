@@ -2,11 +2,10 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\JWT;
+use App\Services\ServerConfig;
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use OnlyOffice\Config;
-use OnlyOffice\JWT;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureJWTTokenIsPresent
@@ -18,28 +17,20 @@ class EnsureJWTTokenIsPresent
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $config = app(Config::class);
+        $config = app(ServerConfig::class);
         $jwt = app(JWT::class);
-        $payload = null;
+        $embeded = $request->has('dmode');
 
-        if ($config->get('jwt.enabled') && $config->get('jwt.use_for_request')) {
-            if ($request->token) {
-                $payload = $jwt->decode($request->token);
-                $payload = json_decode(json_encode($payload), true);
-            } elseif ($request->hasHeader($config->get('jwt.header'))) {
-                $payload = $jwt->decode($request->bearerToken());
-                $payload = json_decode($payload);
+        if ($config->get('jwt.enabled') && $embeded == null && $config->get('jwt.use_for_request')) {
+            if ($request->hasHeader($config->get('jwt.header'))) {
+                $token = $jwt->decode($request->bearerToken());
+
+                if (empty($token)) {
+                    abort(498, 'Invalid JWT signature');
+                }
             } else {
                 abort(499, 'Expected JWT token');
             }
-
-
-    
-            if (!$payload) {
-                abort(498, 'Invalid JWT signature');
-            }
-
-            $request->merge(['payload' => $payload]);
         }
 
         return $next($request);
