@@ -3,6 +3,8 @@ FROM php:8.2-fpm
 ARG user
 ARG uid
 
+COPY ./conf.d/uploads.ini /usr/local/etc/php/conf.d/uploads.ini
+
 RUN apt-get update && apt-get install -y \
     build-essential \
     git \
