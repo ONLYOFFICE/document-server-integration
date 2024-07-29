@@ -52,6 +52,13 @@ return [
             'throw' => true,
         ],
 
+        'forcesaved' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/forcesaved'),
+            'visibility' => 'public',
+            'throw' => true,
+        ],
+
         'formats' => [
             'driver' => 'local',
             'root' => public_path('assets/document-formats'),
