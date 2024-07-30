@@ -28,22 +28,22 @@ class ServerConfig extends Config
         $preloaderUrl = $publicServerUrl.'/'.env('DOCUMENT_SERVER_PRELOADER_PATH', 'web-apps/apps/api/documents/cache-scripts.html');
         $conversionUrl = $privateServerUrl.'/'.env('DOCUMENT_SERVER_CONVERTER_PATH', 'ConvertService.ashx');
         $commandUrl = $privateServerUrl.'/'.env('DOCUMENT_SERVER_COMMAND_PATH', 'coauthoring/CommandService.ashx');
-        $jwtSecret = env('JWT_SECRET', '');
-        $jwtUseForRequest = env('JWT_USE_FOR_REQUEST', true);
+        $jwtSecret = env('DOCUMENT_SERVER_JWT_SECRET', 'secret');
+        $jwtUseForRequest = env('DOCUMENT_SERVER_JWT_USE_FOR_REQUEST', true);
 
         $this->config = [
             'conversion' => [
-                'timeout' => env('CONVERSION_TIMEOUT', 120 * 1000),
+                'timeout' => env('DOCUMENT_SERVER_CONVERSION_TIMEOUT', 120 * 1000),
                 'url' => $conversionUrl,
             ],
 
-            'ssl_verify' => env('SSL_VERIFY_PEER_MODE_ENABLED', false),
+            'ssl_verify' => env('DOCUMENT_SERVER_SSL_VERIFY_PEER_MODE_ENABLED', false),
             'jwt' => [
                 'enabled' => $jwtSecret && $jwtUseForRequest,
                 'secret' => $jwtSecret,
-                'header' => env('JWT_HEADER', 'Authorization'),
+                'header' => env('DOCUMENT_SERVER_JWT_HEADER', 'Authorization'),
                 'use_for_request' => $jwtUseForRequest,
-                'algorithm' => env('JWT_ALGORITHM', 'HS256'),
+                'algorithm' => env('DOCUMENT_SERVER_JWT_ALGORITHM', 'HS256'),
             ],
             'url' => [
                 'api' => $apiUrl,
@@ -51,12 +51,6 @@ class ServerConfig extends Config
                 'private' => $privateServerUrl,
                 'preloader' => $preloaderUrl,
                 'command' => $commandUrl,
-            ],
-            'path' => [
-                'template' => env('TEMPLATE_PATH'),
-            ],
-            'file' => [
-                'max_size' => env('MAXIMUM_FILE_SIZE', 5 * 1024 * 1024),
             ],
         ];
     }

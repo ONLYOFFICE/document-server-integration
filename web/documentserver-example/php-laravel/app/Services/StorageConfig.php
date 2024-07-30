@@ -22,19 +22,16 @@ class StorageConfig extends Config
 {
     public function __construct()
     {
-        $publicStorageUrl = rtrim(env('STORAGE_PUBLIC_URL', request()->schemeAndHttpHost()), '/');
-        $privateStorageUrl = rtrim(env('STORAGE_PRIVATE_URL', $publicStorageUrl), '/');
+        $publicStorageUrl = rtrim(env('DOCUMENT_STORAGE_PUBLIC_URL', request()->schemeAndHttpHost()), '/');
+        $privateStorageUrl = rtrim(env('DOCUMENT_STORAGE_PRIVATE_URL', $publicStorageUrl), '/');
 
         $this->config = [
             'url' => [
                 'private' => $privateStorageUrl,
                 'public' => $publicStorageUrl,
             ],
-            'path' => [
-                'template' => env('TEMPLATE_PATH'),
-            ],
             'file' => [
-                'max_size' => env('MAXIMUM_FILE_SIZE', 5 * 1024 * 1024),
+                'max_size' => env('DOCUMENT_STORAGE_MAXIMUM_FILE_SIZE', 5 * 1024 * 1024),
             ],
         ];
     }
