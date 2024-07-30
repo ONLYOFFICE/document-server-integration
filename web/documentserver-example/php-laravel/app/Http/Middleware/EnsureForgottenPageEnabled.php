@@ -17,7 +17,7 @@ class EnsureForgottenPageEnabled
     {
         $forgottenPageEnabled = env('DOCUMENT_STORAGE_DISPLAY_FORGOTTEN_PAGE', false);
 
-        if (!$forgottenPageEnabled) {
+        if (! $forgottenPageEnabled) {
             abort(403);
         }
 
