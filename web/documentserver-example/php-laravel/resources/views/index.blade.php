@@ -109,9 +109,11 @@
                                             <img src="/images/home.svg" alt="Home" />
                                         </a>
                                     </li>
+                                    @if (env('DOCUMENT_STORAGE_DISPLAY_FORGOTTEN_PAGE', false))
                                     <li>
                                         <a href="{{ route('files.forgotten.index') }}">Forgotten files</a>
                                     </li>
+                                    @endif
                                 </menu>
                                 @if($files)
                                 <div class="stored-list">

@@ -7,6 +7,7 @@ use App\Http\Controllers\ForgottenController;
 use App\Http\Controllers\IndexController;
 use App\Http\Controllers\VersionController;
 use App\Http\Middleware\CheckAndDecodeJWTPayload;
+use App\Http\Middleware\EnsureForgottenPageEnabled;
 use App\Http\Middleware\EnsureJWTTokenIsPresent;
 use App\Http\Middleware\EnsureUserDirectoryExists;
 use Illuminate\Support\Facades\Route;
@@ -27,7 +28,7 @@ Route::middleware(EnsureUserDirectoryExists::class)->group(function () {
             Route::get('/versions/previous', [VersionController::class, 'previous'])->name('versions.previous');
         });
 
-        Route::prefix('forgotten')->name('forgotten.')->group(function () {
+        Route::prefix('forgotten')->name('forgotten.')->middleware(EnsureForgottenPageEnabled::class)->group(function () {
             Route::get('/', [ForgottenController::class, 'index'])->name('index');
             Route::delete('/{key}/delete', [ForgottenController::class, 'destroy'])->name('delete');
         });
