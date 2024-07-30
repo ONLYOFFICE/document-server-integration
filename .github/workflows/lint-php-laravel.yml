@@ -27,4 +27,4 @@ jobs:
         run: composer global require laravel/pint
           
       - name: Run Pint
-        run: pint
+        run: pint --test
