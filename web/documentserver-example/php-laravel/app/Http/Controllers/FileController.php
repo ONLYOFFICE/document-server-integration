@@ -220,6 +220,8 @@ class FileController extends Controller
                 );
             }
         } catch (Exception $e) {
+            Log::error($e->getMessage());
+
             return response()
                 ->json([
                     'error' => $e->getMessage(),

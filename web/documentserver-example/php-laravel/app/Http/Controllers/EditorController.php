@@ -96,7 +96,6 @@ class EditorController extends Controller
                         )
                     );
             } catch (Exception $e) {
-                Log::debug($e->getMessage());
                 abort(500, $e->getMessage());
             }
         } elseif ($fileId) {
@@ -129,9 +128,11 @@ class EditorController extends Controller
             ->__invoke(new FindDocumentQuery($filename, $request->ip()));
 
         if (!$file['format']->type) {
+            $message = 'The format ' . $file['format']->extension() . ' has undefined format.';
+            Log::error($message);
             return view('error', [
                 'code' => 500,
-                'message' => 'The format ' . $file['format']->extension() . ' has undefined format.',
+                'message' => $message,
             ]);
         }
 
@@ -283,7 +284,7 @@ class EditorController extends Controller
             ->__invoke(new FileExistsQuery($filename, $address));
 
         if (!$fileExists) {
-            Log::debug("$filename does not exist.");
+            Log::error("$filename does not exist.");
 
             return response()->json([
                 'error' => 1,
