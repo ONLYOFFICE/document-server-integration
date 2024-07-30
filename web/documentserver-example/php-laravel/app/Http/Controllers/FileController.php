@@ -31,8 +31,7 @@ class FileController extends Controller
     public function __construct(
         private ServerConfig $serverConfig,
         private StorageConfig $storageConfig,
-    ) {
-    }
+    ) {}
 
     public function upload(Request $request)
     {
@@ -129,7 +128,7 @@ class FileController extends Controller
                         'filename' => $result['filename'],
                         'fileUri' => $result['url'],
                     ], 500);
-            } else if (array_key_exists('error', $result)) {
+            } elseif (array_key_exists('error', $result)) {
                 return response()
                     ->json([
                         'error' => $result['error'],
@@ -183,7 +182,7 @@ class FileController extends Controller
         }, $filename, [
             'Content-Length' => $file['size'],
             'Content-Type' => $file['mimeType'],
-            'Content-Disposition' => 'attachment; filename*=UTF-8\'\'' . str_replace('+', '%20', urlencode($filename)),
+            'Content-Disposition' => 'attachment; filename*=UTF-8\'\''.str_replace('+', '%20', urlencode($filename)),
             'Access-Control-Allow-Origin' => '*',
         ]);
     }

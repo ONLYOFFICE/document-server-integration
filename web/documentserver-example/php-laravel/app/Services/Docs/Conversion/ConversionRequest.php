@@ -14,9 +14,7 @@ class ConversionRequest
 {
     private array $headers = [];
 
-    public function __construct(private ServerConfig $config, private JWT $jwt)
-    {
-    }
+    public function __construct(private ServerConfig $config, private JWT $jwt) {}
 
     private function withJWTHeader(array $content): void
     {
@@ -40,18 +38,18 @@ class ConversionRequest
 
         if (
             Str::of($url)->isUrl(['https'])
-            && !$this->config->get('ssl_verify')
+            && ! $this->config->get('ssl_verify')
         ) {
             $client = $client->withoutVerifying();
         }
 
         if ($key) {
-            $url = "$url?shardkey=" . urlencode($key);
+            $url = "$url?shardkey=".urlencode($key);
         }
 
         $response = $client->post($url, $content);
 
-        if (!$response->ok()) {
+        if (! $response->ok()) {
             throw new Exception('Could not convert the file');
         }
 
@@ -61,7 +59,7 @@ class ConversionRequest
             throw new ConversionError($result['error']);
         }
 
-        if (!$result['endConvert']) {
+        if (! $result['endConvert']) {
             throw new ConversionNotComplete($result['percent'], $result['filename'], $result['fileUrl']);
         }
 

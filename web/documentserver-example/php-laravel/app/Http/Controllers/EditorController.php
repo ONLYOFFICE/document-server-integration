@@ -46,8 +46,7 @@ class EditorController extends Controller
     public function __construct(
         private StorageConfig $storageConfig,
         private ServerConfig $serverConfig,
-    ) {
-    }
+    ) {}
 
     public function index(Request $request, JWT $jwt)
     {
@@ -104,7 +103,7 @@ class EditorController extends Controller
             $fileExists = app(FileExistsQueryHandler::class)
                 ->__invoke(new FileExistsQuery($filename, $request->ip()));
 
-            if (!$fileExists) {
+            if (! $fileExists) {
                 abort(404, "The file $filename does not exist");
             }
         } elseif ($fileExt) {
@@ -127,9 +126,10 @@ class EditorController extends Controller
         $file = app(FindDocumentQueryHandler::class)
             ->__invoke(new FindDocumentQuery($filename, $request->ip()));
 
-        if (!$file['format']->type) {
-            $message = 'The format ' . $file['format']->extension() . ' has undefined format.';
+        if (! $file['format']->type) {
+            $message = 'The format '.$file['format']->extension().' has undefined format.';
             Log::error($message);
+
             return view('error', [
                 'code' => 500,
                 'message' => $message,
@@ -194,11 +194,11 @@ class EditorController extends Controller
 
         $usersForMentions = $user['id'] !== 'uid-0'
             ? app(FindAllUsersQueryHandler::class)
-            ->__invoke(new FindAllUsersQuery(id: $user['id'], forMentions: true))
+                ->__invoke(new FindAllUsersQuery(id: $user['id'], forMentions: true))
             : null;
         $usersForProtect = $user['id'] !== 'uid-0'
             ? app(FindAllUsersQueryHandler::class)
-            ->__invoke(new FindAllUsersQuery(id: $user['id'], forProtect: true))
+                ->__invoke(new FindAllUsersQuery(id: $user['id'], forProtect: true))
             : null;
 
         $usersInfo = [];
@@ -209,7 +209,7 @@ class EditorController extends Controller
         if ($user['id'] != 'uid-0') {
             foreach ($users as $userInfo) {
                 $u = $userInfo;
-                $u['image'] = $userInfo['avatar'] ? "$storagePublicUrl/images/" . $userInfo['id'] . '.png' : null;
+                $u['image'] = $userInfo['avatar'] ? "$storagePublicUrl/images/".$userInfo['id'].'.png' : null;
                 array_push($usersInfo, $u);
             }
         }
@@ -283,7 +283,7 @@ class EditorController extends Controller
         $fileExists = app(FileExistsQueryHandler::class)
             ->__invoke(new FileExistsQuery($filename, $address));
 
-        if (!$fileExists) {
+        if (! $fileExists) {
             Log::error("$filename does not exist.");
 
             return response()->json([
@@ -329,7 +329,7 @@ class EditorController extends Controller
                         ));
 
                     if (array_key_exists('step', $result) || array_key_exists('error', $result)) {
-                        $filename = PathInfo::filename($filename) . ".$downloadExtension";
+                        $filename = PathInfo::filename($filename).".$downloadExtension";
                     } else {
                         $url = $result['fileUrl'];
                     }
@@ -368,7 +368,7 @@ class EditorController extends Controller
             case 7:
                 $isSubmitForm = $data['forcesavetype'] === 3;
 
-                if ($isSubmitForm && !array_key_exists('formsdataurl', $data)) {
+                if ($isSubmitForm && ! array_key_exists('formsdataurl', $data)) {
                     abort(500, 'Document editing service did not return formsDataUrl');
                 }
 
@@ -394,7 +394,7 @@ class EditorController extends Controller
                         ));
 
                     if (array_key_exists('step', $result) || array_key_exists('error', $result)) {
-                        $filename = PathInfo::filename($filename) . ".$downloadExtension";
+                        $filename = PathInfo::filename($filename).".$downloadExtension";
                     } else {
                         $url = $result['fileUrl'];
                     }

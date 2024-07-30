@@ -10,8 +10,8 @@ use App\Repositories\FormatRepository;
 use App\Services\Docs\Conversion\ConversionRequest;
 use App\Services\JWT;
 use App\Services\ServerConfig;
-use Illuminate\Support\Str;
 use Exception;
+use Illuminate\Support\Str;
 
 class ConvertCommand
 {
@@ -19,14 +19,13 @@ class ConvertCommand
         private ServerConfig $serverConfig,
         private FormatRepository $formatRepository,
         private JWT $jwt,
-    ) {
-    }
+    ) {}
 
     public function __invoke(ConvertRequest $request): mixed
     {
         $format = $this->formatRepository->find($request->fileType);
 
-        if (!$format->convertible()) {
+        if (! $format->convertible()) {
             throw new Exception("The format $request->fileType is not convertible.");
         }
 
@@ -48,7 +47,7 @@ class ConvertCommand
         try {
             $result = app(ConversionRequest::class)
                 ->send($content, $key);
-            $result['filename'] = PathInfo::filename($request->filename) . '.' . $result['fileType'];
+            $result['filename'] = PathInfo::filename($request->filename).'.'.$result['fileType'];
         } catch (ConversionNotComplete $e) {
             return [
                 'step' => $e->step,

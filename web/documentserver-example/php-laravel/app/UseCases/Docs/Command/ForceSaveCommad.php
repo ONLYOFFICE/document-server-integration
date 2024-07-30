@@ -12,7 +12,7 @@ class ForceSaveCommad
     {
         try {
             app(ForceSave::class)
-            ->save($request->key);
+                ->save($request->key);
         } catch (CommandServiceError $e) {
             Log::debug($e->getMessage());
         }
