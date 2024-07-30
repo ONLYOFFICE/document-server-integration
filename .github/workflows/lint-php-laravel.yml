@@ -1,13 +1,6 @@
 name: Laravel Pint
 
-on:
-  workflow_dispatch:
-  push:
-    branches: [master, main]
-    paths: ['web/documentserver-example/php-laravel/**']
-  pull_request:
-    branches: [master, main, develop]
-    paths: ['web/documentserver-example/php-laravel/**']
+on: [push]
 
 jobs:
   lint:
