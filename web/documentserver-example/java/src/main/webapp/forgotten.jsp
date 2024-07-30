@@ -38,11 +38,23 @@
     </head>
     <body>
         <header>
-            <div class="center">
+            <div class="center main-nav">
                 <a href="./">
                     <img src ="css/img/logo.svg" alt="ONLYOFFICE" />
                 </a>
             </div>
+            <menu class="responsive-nav">
+                <li>
+                  <a href="#">
+                    <img src="css/img/mobile-menu.svg" alt="ONLYOFFICE" />
+                  </a>
+                </li>
+                <li>
+                  <a href="./">
+                    <img src ="css/img/mobile-logo.svg" alt="ONLYOFFICE" />
+                  </a>
+                </li>
+            </menu>
         </header>
         <div class="center main">
             <table class="table-main">

@@ -63,6 +63,14 @@ header img {
     margin: 10px 0 22px 32px;
 }
 
+.responsive-nav {
+    display: none;
+}
+
+.mobile-close-btn {
+    display: none;
+}
+
 .center {
     position: relative;
     margin: 0 auto 0;
@@ -164,9 +172,8 @@ label .checkbox {
     background-image: url("../images/file_pptx.svg");
 }
 
-.try-editor.docxf,
-.try-editor.form {
-    background-image: url("../images/file_docxf.svg");
+.try-editor.pdf {
+    background-image: url("../images/file_pdf.svg");
 }
 
 .side-option {
@@ -499,14 +506,18 @@ label .checkbox {
     display: inline;
 }
 
-.step-descr {
+.step-descr, .step-error {
     display: block;
     margin-left: 35px;
     font-size: 11px;
     line-height: 188%;
 }
 
-.step-descr.disable {
+.step-error {
+    color: #CB0000;
+}
+
+.step-descr.disable, .step-error.hidden {
     display: none;
 }
 

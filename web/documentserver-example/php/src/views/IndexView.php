@@ -85,11 +85,11 @@ final class IndexView extends View
         $userList = new ExampleUsers();
         foreach ($userList->getAllUsers() as $userL) {
             $name = $userL->name ?: "Anonymous";
-            $layout .= '<div class="user-descr"><br><b>'.$name.'</b><br><ul>';
+            $layout .= '<div class="user-descr" onclick="toggleUserDescr(event)"><b>'.$name.'</b><ul>';
             foreach ($userL->descriptions as $description) {
                 $layout .= '<li>'.$description.'</li>';
             }
-            $layout .= '</ul><br></div>';
+            $layout .= '</ul></div>';
         }
         return $layout;
     }

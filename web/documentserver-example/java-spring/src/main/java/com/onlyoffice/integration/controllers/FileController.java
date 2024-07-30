@@ -388,7 +388,7 @@ public class FileController {
                 if (fileName == null || fileName.isBlank()) {
                     throw new RuntimeException("You must have forgotten to add asset files");
                 }
-                return "redirect:editor?fileName=" + URLEncoder
+                return "redirect:editor?action=edit&fileName=" + URLEncoder
                         .encode(fileName, StandardCharsets.UTF_8);  // redirect the request
             } catch (Exception ex) {
                 model.addAttribute("error", ex.getMessage());

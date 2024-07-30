@@ -65,7 +65,8 @@ public class UserServices {
                            final Boolean chat,
                            final Boolean protect,
                            final Boolean avatar,
-                           final Goback goback) {
+                           final Goback goback,
+                           final Boolean submitForm) {
         User newUser = new User();
         newUser.setName(name);  // set the user name
         newUser.setEmail(email);  // set the user email
@@ -91,7 +92,8 @@ public class UserServices {
                         commentGroupsRemove,
                         usInfoGroups,
                         chat,
-                        protect);  // specify permissions for the current user
+                        protect,
+                        submitForm);  // specify permissions for the current user
         newUser.setPermissions(permission);
 
         newUser.setGoback(goback);

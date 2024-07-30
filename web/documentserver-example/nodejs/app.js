@@ -584,18 +584,25 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
   const { referenceData } = req.body;
   let fileName = '';
-  let userAddress = '';
   if (referenceData) {
     const { instanceId } = referenceData;
 
     if (instanceId === req.DocManager.getInstanceId()) {
       const fileKey = JSON.parse(referenceData.fileKey);
-      ({ userAddress } = fileKey);
+      const { userAddress } = fileKey;
 
       if (userAddress === req.DocManager.curUserHostAddress()
-                && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName, userAddress))) {
+                && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName))) {
         ({ fileName } = fileKey);
       }
+    }
+  }
+
+  if (!fileName && !!req.body.path) {
+    const filePath = fileUtility.getFileName(req.body.path);
+
+    if (req.DocManager.existsSync(req.DocManager.storagePath(filePath))) {
+      fileName = filePath;
     }
   }
 
@@ -610,17 +617,9 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
     const urlObj = urlModule.parse(req.body.link, true);
     fileName = urlObj.query.fileName;
-    if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
+    if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName))) {
       result({ error: 'File is not exist' });
       return;
-    }
-  }
-
-  if (!fileName && !!req.body.path) {
-    const filePath = fileUtility.getFileName(req.body.path);
-
-    if (req.DocManager.existsSync(req.DocManager.storagePath(filePath, userAddress))) {
-      fileName = filePath;
     }
   }
 
@@ -705,6 +704,13 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       newFileName,
     ) {
       try {
+        if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
+          console.log(`callbackProcessSave error: name = ${fileName} userAddress = ${userAddress} is not exist`);
+          response.write('{"error":1, "message":"file is not exist"}');
+          response.end();
+          return;
+        }
+
         const { status, data } = await urllib.request(downloadUri, { method: 'GET' });
 
         if (status !== 200) throw new Error(`Document editing service returned status: ${status}`);
@@ -1019,7 +1025,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
 
       // get the redirect path
-      const redirectPath = `${req.DocManager.getServerUrl()}/editor?fileName=`
+      const redirectPath = `${req.DocManager.getServerUrl()}/editor?mode=edit&fileName=`
       + `${encodeURIComponent(fName)}${req.DocManager.getCustomParams()}`;
       res.redirect(redirectPath);
       return;
@@ -1095,11 +1101,14 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const key = req.DocManager.getKey(fileName);
     const url = req.DocManager.getDownloadUrl(fileName, true);
     const directUrl = req.DocManager.getDownloadUrl(fileName);
-    let mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
+
+    // check if this file can be filled
+    const canFill = fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1;
+    let mode = req.query.mode || (canFill ? 'fillForms' : 'edit'); // mode: view/edit/review/comment/fillForms/embedded
 
     let canEdit = fileUtility.getEditExtensions().indexOf(fileExt.slice(1)) !== -1; // check if this file can be edited
     if (((!canEdit && mode === 'edit') || mode === 'fillForms')
-      && fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1) {
+      && canFill) {
       mode = 'fillForms';
       canEdit = true;
     }
@@ -1108,7 +1117,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     let submitForm = false;
-    if (mode === 'fillForms') {
+    if (mode === 'fillForms' || mode === 'embedded') {
       submitForm = userid === 'uid-1';
     }
 

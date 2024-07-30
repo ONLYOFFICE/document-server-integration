@@ -138,12 +138,24 @@ header a {
     }
 
     .main-panel {
-        width: calc(100% - 32px);
-        margin: 0 16px;
-        padding: 16px 0;
+        width: 100%;
+        margin: 0;
+        padding: 28px 16px;
     }
 
     .tableHeader td:last-child, .tableRow td:last-child {
         width: 25%;
+    }
+
+    header a {
+        width: auto;
+    }
+
+    .scroll-table-body {
+        top: 40px;
+    }
+
+    .tableRow {
+        padding: 8px 0;
     }
 }

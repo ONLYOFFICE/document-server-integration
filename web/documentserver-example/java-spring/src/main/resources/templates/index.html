@@ -30,11 +30,23 @@
 </head>
 <body>
     <header>
-        <div class="center">
+        <div class="center main-nav">
             <a href="./">
                 <img src ="css/img/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
+        <menu class="responsive-nav">
+            <li>
+              <a href="#" onclick="toggleSidePanel(event)">
+                <img src="css/img/mobile-menu.svg" alt="ONLYOFFICE" />
+              </a>
+            </li>
+            <li>
+              <a href="./">
+                <img src ="css/img/mobile-logo.svg" alt="ONLYOFFICE" />
+              </a>
+            </li>
+        </menu>
     </header>
 
     <div class="center main">
@@ -57,7 +69,7 @@
                                         <a class="try-editor slide" data-type="pptx">Presentation</a>
                                     </li>
                                     <li>
-                                        <a class="try-editor form" data-type="docxf">PDF form</a>
+                                        <a class="try-editor form" data-type="pdf">PDF form</a>
                                     </li>
                                 </ul>
                                 <label class="side-option">
@@ -109,6 +121,9 @@
                             </table>
                         </div>
                     </div>
+                    <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                        <img src="css/img/close.svg" alt="">
+                    </button>
                 </td>
                 <td class="section">
                     <div class="main-panel">
@@ -176,12 +191,14 @@
                                                     <img src="css/img/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                     </a>
                                                 </td>
-                                                <td class="contentCells contentCells-icon">
-                                                    <a th:with="directUrl=${directUrl}"
-                                                       th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='comment', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
-                                                        <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
-                                                    </a>
-                                                </td>
+                                                <div th:if="not ${docTypes[iState.index]} eq 'pdf'">
+                                                    <td class="contentCells contentCells-icon">
+                                                        <a th:with="directUrl=${directUrl}"
+                                                        th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='comment', __(${#strings.isEmpty(directUrl)} ? '' : ('directUrl=' + ${directUrl}))__)}" target="_blank">
+                                                            <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                        </a>
+                                                    </td>
+                                                </div>
                                                     <div th:if="${docTypes[iState.index]} eq 'word'">
                                                         <td class="contentCells contentCells-icon">
                                                             <a th:with="directUrl=${directUrl}"

@@ -121,7 +121,7 @@ def createNew(request):
 
         filename = docManager.createSample(fileType, sample, request)  # create a new sample file of the necessary type
 
-        return HttpResponseRedirect(f'edit?filename={filename}')  # return http response with redirection url
+        return HttpResponseRedirect(f'edit?mode=edit&filename={filename}')  # return http response with redirection url
 
     except Exception as e:
         response.setdefault('error', e.args[0])
@@ -198,16 +198,16 @@ def edit(request):
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)  # get user
-
+    canFill = docManager.isCanFillForms(ext)
     # get the editor mode: view/edit/review/comment/fillForms/embedded (the default mode is edit)
-    edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'
+    edMode = request.GET.get('mode') if request.GET.get('mode') else ('fillForms' if canFill else 'edit')
     canEdit = docManager.isCanEdit(ext)  # check if the file with this extension can be edited
 
-    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and docManager.isCanFillForms(ext):
+    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and canFill:
         edMode = 'fillForms'
         canEdit = True
     # if the Submit form button is displayed or hidden
-    submitForm = edMode == 'fillForms' and user.id == 'uid-1'
+    submitForm = edMode in ['fillForms', 'embedded'] and user.id == 'uid-1'
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'  # if the file can't be edited, the mode is view
 
     types = ['desktop', 'mobile', 'embedded']
@@ -274,14 +274,14 @@ def edit(request):
             'key': docKey,
             'info': infObj,
             'permissions': {  # the permission for the document to be edited and downloaded or not
-                'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded') \
+                'comment': (edMode != 'view') & (edMode != 'fillForms') & (edMode != 'embedded')
                 & (edMode != "blockcontent"),
                 'copy': 'copy' not in user.deniedPermissions,
                 'download': 'download' not in user.deniedPermissions,
-                'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter') \
+                'edit': canEdit & ((edMode == 'edit') | (edMode == 'view') | (edMode == 'filter')
                                    | (edMode == "blockcontent")),
                 'print': 'print' not in user.deniedPermissions,
-                'fillForms': (edMode != 'view') & (edMode != 'comment') \
+                'fillForms': (edMode != 'view') & (edMode != 'comment')
                 & (edMode != "blockcontent"),
                 'modifyFilter': edMode != 'filter',
                 'modifyContentControl': edMode != "blockcontent",

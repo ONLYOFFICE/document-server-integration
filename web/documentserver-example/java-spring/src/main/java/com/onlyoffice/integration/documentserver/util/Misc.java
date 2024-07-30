@@ -28,7 +28,8 @@ public class Misc {
 
     // convert user descriptions to the specified format
     public String convertUserDescriptions(final String username, final List<String> description) {
-        String result = "<div class=\"user-descr\"><b>" + username + "</b><br/><ul>" + description.
+        String result = "<div class=\"user-descr\" onclick=\"toggleUserDescr(event)\"><b>"
+                + username + "</b><ul>" + description.
                 stream().map(text -> "<li>" + text + "</li>")
                 .collect(Collectors.joining()) + "</ul></div>";
         return result;

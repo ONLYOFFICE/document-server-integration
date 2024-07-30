@@ -43,11 +43,23 @@
     </head>
     <body>
         <header>
-            <div class="center">
+            <div class="center main-nav">
                 <a href="./">
                     <img src ="css/img/logo.svg" alt="ONLYOFFICE" />
                 </a>
             </div>
+            <menu class="responsive-nav">
+                <li>
+                  <a href="#" onclick="toggleSidePanel(event)">
+                    <img src="css/img/mobile-menu.svg" alt="ONLYOFFICE" />
+                  </a>
+                </li>
+                <li>
+                  <a href="./">
+                    <img src ="css/img/mobile-logo.svg" alt="ONLYOFFICE" />
+                  </a>
+                </li>
+            </menu>
         </header>
         <div class="center main">
             <table class="table-main">
@@ -69,7 +81,7 @@
                                                 <a class="try-editor slide" data-type="pptx">Presentation</a>
                                             </li>
                                             <li>
-                                                <a class="try-editor form" data-type="docxf">PDF form</a>
+                                                <a class="try-editor form" data-type="pdf">PDF form</a>
                                             </li>
                                         </ul>
                                         <label class="create-sample">
@@ -120,6 +132,9 @@
                                     </table>
                                 </div>
                             </div>
+                            <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                                <img src="css/img/close.svg" alt="">
+                            </button>
                         </td>
                         <td class="section">
                             <% DocumentManager.init(request, response); %>
@@ -146,7 +161,7 @@
                                     <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                     <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                     <% for (User user : Users.getAllUsers()) { %>
-                                        <div class="user-descr">
+                                        <div class="user-descr" onclick="toggleUserDescr(event)">
                                             <b><%= user.getName() == null ? "Anonymous" : user.getName() %></b>
                                             <ul>
                                                 <% for (String description : user.getDescriptions()) { %>
@@ -203,11 +218,13 @@
                                                                         <img src="css/img/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                     </a>
                                                                 </td>
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=comment" target="_blank">
-                                                                        <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
-                                                                    </a>
-                                                                </td>
+                                                                <% if (!docType.equals("pdf")) { %>
+                                                                    <td class="contentCells contentCells-icon">
+                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=comment" target="_blank">
+                                                                            <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                        </a>
+                                                                    </td>
+                                                                <% } %>
                                                                 <% if (docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=review" target="_blank">

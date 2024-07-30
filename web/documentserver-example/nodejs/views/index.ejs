@@ -32,11 +32,23 @@
 </head>
 <body>
     <header>
-        <div class="center">
+        <div class="center main-nav">
             <a href="./">
                 <img src ="images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
+        <menu class="responsive-nav">
+            <li>
+                <a href="#" onclick="toggleSidePanel(event)">
+                    <img src ="images/mobile-menu.svg" alt="ONLYOFFICE" />
+                </a>
+            </li>
+            <li>
+                <a href="./">
+                    <img src ="images/mobile-logo.svg" alt="ONLYOFFICE" />
+                </a>
+            </li>
+        </menu>
     </header>
     <div class="center main">
         <table class="table-main">
@@ -58,7 +70,7 @@
                                             <a class="try-editor slide reload-page action-link" target="_blank" href="editor?fileExt=pptx" title="Create new presentation">Presentation</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor form reload-page action-link" target="_blank" href="editor?fileExt=docxf" title="Create new PDF form">PDF form</a>
+                                            <a class="try-editor pdf reload-page action-link" target="_blank" href="editor?fileExt=pdf" title="Create new PDF form">PDF form</a>
                                         </li>
                                     </ul>
                                     <label class="side-option">
@@ -108,6 +120,9 @@
                                 </table>
                             </div>
                         </div>
+                        <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                            <img src="images/close.svg" alt="">
+                        </button>
                     </td>
                     <td class="section">
                         <div class="main-panel">
@@ -135,7 +150,7 @@
                                 <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                 <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                 <% users.forEach(user => { %>
-                                    <div class="user-descr">
+                                    <div class="user-descr" onclick="toggleUserDescr(event)">
                                         <b><%= user.name == null ? 'Anonymous' : user.name %></b>
                                         <ul>
                                             <% user.descriptions.forEach(description => { %>
@@ -178,13 +193,17 @@
                                                     </td>
                                                     <% if (storedFiles[i].canEdit) { %>
                                                         <td class="contentCells contentCells-icon">
-                                                            <a class="action-link" href="editor?type=desktop&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
+                                                            <a class="action-link" href="editor?type=desktop&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
                                                         </td>
+                                                        <% if (storedFiles[i].documentType !== "pdf") { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment" /></a>
                                                         </td>
+                                                        <% } else { %>
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                        <% } %>
                                                         <% if (storedFiles[i].documentType == "word") { %>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a class="action-link" href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
@@ -341,6 +360,7 @@
             <br />
             <span id="convertStep2" class="step">2. File conversion</span>
             <span class="step-descr disable" id="convert-descr">The file is converted <div class="convertPercent" id="convertPercent">0 %</div></span>
+            <span class="step-error hidden" id="convert-error"></span>
             <div class="describeUpload">Note the speed of all operations depends on your connection quality and server location.</div>
             <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
         </div>

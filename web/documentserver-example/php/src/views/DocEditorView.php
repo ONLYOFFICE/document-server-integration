@@ -63,7 +63,7 @@ final class DocEditorView extends View
             $filename = tryGetDefaultByType($createExt, $user);
 
             // create the demo file url
-            $newURL = "editor?fileID=" . $filename . "&user=" . $request["user"];
+            $newURL = "editor?action=edit&fileID=" . $filename . "&user=" . $request["user"];
             header('Location: ' . $newURL, true);
             exit;
         }
@@ -74,18 +74,16 @@ final class DocEditorView extends View
         $filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
         $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        $editorsMode = empty($request["action"]) ? "edit" : $request["action"];  // get the editors mode
+        $canFill = in_array($ext, $formatManager->fillableExtensions());
+        $editorsMode = empty($request["action"]) ? ($canFill ? "fillForms" : "edit") : $request["action"];
         $canEdit = in_array($ext, $formatManager->editableExtensions());  // check if the file can be edited
-        if ((!$canEdit && $editorsMode == "edit"
-                || $editorsMode == "fillForms")
-            && in_array($ext, $formatManager->fillableExtensions())
-        ) {
+        if ((!$canEdit && $editorsMode == "edit" || $editorsMode == "fillForms") && $canFill) {
             $editorsMode = "fillForms";
             $canEdit = true;
         }
 
         // check if the Submit form button is displayed or not
-        $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1";
+        $submitForm = in_array($editorsMode, ["fillForms", "embedded"]) && $user->id == "uid-1";
         $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
         $type = empty($request["type"]) ? "desktop" : $request["type"];
 
