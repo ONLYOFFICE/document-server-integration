@@ -1,6 +1,8 @@
 install: # Install all the dependencies
 	@composer install
+	@npm run install
 	@npm run build
+	@php artisan key
 
 compose-start: # Start docker services and install all the dependencies (e.g. php, nodejs)
 	@docker compose build
