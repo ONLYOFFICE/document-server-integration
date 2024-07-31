@@ -1,13 +1,6 @@
 name: Artifact PHP Laravel
 
-on:
-  workflow_dispatch:
-  push:
-    branches: [master]
-    paths: ['web/documentserver-example/php-laravel/**']
-  pull_request:
-    branches: [master]
-    paths: ['web/documentserver-example/php-laravel/**']
+on: [push]
 
 jobs:
   artifact:
