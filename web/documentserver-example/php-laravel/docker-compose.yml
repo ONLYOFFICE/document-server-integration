@@ -19,7 +19,7 @@ services:
     expose:
       - "80"
     environment:
-      JWT_SECRET: ${JWT_SECRET}
+      JWT_SECRET: ${DOCUMENT_SERVER_JWT_SECRET}
     networks:
       - example
 
