@@ -1,4 +1,11 @@
 # Change Log
+- php-laravel: new integration example
+- php-laravel: upload files to the server
+- php-laravel: create blank files and files with sample content
+- php-laravel: edit uploaded files in onlyoffice editor
+- php-laravel: delete files on the server
+- php-laravel: create, edit, and submit pdf forms
+- php-laravel: show forgotten files on a seperate page
 
 ## 1.10.0
 - nodejs: tabs menu
