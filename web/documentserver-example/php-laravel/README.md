@@ -107,6 +107,8 @@ The following table shows the environment variables that is used to configure th
 
 | Name                          | Description                                                             | Example                 |
 | ----------------------------- | ----------------------------------------------------------------------- | ----------------------- |
+| `USER`                        | The user name in the system.                                                     | `user` |
+| `UID`                         | The user ID number (UID) in the system.                                 | `1000` |
 | `DOCUMENT_STORAGE_PUBLIC_URL` | The URL address used by the client to communicate with the server.      | `http://localhost`      |
 | `DOCUMENT_STORAGE_PRIVATE_URL`| The URL address used by the Document Server to communicate with the server. | `http://proxy`          |
 | `DOCUMENT_SERVER_PUBLIC_URL`  | The URL address used by the client to communicate with the Document Server. | `http://localhost:8080` |
