@@ -261,7 +261,7 @@ class EditorController extends Controller
                 config.events['onRequestHistoryData'] = onRequestHistoryData;";
             if ($user['id'] != 'uid-3') {
                 $historyLayout .= "config.events['onRequestHistoryClose'] = onRequestHistoryClose;
-                config.events['onRequestRestore'] = onRequestRestore;";
+                // config.events['onRequestRestore'] = onRequestRestore;";
             }
         }
 
