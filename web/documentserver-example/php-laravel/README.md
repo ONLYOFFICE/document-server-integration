@@ -65,7 +65,7 @@ Before diving into the example, you will need to install ONLYOFFICE Document Ser
 
 - PHP >= 8.2
 - [Node.js (16+) and NPM](https://laravel.com/docs/11.x/vite#installing-node)
-- [Laravel Server Requirements](https://laravel.com/docs/11.x/deployment#server-requirements)
+- [Laravel (11) Server Requirements](https://laravel.com/docs/11.x/deployment#server-requirements)
 
 Once you have everything installed, download the release archive and extract it in your preferred directory.
 
@@ -107,12 +107,11 @@ The following table shows the environment variables that is used to configure th
 
 | Name                          | Description                                                             | Example                 |
 | ----------------------------- | ----------------------------------------------------------------------- | ----------------------- |
-| `DOCUMENT_STORAGE_PUBLIC_URL` | .                                                                       | `0.0.0.0`               |
-| `PORT`                        | The port on which the server should be running.                         | `80`                    |
-| `DOCUMENT_SERVER_PRIVATE_URL` | The URL through which the server will communicate with Document Server. | `http://proxy:8080`     |
-| `DOCUMENT_SERVER_PUBLIC_URL`  | The URL through which a user will communicate with Document Server.     | `http://localhost:8080` |
-| `EXAMPLE_URL`                 | The URL through which Document Server will communicate with the server. | `http://proxy`          |
-| `JWT_SECRET`                  | JWT authorization secret. Leave blank to disable authorization.         | `your-256-bit-secret`   |
+| `DOCUMENT_STORAGE_PUBLIC_URL` | The URL address used by the client to communicate with the server.      | `http://localhost`      |
+| `DOCUMENT_STORAGE_PRIVATE_URL`| The URL address used by the Document Server to communicate with the server. | `http://proxy`          |
+| `DOCUMENT_SERVER_PUBLIC_URL`  | The URL address used by the client to communicate with the Document Server. | `http://localhost:8080` |
+| `DOCUMENT_SERVER_PRIVATE_URL` | The URL address used by the server to communicate with the Document Server. | `http://proxy:8080`     |
+| `DOCUMENT_SERVER_JWT_SECRET`  | JWT authorization secret.                                               | `your-256-bit-secret`   |
 
 ## Security Info
 
