@@ -43,7 +43,7 @@ class IndexController extends Controller
         $languages = app(FindAllLanguagesQueryHandler::class)->__invoke();
 
         $users = app(FindAllUsersQueryHandler::class)->
-            __invoke(new FindAllUsersQuery());
+            __invoke(new FindAllUsersQuery);
 
         $user = $request->input('user', cache('user'));
 

@@ -219,7 +219,7 @@ class EditorController extends Controller
         $usersInfo = [];
 
         $users = app(FindAllUsersQueryHandler::class)
-            ->__invoke(new FindAllUsersQuery());
+            ->__invoke(new FindAllUsersQuery);
 
         if ($user['id'] != 'uid-0') {
             foreach ($users as $userInfo) {

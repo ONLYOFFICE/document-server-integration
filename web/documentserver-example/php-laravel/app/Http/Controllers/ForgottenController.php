@@ -27,7 +27,7 @@ class ForgottenController extends Controller
     public function index()
     {
         $files = app(FindAllForgottenFilesQueryHandler::class)
-            ->__invoke(new FindAllForgottenFilesQuery());
+            ->__invoke(new FindAllForgottenFilesQuery);
 
         return view('forgotten', compact('files'));
     }
