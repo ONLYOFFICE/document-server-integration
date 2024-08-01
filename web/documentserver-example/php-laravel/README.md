@@ -85,7 +85,7 @@ $ composer install
 
 - Install the application's frontend dependencies and build the assets
 ```sh
-$ npm run install && npm run build
+$ npm install && npm run build
 ```
 
 - Generate an application key for the laravel instance
