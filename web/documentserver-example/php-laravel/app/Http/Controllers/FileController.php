@@ -57,6 +57,7 @@ class FileController extends Controller
 
         $uploadedFile = $request->file('file');
         $fileType = $uploadedFile->getClientOriginalExtension();
+        $user = $request->input('user') ?? '';
 
         try {
             $file = app(CreateDocumentCommand::class)->__invoke(
@@ -66,7 +67,7 @@ class FileController extends Controller
                     $fileType,
                     $uploadedFile->getSize(),
                     $uploadedFile->getContent(),
-                    $request->user,
+                    $user,
                 )
             );
         } catch (Exception $e) {

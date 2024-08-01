@@ -58,16 +58,16 @@
                                     <div class="create-panel clearFix">
                                         <ul class="try-editor-list clearFix">
                                             <li>
-                                                <a class="try-editor word reload-page" target="_blank" href="editor?fileExt=docx&user={user}">Document</a>
+                                                <a class="try-editor word reload-page" target="_blank" href="editor?fileExt=docx&user={{ $user }}">Document</a>
                                             </li>
                                             <li>
-                                                <a class="try-editor cell reload-page" target="_blank" href="editor?fileExt=xlsx&user={user}">Spreadsheet</a>
+                                                <a class="try-editor cell reload-page" target="_blank" href="editor?fileExt=xlsx&user={{ $user }}">Spreadsheet</a>
                                             </li>
                                             <li>
-                                                <a class="try-editor slide reload-page" target="_blank" href="editor?fileExt=pptx&user={user}">Presentation</a>
+                                                <a class="try-editor slide reload-page" target="_blank" href="editor?fileExt=pptx&user={{ $user }}">Presentation</a>
                                             </li>
                                             <li>
-                                                <a class="try-editor form reload-page" target="_blank" href="editor?fileExt=pdf&user={user}">PDF form</a>
+                                                <a class="try-editor form reload-page" target="_blank" href="editor?fileExt=pdf&user={{ $user }}">PDF form</a>
                                             </li>
                                         </ul>
                                         <label class="side-option">
@@ -78,7 +78,7 @@
                                     <div class="upload-panel clearFix">
                                         <a class="file-upload">Upload file
                                             @csrf
-                                            <input type="file" id="fileupload" name="file" data-url="/files/upload?user={user}" />
+                                            <input type="file" id="fileupload" name="file" data-url="/files/upload?user={{ $user }}" />
                                         </a>
                                     </div>
 
