@@ -28,8 +28,11 @@ class FindAllDocumentsQueryHandler
                 'filename' => PathInfo::basename($file->filename),
                 'version' => $currentVersion,
                 'format' => $this->formatRepository->find(PathInfo::extension($file->filename)),
+                'lastModified' => $file->modified,
             ];
         }
+
+        $result = collect($result)->sortByDesc('lastModified')->toArray();
 
         return $result;
     }
