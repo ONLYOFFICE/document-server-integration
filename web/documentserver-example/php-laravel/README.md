@@ -115,6 +115,10 @@ The following table shows the environment variables that is used to configure th
 | `DOCUMENT_SERVER_PRIVATE_URL` | The URL address used by the server to communicate with the Document Server. | `http://proxy:8080`     |
 | `DOCUMENT_SERVER_JWT_SECRET`  | JWT authorization secret.                                               | `your-256-bit-secret`   |
 
+## Troubleshooting
+
+Check out the [Laravel documentation](https://laravel.com/docs/11.x/deployment#server-configuration) page in case you are having installation or configuration problems with the framework.
+
 ## Security Info
 
 Please keep in mind the following security aspects when you are using test examples:
