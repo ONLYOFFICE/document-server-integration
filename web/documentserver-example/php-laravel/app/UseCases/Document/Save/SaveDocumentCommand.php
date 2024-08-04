@@ -44,8 +44,8 @@ class SaveDocumentCommand
             $this->forceSavedFilesRepository->delete($request->filename);
         }
 
-        $this->versionRepository->save($version);
         $this->fileRepository->delete($file);
         $this->fileRepository->save($newFile);
+        $this->versionRepository->save($version);
     }
 }
