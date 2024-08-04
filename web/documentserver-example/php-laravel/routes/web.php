@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\Files\VersionController as FilesVersionController;
 use App\Http\Controllers\API\FormatController;
 use App\Http\Controllers\EditorController;
 use App\Http\Controllers\FileController;
@@ -35,6 +36,10 @@ Route::middleware(EnsureUserDirectoryExists::class)->group(function () {
     });
     Route::prefix('api')->group(function () {
         Route::get('/formats', [FormatController::class, 'index']);
+
+        Route::prefix('files')->name('files.')->group(function () {
+            Route::put('/versions/restore', [FilesVersionController::class, 'restore']);
+        });
     });
     Route::prefix('editor')->name('editor.')->group(function () {
         Route::get('/', [EditorController::class, 'index'])->name('index');

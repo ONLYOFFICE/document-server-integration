@@ -151,7 +151,6 @@
             xhr.send(JSON.stringify(data));
             xhr.onload = function() {
                 innerAlert(xhr.responseText);
-                console.log(JSON.parse(xhr.responseText));
                 callback(JSON.parse(xhr.responseText));
             }
         };
@@ -261,7 +260,6 @@
         function onRequestHistoryData(event) {
             var ver = event.data;
             var histData = history.history;
-            console.log(histData[ver - 1]);
             docEditor.setHistoryData(histData[ver - 1]) 
         }
 
@@ -272,14 +270,18 @@
         function onRequestRestore(event) {
             const query = new URLSearchParams(window.location.search)
             const config = {!! $config !!}
-            const payload = {
-                fileName: query.get('fileID'),
+            const data = {
+                filename: query.get('fileID'),
+                fileType: event.data.fileType,
                 version: event.data.version,
                 userId: query.get('user') || config.editorConfig.user.id
             }
             const request = new XMLHttpRequest()
-            request.open("PUT", 'restore')
-            request.send(JSON.stringify(payload))
+            request.open("PUT", '/api/files/versions/restore')
+            request.setRequestHeader('X-CSRF-TOKEN', "{{ csrf_token() }}")
+            request.setRequestHeader('Content-Type', 'application/json');
+            request.setRequestHeader('Accept', 'application/json');
+            request.send(JSON.stringify(data));
             request.onload = function() {
                 if (request.status != 200) {
                     response = JSON.parse(request.response)
