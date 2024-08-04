@@ -76,6 +76,7 @@ class VersionRepository
         $absPath = Storage::disk('files')->path($path);
 
         $file = [
+            'path' => $absPath,
             'filename' => "$version.$extension",
             'content' => Storage::disk('files')->get($path),
             'mime' => mime_content_type($absPath),
