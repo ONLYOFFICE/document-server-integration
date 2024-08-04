@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\UseCases\Document\Update\ChangeDocumentVersionCommand;
 use App\UseCases\Document\Update\ChangeDocumentVersionRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class VersionController extends Controller
 {
