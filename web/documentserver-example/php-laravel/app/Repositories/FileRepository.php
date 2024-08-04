@@ -53,6 +53,11 @@ class FileRepository
         return $file;
     }
 
+    public function path(string $filename): string
+    {
+        return Storage::disk('files')->path($filename);
+    }
+
     public function exists(string $filename): bool
     {
         return $this->storage->exists($filename);
