@@ -17,6 +17,6 @@ class UpdateMetaCommand
         ];
 
         app(CommandRequest::class)
-                ->send($content, $request->key);
+            ->send($content, $request->key);
     }
 }

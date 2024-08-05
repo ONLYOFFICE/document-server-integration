@@ -225,14 +225,14 @@ class FileController extends Controller
             'ext' => 'required|string',
         ]);
 
-        $title = PathInfo::filename($request->newfilename) . '.' . $request->ext;
+        $title = PathInfo::filename($request->newfilename).'.'.$request->ext;
 
         app(UpdateMetaCommand::class)
             ->__invoke(new UpdateMetaRequest(
                 key: $request->dockey,
                 title: $title,
             ));
-        
+
         return response()->json(['result' => $request->dockey]);
     }
 
