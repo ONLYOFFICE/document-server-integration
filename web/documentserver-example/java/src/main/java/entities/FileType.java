@@ -30,5 +30,8 @@ public enum FileType {
     CELL,
     @JsonProperty("slide")
     @SerializedName("slide")
-    SLIDE
+    SLIDE,
+    @JsonProperty("pdf")
+    @SerializedName("pdf")
+    PDF
 }

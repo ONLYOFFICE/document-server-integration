@@ -44,6 +44,12 @@ class IndexStoredListView extends View
         $directUrlArg = isset($this->request["directUrl"]) ? "&directUrl=" . $this->request["directUrl"] : "";
         if (!empty($storedFiles)) {
             foreach ($storedFiles as &$storeFile) {
+                $comment = $storeFile->documentType != "pdf" ?
+                    ' <td class="contentCells contentCells-icon">  <a href="editor?fileID='.
+                    urlencode($storeFile->name).'&user='.htmlentities($user).$directUrlArg.
+                    '&action=comment&type=desktop" target="_blank">'.
+                    '   <img src="assets/images/comment.svg" alt="Open in editor for comment"'.
+                    ' title="Open in editor for comment" /></a></td>' : '';
                 $layout .= '<tr class="tableRow" title="'.$storeFile->name.' ['.getFileVersion(
                     getHistoryDir(
                         getStoragePath($storeFile->name)
@@ -64,12 +70,7 @@ class IndexStoredListView extends View
                         urlencode($storeFile->name).'&user=' . htmlentities($user).$directUrlArg.
                      '&action=edit&type=mobile" target="_blank">'.
                     '<img src="assets/images/mobile.svg" alt="Open in editor for mobile devices"'.
-                    ' title="Open in editor for mobile devices" /></a></td>'.
-                     ' <td class="contentCells contentCells-icon">  <a href="editor?fileID='.
-                        urlencode($storeFile->name).'&user='.htmlentities($user).$directUrlArg.
-                    '&action=comment&type=desktop" target="_blank">'.
-                    '   <img src="assets/images/comment.svg" alt="Open in editor for comment"'.
-                    ' title="Open in editor for comment" /></a></td>';
+                    ' title="Open in editor for mobile devices" /></a></td>'.$comment;
                     if ($storeFile->documentType == "word") {
                         $layout .= '<td class="contentCells contentCells-icon">   <a href="editor?fileID='.
                             urlencode($storeFile->name).'&user='.htmlentities($user).$directUrlArg.

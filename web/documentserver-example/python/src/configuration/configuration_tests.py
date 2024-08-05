@@ -46,7 +46,7 @@ class ConfigurationManagerDocumentServerPublicURLTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
         url = config_manager.document_server_public_url()
-        self.assertEqual(url.geturl(), 'http://document-server')
+        self.assertEqual(url.geturl(), 'http://documentserver')
 
     @patch.dict(environ, {
         'DOCUMENT_SERVER_PUBLIC_URL': 'http://localhost'
@@ -61,7 +61,7 @@ class ConfigurationManagerDocumentServerPrivateURLTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
         url = config_manager.document_server_private_url()
-        self.assertEqual(url.geturl(), 'http://document-server')
+        self.assertEqual(url.geturl(), 'http://documentserver')
 
     @patch.dict(environ, {
         'DOCUMENT_SERVER_PRIVATE_URL': 'http://localhost'

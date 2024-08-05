@@ -48,22 +48,22 @@ server-prod: #   Start the poruction server on 0.0.0.0 at $PORT (default: 3000).
 
 .PHONY: compose-dev
 compose-dev: #   Up containers in a development environment.
-	@docker-compose \
+	@docker compose \
 		--file compose-base.yml \
 		--file compose-dev.yml \
 		build
-	@docker-compose \
+	@docker compose \
 		--file compose-base.yml \
 		--file compose-dev.yml \
 		up --detach
 
 .PHONY: compose-prod
 compose-prod: #  Up containers in a production environment.
-	@docker-compose \
+	@docker compose \
 		--file compose-base.yml \
 		--file compose-prod.yml \
 		build
-	@docker-compose \
+	@docker compose \
 		--file compose-base.yml \
 		--file compose-prod.yml \
 		up --detach

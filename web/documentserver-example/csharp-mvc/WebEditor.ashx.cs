@@ -69,6 +69,9 @@ namespace OnlineEditorsExampleMVC
                 case "remove":
                     Remove(context);
                     break;
+                case "removeforgotten":
+                    RemoveForgotten(context);
+                    break;
                 case "assets":
                     Assets(context);
                     break;
@@ -86,6 +89,9 @@ namespace OnlineEditorsExampleMVC
                     break;
                 case "reference":
                     Reference(context);
+                    break;
+                case "formats":
+                    Formats(context);
                     break;
             }
         }
@@ -240,7 +246,13 @@ namespace OnlineEditorsExampleMVC
                 var fileUri = DocManagerHelper.GetDownloadUrl(fileName);
 
                 var extension = (Path.GetExtension(fileName).ToLower() ?? "").Trim('.');
-                var internalExtension = "ooxml";
+                string conversionExtension = "ooxml";
+                object fileExt;
+
+                if (body.TryGetValue("fileExt", out fileExt) && !String.IsNullOrEmpty(fileExt.ToString()))
+                {
+                    conversionExtension = fileExt.ToString();
+                }
 
                 // check if the file with such an extension can be converted
                 if (DocManagerHelper.ConvertExts.Contains("." + extension))
@@ -258,7 +270,7 @@ namespace OnlineEditorsExampleMVC
 
                     // get the url and file type of the converted file
                     Dictionary<string, string> newFileData;
-                    var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, internalExtension, key, true, out newFileData, filePass, lang);
+                    var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, conversionExtension, key, true, out newFileData, filePass, lang);
                     if (result != 100)
                     {
                         context.Response.Write("{ \"step\" : \"" + result + "\", \"filename\" : \"" + fileName + "\"}");
@@ -393,8 +405,17 @@ namespace OnlineEditorsExampleMVC
             context.Response.ContentType = "text/plain";
             try
             {
-                var fileName = Path.GetFileName(context.Request["fileName"]);
-                Remove(fileName);  // remove a file and its history if it exists
+                string fileName = context.Request["fileName"];
+
+                if (!String.IsNullOrEmpty(fileName))
+                {
+                    fileName = Path.GetFileName(context.Request["fileName"]);
+                    Remove(fileName);  // remove a file and its history if it exists
+                }
+                else
+                {
+                    RemoveUserDirectory(); // remove the user's directory
+                }
 
                 context.Response.Write("{ \"success\": true }");
             }
@@ -412,6 +433,14 @@ namespace OnlineEditorsExampleMVC
 
             if (File.Exists(path)) File.Delete(path);
             if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
+        }
+
+        // remove the user's directory
+        private static void RemoveUserDirectory()
+        {
+            var path = DocManagerHelper.StoragePath("", null);  // get the path to the user directory
+
+            if (Directory.Exists(path)) Directory.Delete(path, true);
         }
 
         // get files information
@@ -951,6 +980,51 @@ namespace OnlineEditorsExampleMVC
             return history;
         }
 
+        // return all the supported formats
+        private static void Formats(HttpContext context)
+        {
+            try
+            {
+                Dictionary<string, object> data = new Dictionary<string, object>
+                {
+                    { "formats", FormatManager.All() }
+                };
+                context.Response.ContentType = "application/json";
+                var jss = new JavaScriptSerializer();
+
+                context.Response.Write(jss.Serialize(data));
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
+
+        // delete a forgotten file from the document server
+        private static void RemoveForgotten(HttpContext context)
+        {
+            try
+            {
+                if (!bool.Parse(WebConfigurationManager.AppSettings["enable-forgotten"]))
+                {
+                    throw new HttpException(403, "The forgotten page is disabled");
+                }
+
+                string filename = context.Request["filename"];
+
+                if (!String.IsNullOrEmpty(filename))
+                {
+                    TrackManager.commandRequest("deleteForgotten", filename);
+                }
+
+                context.Response.StatusCode = 204;
+            }
+            catch (Exception e)
+            {
+                context.Response.StatusCode = 500;
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
     }
  
 }

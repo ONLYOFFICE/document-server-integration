@@ -63,7 +63,7 @@ public class EditorServlet extends HttpServlet {
                 fileName = DocumentManager.createDemo(fileExt, sampleData, user);
 
                 // redirect the request
-                response.sendRedirect("EditorServlet?fileName=" + URLEncoder.encode(fileName, "UTF-8"));
+                response.sendRedirect("EditorServlet?mode=edit&fileName=" + URLEncoder.encode(fileName, "UTF-8"));
                 return;
             } catch (Exception ex) {
                 response.getWriter().write("Error: " + ex.getMessage());
@@ -78,10 +78,10 @@ public class EditorServlet extends HttpServlet {
 
         // an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
-        dataInsertImage.put("fileType", "png");
-        dataInsertImage.put("url", DocumentManager.getServerUrl(true) + "/css/img/logo.png");
+        dataInsertImage.put("fileType", "svg");
+        dataInsertImage.put("url", DocumentManager.getServerUrl(true) + "/css/img/logo.svg");
         if (isEnableDirectUrl) {
-            dataInsertImage.put("directUrl", DocumentManager.getServerUrl(false) + "/css/img/logo.png");
+            dataInsertImage.put("directUrl", DocumentManager.getServerUrl(false) + "/css/img/logo.svg");
         }
 
         // a document that will be compared with the current document

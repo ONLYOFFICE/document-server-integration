@@ -43,11 +43,23 @@
     </head>
     <body>
         <header>
-            <div class="center">
-                <a href="">
+            <div class="center main-nav">
+                <a href="./">
                     <img src ="css/img/logo.svg" alt="ONLYOFFICE" />
                 </a>
             </div>
+            <menu class="responsive-nav">
+                <li>
+                  <a href="#" onclick="toggleSidePanel(event)">
+                    <img src="css/img/mobile-menu.svg" alt="ONLYOFFICE" />
+                  </a>
+                </li>
+                <li>
+                  <a href="./">
+                    <img src ="css/img/mobile-logo.svg" alt="ONLYOFFICE" />
+                  </a>
+                </li>
+            </menu>
         </header>
         <div class="center main">
             <table class="table-main">
@@ -69,7 +81,7 @@
                                                 <a class="try-editor slide" data-type="pptx">Presentation</a>
                                             </li>
                                             <li>
-                                                <a class="try-editor form" data-type="docxf">PDF form</a>
+                                                <a class="try-editor form" data-type="pdf">PDF form</a>
                                             </li>
                                         </ul>
                                         <label class="create-sample">
@@ -120,11 +132,26 @@
                                     </table>
                                 </div>
                             </div>
+                            <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                                <img src="css/img/close.svg" alt="">
+                            </button>
                         </td>
                         <td class="section">
                             <% DocumentManager.init(request, response); %>
                             <% File[] files = DocumentManager.getStoredFiles(null); %>
                             <div class="main-panel">
+                                <menu class="links">
+                                    <li class="home-link active" >
+                                      <a href="./">
+                                        <img src="css/img/home.svg" alt="Home"/>
+                                      </a>
+                                    </li>
+                                    <% if (Boolean.valueOf(ConfigManager.getProperty("enable-forgotten"))) { %>
+                                        <li>
+                                            <a href="/ForgottenServlet">Forgotten files</a>
+                                        </li>
+                                    <% } %>
+                                </menu>
                                 <div id="portal-info" style="display: <%= files.length > 0 ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
@@ -134,7 +161,7 @@
                                     <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                     <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                     <% for (User user : Users.getAllUsers()) { %>
-                                        <div class="user-descr">
+                                        <div class="user-descr" onclick="toggleUserDescr(event)">
                                             <b><%= user.getName() == null ? "Anonymous" : user.getName() %></b>
                                             <ul>
                                                 <% for (String description : user.getDescriptions()) { %>
@@ -146,7 +173,14 @@
                                 </div>
                                 <% if (files.length > 0)  { %>
                                     <div class="stored-list">
-                                       <span class="header-list">Your documents</span>
+                                        <div class="storedHeader">
+                                            <div class="storedHeaderText">
+                                                <span class="header-list">Your documents</span>
+                                            </div>
+                                            <div class="storedHeaderClearAll">
+                                                <div class="clear-all">Clear all</div>
+                                            </div>
+                                        </div>
                                        <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
                                            <thead>
                                                <tr>
@@ -184,11 +218,13 @@
                                                                         <img src="css/img/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                     </a>
                                                                 </td>
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=comment" target="_blank">
-                                                                        <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
-                                                                    </a>
-                                                                </td>
+                                                                <% if (!docType.equals("pdf")) { %>
+                                                                    <td class="contentCells contentCells-icon">
+                                                                        <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=comment" target="_blank">
+                                                                            <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                        </a>
+                                                                    </td>
+                                                                <% } %>
                                                                 <% if (docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=review" target="_blank">
@@ -299,6 +335,15 @@
                 <div class="describeUpload">After these steps are completed, you can work with your document.</div>
                 <span id="step1" class="step">1. Loading the file.</span>
                 <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+                <div id="select-file-type" class="invisible">
+                    <br />
+                    <span class="step">Please select the current document type</span>
+                    <div class="buttonsMobile indent">
+                        <div class="button file-type document" data="docx">Document</div>
+                        <div class="button file-type spreadsheet" data="xlsx">Spreadsheet</div>
+                        <div class="button file-type presentation" data="pptx">Presentation</div>
+                    </div>
+                </div>
                 <br />
                 <span id="step2" class="step">2. Conversion.</span>
                 <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
@@ -365,12 +410,10 @@
         <script type="text/javascript" src="scripts/jquery.iframe-transport.js"></script>
         <script type="text/javascript" src="scripts/jquery.fileupload.js"></script>
         <script type="text/javascript" src="scripts/jquery.dropdownToggle.js"></script>
+        <script type="text/javascript" src="scripts/formats.js"></script>
         <script type="text/javascript" src="scripts/jscript.js"></script>
 
         <script language="javascript" type="text/javascript">
-            var FillExtList = "<%= String.join(",", DocumentManager.getFillExts()) %>".split(",");
-            var ConverExtList = "<%= String.join(",", DocumentManager.getConvertExts()) %>".split(",");
-            var EditedExtList = "<%= String.join(",", DocumentManager.getEditedExts()) %>".split(",");
             var UrlConverter = "IndexServlet?type=convert";
             var UrlEditor = "EditorServlet";
 

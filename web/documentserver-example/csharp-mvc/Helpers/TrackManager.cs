@@ -282,7 +282,7 @@ namespace OnlineEditorsExampleMVC.Helpers
         }
 
         // create a command request
-        public static void commandRequest(string method, string key, object meta = null)
+        public static Dictionary<string, object> commandRequest(string method, string key, object meta = null)
         {
             DocManagerHelper.VerifySSL();
 
@@ -345,6 +345,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             {
                 throw new Exception(dataResponse);
             }
+            return responseObj;
         }
 
         // save file

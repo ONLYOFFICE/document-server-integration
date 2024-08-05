@@ -390,7 +390,9 @@ public final class TrackManager {
     }
 
     // create a command request
-    public static void commandRequest(final String method, final String key, final HashMap meta) throws Exception {
+    public static JSONObject commandRequest(final String method,
+                                            final String key,
+                                            final HashMap meta) throws Exception {
         String documentCommandUrl = ConfigManager.getProperty("files.docservice.url.site") + ConfigManager
                 .getProperty("files.docservice.url.command");
 
@@ -448,5 +450,6 @@ public final class TrackManager {
         if (!response.get("error").toString().equals("0")) {
             throw new Exception(response.toJSONString());
         }
+        return response;
     }
 }

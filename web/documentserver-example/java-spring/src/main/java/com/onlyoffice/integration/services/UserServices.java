@@ -18,13 +18,18 @@
 
 package com.onlyoffice.integration.services;
 
+import com.onlyoffice.integration.entities.Goback;
 import com.onlyoffice.integration.entities.Group;
 import com.onlyoffice.integration.entities.Permission;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 import java.util.Optional;
 
@@ -59,7 +64,9 @@ public class UserServices {
                            final List<String> userInfoGroups, final Boolean favoriteDoc,
                            final Boolean chat,
                            final Boolean protect,
-                           final Boolean avatar) {
+                           final Boolean avatar,
+                           final Goback goback,
+                           final Boolean submitForm) {
         User newUser = new User();
         newUser.setName(name);  // set the user name
         newUser.setEmail(email);  // set the user email
@@ -85,11 +92,39 @@ public class UserServices {
                         commentGroupsRemove,
                         usInfoGroups,
                         chat,
-                        protect);  // specify permissions for the current user
+                        protect,
+                        submitForm);  // specify permissions for the current user
         newUser.setPermissions(permission);
+
+        newUser.setGoback(goback);
 
         userRepository.save(newUser); // save a new user
 
         return newUser;
+    }
+
+    public User getCurrentUser() {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
+                .getRequest();
+
+        Cookie[] cookies = request.getCookies();
+
+        String uid = null;
+
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if (cookie.getName().equals("uid")) {
+                    uid = cookie.getValue();
+                }
+            }
+        }
+
+        if (uid == null || uid.isEmpty()) {
+            return null;
+        }
+
+        Optional<User> optionalUser = this.findUserById(Integer.parseInt(uid));
+
+        return optionalUser.get();
     }
 }

@@ -114,9 +114,15 @@ public class FileModel {
         editorConfig.getUser().setImage(user.getAvatar() ? DocumentManager.getServerUrl(false)
         + "/css/img/" + user.getId() + ".png" : null);
 
-        // write the absolute URL to the file location
-        editorConfig.getCustomization().getGoback()
+        if (user.getGoback() != null) {
+            // write the absolute URL to the file location
+            editorConfig.getCustomization().getGoback()
                 .setUrl(DocumentManager.getServerUrl(false) + "/IndexServlet");
+            editorConfig.getCustomization().getGoback()
+                .setText(user.getGoback().getText());
+            editorConfig.getCustomization().getGoback()
+                .setBlank(user.getGoback().getBlank());
+        }
 
         changeType(mode, type, user, fileName);
     }
@@ -143,21 +149,26 @@ public class FileModel {
 
     // change the document type
     public void changeType(final String modeParam, final String typeParam, final User user, final String fileName) {
+        // check if the file with such an extension can be edited
+        String fileExt = FileUtility.getFileExtension(document.getTitle());
+        Boolean canFill = DocumentManager.getFillExts().contains(fileExt);
+        Boolean canEdit = DocumentManager.getEditedExts().contains(fileExt);
+
         if (modeParam != null) {
             mode = modeParam;
+        } else {
+            mode = canFill ? "fillForms" : "edit";
         }
         if (typeParam != null) {
             type = typeParam;
         }
 
-        // check if the file with such an extension can be edited
-        String fileExt = FileUtility.getFileExtension(document.getTitle());
-        Boolean canEdit = DocumentManager.getEditedExts().contains(fileExt);
         // check if the Submit form button is displayed or not
-        editorConfig.getCustomization().setSubmitForm(true);
+        if (mode.equals("fillForms") || mode.equals("embedded")) {
+            editorConfig.getCustomization().setSubmitForm(user.getId().equals("uid-1"));
+        }
 
-        if ((!canEdit && mode.equals("edit") || mode.equals("fillForms"))
-                && DocumentManager.getFillExts().contains(fileExt)) {
+        if ((!canEdit && mode.equals("edit") || mode.equals("fillForms")) && canFill) {
             canEdit = true;
             mode = "fillForms";
         }
@@ -601,6 +612,8 @@ public class FileModel {
 
             public class Goback {
                 private String url;
+                private String text;
+                private Boolean blank;
 
                 public String getUrl() {
                     return url;
@@ -608,6 +621,22 @@ public class FileModel {
 
                 public void setUrl(final String urlParam) {
                     this.url = urlParam;
+                }
+
+                public String getText() {
+                    return text;
+                }
+
+                public void setText(final String textParam) {
+                    this.text = textParam;
+                }
+
+                public Boolean getBlank() {
+                    return blank;
+                }
+
+                public void setBlank(final Boolean blankParam) {
+                    this.blank = blankParam;
                 }
             }
         }

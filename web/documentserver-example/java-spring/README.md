@@ -135,9 +135,9 @@ See the detailed guide to learn how to install Document Server [for Linux](https
     a) archive with Java-Spring:
 
     ```
-    wget https://api.onlyoffice.com/app_data/editor/Java.Spring.Example.zip
+    wget https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/Java.Spring.Example.zip
     ```
-    
+
     ```
     unzip Java.Spring.Example.zip
     ```

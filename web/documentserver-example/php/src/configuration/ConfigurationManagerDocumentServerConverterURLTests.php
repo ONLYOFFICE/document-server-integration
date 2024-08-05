@@ -42,7 +42,7 @@ final class ConfigurationManagerDocumentServerConverterURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerConverterURL();
         $this->assertEquals(
-            'http://document-server/ConvertService.ashx',
+            'http://documentserver/ConvertService.ashx',
             $url->string()
         );
     }
@@ -53,7 +53,7 @@ final class ConfigurationManagerDocumentServerConverterURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerConverterURL();
         $this->assertEquals(
-            'http://document-server/converter',
+            'http://documentserver/converter',
             $url->string()
         );
     }

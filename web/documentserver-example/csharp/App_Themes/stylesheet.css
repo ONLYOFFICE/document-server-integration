@@ -65,6 +65,14 @@ header img {
     margin: 10px 0 22px 32px;
 }
 
+.responsive-nav {
+    display: none;
+}
+
+.mobile-close-btn {
+    display: none;
+}
+
 .center {
     position: relative;
     margin: 0 auto 0;
@@ -164,7 +172,7 @@ label .checkbox {
 }
 
 .try-editor.form {
-    background-image: url("images/file_docxf.svg");
+    background-image: url("images/file_pdf.svg");
 }
 
 .side-option {
@@ -230,6 +238,33 @@ label .checkbox {
     color: #FF6F3D;
 }
 
+.button.file-type {
+    font-size: 11px;
+    color: #FFFFFF;
+    padding: 8px 8px;
+    margin-right: 10px;
+}
+
+.button.file-type.disable {
+    cursor: default;
+}
+
+.button.file-type.pale {
+    opacity: 30%;
+}
+
+.button.file-type.document {
+    background: #446995;
+}
+
+.button.file-type.spreadsheet {
+    background: #40865C;
+}
+
+.button.file-type.presentation {
+    background: #AA5252;
+}
+
 .upload-panel {
     float: left;
     padding: 24px 0;
@@ -269,6 +304,43 @@ label .checkbox {
 .create-panel {
     width: 100%;
     border-bottom: 1px solid #D0D5DA;
+}
+
+.links {
+    display: flex;
+    padding: 0;
+    column-gap: 30px;
+    align-items: center;
+    list-style: none;
+    border-bottom: 1px solid #E2E2E2;
+    margin: 0;
+    margin-bottom: 24px;
+}
+
+.links li {
+    padding: 4px;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+}
+
+.links li.active {
+    border-bottom: 2px solid #FF6F3D;
+}
+
+.links li.active a {
+    color: #FF6F3D;
+}
+
+.links li.active a img {
+    filter: invert(55%) sepia(67%) saturate(2727%) hue-rotate(335deg) brightness(104%) contrast(101%);
+}
+
+.links a {
+    display: inline-block;
+    padding: 2px 0;
+    line-height: 20px;
+    font-size: 13px;
+    text-decoration: none;
 }
 
 #mainProgress {
@@ -468,6 +540,11 @@ footer a:hover {
     background-image: url("images/icon_pptx.svg");
 }
 
+.stored-edit.pdf,
+.uploadFileName.pdf {
+    background-image: url("images/icon_pdf.svg");
+}
+
 .stored-edit span {
     font-size: 12px;
     line-height: 12px;
@@ -594,6 +671,29 @@ footer a:hover {
 
 .contentCells-icon {
     width: 4%;
+}
+
+.storedHeader {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.storedHeaderClearAll {
+    padding-right: 52px;
+}
+
+.clear-all {
+    display: inline-block;
+    width: 100px;
+    padding: 2px;
+    outline: 1px solid #E5E5E5;
+    text-align: center;
+    cursor:pointer;
+    text-transform: uppercase;
+    background-color: #F5F5F5;
+    color: #666666;
 }
 
 .select-user {
@@ -743,6 +843,16 @@ html {
 
 .user-descr > b {
     margin-left: 25px;
+}
+
+.buttonsMobile.indent{
+    padding-left: 35px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.invisible {
+    display: none;
 }
 
 .tooltip {

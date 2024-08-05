@@ -229,6 +229,10 @@ namespace OnlineEditorsExampleMVC.Helpers
 
             switch (errorCode)
             {
+                case -9:
+                    // public const int c_nErrorConversionOutputFormatError = -9;
+                    errorMessage = String.Format(errorMessageTemplate, "Error conversion output format");
+                    break;
                 case -8:
                     // public const int c_nErrorFileVKey = -8;
                     errorMessage = String.Format(errorMessageTemplate, "Error document VKey");

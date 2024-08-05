@@ -46,6 +46,8 @@ def getFileExt(uri):
 # get file type
 def getFileType(uri):
     ext = getFileExt(uri)
+    if ext in format_manager.pdf_extensions():
+        return 'pdf'
     if ext in format_manager.document_extensions():
         return 'word'
     if ext in format_manager.spreadsheet_extensions():

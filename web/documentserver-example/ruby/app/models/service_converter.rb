@@ -108,6 +108,8 @@ class ServiceConverter
 
     # add an error message to the error message template depending on the error code
     case error_code
+    when -9
+      error_message = 'Error occurred in the ConvertService.ashx: Error conversion output format'
     when -8
       error_message = 'Error occurred in the ConvertService.ashx: Error document VKey'
     when -7
@@ -139,7 +141,7 @@ class ServiceConverter
 
     error_element = file_result['error']
     unless error_element.nil? # if an error occurs
-      process_convert_service_responce_error(Integer(error_element, 10)) # get an error message
+      process_convert_service_responce_error(Integer(error_element)) # get an error message
     end
 
     is_end_convert = file_result['endConvert'] # check if the conversion is completed

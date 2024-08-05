@@ -83,6 +83,16 @@ class FormatManager():
         )
         return list(filtered)
 
+    def pdf_extensions(self) -> list[str]:
+        formats = self.pdfs()
+        mapped = map(lambda format: format.extension(), formats)
+        return list(mapped)
+
+    def pdfs(self) -> list[Format]:
+        formats = self.all()
+        filtered = filter(lambda format: format.type == 'pdf', formats)
+        return list(filtered)
+
     def spreadsheet_extensions(self) -> list[str]:
         formats = self.spreadsheets()
         mapped = map(lambda format: format.extension(), formats)

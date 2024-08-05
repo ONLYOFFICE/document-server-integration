@@ -150,7 +150,7 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
-            if (event.data.favorite) {
+            if (event.data.favorite !== undefined) {
                 var favorite = !!event.data.favorite;
                 var title = document.title.replace(/^\☆/g, "");
                 document.title = (favorite ? "☆" : "") + title;
@@ -275,6 +275,44 @@
           }
         }
 
+        // add mentions for not anonymous users
+        var onRequestUsers = function (event) {
+            if (event && event.data){
+                var c = event.data.c;
+            }
+
+            switch (c) {
+                case "info":
+                    users = [];
+                    var allUsers = {usersInfo};
+                    for (var i = 0; i < event.data.id.length; i++) {
+                        for (var j = 0; j < allUsers.length; j++) {
+                            if (allUsers[j].id == event.data.id[i]) {
+                                users.push(allUsers[j]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case "protect":
+                    var users = {usersForProtect};
+                    break;
+                default:
+                    users = {usersForMentions};
+            }
+
+            docEditor.setUsers({
+                "c": c,
+                "users": users,
+            });
+        };
+
+        var onRequestSendNotify = function (event) {
+            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+            var data = JSON.stringify(event.data);
+            innerAlert("onRequestSendNotify: " + data);
+        };
+
         var сonnectEditor = function () {
             {fileNotFoundAlert}
 
@@ -294,24 +332,10 @@
                 'onRequestSelectDocument': onRequestSelectDocument,
                 'onRequestSelectSpreadsheet': onRequestSelectSpreadsheet,
                 'onRequestReferenceData': onRequestReferenceData,
-                'onRequestRestore': onRequestRestore,
-                'onRequestHistoryData': onRequestHistoryData,
-                'onRequestHistory': onRequestHistory,
-                'onRequestHistoryClose': onRequestHistoryClose,
                 "onRequestOpen": onRequestOpen,
             };
 
                 {history}
-
-            if (config.editorConfig.createUrl) {
-                config.events.onRequestSaveAs = onRequestSaveAs;
-            };
-
-            if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
-                && DocsAPI.DocEditor.version().split(".")[0] < 7) {
-                innerAlert("Please update ONLYOFFICE Docs to version 7.0 to work on fillable forms online.");
-                return;
-            }
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };

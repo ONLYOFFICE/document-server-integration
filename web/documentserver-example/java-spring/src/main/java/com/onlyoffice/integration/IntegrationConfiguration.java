@@ -20,6 +20,17 @@ package com.onlyoffice.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
+import com.onlyoffice.manager.document.DocumentManager;
+import com.onlyoffice.manager.request.DefaultRequestManager;
+import com.onlyoffice.manager.request.RequestManager;
+import com.onlyoffice.manager.security.DefaultJwtManager;
+import com.onlyoffice.manager.security.JwtManager;
+import com.onlyoffice.manager.settings.SettingsManager;
+import com.onlyoffice.manager.url.UrlManager;
+import com.onlyoffice.service.command.CommandService;
+import com.onlyoffice.service.command.DefaultCommandService;
+import com.onlyoffice.service.convert.ConvertService;
+import com.onlyoffice.service.convert.DefaultConvertService;
 import org.json.simple.parser.JSONParser;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -30,22 +41,14 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 
-import com.onlyoffice.integration.documentserver.util.SSLUtils;
-
 @Configuration
 public class IntegrationConfiguration {
 
     @Value("${files.storage}")
     private String storageAddress;
 
-    @Value("${files.docservice.verify-peer-off}")
-    private String verifyPerrOff;
-
     @Autowired
     private FileStoragePathBuilder storagePathBuilder;
-
-    @Autowired
-    private SSLUtils ssl;
 
     @Bean
     public ModelMapper mapper() {  // create the model mapper
@@ -67,21 +70,34 @@ public class IntegrationConfiguration {
     @PostConstruct
     public void init() {  // initialize the storage path builder
         storagePathBuilder.configure(storageAddress.isBlank() ? null : storageAddress);
-        if (!verifyPerrOff.isEmpty()) {
-            try {
-                if (verifyPerrOff.equals("true")) {
-                    ssl.turnOffSslChecking(); //the certificate will be ignored
-                } else {
-                    ssl.turnOnSslChecking(); //the certificate will be verified
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     @Bean
     public ObjectMapper objectMapper() {  // create the object mapper
         return new ObjectMapper();
     }
+
+    @Bean
+    public JwtManager jwtManager(final SettingsManager settingsManager) {
+        return new DefaultJwtManager(settingsManager);
+    }
+
+    @Bean
+    public RequestManager requestManager(final UrlManager urlManager,  final JwtManager jwtManager,
+                                         final SettingsManager settingsManager) {
+        return new DefaultRequestManager(urlManager, jwtManager, settingsManager);
+    }
+
+    @Bean
+    public ConvertService convertService(final DocumentManager documentManager, final UrlManager urlManager,
+                                         final RequestManager requestManager,
+                                         final SettingsManager settingsManager) {
+        return new DefaultConvertService(documentManager, urlManager, requestManager, settingsManager);
+    }
+
+    @Bean
+    public CommandService commandService(final RequestManager requestManager) {
+        return new DefaultCommandService(requestManager);
+    }
+
 }

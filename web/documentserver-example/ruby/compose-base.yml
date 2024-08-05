@@ -1,8 +1,8 @@
 version: "3.8"
 
 services:
-  document-server:
-    container_name: document-server
+  documentserver:
+    container_name: documentserver
     image: onlyoffice/documentserver:8.0
     expose:
       - "80"
@@ -30,7 +30,7 @@ services:
       context: .
       target: proxy
     depends_on:
-      - document-server
+      - documentserver
       - example
     ports:
       - "80:80"

@@ -42,7 +42,7 @@ final class ConfigurationManagerDocumentServerAPIURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerAPIURL();
         $this->assertEquals(
-            'http://document-server/web-apps/apps/api/documents/api.js',
+            'http://documentserver/web-apps/apps/api/documents/api.js',
             $url->string()
         );
     }
@@ -53,7 +53,7 @@ final class ConfigurationManagerDocumentServerAPIURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerAPIURL();
         $this->assertEquals(
-            'http://document-server/api',
+            'http://documentserver/api',
             $url->string()
         );
     }

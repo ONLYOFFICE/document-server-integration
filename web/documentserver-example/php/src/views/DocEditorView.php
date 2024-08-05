@@ -63,7 +63,7 @@ final class DocEditorView extends View
             $filename = tryGetDefaultByType($createExt, $user);
 
             // create the demo file url
-            $newURL = "editor?fileID=" . $filename . "&user=" . $request["user"];
+            $newURL = "editor?action=edit&fileID=" . $filename . "&user=" . $request["user"];
             header('Location: ' . $newURL, true);
             exit;
         }
@@ -74,18 +74,16 @@ final class DocEditorView extends View
         $filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
         $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        $editorsMode = empty($request["action"]) ? "edit" : $request["action"];  // get the editors mode
+        $canFill = in_array($ext, $formatManager->fillableExtensions());
+        $editorsMode = empty($request["action"]) ? ($canFill ? "fillForms" : "edit") : $request["action"];
         $canEdit = in_array($ext, $formatManager->editableExtensions());  // check if the file can be edited
-        if ((!$canEdit && $editorsMode == "edit"
-                || $editorsMode == "fillForms")
-            && in_array($ext, $formatManager->fillableExtensions())
-        ) {
+        if ((!$canEdit && $editorsMode == "edit" || $editorsMode == "fillForms") && $canFill) {
             $editorsMode = "fillForms";
             $canEdit = true;
         }
 
         // check if the Submit form button is displayed or not
-        $submitForm = $editorsMode == "fillForms" && $user->id == "uid-1";
+        $submitForm = in_array($editorsMode, ["fillForms", "embedded"]) && $user->id == "uid-1";
         $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
         $type = empty($request["type"]) ? "desktop" : $request["type"];
 
@@ -103,6 +101,10 @@ final class DocEditorView extends View
                 "url" => $createUrl . "&sample=true",
             ],
         ];
+
+        if ($user->goback !== null) {
+            $user->goback["url"] = serverPath();
+        }
 
         // specify the document config
         $config = [
@@ -180,23 +182,20 @@ final class DocEditorView extends View
                     // adds the request for the forced file saving to the callback handler when saving the document
                     "forcesave" => false,
                     "submitForm" => $submitForm,  // if the Submit form button is displayed or not
-                    "goback" => [  // settings for the Open file location menu button and upper right corner button
-                        // the absolute URL to the website address which will be opened
-                        // when clicking the Open file location menu button
-                        "url" => serverPath(),
-                    ],
+                    // settings for the Open file location menu button and upper right corner button
+                    "goback" => $user->goback !== null ? $user->goback : "",
                 ],
             ],
         ];
 
         // an image for inserting
         $dataInsertImage = $isEnableDirectUrl ? [
-            "fileType" => "png",
-            "url" => serverPath(true) . "/assets/images/logo.png",
-            "directUrl" => serverPath(false) . "/assets/images/logo.png",
+            "fileType" => "svg",
+            "url" => serverPath(true) . "/assets/images/logo.svg",
+            "directUrl" => serverPath(false) . "/assets/images/logo.svg",
         ] : [
-            "fileType" => "png",
-            "url" => serverPath(true) . "/assets/images/logo.png",
+            "fileType" => "svg",
+            "url" => serverPath(true) . "/assets/images/logo.svg",
         ];
 
         // a document for comparing
@@ -246,46 +245,28 @@ final class DocEditorView extends View
         }
 
         $historyLayout = "";
+
+        if ($user->id == "uid-3") {
+            $historyLayout .= "config.events['onRequestHistoryClose'] = null;
+                config.events['onRequestRestore'] = null;";
+        }
+
         if ($user->id != "uid-0") {
             $historyLayout .= "// add mentions for not anonymous users
-                config.events['onRequestUsers'] = function (event) {
-                    if (event && event.data){
-                        var c = event.data.c;
-                    }
-                    switch (c) {
-                        case \"info\":
-                            users = [];
-                            var allUsers = {usersInfo};
-                            for (var i = 0; i < event.data.id.length; i++) {
-                                for (var j = 0; j < allUsers.length; j++) {
-                                    if (allUsers[j].id == event.data.id[i]) {
-                                        users.push(allUsers[j]);
-                                        break;
-                                    }
-                                }
-                            }
-                            break;
-                        case \"protect\":
-                            var users = {usersForProtect};
-                            break;
-                        default:
-                            users = {usersForMentions};
-                    }
-                    docEditor.setUsers({
-                        \"c\": c,
-                        \"users\": users,
-                    });
-                };
+                config.events['onRequestUsers'] = onRequestUsers;
+                config.events['onRequestSaveAs'] = onRequestSaveAs;
                 // the user is mentioned in a comment
-                config.events['onRequestSendNotify'] = function (event) {
-                    event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-                    var data = JSON.stringify(event.data);
-                    innerAlert(\"onRequestSendNotify: \" + data);
-                };
+                config.events['onRequestSendNotify'] = onRequestSendNotify;
                 // prevent file renaming for anonymous users
                 config.events['onRequestRename'] = onRequestRename;
                 // prevent switch the document from the viewing into the editing mode for anonymous users
-                config.events['onRequestEditRights'] = onRequestEditRights;";
+                config.events['onRequestEditRights'] = onRequestEditRights;
+                config.events['onRequestHistory'] = onRequestHistory;
+                config.events['onRequestHistoryData'] = onRequestHistoryData;";
+            if ($user->id != "uid-3") {
+                $historyLayout .= "config.events['onRequestHistoryClose'] = onRequestHistoryClose;
+                config.events['onRequestRestore'] = onRequestRestore;";
+            }
         }
         $this->tagsValues = [
             "docType" => getDocumentType($filename),

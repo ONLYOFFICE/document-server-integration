@@ -19,6 +19,7 @@
 package com.onlyoffice.integration;
 
 import com.onlyoffice.integration.documentserver.serializers.FilterState;
+import com.onlyoffice.integration.entities.Goback;
 import com.onlyoffice.integration.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -92,30 +93,34 @@ public class ExampleData {
                 "Can create a file from an editor",
                 "Can see the information about Group2 users",
                 "Can view chat",
-                "Can’t submit forms"
+                "Can’t submit forms",
+                "Can't close history",
+                "Can't restore the file version"
         );
 
         // create user 1 with the specified parameters
         userService.createUser("John Smith", "smith@example.com", descriptionUserFirst,
                 "", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()), null, true, true, true);
+                List.of(FilterState.NULL.toString()), null, true, true, true,
+                new Goback(null, false), true);
 
         // create user 2 with the specified parameters
         userService.createUser("Mark Pottato", "pottato@example.com", descriptionUserSecond,
                 "group-2", List.of("", "group-2"), List.of(FilterState.NULL.toString()),
                 List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true, true,
-                true, true);
+                true, true, new Goback("Go to Documents", null), false);
 
         // create user 3 with the specified parameters
         userService.createUser("Hamish Mitchell", null, descriptionUserThird,
                 "group-3", List.of("group-2"), List.of("group-2", "group-3"), List.of("group-2"),
-                new ArrayList<>(), List.of("group-2"), false, true, true, false);
+                new ArrayList<>(), List.of("group-2"), false, true, true, false,
+                null, false);
 
         // create user 0 with the specified parameters
         userService.createUser("Anonymous", null, descriptionUserZero, "",
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                new ArrayList<>(), null, false, false, false);
+                new ArrayList<>(), null, false, false, false, null, false);
     }
 }

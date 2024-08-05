@@ -22,7 +22,7 @@ use Example\Common\URL;
 
 class ConfigurationManager
 {
-    public string $version = '1.9.0';
+    public string $version = '1.10.0';
 
     public function getVersion(): string
     {
@@ -40,7 +40,7 @@ class ConfigurationManager
 
     public function documentServerPublicURL(): URL
     {
-        $url = getenv('DOCUMENT_SERVER_PUBLIC_URL') ?: 'http://document-server';
+        $url = getenv('DOCUMENT_SERVER_PUBLIC_URL') ?: 'http://documentserver';
         return new URL($url);
     }
 
@@ -155,6 +155,12 @@ class ConfigurationManager
             return 120 * 1000;
         }
         return intval($timeout);
+    }
+
+    public function enableForgotten(): bool
+    {
+        $enableForgotten = getenv('ENABLE_FORGOTTEN');
+        return $enableForgotten !== false ? boolval($enableForgotten) : true;
     }
 
     /**
