@@ -21,6 +21,7 @@ Route::middleware(EnsureUserDirectoryExists::class)->group(function () {
         Route::delete('/delete', [FileController::class, 'destroy'])->name('delete');
         Route::post('/saveas', [FileController::class, 'saveAs'])->name('saveas');
         Route::get('/history', [FileController::class, 'history'])->name('history');
+        Route::post('/rename', [FileController::class, 'rename'])->name('rename');
 
         Route::middleware(EnsureJWTTokenIsPresent::class)->group(function () {
             Route::get('/download', [FileController::class, 'download'])->name('download');

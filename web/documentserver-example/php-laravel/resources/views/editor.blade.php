@@ -227,8 +227,10 @@
             };
 
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "rename");
+            xhr.open("POST", "/files/rename");
+            xhr.setRequestHeader('X-CSRF-TOKEN', "{{ csrf_token() }}")
             xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('Accept', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function() {
                 innerAlert(xhr.responseText);

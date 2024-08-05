@@ -254,7 +254,7 @@ class EditorController extends Controller
                 // the user is mentioned in a comment
                 config.events['onRequestSendNotify'] = onRequestSendNotify;
                 // prevent file renaming for anonymous users
-                // config.events['onRequestRename'] = onRequestRename;
+                config.events['onRequestRename'] = onRequestRename;
                 // prevent switch the document from the viewing into the editing mode for anonymous users
                 config.events['onRequestEditRights'] = onRequestEditRights;
                 config.events['onRequestHistory'] = onRequestHistory;

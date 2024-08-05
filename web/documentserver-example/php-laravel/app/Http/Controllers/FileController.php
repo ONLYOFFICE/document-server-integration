@@ -24,6 +24,8 @@ use App\Services\ServerConfig;
 use App\Services\StorageConfig;
 use App\UseCases\Common\Http\DownloadFileCommand;
 use App\UseCases\Common\Http\DownloadFileRequest;
+use App\UseCases\Docs\Command\UpdateMetaCommand;
+use App\UseCases\Docs\Command\UpdateMetaRequest;
 use App\UseCases\Docs\Conversion\ConvertCommand;
 use App\UseCases\Docs\Conversion\ConvertRequest;
 use App\UseCases\Document\Create\CreateDocumentCommand;
@@ -213,6 +215,25 @@ class FileController extends Controller
             ->__invoke(new FindDocumentHistoryQuery($filename, $address));
 
         return response()->json($history);
+    }
+
+    public function rename(Request $request)
+    {
+        $request->validate([
+            'newfilename' => 'required|string',
+            'dockey' => 'required|string',
+            'ext' => 'required|string',
+        ]);
+
+        $title = PathInfo::filename($request->newfilename) . '.' . $request->ext;
+
+        app(UpdateMetaCommand::class)
+            ->__invoke(new UpdateMetaRequest(
+                key: $request->dockey,
+                title: $title,
+            ));
+        
+        return response()->json(['result' => $request->dockey]);
     }
 
     public function destroy(Request $request)
