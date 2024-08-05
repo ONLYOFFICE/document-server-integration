@@ -341,7 +341,7 @@
                 'onDocumentStateChange': onDocumentStateChange,
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
-                // 'onMakeActionLink': onMakeActionLink,
+                'onMakeActionLink': onMakeActionLink,
                 'onMetaChange': onMetaChange,
                 'onRequestInsertImage': onRequestInsertImage,
                 'onRequestSelectDocument': onRequestSelectDocument,

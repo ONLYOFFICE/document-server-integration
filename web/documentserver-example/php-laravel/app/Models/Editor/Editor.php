@@ -105,7 +105,7 @@ class Editor
         ];
 
         return [
-            'actionLink' => $this->config->actionLink,
+            'actionLink' => $this->config->actionLink ? json_decode($this->config->actionLink): null,
             'mode' => $this->config->mode,
             'lang' => $this->config->lang,
             'callbackUrl' => $this->config->callbackUrl,
