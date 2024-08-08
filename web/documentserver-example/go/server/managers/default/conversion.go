@@ -50,7 +50,7 @@ func NewDefaultConversionManager(config config.ApplicationConfig, spec config.Sp
 }
 
 func (cm DefaultConversionManager) GetFileType(filename string) string {
-	ext := utils.GetFileExt(filename)
+	ext := utils.GetFileExt(filename, true)
 
 	exts := cm.specification.ExtensionTypes
 
@@ -86,13 +86,13 @@ func (cm DefaultConversionManager) IsCanConvert(ext string) bool {
 
 func (cm DefaultConversionManager) GetConverterUri(docUri string, fromExt string, toExt string, docKey string, isAsync bool) (string, error) {
 	if fromExt == "" {
-		fromExt = utils.GetFileExt(docUri)
+		fromExt = utils.GetFileExt(docUri, true)
 	}
 
 	payload := managers.ConvertRequestPayload{
 		DocUrl:     docUri,
 		OutputType: strings.Replace(toExt, ".", "", -1),
-		FileType:   strings.Replace(fromExt, ".", "", -1),
+		FileType:   fromExt,
 		Title:      utils.GetFileName(docUri),
 		Key:        docKey,
 		Async:      isAsync,

@@ -18,7 +18,25 @@
 package models
 
 type User struct {
-	Id          string   `json:"id"`
-	Username    string   `json:"name"`
-	Description []string `json:"description,omitempty"`
+	Id                string                 `json:"id"`
+	Username          string                 `json:"name"`
+	Email             string                 `json:"email"`
+	Group             string                 `json:"group"`
+	ReviewGroups      []string               `json:"reviewGroups"`
+	CommentGroups     map[string]interface{} `json:"commentGroups"`
+	UserInfoGroups    []string               `json:"userInfoGroups"`
+	Favorite          int                    `json:"favorite"`
+	DeniedPermissions []string               `json:"deniedPermissions"`
+	Description       []string               `json:"description,omitempty"`
+	Templates         bool                   `json:"templates"`
+	Avatar            bool                   `json:"avatar"`
+	Goback            map[string]interface{} `json:"goback"`
+	Close             map[string]interface{} `json:"close"`
+}
+
+type UserInfo struct {
+	Id    string `json:"id"`
+	Name  string `json:"name"`
+	Email string `json:"email"`
+	Image string `json:"image"`
 }

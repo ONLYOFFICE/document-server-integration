@@ -98,7 +98,7 @@ func (sm DefaultStorageManager) GetStoredFiles(remoteAddress string) ([]models.D
 			FileType: sm.ConversionManager.GetFileType(filename),
 			Title:    filename,
 			Url:      sm.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{}),
-			CanEdit:  !sm.ConversionManager.IsCanConvert(utils.GetFileExt(filename)),
+			CanEdit:  !sm.ConversionManager.IsCanConvert(utils.GetFileExt(filename, true)),
 		})
 	}
 
@@ -161,7 +161,7 @@ func (sm DefaultStorageManager) GeneratePublicFileUri(originalName string, remot
 
 func (sm DefaultStorageManager) GenerateVersionedFilename(filename string) (string, error) {
 	basename := utils.GetFileNameWithoutExt(filename)
-	ext := utils.GetFileExt(filename)
+	ext := utils.GetFileExt(filename, false)
 	name := fmt.Sprintf("%s%s", basename, ext)
 
 	i := 1
@@ -209,6 +209,13 @@ func (sm DefaultStorageManager) CreateDirectory(path string) error {
 
 func (sm DefaultStorageManager) PathExists(path string) bool {
 	if _, err := os.Stat(path); !os.IsNotExist(err) {
+		return true
+	}
+	return false
+}
+
+func (sm DefaultStorageManager) DirExists(path string) bool {
+	if stat, err := os.Stat(path); err == nil && stat.IsDir() {
 		return true
 	}
 	return false

@@ -15,29 +15,22 @@
  * limitations under the License.
  *
  */
-package utils
+package models
 
-import (
-	"strings"
-)
+import "github.com/golang-jwt/jwt"
 
-func GetFileName(str string) string {
-	ind := strings.LastIndex(str, "/")
-	return str[ind+1:]
+type ReferenceData struct {
+	FileKey    string `json:"fileKey"`
+	InstanceId string `json:"instanceId"`
 }
 
-func GetFileNameWithoutExt(str string) string {
-	fn := GetFileName(str)
-	ind := strings.LastIndex(fn, ".")
-	return fn[:ind]
-}
-
-func GetFileExt(str string, withoutdot bool) string {
-	pos := 0
-	if withoutdot {
-		pos = 1
-	}
-	fn := GetFileName(str)
-	ind := strings.LastIndex(fn, ".")
-	return strings.ToLower(fn[ind+pos:])
+type Reference struct {
+	ReferenceData      ReferenceData `json:"referenceData"`
+	Link               string        `json:"link"`
+	Path               string        `json:"path"`
+	FileType           string        `json:"fileType"`
+	Key                string        `json:"key"`
+	Url                string        `json:"url"`
+	Token              string        `json:"token,omitempty"`
+	jwt.StandardClaims `json:"-"`
 }

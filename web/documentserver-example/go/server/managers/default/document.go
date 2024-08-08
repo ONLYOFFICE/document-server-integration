@@ -18,7 +18,9 @@
 package dmanager
 
 import (
+	"encoding/json"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -73,7 +75,7 @@ func (dm DefaultDocumentManager) sanitizeEditorParameters(parameters *managers.E
 		parameters.PermissionsMode = "edit"
 	}
 
-	parameters.CanEdit = utils.IsInList(utils.GetFileExt(parameters.Filename), dm.specification.Extensions.Edited)
+	parameters.CanEdit = utils.IsInList(utils.GetFileExt(parameters.Filename, true), dm.specification.Extensions.Edited)
 
 	if parameters.CanEdit && parameters.PermissionsMode != "view" {
 		parameters.Mode = "edit"
@@ -90,6 +92,55 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 		return nil, err
 	}
 
+	fileType := utils.GetFileExt(parameters.Filename, true)
+	var favorite interface{} = nil
+	if user.Favorite != -1 {
+		favorite = (user.Favorite == 1)
+	}
+	var coEditing map[string]interface{}
+	if parameters.Mode == "view" && user.Id == "uid-0" {
+		coEditing["mode"] = "strict"
+		coEditing["change"] = false
+	}
+	actionLink := "null"
+	if parameters.ActionLink != "" {
+		var actionData map[string]interface{}
+		err := json.Unmarshal([]byte(parameters.ActionLink), &actionData)
+		if err == nil {
+			actionLinkByte, err := json.Marshal(actionData)
+			if err == nil {
+				actionLink = string(actionLinkByte)
+			}
+		}
+	}
+	var createUrl string
+	var templates []models.Template
+	if fileType != "" {
+		createUrl = fmt.Sprintf("%s/create?fileExt=%s&userid=%s&type=%s&lang=%s",
+			remoteAddress, fileType, user.Id, parameters.Type, parameters.Language,
+		)
+		templates = append(templates,
+			models.Template{
+				Image: "",
+				Title: "blank",
+				Url:   createUrl,
+			},
+			models.Template{
+				Image: fmt.Sprintf("%s/static/images/file_%s.svg", remoteAddress, fileType),
+				Title: "With sample content",
+				Url:   createUrl + "&sample=true",
+			},
+		)
+	}
+	var plugins map[string]interface{}
+	if dm.config.Plugins != "" {
+		json.Unmarshal([]byte(dm.config.Plugins), &plugins)
+	}
+	submitForm := false
+	if parameters.Mode == "fillForms" {
+		submitForm = user.Id == "uid-1"
+	}
+
 	dm.logger.Debugf("Generating file %s config", parameters.Filename)
 	dm.sanitizeEditorParameters(&parameters)
 	furi := dm.StorageManager.GeneratePublicFileUri(parameters.Filename, remoteAddress, managers.FileMeta{})
@@ -104,15 +155,18 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 		Document: models.Document{
 			Title:    parameters.Filename,
 			Url:      furi,
-			FileType: strings.ReplaceAll(utils.GetFileExt(parameters.Filename), ".", ""),
+			FileType: fileType,
 			Key:      docKey,
 			Info: models.MetaInfo{
-				Author:  user.Username,
-				Created: time.Now().Format(time.RFC3339),
+				Author:   user.Username,
+				Created:  time.Now().Format(time.RFC3339),
+				Favorite: favorite,
 			},
 			Permissions: models.Permissions{
+				Chat: user.Id != "uid-1",
 				Comment: parameters.PermissionsMode != onlyoffice_permission_view && parameters.PermissionsMode != onlyoffice_permission_fill_forms &&
 					parameters.PermissionsMode != onlyoffice_permission_embedded && parameters.PermissionsMode != onlyoffice_permission_blockcontent,
+				Copy:     !slices.Contains(user.DeniedPermissions, "copy"),
 				Download: true,
 				Edit: parameters.CanEdit && (parameters.PermissionsMode == onlyoffice_permission_edit ||
 					parameters.PermissionsMode == onlyoffice_permission_filter || parameters.PermissionsMode == onlyoffice_permission_blockcontent),
@@ -120,14 +174,28 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 					parameters.PermissionsMode != onlyoffice_permission_embedded && parameters.PermissionsMode != onlyoffice_permission_blockcontent,
 				ModifyFilter:         parameters.PermissionsMode != onlyoffice_permission_filter,
 				ModifyContentControl: parameters.PermissionsMode != onlyoffice_permission_blockcontent,
+				Print:                !slices.Contains(user.DeniedPermissions, "print"),
 				Review:               parameters.PermissionsMode == onlyoffice_permission_edit || parameters.PermissionsMode == onlyoffice_permission_review,
+				RewiewGroups:         user.ReviewGroups,
+				CommentGroups:        user.CommentGroups,
+				UserInfoGroups:       user.UserInfoGroups,
+				Protect:              !slices.Contains(user.DeniedPermissions, "protect"),
+			},
+			ReferenceData: models.ReferenceData{
+				FileKey:    fmt.Sprintf("{\"fileName\":\"%s\"}", parameters.Filename),
+				InstanceId: remoteAddress,
 			},
 		},
 		EditorConfig: models.EditorConfig{
+			ActionLink:  actionLink,
+			CoEditing:   coEditing,
+			CreateUrl:   createUrl,
+			Templates:   templates,
+			Plugins:     plugins,
 			Mode:        parameters.Mode,
 			Lang:        parameters.Language,
 			CallbackUrl: dm.generateCallbackUrl(parameters.Filename, remoteAddress),
-			User:        user,
+			User:        dm.GetUserInfoById(user.Id, remoteAddress),
 			Embedded: models.Embedded{
 				SaveUrl:       furi,
 				EmbedUrl:      furi,
@@ -135,8 +203,12 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 				ToolbarDocked: "top",
 			},
 			Customization: models.Customization{
-				About:    true,
-				Feedback: true,
+				About:      true,
+				Comments:   true,
+				Close:      user.Close,
+				Feedback:   true,
+				Forcesave:  false,
+				SubmitForm: submitForm,
 				Goback: models.Goback{
 					RequestClose: false,
 				},
@@ -154,7 +226,7 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 }
 
 func (dm DefaultDocumentManager) IsDocumentConvertable(filename string) bool {
-	ext := utils.GetFileExt(filename)
+	ext := utils.GetFileExt(filename, true)
 
 	return utils.IsInList(ext, dm.specification.Extensions.Viewed) ||
 		utils.IsInList(ext, dm.specification.Extensions.Edited) || utils.IsInList(ext, dm.specification.Extensions.Converted)

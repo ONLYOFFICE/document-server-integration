@@ -29,6 +29,7 @@ var ErrInvalidFilename = errors.New("invalid filename")
 type HistoryRefresh struct {
 	CurrentVersion string           `json:"currentVersion"`
 	History        []models.History `json:"history"`
+	HistoryData    []HistorySet     `json:"historyData"`
 }
 
 type HistorySet struct {

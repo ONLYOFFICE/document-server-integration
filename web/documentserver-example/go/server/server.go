@@ -95,7 +95,12 @@ func (srv *Server) configureRouter() *mux.Router {
 	r.HandleFunc("/convert", srv.ServerAPI.Convert).Methods(http.MethodPost)
 	r.HandleFunc("/download", srv.ServerAPI.Download).Methods(http.MethodGet)
 	r.HandleFunc("/history", srv.ServerAPI.History).Methods(http.MethodGet)
-	r.HandleFunc("/create", srv.ServerAPI.Create).Methods(http.MethodGet)
+	r.HandleFunc("/create", srv.ServerAPI.Create).Methods(http.MethodGet, http.MethodPost)
+	r.HandleFunc("/reference", srv.ServerAPI.Reference).Methods(http.MethodPost)
+	r.HandleFunc("/files", srv.ServerAPI.Files).Methods(http.MethodGet)
+	r.HandleFunc("/rename", srv.ServerAPI.Rename).Methods(http.MethodPost)
+	r.HandleFunc("/historyObj", srv.ServerAPI.HistoryObj).Methods(http.MethodPost)
+	r.HandleFunc("/restore", srv.ServerAPI.Restore).Methods(http.MethodPut)
 
 	return r
 }

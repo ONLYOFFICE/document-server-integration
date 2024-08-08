@@ -18,10 +18,12 @@
 package dapi
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
+	"net/url"
 	"os"
 	"path"
 	"strconv"
@@ -154,6 +156,18 @@ func (srv *DefaultServerEndpointsHandler) Index(w http.ResponseWriter, r *http.R
 	indexTemplate.Execute(w, data)
 }
 
+func (srv *DefaultServerEndpointsHandler) Files(w http.ResponseWriter, r *http.Request) {
+	srv.logger.Debug("A new files call")
+	files, err := srv.Managers.StorageManager.GetStoredFiles(r.Host)
+	if err != nil {
+		srv.logger.Errorf("could not fetch files: %s", err.Error())
+		shared.SendCustomErrorResponse(w, fmt.Sprintf("could not fetch files: %s", err.Error()))
+		return
+	}
+
+	shared.SendResponse(w, files)
+}
+
 func (srv *DefaultServerEndpointsHandler) Download(w http.ResponseWriter, r *http.Request) {
 	filename := r.URL.Query().Get("fileName")
 
@@ -216,21 +230,151 @@ func (srv *DefaultServerEndpointsHandler) Editor(w http.ResponseWriter, r *http.
 		return
 	}
 
-	refHist, setHist, err := srv.Managers.HistoryManager.GetHistory(config.Document.Title, remoteAddr)
-	if err != nil {
-		srv.logger.Warnf("could not get file history: %s", err.Error())
+	var usersForMentions, usersForProtect, usersInfo []models.UserInfo
+	if config.EditorConfig.User.Id != "uid-0" {
+		usersForMentions = srv.GetUsersForMentions(config.EditorConfig.User.Id)
+		usersForProtect = srv.GetUsersForProtect(config.EditorConfig.User.Id, remoteAddr)
+		usersInfo = srv.GetUsersInfo(remoteAddr)
 	}
 
 	data := map[string]interface{}{
-		"apijs":      srv.config.DocumentServerHost + srv.config.DocumentServerApi,
-		"config":     config,
-		"actionLink": editorParameters.ActionLink,
-		"docType":    config.DocumentType,
-		"refHist":    refHist,
-		"setHist":    setHist,
+		"apijs":            srv.config.DocumentServerHost + srv.config.DocumentServerApi,
+		"config":           config,
+		"actionLink":       editorParameters.ActionLink,
+		"docType":          config.DocumentType,
+		"usersForProtect":  usersForProtect,
+		"usersForMentions": usersForMentions,
+		"usersInfo":        usersInfo,
+		"dataInsertImage": map[string]interface{}{
+			"fileType": "svg",
+			"url":      remoteAddr + "/static/images/logo.svg",
+		},
+		"dataDocument": map[string]interface{}{
+			"fileType": "docx",
+			"url":      remoteAddr + "/static/assets/document-templates/sample/sample.docx",
+		},
+		"dataSpreadsheet": map[string]interface{}{
+			"fileType": "csv",
+			"url":      remoteAddr + "/static/assets/document-templates/sample/csv.csv",
+		},
 	}
 
 	editorTemplate.Execute(w, data)
+}
+
+func (srv *DefaultServerEndpointsHandler) Rename(w http.ResponseWriter, r *http.Request) {
+	var body map[string]string
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		srv.logger.Error("Rename body decoding error")
+		shared.SendCustomErrorResponse(w, err.Error())
+		return
+	}
+
+	newFileName, ext, docKey := body["newfilename"], body["ext"], body["dockey"]
+	if newFileName == "" || docKey == "" {
+		srv.logger.Error("No filename or dockey")
+		shared.SendCustomErrorResponse(w, "No filename or dockey")
+		return
+	}
+
+	if curExt := utils.GetFileExt(newFileName, true); curExt != ext {
+		newFileName += "." + ext
+	}
+	meta := map[string]string{
+		"title": newFileName,
+	}
+
+	commandResponse, err := srv.CommandManager.CommandRequest("meta", docKey, meta)
+	if err != nil {
+		srv.logger.Error("Command request error")
+		shared.SendCustomErrorResponse(w, err.Error())
+		return
+	}
+
+	var res map[string]interface{}
+	if err := json.NewDecoder(commandResponse.Body).Decode(&res); err != nil {
+		srv.logger.Error("Command response body decoding error")
+		shared.SendCustomErrorResponse(w, err.Error())
+		return
+	}
+	result := map[string]interface{}{
+		"result": res,
+	}
+	shared.SendResponse(w, result)
+}
+
+func (srv *DefaultServerEndpointsHandler) Reference(w http.ResponseWriter, r *http.Request) {
+	var body models.Reference
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		srv.logger.Error("Reference body decoding error")
+		shared.SendDocumentServerRespose(w, true)
+		return
+	}
+
+	remoteAddr := generateUrl(r)
+	var fileName /*, userAddress*/ string
+
+	var fileKey map[string]string
+	json.Unmarshal([]byte(body.ReferenceData.FileKey), &fileKey)
+	path, _ := srv.GenerateFilePath(fileKey["fileName"])
+	if body.ReferenceData.InstanceId == remoteAddr && srv.PathExists(path) {
+		fileName = fileKey["fileName"]
+	}
+
+	if fileName == "" && body.Link != "" {
+		if strings.Contains(body.Link, remoteAddr) {
+			res := map[string]interface{}{
+				"url": body.Link,
+			}
+			shared.SendResponse(w, res)
+			return
+		}
+
+		urlObj, _ := url.Parse(body.Link)
+		params, _ := url.ParseQuery(urlObj.RawQuery)
+		if len(params["filename"]) != 0 {
+			fileName = params["filename"][0]
+		}
+		path, _ := srv.GenerateFilePath(fileName)
+		if !srv.PathExists(path) {
+			shared.SendCustomErrorResponse(w, "File is not exist")
+			return
+		}
+	}
+
+	if fileName == "" && body.Path != "" {
+		filePath := utils.GetFileName(body.Path)
+		path, _ := srv.GenerateFilePath(filePath)
+		if srv.PathExists(path) {
+			fileName = filePath
+		}
+	}
+
+	if fileName == "" {
+		shared.SendCustomErrorResponse(w, "File is not found")
+		return
+	}
+
+	docKey, _ := srv.GenerateFileHash(fileName)
+	data := models.Reference{
+		FileType: srv.GetFileType(fileName),
+		Key:      docKey,
+		Url:      srv.GeneratePublicFileUri(fileName, remoteAddr, managers.FileMeta{}),
+		ReferenceData: models.ReferenceData{
+			FileKey:    fmt.Sprintf("{\"fileName\":\"%s\"}", fileName),
+			InstanceId: remoteAddr,
+		},
+		Link: remoteAddr + "/editor?filename=" + url.QueryEscape(fileName),
+		Path: fileName,
+	}
+
+	secret := strings.TrimSpace(srv.config.JwtSecret)
+	if secret != "" && srv.config.JwtEnabled {
+		token, _ := srv.JwtSign(data, []byte(secret))
+		data.Token = token
+	}
+
+	shared.SendResponse(w, data)
 }
 
 func (srv *DefaultServerEndpointsHandler) History(w http.ResponseWriter, r *http.Request) {
@@ -262,6 +406,32 @@ func (srv *DefaultServerEndpointsHandler) History(w http.ResponseWriter, r *http
 	}
 
 	http.Redirect(w, r, fileUrl, http.StatusSeeOther)
+}
+
+func (srv *DefaultServerEndpointsHandler) HistoryObj(w http.ResponseWriter, r *http.Request) {
+	var body map[string]string
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		srv.logger.Error("HistoryObj body decoding error")
+		shared.SendCustomErrorResponse(w, err.Error())
+		return
+	}
+
+	fileName := body["fileName"]
+	if fileName == "" {
+		srv.logger.Error("No filename in historyObj request")
+		shared.SendCustomErrorResponse(w, "No filename")
+		return
+	}
+
+	remoteAddr := generateUrl(r)
+	refHist, setHist, err := srv.Managers.HistoryManager.GetHistory(fileName, remoteAddr)
+	if err != nil {
+		srv.logger.Warnf("could not get file history: %s", err.Error())
+		shared.SendCustomErrorResponse(w, err.Error())
+	}
+
+	refHist.HistoryData = setHist
+	shared.SendResponse(w, refHist)
 }
 
 func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http.Request) {
@@ -305,7 +475,7 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 	}
 
 	fileUrl := srv.StorageManager.GeneratePublicFileUri(filename, remoteAddr, managers.FileMeta{})
-	fileExt := utils.GetFileExt(filename)
+	fileExt := utils.GetFileExt(filename, true)
 	fileType := srv.ConversionManager.GetFileType(filename)
 	newExt := srv.ConversionManager.GetInternalExtension(fileType)
 
@@ -357,6 +527,64 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 	}
 }
 
+func (srv *DefaultServerEndpointsHandler) Restore(w http.ResponseWriter, r *http.Request) {
+	result := map[string]interface{}{
+		"success": false,
+	}
+	var body map[string]interface{}
+	if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+		srv.logger.Error("Restore body decoding error")
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
+
+	fileName := fmt.Sprintf("%v", body["fileName"])
+	if fileName == "" {
+		srv.logger.Error("Restore filename is empty")
+		result["error"] = "Empty filename"
+		shared.SendResponse(w, result)
+		return
+	}
+
+	version := fmt.Sprintf("%v", body["version"])
+	key, err := srv.GenerateFileHash(fileName)
+	if err != nil {
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
+	filePath, err := srv.GenerateFilePath(fileName)
+	if err != nil {
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
+	rootPath, _ := srv.GetRootFolder()
+	historyPath := path.Join(rootPath, fileName+shared.ONLYOFFICE_HISTORY_POSTFIX)
+	newVersion := srv.HistoryManager.CountVersion(historyPath)
+	versionPath := path.Join(historyPath, version, "prev"+utils.GetFileExt(fileName, false))
+	newVersionPath := path.Join(historyPath, fmt.Sprint(newVersion))
+
+	if !srv.Managers.StorageManager.PathExists(versionPath) {
+		result["error"] = "Version path does not exist"
+		shared.SendResponse(w, result)
+		return
+	}
+
+	srv.Managers.StorageManager.CreateDirectory(newVersionPath)
+	currFile, _ := srv.Managers.StorageManager.ReadFile(filePath)
+	srv.Managers.StorageManager.CreateFile(
+		bytes.NewBuffer(currFile),
+		path.Join(newVersionPath, "prev"+utils.GetFileExt(fileName, false)))
+	srv.Managers.StorageManager.CreateFile(bytes.NewBuffer([]byte(key)), path.Join(newVersionPath, "key.txt"))
+	verFile, _ := srv.Managers.StorageManager.ReadFile(versionPath)
+	srv.Managers.StorageManager.CreateFile(bytes.NewBuffer(verFile), filePath)
+
+	result["success"] = true
+	shared.SendResponse(w, result)
+}
+
 func (srv *DefaultServerEndpointsHandler) Callback(w http.ResponseWriter, r *http.Request) {
 	query := r.URL.Query()
 	filename, userAddress := query.Get("filename"), query.Get("user_address")
@@ -389,10 +617,68 @@ func (srv *DefaultServerEndpointsHandler) Callback(w http.ResponseWriter, r *htt
 }
 
 func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		var body map[string]string
+		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+			srv.logger.Error("Reference body decoding error")
+			shared.SendDocumentServerRespose(w, true)
+			return
+		}
+
+		fileName, url := body["title"], body["url"]
+		if fileName == "" || url == "" {
+			srv.logger.Error("empty url or title")
+			shared.SendCustomErrorResponse(w, "empty url or title")
+			return
+		}
+
+		_, uid := shared.GetCookiesInfo(r.Cookies())
+		user, err := srv.UserManager.GetUserById(uid)
+		if err != nil {
+			srv.logger.Errorf("could not find user with id: %s", uid)
+			shared.SendCustomErrorResponse(w, err.Error())
+			return
+		}
+
+		fileExt := utils.GetFileExt(fileName, true)
+		if strings.TrimSpace(fileExt) == "" || !utils.IsInList(fileExt, srv.specification.Extensions.Viewed) {
+			srv.logger.Errorf("%s extension is not supported", fileExt)
+			shared.SendCustomErrorResponse(w, "extension is not supported")
+			return
+		}
+
+		correctName, err := srv.StorageManager.GenerateVersionedFilename(fileName)
+		if err != nil {
+			srv.logger.Errorf("file saving error: ", err)
+			shared.SendCustomErrorResponse(w, "file saving error")
+			return
+		}
+
+		srv.StorageManager.SaveFileFromUri(models.Callback{
+			Url:         url,
+			Filename:    correctName,
+			UserAddress: r.Host,
+		})
+		srv.HistoryManager.CreateMeta(correctName, models.History{
+			ServerVersion: "0.0.0",
+			Changes: []models.Changes{
+				{
+					Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
+					User: models.User{
+						Id:       user.Id,
+						Username: user.Username,
+					},
+				},
+			},
+		})
+
+		return
+	}
+
 	query := r.URL.Query()
 	fileExt, isSample := query.Get("fileExt"), query.Get("sample")
 
-	if strings.TrimSpace(fileExt) == "" || !utils.IsInList("."+fileExt, srv.specification.Extensions.Edited) {
+	if strings.TrimSpace(fileExt) == "" || !utils.IsInList(fileExt, srv.specification.Extensions.Edited) {
 		srv.logger.Errorf("%s extension is not supported", fileExt)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
@@ -419,7 +705,7 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 	}
 
 	filename := fmt.Sprintf("%s.%s", sampleType, fileExt)
-	file, err := os.Open(path.Join("static/assets", sampleType, filename))
+	file, err := os.Open(path.Join("static/assets/document-templates", sampleType, filename))
 	if err != nil {
 		srv.logger.Errorf("could not create a new file: %s", err.Error())
 		http.Redirect(w, r, "/", http.StatusSeeOther)

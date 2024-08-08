@@ -21,22 +21,25 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"github.com/ONLYOFFICE/document-server-integration/utils"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
 
 type ApplicationConfig struct {
-	ServerAddress           string `mapstructure:"SERVER_ADDRESS"`
-	ServerPort              string `mapstructure:"SERVER_PORT"`
-	DocumentServerHost      string `mapstructure:"DOC_SERVER_HOST"`
-	DocumentServerConverter string `mapstructure:"DOC_SERVER_CONVERTER_URL"`
-	DocumentServerApi       string `mapstructure:"DOC_SERVER_API_URL"`
-	DocumentServerPreloader string `mapstructure:"DOC_SERVER_PRELOADER_URL"`
-	JwtEnabled              bool   `mapstructure:"JWT_IS_ENABLED"`
-	JwtHeader               string `mapstructure:"JWT_HEADER"`
-	JwtSecret               string `mapstructure:"JWT_SECRET"`
-	StoragePath             string `mapstructure:"STORAGE_PATH"`
-	LoggerDebug             bool   `mapstructure:"LOGGER_DEBUG"`
+	ServerAddress            string `mapstructure:"SERVER_ADDRESS"`
+	ServerPort               string `mapstructure:"SERVER_PORT"`
+	DocumentServerHost       string `mapstructure:"DOC_SERVER_HOST"`
+	DocumentServerConverter  string `mapstructure:"DOC_SERVER_CONVERTER_URL"`
+	DocumentServerApi        string `mapstructure:"DOC_SERVER_API_URL"`
+	DocumentServerPreloader  string `mapstructure:"DOC_SERVER_PRELOADER_URL"`
+	DocumentServerCommandUrl string `mapstructure:"DOC_SERVER_COMMAND_URL"`
+	JwtEnabled               bool   `mapstructure:"JWT_IS_ENABLED"`
+	JwtHeader                string `mapstructure:"JWT_HEADER"`
+	JwtSecret                string `mapstructure:"JWT_SECRET"`
+	StoragePath              string `mapstructure:"STORAGE_PATH"`
+	Plugins                  string `mapstructure:"PLUGINS"`
+	LoggerDebug              bool   `mapstructure:"LOGGER_DEBUG"`
 }
 
 type SpecificationConfig struct {
@@ -69,26 +72,25 @@ func NewConfiguration() (app_config ApplicationConfig, err error) {
 }
 
 func NewSpecification() (specification SpecificationConfig, err error) {
-	_, b, _, _ := runtime.Caller(0)
-	basepath := filepath.Dir(b)
-
-	viper.AddConfigPath(basepath)
-	viper.SetConfigName("specification")
-	viper.SetConfigType("json")
-
-	viper.AutomaticEnv()
-	err = viper.ReadInConfig()
-
+	fm, err := utils.NewFormatManager()
 	if err != nil {
 		return SpecificationConfig{}, err
 	}
 
-	err = viper.Unmarshal(&specification)
-
-	if err != nil {
-		return SpecificationConfig{}, err
+	exts := Extensions{
+		fm.GetViewedExtensions(),
+		fm.GetEditedExtensions(),
+		fm.GetConvertedExtensions(),
 	}
-
+	extTypes := ExtensionTypes{
+		fm.GetSpreadsheetExtensions(),
+		fm.GetPresentationExtensions(),
+		fm.GetDocumentExtensions(),
+	}
+	specification = SpecificationConfig{
+		exts,
+		extTypes,
+	}
 	return
 }
 

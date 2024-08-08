@@ -19,6 +19,7 @@ package managers
 
 import (
 	"io"
+	"net/http"
 
 	"github.com/ONLYOFFICE/document-server-integration/server/models"
 	"github.com/golang-jwt/jwt"
@@ -33,6 +34,8 @@ type HistoryManager interface {
 	GetHistory(filename, storageAddress string) (HistoryRefresh, []HistorySet, error)
 	CreateMeta(filename string, history models.History) error
 	CreateHistory(cbody models.Callback) error
+	CountVersion(directory string) int
+	GetFileData(filename string) map[string]string
 }
 
 type StorageManager interface {
@@ -46,6 +49,7 @@ type StorageManager interface {
 	CreateFile(stream io.Reader, path string) error
 	CreateDirectory(path string) error
 	PathExists(path string) bool
+	DirExists(path string) bool
 	RemoveFile(filename string) error
 	ReadFile(filePath string) ([]byte, error)
 	MoveFile(from, to string) error
@@ -55,6 +59,10 @@ type StorageManager interface {
 type UserManager interface {
 	GetUsers() []models.User
 	GetUserById(uid string) (models.User, error)
+	GetUserInfoById(uid string, serverAddress string) models.UserInfo
+	GetUsersForMentions(uid string) []models.UserInfo
+	GetUsersForProtect(uid string, serverAddress string) []models.UserInfo
+	GetUsersInfo(serverAddress string) []models.UserInfo
 }
 
 type JwtManager interface {
@@ -70,6 +78,10 @@ type ConversionManager interface {
 	GetConverterUri(docUri, fromExt, toExt, docKey string, isAsync bool) (string, error)
 }
 
+type CommandManager interface {
+	CommandRequest(method string, docKey string, meta interface{}) (*http.Response, error)
+}
+
 type Managers struct {
 	DocumentManager
 	HistoryManager
@@ -77,11 +89,13 @@ type Managers struct {
 	UserManager
 	JwtManager
 	ConversionManager
+	CommandManager
 }
 
 func New(umanager UserManager, smanager StorageManager,
 	hmanager HistoryManager, dmanager DocumentManager,
-	jmanager JwtManager, cmanager ConversionManager) *Managers {
+	jmanager JwtManager, cmanager ConversionManager,
+	commanager CommandManager) *Managers {
 	return &Managers{
 		HistoryManager:    hmanager,
 		StorageManager:    smanager,
@@ -89,5 +103,6 @@ func New(umanager UserManager, smanager StorageManager,
 		UserManager:       umanager,
 		JwtManager:        jmanager,
 		ConversionManager: cmanager,
+		CommandManager:    commanager,
 	}
 }
