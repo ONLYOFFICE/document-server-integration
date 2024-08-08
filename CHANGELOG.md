@@ -1,16 +1,10 @@
 # Change Log
-
-- en-GB skin language
-- save as for pdf
-- fill permission in embedded mode
-- delete all files
-- handling conversion -9 error
-- nodejs: wopi formsubmit icon
-- nodejs: tabs menu
-- change insert image
-- different goback for users
-- nodejs: converting function on index page
-- nodejs: close editor
+- golang: new integration example
+- golang: upload files to the server
+- golang: create blank files and files with sample content
+- glang: edit uploaded files in onlyoffice editor
+- golang: delete files on the server
+- golang: show files history
 
 ## 1.8.0
 - nodejs: pdf, djvu, xps, oxps as pdf documentType
