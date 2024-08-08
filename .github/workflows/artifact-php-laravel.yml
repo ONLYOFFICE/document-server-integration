@@ -1,0 +1,31 @@
+name: Artifact PHP Laravel
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths: ['web/documentserver-example/php-laravel/**']
+  pull_request:
+    branches: [master]
+    paths: ['web/documentserver-example/php-laravel/**']
+
+jobs:
+  artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Build Artifact
+        run: |
+          cd ${{ github.workspace }}
+          git submodule update --init --recursive
+          cd ./web/documentserver-example/php-laravel
+          mkdir -p ./deploy/'PHP Laravel Example'
+          rsync -av --exclude='deploy' ./ ./deploy/'PHP Laravel Example'
+          rm -rf ./deploy/'PHP Laravel Example'/public/assets/document-formats/.git
+          rm -rf ./deploy/'PHP Laravel Example'/public/assets/document-templates/.git
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PHP-Laravel.Example
+          path: ${{ github.workspace }}/web/documentserver-example/php-laravel/deploy
