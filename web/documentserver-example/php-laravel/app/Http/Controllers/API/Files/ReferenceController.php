@@ -26,26 +26,26 @@ class ReferenceController extends Controller
         $path = $request->input('path');
         $filename = null;
 
-        if ($referenceData && $referenceData["instanceId"] === $storagePrivateUrl) {
-            $fileKey =  json_decode(str_replace("'", "\"", $referenceData["fileKey"]));
+        if ($referenceData && $referenceData['instanceId'] === $storagePrivateUrl) {
+            $fileKey = json_decode(str_replace("'", '"', $referenceData['fileKey']));
             $userAddress = $fileKey->userAddress;
             if ($userAddress === $request->ip()) {
                 $filename = $fileKey->fileName;
             }
         }
 
-        if (!$filename && $link) {
+        if (! $filename && $link) {
             if (strpos($link, $storagePublicUrl) === false) {
                 return response()->json([
-                    "url" => $link,
-                    "directUrl" => $link
+                    'url' => $link,
+                    'directUrl' => $link,
                 ]);
             }
 
             $urlComponents = parse_url($link);
-            parse_str($urlComponents["query"], $urlParams);
-            $filename = $urlParams["fileID"];
-        } else if (!$filename && $path) {
+            parse_str($urlComponents['query'], $urlParams);
+            $filename = $urlParams['fileID'];
+        } elseif (! $filename && $path) {
             $filename = PathInfo::basename($path);
         }
 
@@ -59,7 +59,7 @@ class ReferenceController extends Controller
             Log::error($e->getMessage());
 
             return response()
-                ->json(["error" => $e->getMessage()]);
+                ->json(['error' => $e->getMessage()]);
         }
 
         $directDownloadUrl = route(
@@ -79,23 +79,23 @@ class ReferenceController extends Controller
         );
 
         $data = [
-            "fileType" => $file['format']->extension(),
-            "key" => $file['key'],
-            "url" => $downloadUrl,
-            "directUrl" => $request->input('directUrl') ? $directDownloadUrl : null,
-            "referenceData" => [
-                "fileKey" => json_encode([
-                    "fileName" => $filename,
-                    "userAddress" =>  $request->ip(),
+            'fileType' => $file['format']->extension(),
+            'key' => $file['key'],
+            'url' => $downloadUrl,
+            'directUrl' => $request->input('directUrl') ? $directDownloadUrl : null,
+            'referenceData' => [
+                'fileKey' => json_encode([
+                    'fileName' => $filename,
+                    'userAddress' => $request->ip(),
                 ]),
-                "instanceId" => $storagePublicUrl,
+                'instanceId' => $storagePublicUrl,
             ],
-            "path" => $filename,
-            "link" => "$storagePublicUrl/editor?fileID=$filename",
+            'path' => $filename,
+            'link' => "$storagePublicUrl/editor?fileID=$filename",
         ];
 
         if ($serverConfig->get('jwt.enabled')) {
-            $data["token"] = $jwt->encode($data);
+            $data['token'] = $jwt->encode($data);
         }
 
         return response()->json($data);
