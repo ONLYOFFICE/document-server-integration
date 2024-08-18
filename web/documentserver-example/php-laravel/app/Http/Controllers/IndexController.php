@@ -49,7 +49,7 @@ class IndexController extends Controller
 
         foreach ($files as &$file) {
             $url = route('files.download', ['fileName' => urlencode($file['filename']), 'dmode' => true]);
-            $file['url'] = Str::replace(URL::origin($url), $storageConfig->get('url.server.public'), $url);
+            $file['url'] = Str::replace(URL::origin($url), $storageConfig->get('url.public'), $url);
         }
 
         return view('index', [
