@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\Files\ReferenceController;
 use App\Http\Controllers\API\Files\VersionController as FilesVersionController;
 use App\Http\Controllers\API\FormatController;
 use App\Http\Controllers\EditorController;
@@ -40,6 +41,7 @@ Route::middleware(EnsureUserDirectoryExists::class)->group(function () {
 
         Route::prefix('files')->name('files.')->group(function () {
             Route::put('/versions/restore', [FilesVersionController::class, 'restore']);
+            Route::post('/reference', [ReferenceController::class, 'get']);
         });
     });
     Route::prefix('editor')->name('editor.')->group(function () {

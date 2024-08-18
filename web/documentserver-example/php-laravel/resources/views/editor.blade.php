@@ -146,8 +146,10 @@
 
             data.directUrl = !!config.document.directUrl;
             let xhr = new XMLHttpRequest();
-            xhr.open("POST", "reference");
-            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.open("POST", "/api/files/reference");
+            xhr.setRequestHeader('X-CSRF-TOKEN', "{{ csrf_token() }}")
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.setRequestHeader('Accept', 'application/json');
             xhr.send(JSON.stringify(data));
             xhr.onload = function() {
                 innerAlert(xhr.responseText);
