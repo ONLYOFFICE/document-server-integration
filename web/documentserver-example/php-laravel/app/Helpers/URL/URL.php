@@ -43,6 +43,8 @@ class URL
         $host = parse_url($url, PHP_URL_HOST);
         $port = parse_url($url, PHP_URL_PORT);
 
-        return "{$scheme}://{$host}:{$port}";
+        $origin = $port ? "{$scheme}://{$host}:{$port}" : "{$scheme}://{$host}";
+
+        return $origin;
     }
 }
