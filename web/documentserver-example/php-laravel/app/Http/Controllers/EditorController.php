@@ -82,7 +82,7 @@ class EditorController extends Controller
         $userId = $request->user ?? 'uid-1';
         $type = $request->type ?? 'desktop';
         $actionLink = $request->input('actionLink', '');
-        $lang = cache('lang') ?? 'en';
+        $lang = $request->cookie('ulang', 'en');
         $fileExt = $request->input('fileExt');
         $withSample = $request->has('sample') && $request->sample === 'true';
         $storagePublicUrl = $this->storageConfig->get('url.public');

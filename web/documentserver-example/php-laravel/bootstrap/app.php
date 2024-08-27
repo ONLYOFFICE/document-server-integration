@@ -15,6 +15,9 @@ return Application::configure(basePath: dirname(__DIR__))
             '/editor/track',
             '/files/saveas',
         ]);
+        $middleware->encryptCookies(except: [
+            'ulang',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //
