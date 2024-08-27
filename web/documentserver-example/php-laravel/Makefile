@@ -6,10 +6,7 @@ install: # Install all the dependencies
 
 compose-start: # Start docker services and install all the dependencies (e.g. php, nodejs)
 	@docker compose build
-	@docker compose up -d
-	@docker compose exec example composer install
-	@docker compose exec node npm install
-	@docker compose exec node npm run build
+	@docker compose up
 
 compose-stop: # Stop docker services
-	@docker compose down
+	@docker compose down -v

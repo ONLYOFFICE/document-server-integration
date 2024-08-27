@@ -1,15 +1,11 @@
 services:
   example:
     build:
-      args:
-        user: ${USER}
-        uid: ${UID}
-      context: ./docker/php-fpm/
-      dockerfile: Dockerfile
+      dockerfile: ./docker/php-fpm/Dockerfile
     container_name: example
     working_dir: /var/www/
     volumes:
-      - ./:/var/www
+      - example:/var/www
     networks:
       - example
 
@@ -33,7 +29,7 @@ services:
       - 80:80
       - 8080:8080
     volumes:
-      - ./:/var/www
+      - example:/var/www
     networks:
       - example
 
@@ -45,10 +41,14 @@ services:
     ports:
       - 5173:5173
     volumes:
-      - ./:/var/www
+      - example:/var/www
+    command: >
+      sh -c "npm install && npm run build"
     networks:
       - example
 
 networks:
   example:
     driver: bridge
+volumes:
+  example:
