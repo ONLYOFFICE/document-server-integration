@@ -24,6 +24,7 @@ const fileUtility = require('../fileUtility');
 const lockManager = require('./lockManager');
 const users = require('../users');
 const DocManager = require('../docManager');
+const utf7 = require('utf7');
 
 // return lock mismatch
 const returnLockMismatch = function returnLockMismatch(res, lock, reason) {
@@ -228,7 +229,7 @@ const putRelativeFile = function putRelativeFile(wopi, req, res, userHost) {
     }
   } else {
     filename = req.headers[reqConsts.requestHeaders.SuggestedTarget.toLowerCase()]; // we can modify this filename
-
+    filename = utf7.decode(filename);
     if (filename.startsWith('.')) { // check if extension
       filename = fileUtility.getFileName(wopi.id, true) + filename; // get original filename with new extension
     }

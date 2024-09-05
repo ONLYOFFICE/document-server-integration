@@ -278,6 +278,10 @@ urllib        - Request HTTP URLs in a complex world — basic and digest authen
 License:        MIT
 License File:   urllib.license
 
+utf7          - Encodes and decodes JavaScript (Unicode/UCS-2) strings to UTF-7 ASCII strings. (https://github.com/kkaefer/utf7/blob/master/LICENSE)
+License:        MIT
+License File:   utf7.license
+
 
 web/documentserver-example/php
 
