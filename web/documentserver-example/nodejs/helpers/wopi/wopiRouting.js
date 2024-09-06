@@ -73,7 +73,16 @@ exports.registerRoutes = function registerRoutes(app) {
         file.actions = await utils.getActions(req.DocManager, ext); // get actions of the specified extension
         // eslint-disable-next-line no-await-in-loop
         file.defaultAction = await utils.getDefaultAction(req.DocManager, ext);// get the default action for extension
-        if (mobile) file.actions.forEach((act) => { if (act.name === 'mobileEdit') file.defaultAction = act; });
+        if (mobile) {
+          file.actions.forEach((act) => {
+            if ((file.defaultAction.name === 'edit' || file.defaultAction.name === 'formsubmit')
+              && act.name === 'mobileEdit') {
+              file.defaultAction = act;
+            } else if (file.defaultAction.name === 'view' && act.name === 'mobileView') {
+              file.defaultAction = act;
+            }
+          });
+        }
       }
 
       // render wopiIndex template with the parameters specified
