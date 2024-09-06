@@ -19,12 +19,12 @@
 const fileSystem = require('fs');
 const mime = require('mime');
 const path = require('path');
+const utf7 = require('utf7');
 const reqConsts = require('./request');
 const fileUtility = require('../fileUtility');
 const lockManager = require('./lockManager');
 const users = require('../users');
 const DocManager = require('../docManager');
-const utf7 = require('utf7');
 
 // return lock mismatch
 const returnLockMismatch = function returnLockMismatch(res, lock, reason) {
