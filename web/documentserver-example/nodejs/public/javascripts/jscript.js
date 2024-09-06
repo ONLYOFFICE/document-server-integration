@@ -436,7 +436,7 @@ if (typeof jQuery != "undefined") {
                         jq("td[name='convertingTypeButton']").removeClass("disable orange");
                         return;
                     }
-                    if(response.step && response.step !==100) {
+                    if (response.step != undefined && response.step !== 100) {
                         jq("#convertPercent").text(`${response.step} %`);
                         convertFile();
                     } else {
