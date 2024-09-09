@@ -30,7 +30,8 @@
     "log4js": "^6.9.1",
     "mime": "^2.4.6",
     "serve-favicon": "^2.5.0",
-    "urllib": "^2.36.1"
+    "urllib": "^2.36.1",
+    "utf7": "^1.0.2"
   },
   "license": "Apache",
   "repository": {

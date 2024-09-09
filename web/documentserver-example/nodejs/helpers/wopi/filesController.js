@@ -19,6 +19,7 @@
 const fileSystem = require('fs');
 const mime = require('mime');
 const path = require('path');
+const utf7 = require('utf7');
 const reqConsts = require('./request');
 const fileUtility = require('../fileUtility');
 const lockManager = require('./lockManager');
@@ -228,7 +229,7 @@ const putRelativeFile = function putRelativeFile(wopi, req, res, userHost) {
     }
   } else {
     filename = req.headers[reqConsts.requestHeaders.SuggestedTarget.toLowerCase()]; // we can modify this filename
-
+    filename = utf7.decode(filename);
     if (filename.startsWith('.')) { // check if extension
       filename = fileUtility.getFileName(wopi.id, true) + filename; // get original filename with new extension
     }
