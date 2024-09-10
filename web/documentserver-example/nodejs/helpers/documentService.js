@@ -63,7 +63,8 @@ documentService.getConvertedUri = function getConvertedUri(
 ) {
   const fromExt = fromExtension || fileUtility.getFileExtension(documentUri); // get the current document extension
 
-  const title = fileUtility.getFileName(documentUri) || guidManager.newGuid(); // get the current document name or uuid
+  // get the current document name or uuid
+  const title = fileUtility.getFileNameFromUrl(documentUri) || guidManager.newGuid();
 
   // generate the document key value
   const revisionId = documentService.generateRevisionId(documentRevisionId || documentUri);

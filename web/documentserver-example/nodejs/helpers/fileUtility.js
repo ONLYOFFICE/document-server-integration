@@ -25,14 +25,22 @@ fileUtility.getFormats = function getFormats() {
 };
 
 // get file name from the given url
-fileUtility.getFileName = function getFileName(url, withoutExtension) {
+fileUtility.getFileNameFromUrl = function getFileNameFromUrl(url, withoutExtension) {
   if (!url) return '';
 
   let parts = url.split('\\');
   parts = parts.pop();
-  parts = parts.split('/');
-  let fileName = parts.pop(); // get the file name from the last part of the url
-  [fileName] = fileName.split('?');
+  const path = parts.split('?')[0];
+
+  return fileUtility.getFileName(path, withoutExtension);
+};
+
+// get file name
+fileUtility.getFileName = function getFileName(path, withoutExtension) {
+  if (!path) return '';
+
+  const parts = path.split('/');
+  const fileName = parts.pop(); // get the file name from the last part of the path
 
   // get file name without extension
   if (withoutExtension) {
@@ -46,7 +54,7 @@ fileUtility.getFileName = function getFileName(url, withoutExtension) {
 fileUtility.getFileExtension = function getFileExtension(url, withoutDot) {
   if (!url) return null;
 
-  const fileName = fileUtility.getFileName(url); // get file name from the given url
+  const fileName = fileUtility.getFileNameFromUrl(url); // get file name from the given url
 
   const parts = fileName.toLowerCase().split('.');
 
