@@ -86,7 +86,8 @@ DocManager.prototype.getCustomParams = function getCustomParams() {
 DocManager.prototype.getCorrectName = function getCorrectName(fileName, userAddress) {
   // get file name from the url without extension
   const maxName = configServer.get('maxNameLength');
-  const baseName = fileUtility.getFileName(fileName, true).substr(0, maxName)
+  let baseName = fileUtility.getFileName(fileName, true);
+  baseName = baseName.replace(/[/\\?%*:|"<>]/g, '_').substr(0, maxName)
     + (fileName.length > maxName ? '[...]' : '');
   const ext = fileUtility.getFileExtension(fileName); // get file extension from the url
   let name = baseName + ext; // get full file name
