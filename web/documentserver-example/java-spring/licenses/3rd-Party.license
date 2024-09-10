@@ -1,6 +1,5 @@
 ONLYOFFICE Applications example uses code from the following 3rd party projects:
 
-
 Gson          - Gson is a Java library that can be used to convert Java Objects into their JSON representation. (https://github.com/google/gson/blob/master/LICENSE)
 License:        Apache 2.0
 License File:   gson.license
@@ -12,6 +11,10 @@ License File:   h2database.license
 Jackson Databind - General-purpose data-binding functionality and tree-model for Jackson Data Processor. (https://github.com/FasterXML/jackson-databind/blob/master/LICENSE)
 License:        Apache 2.0
 License File:   jackson-databind.license
+
+Jackson Dataformat Properties - Support for reading and writing content of "Java Properties" style configuration files as if there was implied nesting structure (by default using dots as separators). (https://github.com/FasterXML/jackson-dataformats-text/blob/master/LICENSE)
+License:        Apache 2.0
+License File:   jackson-dataformat-properties.license
 
 jQuery.BlockUI - The jQuery BlockUI Plugin lets you simulate synchronous behavior when using AJAX, without locking the browser. (https://github.com/malsup/blockui/)
 License:        MIT, GPL
@@ -37,6 +40,10 @@ jQuery.UI     - jQuery UI is an open source library of interface components — 
 License:        MIT
 License File:   jQuery.UI.license
 
+JSON          - JSON is a light-weight, language independent, data interchange format. (https://github.com/stleary/JSON-java/blob/master/LICENSE)
+License         Public Domain
+License File:   json.license
+
 JSON.simple   - JSON.simple is a simple Java toolkit for JSON. You can use JSON.simple to encode or decode JSON text. (https://github.com/fangyidong/json-simple/blob/master/LICENSE.txt)
 License:        Apache 2.0
 License File:   JSON.simple.license
@@ -49,11 +56,11 @@ ModelMapper   - ModelMapper is an intelligent object mapping library that automa
 License:        Apache 2.0
 License File    modelmapper.license
 
-Prime JWT     - is intended to be fast and easy to use. Prime JWT has a single external dependency on Jackson. (https://github.com/ws-apps/prime-jwt/blob/master/LICENSE)
-License:        Apache 2.0
-License File:   prime-jwt.license
-
 Spring Boot   - Helps create Spring-powered, production-grade applications and services. Has external dependencies on Spring Framework. (https://github.com/spring-projects/spring-boot/blob/main/LICENSE.txt)
+License:        Apache 2.0
+License File:   spring-boot.license
+
+Spring Boot Web - Starter for building web, including RESTful, applications using Spring MVC. Uses Tomcat as the default embedded container. (https://github.com/spring-projects/spring-boot/blob/main/LICENSE.txt)
 License:        Apache 2.0
 License File:   spring-boot.license
 

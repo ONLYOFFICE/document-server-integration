@@ -69,6 +69,9 @@ namespace OnlineEditorsExampleMVC
                 case "remove":
                     Remove(context);
                     break;
+                case "removeforgotten":
+                    RemoveForgotten(context);
+                    break;
                 case "assets":
                     Assets(context);
                     break;
@@ -993,6 +996,32 @@ namespace OnlineEditorsExampleMVC
             }
             catch (Exception e)
             {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
+
+        // delete a forgotten file from the document server
+        private static void RemoveForgotten(HttpContext context)
+        {
+            try
+            {
+                if (!bool.Parse(WebConfigurationManager.AppSettings["enable-forgotten"]))
+                {
+                    throw new HttpException(403, "The forgotten page is disabled");
+                }
+
+                string filename = context.Request["filename"];
+
+                if (!String.IsNullOrEmpty(filename))
+                {
+                    TrackManager.commandRequest("deleteForgotten", filename);
+                }
+
+                context.Response.StatusCode = 204;
+            }
+            catch (Exception e)
+            {
+                context.Response.StatusCode = 500;
                 context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
             }
         }

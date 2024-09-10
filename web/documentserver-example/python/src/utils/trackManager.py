@@ -202,10 +202,11 @@ def commandRequest(method, key, meta=None):
     response = requests.post(config_manager.document_server_command_url().geturl(), json=payload, headers=headers,
                              verify=config_manager.ssl_verify_peer_mode_enabled(), timeout=5)
 
-    if meta:
-        return response
+    error = response.json()["error"]
+    if not error == 0:
+        raise Exception(f"Command Service Error #{error}")
 
-    return
+    return response
 
 
 def resolve_process_save_body(body):

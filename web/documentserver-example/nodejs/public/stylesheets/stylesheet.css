@@ -26,7 +26,7 @@ body {
     color: #333333;
     font-family: Open Sans;
     font-size: 12px;
-    font-style: normal; 
+    font-style: normal;
     font-weight: normal;
     height: 100%;
     margin: 0;
@@ -61,6 +61,14 @@ header {
 
 header img {
     margin: 10px 0 22px 32px;
+}
+
+.responsive-nav {
+    display: none;
+}
+
+.mobile-close-btn {
+    display: none;
 }
 
 .center {
@@ -149,20 +157,23 @@ label .checkbox {
     text-decoration: none;
 }
 
+.try-editor.docx,
 .try-editor.word {
     background-image: url("../images/file_docx.svg");
 }
 
+.try-editor.xlsx,
 .try-editor.cell {
     background-image: url("../images/file_xlsx.svg");
 }
 
+.try-editor.pptx,
 .try-editor.slide {
     background-image: url("../images/file_pptx.svg");
 }
 
-.try-editor.form {
-    background-image: url("../images/file_docxf.svg");
+.try-editor.pdf {
+    background-image: url("../images/file_pdf.svg");
 }
 
 .side-option {
@@ -170,9 +181,9 @@ label .checkbox {
     line-height: 24px;
 }
 
-.button, 
-.button:visited, 
-.button:hover, 
+.button,
+.button:visited,
+.button:hover,
 .button:active {
     align-items: center;
     border-radius: 3px;
@@ -495,14 +506,18 @@ label .checkbox {
     display: inline;
 }
 
-.step-descr {
+.step-descr, .step-error {
     display: block;
     margin-left: 35px;
     font-size: 11px;
     line-height: 188%;
 }
 
-.step-descr.disable {
+.step-error {
+    color: #CB0000;
+}
+
+.step-descr.disable, .step-error.hidden {
     display: none;
 }
 
@@ -554,12 +569,12 @@ footer table td {
     padding-left: 32px;
 }
 
-footer a, 
-footer a:hover, 
+footer a,
+footer a:hover,
 footer a:visited {
     color: #FF6F3D;
     font-size: 14px;
-    line-height: 120%; 
+    line-height: 120%;
 }
 
 footer a:hover {
@@ -621,7 +636,7 @@ footer table tr td:first-child {
 }
 
 .convertFileName.slide,
-.stored-edit.slide, 
+.stored-edit.slide,
 .uploadFileName.slide {
     background-image: url("../images/icon_pptx.svg");
 }
@@ -952,7 +967,7 @@ html {
 .tableRow td:first-child {
     display: flex;
     flex-grow: 1;
-    max-width: 25%;
+    max-width: 24%;
 }
 
 .tableHeaderCellFileName {

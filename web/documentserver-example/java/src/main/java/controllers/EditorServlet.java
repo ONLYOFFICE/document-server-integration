@@ -63,7 +63,7 @@ public class EditorServlet extends HttpServlet {
                 fileName = DocumentManager.createDemo(fileExt, sampleData, user);
 
                 // redirect the request
-                response.sendRedirect("EditorServlet?fileName=" + URLEncoder.encode(fileName, "UTF-8"));
+                response.sendRedirect("EditorServlet?mode=edit&fileName=" + URLEncoder.encode(fileName, "UTF-8"));
                 return;
             } catch (Exception ex) {
                 response.getWriter().write("Error: " + ex.getMessage());

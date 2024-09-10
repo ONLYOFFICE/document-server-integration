@@ -24,7 +24,7 @@ require_relative 'configuration'
 module Enviroment
   def initialize(name)
     @env = ENV.to_hash
-    super(name)
+    super
   end
 
   def setup

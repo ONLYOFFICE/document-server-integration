@@ -18,11 +18,23 @@
 <body>
 <form id="form1">
     <header>
-        <div class="center">
-            <a href="">
+        <div class="center main-nav">
+            <a href="./">
                 <img src ="assets/images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
+        <menu class="responsive-nav">
+            <li>
+                <a href="#" onclick="toggleSidePanel(event)">
+                    <img src ="assets/images/mobile-menu.svg" alt="ONLYOFFICE" />
+                </a>
+            </li>
+            <li>
+                <a href="./">
+                    <img src ="assets/images/mobile-logo.svg" alt="ONLYOFFICE" />
+                </a>
+            </li>
+        </menu>
     </header>
     <div class="center main">
         <table class="table-main">
@@ -48,7 +60,7 @@
                                     </li>
                                     <li>
                                         <a class="try-editor form reload-page" target="_blank"
-                                           href="editor?fileExt=docxf&user={user}">PDF form</a>
+                                           href="editor?fileExt=pdf&user={user}">PDF form</a>
                                     </li>
                                 </ul>
                                 <label class="side-option">
@@ -100,9 +112,20 @@
                             </table>
                         </div>
                     </div>
+                    <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                        <img src="assets/images/close.svg" alt="">
+                    </button>
                 </td>
                 <td class="section">
                     <div class="main-panel">
+                        <menu class="links">
+                            <li class="home-link active" >
+                                <a href="./">
+                                    <img src="assets/images/home.svg" alt="Home"/>
+                            </a>
+                            </li>
+                            {forgottenLink}
+                        </menu>
                         <div id="portal-info" style="display: {portalInfoDisplay}">
                             <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                             <span class="portal-descr">

@@ -464,8 +464,12 @@ DocManager.prototype.getHistoryObject = function getHistoryObject(fileName, user
     for (let i = 1; i <= countVersion; i++) { // get keys to all the file versions
       if (i < countVersion) {
         const keyPath = this.keyPath(fileName, userAddress, i);
-        if (!fileSystem.existsSync(keyPath)) continue;
-        keyVersion = `${fileSystem.readFileSync(keyPath)}`;
+        if (!fileSystem.existsSync(keyPath)) {
+          keyVersion = userAddress + fileName + Date.now();
+          keyVersion = documentService.generateRevisionId(keyVersion);
+        } else {
+          keyVersion = `${fileSystem.readFileSync(keyPath)}`;
+        }
       } else {
         keyVersion = key;
       }

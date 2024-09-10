@@ -45,6 +45,7 @@ final class IndexView extends View
             "dataDocs" => $this->getPreloaderUrl(),
             "date" => date("Y"),
             "serverVersion" => $configManager -> getVersion(),
+            "forgottenLink" => $this->getForgottenLink($configManager->enableForgotten()),
         ];
     }
 
@@ -84,11 +85,11 @@ final class IndexView extends View
         $userList = new ExampleUsers();
         foreach ($userList->getAllUsers() as $userL) {
             $name = $userL->name ?: "Anonymous";
-            $layout .= '<div class="user-descr"><br><b>'.$name.'</b><br><ul>';
+            $layout .= '<div class="user-descr" onclick="toggleUserDescr(event)"><b>'.$name.'</b><ul>';
             foreach ($userL->descriptions as $description) {
                 $layout .= '<li>'.$description.'</li>';
             }
-            $layout .= '</ul><br></div>';
+            $layout .= '</ul></div>';
         }
         return $layout;
     }
@@ -108,5 +109,15 @@ final class IndexView extends View
     private function getEditButton()
     {
         return '<div id="beginEdit" class="button orange disable">Edit</div>';
+    }
+
+    private function getForgottenLink($forgottenEnabled)
+    {
+        $link = <<<EOT
+        <li>
+            <a href="forgotten">Forgotten files</a>
+        </li>
+        EOT;
+        return $forgottenEnabled ? $link : '';
     }
 }

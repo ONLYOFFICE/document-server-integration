@@ -450,3 +450,26 @@ function getUrlVars() {
     }
     return vars;
 };
+
+function toggleSidePanel(event) {
+    event.preventDefault();
+    let sidePanel = document.querySelector(".left-panel");
+    let body = document.querySelector("body");
+    if (sidePanel.classList.contains("active")) {
+        sidePanel.classList.remove("active");
+        body.classList.remove("menu-open");
+    } else {
+        sidePanel.classList.add("active")
+        body.classList.add("menu-open");
+    }
+}
+
+function toggleUserDescr(event) {
+    let list = event.currentTarget.querySelector("ul");
+    let cursor = window.getComputedStyle(event.currentTarget).getPropertyValue("cursor");
+
+    if (cursor === "pointer") {
+        if (list.classList.contains("active")) list.classList.remove("active");
+        else list.classList.add("active");
+    }
+}

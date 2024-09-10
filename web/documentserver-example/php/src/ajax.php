@@ -317,6 +317,27 @@ function delete()
 }
 
 /**
+ * Delete a forgotten file from the document server
+ *
+ * @return array|void
+ */
+function deleteForgotten()
+{
+    try {
+        $filename = isset($_GET["filename"]) && !empty($_GET["filename"])
+            ? $_GET["filename"] : null;
+        if ($filename) {
+            commandRequest('deleteForgotten', $filename);
+            http_response_code(204);
+        }
+    } catch (Exception $e) {
+        sendlog("Delete Forgotten File ".$e->getMessage(), "webedior-ajax.log");
+        $result["error"] = "error: " . $e->getMessage();
+        return $result;
+    }
+}
+
+/**
  * Get file information
  *
  * @return array
@@ -326,7 +347,7 @@ function files()
     try {
         @header("Content-Type", "application/json");
 
-        $fileId = $_GET["fileId"];
+        $fileId = isset($_GET["fileId"]) && !empty($_GET["fileId"]) ? $_GET["fileId"] : null;
         $result = getFileInfo($fileId);
 
         return $result;

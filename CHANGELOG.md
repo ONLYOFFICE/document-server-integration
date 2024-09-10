@@ -1,10 +1,41 @@
 # Change Log
+
 - golang: new integration example
 - golang: upload files to the server
 - golang: create blank files and files with sample content
 - glang: edit uploaded files in onlyoffice editor
 - golang: delete files on the server
 - golang: show files history
+- php-laravel: new integration example
+- php-laravel: upload files to the server
+- php-laravel: create blank files and files with sample content
+- php-laravel: edit uploaded files in onlyoffice editor
+- php-laravel: delete files on the server
+- php-laravel: create, edit, and submit pdf forms
+- php-laravel: show forgotten files on a seperate page
+
+## 1.10.0
+- nodejs: converting function on index page
+- java-spring: using java docs-integration-sdk
+- tabs menu
+- creating and editing pdf instead docxf
+- filling by default
+- forgotten files
+- delete all files
+- save as for pdf
+- handling conversion -9 error
+- change inserted image
+- different goback for users
+
+## 1.9.0
+- nodejs: filling by default
+- nodejs: docxf, oform as pdf documentType
+- nodejs: creating and editing pdf instead docxf
+- nodejs: wopi formsubmit icon
+- nodejs: close editor
+- en-GB, sr-Cyrl-RS skin languages
+- switching from filling to editing
+- fill permission in embedded mode
 
 ## 1.8.0
 - nodejs: pdf, djvu, xps, oxps as pdf documentType

@@ -17,10 +17,13 @@
  */
 
 using System;
+using System.Collections.Generic;
+using System.Collections;
 using System.IO;
 using System.Web.Mvc;
 using OnlineEditorsExampleMVC.Helpers;
 using OnlineEditorsExampleMVC.Models;
+using System.Web.Configuration;
 
 namespace OnlineEditorsExampleMVC.Controllers
 {
@@ -29,6 +32,46 @@ namespace OnlineEditorsExampleMVC.Controllers
         public ActionResult Index()
         {
             return View();
+        }
+
+        public ActionResult Forgotten()
+        {
+            if (!bool.Parse(WebConfigurationManager.AppSettings["enable-forgotten"]))
+            {
+                ViewData["Message"] = "The forgotten page is disabled";
+                return View("~/Views/Shared/Error.aspx");
+            }
+
+            var files = new List<Dictionary<string, string>>();
+
+            try
+            {
+                var response = TrackManager.commandRequest("getForgottenList", null);
+                ArrayList keys = (ArrayList)response["keys"];
+
+                // fetch all the forgotten files from the document server
+                foreach (string key in keys)
+                {
+                    var file = new Dictionary<string, string>();
+                    var fileResult = TrackManager.commandRequest("getForgotten", key);
+                    file.Add("key", fileResult["key"].ToString());
+                    file.Add("url", fileResult["url"].ToString());
+                    file.Add(
+                        "type",
+                        FileUtility.GetFileType(fileResult["url"].ToString())
+                            .ToString()
+                            .ToLower()
+                    );
+
+                    files.Add(file);
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine(ex.Message);
+            }
+
+            return View("Forgotten", new ForgottenFilesModel(files));
         }
 
         // viewing file in the editor
@@ -52,7 +95,7 @@ namespace OnlineEditorsExampleMVC.Controllers
             var id = Request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);
             DocManagerHelper.CreateMeta(fileName, user.id, user.name);  // create meta information for the sample document
-            Response.Redirect(Url.Action("Editor", "Home", new { fileName = fileName }));
+            Response.Redirect(Url.Action("Editor", "Home", new { fileName = fileName, editorsMode="edit" }));
             return null;
         }
     }

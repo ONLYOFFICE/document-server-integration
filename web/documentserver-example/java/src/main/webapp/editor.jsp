@@ -58,7 +58,7 @@
 
         // the user is trying to switch the document from the viewing into the editing mode
         var onRequestEditRights = function () {
-            location.href = location.href.replace(RegExp("mode=view\&?", "i"), "");
+            location.href = location.href.replace(RegExp("mode=\\w+\&?", "i"), "") + "&mode=edit";
         };
 
         // an error or some other specific event occurs
@@ -98,7 +98,7 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
-            if (event.data.favorite) {
+            if (event.data.favorite !== undefined) {
                 var favorite = !!event.data.favorite;
                 var title = document.title.replace(/^\☆/g, "");
                 document.title = (favorite ? "☆" : "") + title;

@@ -32,7 +32,7 @@ class Format < T::Struct
 
   sig { params(hash: T.untyped, strict: T.untyped).returns(Format) }
   def self.from_hash(hash, strict = nil)
-    super(hash, strict)
+    super
   end
 
   sig { returns(String) }
@@ -91,6 +91,18 @@ class FormatManager
   def convertible
     all.filter do |format|
       format.actions.include?('auto-convert')
+    end
+  end
+
+  sig { returns(T::Array[String]) }
+  def pdf_extensions
+    pdf.map(&:extension)
+  end
+
+  sig { returns(T::Array[Format]) }
+  def pdf
+    all.filter do |format|
+      format.type == 'pdf'
     end
   end
 

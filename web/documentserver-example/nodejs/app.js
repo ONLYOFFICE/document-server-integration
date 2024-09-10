@@ -37,6 +37,7 @@ const users = require('./helpers/users');
 
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl');
+const enableForgotten = configServer.get('enableForgotten');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : '';
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
@@ -99,11 +100,85 @@ app.get('/', (req, res) => { // define a handler for default page
       users,
       languages: configServer.get('languages'),
       serverVersion: config.get('version'),
+      enableForgotten,
     });
   } catch (ex) {
     console.log(ex); // display error message in the console
     res.status(500); // write status parameter to the response
     res.render('error', { message: 'Server error' }); // render error template with the message parameter specified
+  }
+});
+
+app.get('/forgotten', async (req, res) => {
+  if (!enableForgotten) {
+    res.status(403);
+    res.render(
+      'error',
+      { message: 'The forgotten page is disabled.' },
+    );
+    return;
+  }
+
+  let forgottenFiles = [];
+
+  function getForgottenList() {
+    return new Promise((resolve, reject) => {
+      documentService.commandRequest('getForgottenList', '', (err, data, ress) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(JSON.parse(ress.data));
+        }
+      });
+    });
+  }
+
+  function getForgottenFile(key) {
+    return new Promise((resolve, reject) => {
+      documentService.commandRequest('getForgotten', key, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          const parsedData = JSON.parse(data);
+          resolve({
+            name: parsedData.key,
+            documentType: fileUtility.getFileType(parsedData.url),
+            url: parsedData.url,
+          });
+        }
+      });
+    });
+  }
+
+  try {
+    const forgottenListResponse = await getForgottenList();
+
+    const { keys } = forgottenListResponse;
+    forgottenFiles = await Promise.all(keys.map(getForgottenFile));
+  } catch (error) {
+    console.error(error);
+  }
+
+  req.DocManager = new DocManager(req, res);
+  res.render('forgotten', { forgottenFiles });
+});
+
+app.delete('/forgotten', (req, res) => { // define a handler for removing forgotten file
+  if (!enableForgotten) {
+    res.sendStatus(403);
+    return;
+  }
+
+  try {
+    const fileName = req.query.filename;
+    if (fileName && typeof fileName === 'string') { // if the forgotten file name is defined
+      documentService.commandRequest('deleteForgotten', fileName);
+      res.status(204).send();
+    }
+  } catch (ex) {
+    console.log(ex);
+    res.write('Server error');
+    res.status(500).send();
   }
 });
 
@@ -235,7 +310,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     const curExt = fileUtility.getFileExtension(file.originalFilename, true);
     const documentType = fileUtility.getFileType(file.originalFilename);
 
-    if (exts.indexOf(curExt) === -1) { // check if the file extension is supported
+    if (exts.indexOf(curExt) === -1 || fileUtility.getFormatActions(curExt).length === 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' }); // and write the error status and message to the response
       res.write('{ "error": "File type is not supported"}');
@@ -298,7 +373,7 @@ app.post('/create', (req, res) => {
       const exts = fileUtility.getSuppotredExtensions(); // all the supported file extensions
       const curExt = fileUtility.getFileExtension(fileName, true);
 
-      if (exts.indexOf(curExt) === -1) { // check if the file extension is supported
+      if (exts.indexOf(curExt) === -1 || fileUtility.getFormatActions(curExt).length === 0) {
         // and write the error status and message to the response
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.write(JSON.stringify({ error: 'File type is not supported' }));
@@ -509,18 +584,25 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
   const { referenceData } = req.body;
   let fileName = '';
-  let userAddress = '';
   if (referenceData) {
     const { instanceId } = referenceData;
 
     if (instanceId === req.DocManager.getInstanceId()) {
       const fileKey = JSON.parse(referenceData.fileKey);
-      ({ userAddress } = fileKey);
+      const { userAddress } = fileKey;
 
       if (userAddress === req.DocManager.curUserHostAddress()
-                && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName, userAddress))) {
+                && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName))) {
         ({ fileName } = fileKey);
       }
+    }
+  }
+
+  if (!fileName && !!req.body.path) {
+    const filePath = fileUtility.getFileName(req.body.path);
+
+    if (req.DocManager.existsSync(req.DocManager.storagePath(filePath))) {
+      fileName = filePath;
     }
   }
 
@@ -535,17 +617,9 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
     const urlObj = urlModule.parse(req.body.link, true);
     fileName = urlObj.query.fileName;
-    if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
+    if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName))) {
       result({ error: 'File is not exist' });
       return;
-    }
-  }
-
-  if (!fileName && !!req.body.path) {
-    const filePath = fileUtility.getFileName(req.body.path);
-
-    if (req.DocManager.existsSync(req.DocManager.storagePath(filePath, userAddress))) {
-      fileName = filePath;
     }
   }
 
@@ -630,6 +704,13 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       newFileName,
     ) {
       try {
+        if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
+          console.log(`callbackProcessSave error: name = ${fileName} userAddress = ${userAddress} is not exist`);
+          response.write('{"error":1, "message":"file is not exist"}');
+          response.end();
+          return;
+        }
+
         const { status, data } = await urllib.request(downloadUri, { method: 'GET' });
 
         if (status !== 200) throw new Error(`Document editing service returned status: ${status}`);
@@ -944,7 +1025,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
 
       // get the redirect path
-      const redirectPath = `${req.DocManager.getServerUrl()}/editor?fileName=`
+      const redirectPath = `${req.DocManager.getServerUrl()}/editor?mode=edit&fileName=`
       + `${encodeURIComponent(fName)}${req.DocManager.getCustomParams()}`;
       res.redirect(redirectPath);
       return;
@@ -1020,11 +1101,14 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const key = req.DocManager.getKey(fileName);
     const url = req.DocManager.getDownloadUrl(fileName, true);
     const directUrl = req.DocManager.getDownloadUrl(fileName);
-    let mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
+
+    // check if this file can be filled
+    const canFill = fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1;
+    let mode = req.query.mode || (canFill ? 'fillForms' : 'edit'); // mode: view/edit/review/comment/fillForms/embedded
 
     let canEdit = fileUtility.getEditExtensions().indexOf(fileExt.slice(1)) !== -1; // check if this file can be edited
     if (((!canEdit && mode === 'edit') || mode === 'fillForms')
-      && fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1) {
+      && canFill) {
       mode = 'fillForms';
       canEdit = true;
     }
@@ -1033,7 +1117,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     let submitForm = false;
-    if (mode === 'fillForms') {
+    if (mode === 'fillForms' || mode === 'embedded') {
       submitForm = userid === 'uid-1';
     }
 

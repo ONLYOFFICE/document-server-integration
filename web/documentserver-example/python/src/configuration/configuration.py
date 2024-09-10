@@ -22,7 +22,7 @@ from src.common import string
 
 
 class ConfigurationManager:
-    version = '1.8.0'
+    version = '1.10.0'
 
     def getVersion(self) -> str:
         return self.version
@@ -121,6 +121,9 @@ class ConfigurationManager:
             return int(timeout)
         return 120 * 1000
 
+    def enable_forgotten(self) -> bool:
+        return environ.get('ENABLE_FORGOTTEN', True)
+
     def languages(self) -> dict[str, str]:
         return {
             'en': 'English',
@@ -156,7 +159,8 @@ class ConfigurationManager:
             'pt-PT': 'Portuguese (Portugal)',
             'ro': 'Romanian',
             'ru': 'Russian',
-            'sr-Latn-RS': 'Serbian',
+            'sr-Cyrl-RS': 'Serbian (Cyrillic)',
+            'sr-Latn-RS': 'Serbian (Latin)',
             'si': 'Sinhala (Sri Lanka)',
             'sk': 'Slovak',
             'sl': 'Slovenian',

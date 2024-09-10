@@ -5,7 +5,6 @@
 [submodule "web/documentserver-example/nodejs/public/assets/document-formats"]
 	path = web/documentserver-example/nodejs/public/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
-	branch = feature/v8.0
 [submodule "web/documentserver-example/csharp-mvc/assets/document-templates"]
 	path = web/documentserver-example/csharp-mvc/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
@@ -57,10 +56,6 @@
 	path = web/documentserver-example/java/src/main/resources/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
 	branch = master
-[submodule "web/documentserver-example/java-spring/src/main/resources/assets/document-formats"]
-	path = web/documentserver-example/java-spring/src/main/resources/assets/document-formats
-	url = https://github.com/ONLYOFFICE/document-formats
-	branch = master
 [submodule "web/documentserver-example/csharp/assets/document-templates"]
 	path = web/documentserver-example/csharp/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
@@ -68,3 +63,11 @@
 [submodule "web/documentserver-example/csharp/assets/document-formats"]
 	path = web/documentserver-example/csharp/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
+[submodule "web/documentserver-example/php-laravel/public/assets/document-formats"]
+	path = web/documentserver-example/php-laravel/public/assets/document-formats
+	url = https://github.com/ONLYOFFICE/document-formats
+	branch = master
+[submodule "web/documentserver-example/php-laravel/public/assets/document-templates"]
+	path = web/documentserver-example/php-laravel/public/assets/document-templates
+	url = https://github.com/ONLYOFFICE/document-templates
+	branch = main/en

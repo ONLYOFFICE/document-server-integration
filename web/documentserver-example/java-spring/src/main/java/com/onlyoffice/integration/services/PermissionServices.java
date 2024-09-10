@@ -39,7 +39,8 @@ public class PermissionServices {
                                        final List<Group> commentRemoveGroups,
                                        final List<Group> userInfoGroups,
                                        final Boolean chat,
-                                       final Boolean protect) {
+                                       final Boolean protect,
+                                       final Boolean submitForm) {
 
         Permission permission = new Permission();
         permission.setReviewGroups(reviewGroups);  // define the groups whose changes the user can accept/reject
@@ -50,6 +51,7 @@ public class PermissionServices {
         permission.setUserInfoGroups(userInfoGroups);
         permission.setChat(chat);
         permission.setProtect(protect);
+        permission.setSubmitForm(submitForm);
 
         permissionRepository.save(permission);  // save new permissions
 

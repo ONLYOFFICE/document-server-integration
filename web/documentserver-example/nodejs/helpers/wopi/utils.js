@@ -154,6 +154,23 @@ const getActionUrl = function getActionUrl(host, userAddress, action, filename) 
   return `${action.urlsrc.replace(/<.*&>/g, '')}WOPISrc=${encodeURIComponent(WOPISrc)}`;
 };
 
+const getEditNewText = function getEditNewText(ext) {
+  if (typeof ext !== 'string') return null;
+  switch (ext) {
+    case 'docx':
+      return 'Document';
+    case 'xlsx':
+      return 'Spreadsheet';
+    case 'pptx':
+      return 'Presentation';
+    case 'pdf':
+      return 'PDF form';
+    default:
+      return ext.toUpperCase();
+  }
+};
+
+exports.getEditNewText = getEditNewText;
 exports.getDiscoveryInfo = getDiscoveryInfo;
 exports.getAction = getAction;
 exports.getActions = getActions;

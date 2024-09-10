@@ -1,5 +1,5 @@
 {
-  "version": "1.8.0",
+  "version": "1.10.0",
   "log": {
     "appenders": [
       {
@@ -26,6 +26,7 @@
     "storagePath": "/files",
     "maxFileSize": 1073741824,
     "maxNameLength": 50,
+    "enableForgotten": false,
     "mobileRegEx": "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino",
     "token": {
         "enable": false,
@@ -71,7 +72,8 @@
       "pt-PT": "Portuguese (Portugal)",
       "ro": "Romanian",
       "ru": "Russian",
-      "sr-Latn-RS": "Serbian",
+      "sr-Cyrl-RS": "Serbian (Cyrillic)",
+      "sr-Latn-RS": "Serbian (Latin)",
       "si": "Sinhala (Sri Lanka)",
       "sk": "Slovak",
       "sl": "Slovenian",
