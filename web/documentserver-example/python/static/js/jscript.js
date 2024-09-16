@@ -122,7 +122,7 @@ if (typeof jQuery !== "undefined") {
 
         var fileName = jq("#hiddenFileName").val();
         var posExt = fileName.lastIndexOf(".");
-        posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
+        posExt = 0 <= posExt ? fileName.substring(posExt + 1).trim().toLowerCase() : "";
 
         if (!formatManager.isAutoConvertible(posExt)) {
             jq("#step2").addClass("done").removeClass("current");
