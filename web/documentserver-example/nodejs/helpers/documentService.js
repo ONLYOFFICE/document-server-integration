@@ -61,7 +61,8 @@ documentService.getConvertedUri = function getConvertedUri(
   filePass = null,
   lang = null,
 ) {
-  const fromExt = fromExtension || fileUtility.getFileExtension(documentUri); // get the current document extension
+  // get the current document extension
+  const fromExt = fromExtension || fileUtility.getFileExtension(documentUri, false, true);
 
   // get the current document name or uuid
   const title = fileUtility.getFileNameFromUrl(documentUri) || guidManager.newGuid();
