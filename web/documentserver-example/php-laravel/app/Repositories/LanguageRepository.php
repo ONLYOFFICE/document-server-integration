@@ -40,6 +40,7 @@ class LanguageRepository
         'gl' => 'Galego',
         'de' => 'German',
         'el' => 'Greek',
+        'he-IL' => 'Hebrew (Israel)',
         'hu' => 'Hungarian',
         'id' => 'Indonesian',
         'it' => 'Italian',
