@@ -1,5 +1,7 @@
 # Change Log
 
+- he-IL skin language
+
 ## 1.10.0
 - nodejs: converting function on index page
 - java-spring: using java docs-integration-sdk
