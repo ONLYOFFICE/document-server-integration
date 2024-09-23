@@ -121,7 +121,7 @@ if (typeof jQuery !== "undefined") {
         jq("#filePass").val("");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf(".");
+        var posExt = fileName.lastIndexOf(".") + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
         if (!formatManager.isAutoConvertible(posExt)) {
