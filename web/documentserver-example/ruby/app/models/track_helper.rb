@@ -314,7 +314,7 @@ class TrackHelper
       res = http.request(req) # get the response
       data = res.body # and take its body
       result = JSON.parse(data) # convert the response body into the json format
-      raise("Command service error: #{result['error']}") if result['error'] != 0
+      raise("Command service error: #{result['error']}") if [4, 0].exclude?(result['error'])
     rescue StandardError => e
       raise(e.message)
     end
