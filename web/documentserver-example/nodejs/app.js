@@ -1101,14 +1101,11 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const key = req.DocManager.getKey(fileName);
     const url = req.DocManager.getDownloadUrl(fileName, true);
     const directUrl = req.DocManager.getDownloadUrl(fileName);
-
-    // check if this file can be filled
-    const canFill = fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1;
-    let mode = req.query.mode || (canFill ? 'fillForms' : 'edit'); // mode: view/edit/review/comment/fillForms/embedded
+    let mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
 
     let canEdit = fileUtility.getEditExtensions().indexOf(fileExt.slice(1)) !== -1; // check if this file can be edited
     if (((!canEdit && mode === 'edit') || mode === 'fillForms')
-      && canFill) {
+      && fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1) {
       mode = 'fillForms';
       canEdit = true;
     }
