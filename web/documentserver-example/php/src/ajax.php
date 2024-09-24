@@ -61,7 +61,7 @@ function saveas()
         $formatManager = new FormatManager();
 
         $post = json_decode(file_get_contents('php://input'), true);
-        $fileurl = $post["url"];
+        $fileurl = str_replace("//localhost", "//proxy", $post["url"]);
         $title = $post["title"];
         $extension = mb_strtolower(pathinfo($title, PATHINFO_EXTENSION));
         $allexts = $formatManager->allExtensions();

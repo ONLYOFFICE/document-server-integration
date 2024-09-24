@@ -93,7 +93,7 @@ public final class Users {
                 "group-2", Arrays.asList("group-2", ""), new CommentGroups(null,
                 Arrays.asList("group-2", ""), Arrays.asList("group-2")), Arrays.asList("group-2", ""),
                 true, new ArrayList<String>(), descriptionUserSecond, false, true,
-                new Goback("Go to Documents", null)));
+                new Goback("Go to Documents", false)));
         add(new User("uid-3", "Hamish Mitchell", null,
                 "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"),
                 Arrays.asList("group-2"), null), Arrays.asList("group-2"),
