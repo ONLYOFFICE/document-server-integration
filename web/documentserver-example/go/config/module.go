@@ -27,19 +27,22 @@ import (
 )
 
 type ApplicationConfig struct {
-	ServerAddress            string `mapstructure:"SERVER_ADDRESS"`
-	ServerPort               string `mapstructure:"SERVER_PORT"`
-	DocumentServerHost       string `mapstructure:"DOC_SERVER_HOST"`
-	DocumentServerConverter  string `mapstructure:"DOC_SERVER_CONVERTER_URL"`
-	DocumentServerApi        string `mapstructure:"DOC_SERVER_API_URL"`
-	DocumentServerPreloader  string `mapstructure:"DOC_SERVER_PRELOADER_URL"`
-	DocumentServerCommandUrl string `mapstructure:"DOC_SERVER_COMMAND_URL"`
-	JwtEnabled               bool   `mapstructure:"JWT_IS_ENABLED"`
-	JwtHeader                string `mapstructure:"JWT_HEADER"`
-	JwtSecret                string `mapstructure:"JWT_SECRET"`
-	StoragePath              string `mapstructure:"STORAGE_PATH"`
-	Plugins                  string `mapstructure:"PLUGINS"`
-	LoggerDebug              bool   `mapstructure:"LOGGER_DEBUG"`
+	Version                  string            `mapstructure:"VERSION"`
+	ServerAddress            string            `mapstructure:"SERVER_ADDRESS"`
+	ServerPort               string            `mapstructure:"SERVER_PORT"`
+	DocumentServerHost       string            `mapstructure:"DOC_SERVER_HOST"`
+	DocumentServerConverter  string            `mapstructure:"DOC_SERVER_CONVERTER_URL"`
+	DocumentServerApi        string            `mapstructure:"DOC_SERVER_API_URL"`
+	DocumentServerPreloader  string            `mapstructure:"DOC_SERVER_PRELOADER_URL"`
+	DocumentServerCommandUrl string            `mapstructure:"DOC_SERVER_COMMAND_URL"`
+	JwtEnabled               bool              `mapstructure:"JWT_IS_ENABLED"`
+	JwtHeader                string            `mapstructure:"JWT_HEADER"`
+	JwtSecret                string            `mapstructure:"JWT_SECRET"`
+	StoragePath              string            `mapstructure:"STORAGE_PATH"`
+	Plugins                  string            `mapstructure:"PLUGINS"`
+	LoggerDebug              bool              `mapstructure:"LOGGER_DEBUG"`
+	ForgottenEnabled         bool              `mapstructure:"FORGOTTEN_ENABLED"`
+	Languages                map[string]string `mapstructure:"LANGUAGES"`
 }
 
 type SpecificationConfig struct {
@@ -53,7 +56,7 @@ func NewConfiguration() (app_config ApplicationConfig, err error) {
 
 	viper.AddConfigPath(basepath)
 	viper.SetConfigName("configuration")
-	viper.SetConfigType("env")
+	viper.SetConfigType("json")
 
 	viper.AutomaticEnv()
 	err = viper.ReadInConfig()
