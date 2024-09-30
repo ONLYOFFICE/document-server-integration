@@ -54,6 +54,9 @@ func (cm DefaultConversionManager) GetFileType(filename string) string {
 
 	exts := cm.specification.ExtensionTypes
 
+	if utils.IsInList(ext, exts.Pdf) {
+		return shared.ONLYOFFICE_PDF
+	}
 	if utils.IsInList(ext, exts.Document) {
 		return shared.ONLYOFFICE_DOCUMENT
 	}

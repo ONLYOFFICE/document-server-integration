@@ -28,4 +28,5 @@ type ExtensionTypes struct {
 	Spreadsheet  []string `json:"spreadsheet"`
 	Presentation []string `json:"presentation"`
 	Document     []string `json:"document"`
+	Pdf          []string `json:"pdf"`
 }

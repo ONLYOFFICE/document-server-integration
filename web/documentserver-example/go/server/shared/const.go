@@ -21,5 +21,6 @@ const (
 	ONLYOFFICE_DOCUMENT        = "word"
 	ONLYOFFICE_SPREADSHEET     = "cell"
 	ONLYOFFICE_PRESENTATION    = "slide"
+	ONLYOFFICE_PDF             = "pdf"
 	ONLYOFFICE_HISTORY_POSTFIX = "-hist"
 )
