@@ -273,7 +273,8 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
   const uploadDirTmp = path.join(uploadDir, 'tmp'); // and create directory for temporary files if it doesn't exist
   req.DocManager.createDirectory(uploadDirTmp);
 
-  const form = new formidable.IncomingForm(); // create a new incoming form
+  const fileSizeLimit = configServer.get('maxFileSize');
+  const form = new formidable.IncomingForm({maxFileSize: fileSizeLimit, maxTotalFileSize: fileSizeLimit }); // create a new incoming form
   form.uploadDir = uploadDirTmp; // and write there all the necessary parameters
   form.keepExtensions = true;
 
@@ -298,7 +299,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     file.originalFilename = req.DocManager.getCorrectName(file.originalFilename);
 
     // check if the file size exceeds the maximum file size
-    if (configServer.get('maxFileSize') < file.size || file.size <= 0) {
+    if (fileSizeLimit < file.size || file.size <= 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.write('{ "error": "File size is incorrect"}');
