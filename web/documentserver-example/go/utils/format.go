@@ -39,6 +39,7 @@ type DefaultFormatManager struct {
 }
 
 type FormatManager interface {
+	GetFormats() []Format
 	GetViewedExtensions() []string
 	GetEditedExtensions() []string
 	GetConvertedExtensions() []string
@@ -70,6 +71,10 @@ func NewFormatManager() (FormatManager, error) {
 	return DefaultFormatManager{
 		formats,
 	}, err
+}
+
+func (fm DefaultFormatManager) GetFormats() []Format {
+	return fm.formats
 }
 
 func (fm DefaultFormatManager) GetViewedExtensions() (viewed []string) {

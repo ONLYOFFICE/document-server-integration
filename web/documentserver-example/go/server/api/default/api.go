@@ -159,6 +159,18 @@ func (srv *DefaultServerEndpointsHandler) Index(w http.ResponseWriter, r *http.R
 	indexTemplate.Execute(w, data)
 }
 
+func (srv *DefaultServerEndpointsHandler) Formats(w http.ResponseWriter, r *http.Request) {
+	srv.logger.Debug("A new formats call")
+	fm, err := utils.NewFormatManager()
+	if err != nil {
+		srv.logger.Errorf("could not fetch formats: %s", err.Error())
+		shared.SendCustomErrorResponse(w, fmt.Sprintf("could not fetch formats: %s", err.Error()))
+		return
+	}
+
+	shared.SendResponse(w, fm.GetFormats())
+}
+
 func (srv *DefaultServerEndpointsHandler) Files(w http.ResponseWriter, r *http.Request) {
 	srv.logger.Debug("A new files call")
 	files, err := srv.Managers.StorageManager.GetStoredFiles(r.Host)
