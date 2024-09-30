@@ -51,6 +51,7 @@ type StorageManager interface {
 	PathExists(path string) bool
 	DirExists(path string) bool
 	RemoveFile(filename string) error
+	RemoveAll() error
 	ReadFile(filePath string) ([]byte, error)
 	MoveFile(from, to string) error
 	SaveFileFromUri(body models.Callback) error

@@ -245,6 +245,18 @@ func (sm DefaultStorageManager) RemoveFile(filename string) error {
 	return nil
 }
 
+func (sm DefaultStorageManager) RemoveAll() error {
+	rf, err := sm.GetRootFolder()
+
+	if err != nil {
+		return err
+	}
+
+	os.RemoveAll(rf)
+
+	return nil
+}
+
 func (sm DefaultStorageManager) ReadFile(fpath string) ([]byte, error) {
 	file, err := ioutil.ReadFile(fpath)
 

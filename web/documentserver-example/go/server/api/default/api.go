@@ -203,6 +203,19 @@ func (srv *DefaultServerEndpointsHandler) Download(w http.ResponseWriter, r *htt
 }
 
 func (srv *DefaultServerEndpointsHandler) Remove(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "DELETE" {
+		if err := srv.StorageManager.RemoveAll(); err != nil {
+			shared.SendDocumentServerRespose(w, true)
+			return
+		}
+
+		r := map[string]interface{}{
+			"success": true,
+		}
+		shared.SendResponse(w, r)
+		return
+	}
+
 	filename := r.URL.Query().Get("filename")
 	if filename == "" {
 		shared.SendDocumentServerRespose(w, true)
