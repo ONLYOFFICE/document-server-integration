@@ -21,6 +21,7 @@ type Extensions struct {
 	Viewed    []string `json:"viewed"`
 	Edited    []string `json:"edited"`
 	Converted []string `json:"converted"`
+	Filled    []string `json:"filled"`
 }
 
 type ExtensionTypes struct {

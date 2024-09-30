@@ -42,6 +42,7 @@ type FormatManager interface {
 	GetViewedExtensions() []string
 	GetEditedExtensions() []string
 	GetConvertedExtensions() []string
+	GetFilledExtensions() []string
 	GetDocumentExtensions() []string
 	GetSpreadsheetExtensions() []string
 	GetPresentationExtensions() []string
@@ -96,6 +97,15 @@ func (fm DefaultFormatManager) GetConvertedExtensions() (converted []string) {
 		}
 	}
 	return converted
+}
+
+func (fm DefaultFormatManager) GetFilledExtensions() (filled []string) {
+	for _, f := range fm.formats {
+		if slices.Contains(f.Actions, "fill") {
+			filled = append(filled, f.Name)
+		}
+	}
+	return filled
 }
 
 func (fm DefaultFormatManager) GetDocumentExtensions() (word []string) {

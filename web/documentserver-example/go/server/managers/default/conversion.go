@@ -80,6 +80,10 @@ func (cm DefaultConversionManager) GetInternalExtension(fileType string) string 
 	}
 }
 
+func (cm DefaultConversionManager) IsCanFill(ext string) bool {
+	return utils.IsInList(ext, cm.specification.Extensions.Filled)
+}
+
 func (cm DefaultConversionManager) IsCanConvert(ext string) bool {
 	return utils.IsInList(ext, cm.specification.Extensions.Converted)
 }

@@ -99,6 +99,7 @@ func (sm DefaultStorageManager) GetStoredFiles(remoteAddress string) ([]models.D
 			Title:    filename,
 			Url:      sm.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{}),
 			CanEdit:  !sm.ConversionManager.IsCanConvert(utils.GetFileExt(filename, true)),
+			CanFill:  sm.ConversionManager.IsCanFill(utils.GetFileExt(filename, true)),
 		})
 	}
 

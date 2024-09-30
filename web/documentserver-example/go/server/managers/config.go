@@ -75,6 +75,7 @@ type ConversionManager interface {
 	GetFileType(filename string) string
 	GetInternalExtension(fileType string) string
 	IsCanConvert(ext string) bool
+	IsCanFill(ext string) bool
 	GetConverterUri(docUri, fromExt, toExt, docKey string, isAsync bool) (string, error)
 }
 
