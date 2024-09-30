@@ -62,4 +62,4 @@
 [submodule "web/documentserver-example/php-laravel/public/assets/document-templates"]
 	path = web/documentserver-example/php-laravel/public/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
-	branch = main/en
+	branch = main/default
