@@ -124,7 +124,7 @@ func (srv *DefaultServerEndpointsHandler) Upload(w http.ResponseWriter, r *http.
 	}
 
 	srv.HistoryManager.CreateMeta(fileName, models.History{
-		ServerVersion: "0.0.0",
+		ServerVersion: srv.config.Version,
 		Changes: []models.Changes{
 			{
 				Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
@@ -536,7 +536,7 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 			srv.StorageManager.RemoveFile(filename)
 			response.Filename = correctName
 			srv.HistoryManager.CreateMeta(response.Filename, models.History{
-				ServerVersion: "0.0.0",
+				ServerVersion: srv.config.Version,
 				Changes: []models.Changes{
 					{
 						Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
@@ -684,7 +684,7 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 			UserAddress: r.Host,
 		})
 		srv.HistoryManager.CreateMeta(correctName, models.History{
-			ServerVersion: "0.0.0",
+			ServerVersion: srv.config.Version,
 			Changes: []models.Changes{
 				{
 					Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
@@ -753,7 +753,7 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 
 	srv.StorageManager.CreateFile(file, fpath)
 	srv.HistoryManager.CreateMeta(filename, models.History{
-		ServerVersion: "0.0.0",
+		ServerVersion: srv.config.Version,
 		Changes: []models.Changes{
 			{
 				Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
