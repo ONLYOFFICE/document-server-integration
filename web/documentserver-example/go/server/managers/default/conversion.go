@@ -91,7 +91,7 @@ func (cm DefaultConversionManager) IsCanConvert(ext string) bool {
 	return utils.IsInList(ext, cm.specification.Extensions.Converted)
 }
 
-func (cm DefaultConversionManager) GetConverterUri(docUri string, fromExt string, toExt string, docKey string, isAsync bool) (string, error) {
+func (cm DefaultConversionManager) GetConverterUri(docUri string, fromExt string, toExt string, docKey string, isAsync bool) (string, string, error) {
 	if fromExt == "" {
 		fromExt = utils.GetFileExt(docUri, true)
 	}
@@ -113,12 +113,12 @@ func (cm DefaultConversionManager) GetConverterUri(docUri string, fromExt string
 		headerPayload := managers.ConvertRequestHeaderPayload{Payload: payload}
 		headerToken, err = cm.JwtManager.JwtSign(headerPayload, []byte(secret))
 		if err != nil {
-			return "", err
+			return "", "", err
 		}
 
 		bodyToken, err := cm.JwtManager.JwtSign(payload, []byte(secret))
 		if err != nil {
-			return "", err
+			return "", "", err
 		}
 
 		payload.JwtToken = bodyToken
@@ -126,12 +126,12 @@ func (cm DefaultConversionManager) GetConverterUri(docUri string, fromExt string
 
 	requestBody, err := json.Marshal(payload)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	req, err := http.NewRequest("POST", cm.config.DocumentServerHost+cm.config.DocumentServerConverter, bytes.NewReader(requestBody))
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	req.Header.Set("Content-Type", "application/json")
@@ -142,27 +142,27 @@ func (cm DefaultConversionManager) GetConverterUri(docUri string, fromExt string
 
 	response, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	defer response.Body.Close()
 	jsonBody, err := ioutil.ReadAll(response.Body)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	var body managers.ConvertPayload
 	if err := json.Unmarshal(jsonBody, &body); err != nil {
-		return "", err
+		return "", "", err
 	}
 
 	return getResponseUri(body)
 }
 
-func getResponseUri(json managers.ConvertPayload) (string, error) {
+func getResponseUri(json managers.ConvertPayload) (string, string, error) {
 	if json.Error < 0 {
-		return "", fmt.Errorf("error occurred in the ConvertService: %d", json.Error)
+		return "", "", fmt.Errorf("error occurred in the ConvertService: %d", json.Error)
 	}
 
-	return json.FileUrl, nil
+	return json.FileUrl, json.FileType, nil
 }

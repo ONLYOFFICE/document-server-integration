@@ -477,16 +477,10 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 		return
 	}
 
-	err = r.ParseForm()
 	srv.logger.Debug("A new convert call")
-	if err != nil {
-		srv.logger.Error(err.Error())
-		shared.SendDocumentServerRespose(w, true)
-		return
-	}
 
 	var payload managers.ConvertRequest
-	err = decoder.Decode(&payload, r.PostForm)
+	err = json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		srv.logger.Error(err.Error())
 		shared.SendDocumentServerRespose(w, true)
@@ -504,8 +498,10 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 
 	fileUrl := srv.StorageManager.GeneratePublicFileUri(filename, remoteAddr, managers.FileMeta{})
 	fileExt := utils.GetFileExt(filename, true)
-	fileType := srv.ConversionManager.GetFileType(filename)
-	newExt := srv.ConversionManager.GetInternalExtension(fileType)
+	toExt := "ooxml"
+	if payload.Filetype != "" {
+		toExt = payload.Filetype
+	}
 
 	if srv.DocumentManager.IsDocumentConvertable(filename) {
 		key, err := srv.StorageManager.GenerateFileHash(filename)
@@ -515,7 +511,7 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 			return
 		}
 
-		newUrl, err := srv.ConversionManager.GetConverterUri(fileUrl, fileExt, newExt, key, true)
+		newUrl, newExt, err := srv.ConversionManager.GetConverterUri(fileUrl, fileExt, toExt, key, true)
 		if err != nil {
 			response.Error = err.Error()
 			srv.logger.Errorf("File conversion error: %s", err.Error())
@@ -525,7 +521,7 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 		if newUrl == "" {
 			response.Step = 1
 		} else {
-			correctName, err := srv.StorageManager.GenerateVersionedFilename(utils.GetFileNameWithoutExt(filename) + newExt)
+			correctName, err := srv.StorageManager.GenerateVersionedFilename(utils.GetFileNameWithoutExt(filename) + "." + newExt)
 			if err != nil {
 				response.Error = err.Error()
 				srv.logger.Errorf("File conversion error: %s", err.Error())
