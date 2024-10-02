@@ -94,12 +94,25 @@ func (sm DefaultStorageManager) GetStoredFiles(remoteAddress string) ([]models.D
 			continue
 		}
 		filename := v.Name()
+
+		version := 1
+		hpath := path.Join(dir, filename+shared.ONLYOFFICE_HISTORY_POSTFIX, fmt.Sprint(version))
+		for {
+			if sm.PathExists(hpath) {
+				version++
+				hpath = path.Join(dir, filename+shared.ONLYOFFICE_HISTORY_POSTFIX, fmt.Sprint(version))
+			} else {
+				break
+			}
+		}
+
 		documents = append(documents, models.Document{
 			FileType: sm.ConversionManager.GetFileType(filename),
 			Title:    filename,
 			Url:      sm.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{}),
 			CanEdit:  !sm.ConversionManager.IsCanConvert(utils.GetFileExt(filename, true)),
 			CanFill:  sm.ConversionManager.IsCanFill(utils.GetFileExt(filename, true)),
+			Version:  fmt.Sprint(version),
 		})
 	}
 

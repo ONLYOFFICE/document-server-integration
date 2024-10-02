@@ -48,6 +48,7 @@ type Document struct {
 	Title         string        `json:"title"`
 	Url           string        `json:"url"`
 	Info          MetaInfo      `json:"info"`
+	Version       string        `json:"version"`
 	Permissions   Permissions   `json:"permissions,omitempty"`
 	ReferenceData ReferenceData `json:"referenceData"`
 	CanEdit       bool
