@@ -47,3 +47,15 @@ type CommandResponse struct {
 	Error   int    `json:"error"`
 	Version string `json:"version,omitempty"`
 }
+
+type ForgottenList struct {
+	Error int      `json:"error"`
+	Keys  []string `json:"keys"`
+}
+
+type ForgottenFile struct {
+	Error int    `json:"error"`
+	Key   string `json:"key"`
+	Url   string `json:"url"`
+	Type  string
+}

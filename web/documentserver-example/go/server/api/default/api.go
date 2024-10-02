@@ -43,6 +43,7 @@ import (
 
 var decoder = schema.NewDecoder()
 var indexTemplate = template.Must(template.ParseFiles("templates/index.html"))
+var forgottenTemplate = template.Must(template.ParseFiles("templates/forgotten.html"))
 var editorTemplate = template.Must(template.ParseFiles("templates/editor.html"))
 
 type DefaultServerEndpointsHandler struct {
@@ -157,6 +158,62 @@ func (srv *DefaultServerEndpointsHandler) Index(w http.ResponseWriter, r *http.R
 	}
 
 	indexTemplate.Execute(w, data)
+}
+
+func (srv *DefaultServerEndpointsHandler) Forgotten(w http.ResponseWriter, r *http.Request) {
+	srv.logger.Debug("A new forgotten call")
+	if !srv.config.ForgottenEnabled {
+		shared.SendCustomErrorResponse(w, "The forgotten page is disabled")
+		return
+	}
+
+	if r.Method == "DELETE" {
+		filename := r.URL.Query().Get("fileName")
+		if filename == "" {
+			shared.SendCustomErrorResponse(w, "No filename")
+		} else {
+			_, err := srv.Managers.CommandManager.CommandRequest("deleteForgotten", filename, nil)
+			if err != nil {
+				srv.logger.Errorf("could not delete forgotten file: %s", err.Error())
+				shared.SendDocumentServerRespose(w, true)
+			} else {
+				w.WriteHeader(http.StatusNoContent)
+				shared.SendDocumentServerRespose(w, false)
+			}
+		}
+		return
+	}
+
+	var forgottenList models.ForgottenList
+	res, err := srv.Managers.CommandManager.CommandRequest("getForgottenList", "", nil)
+	if err != nil {
+		srv.logger.Errorf("could not fetch forgotten files: %s", err.Error())
+	}
+	if err = json.NewDecoder(res.Body).Decode(&forgottenList); err != nil {
+		srv.logger.Errorf("could not parse forgotten files: %s", err.Error())
+	}
+
+	var files []models.ForgottenFile
+	for _, key := range forgottenList.Keys {
+		var file models.ForgottenFile
+		res, err = srv.CommandRequest("getForgotten", key, nil)
+		if err != nil {
+			srv.logger.Errorf("could not fetch forgotten file[%s]: %s", file.Key, err.Error())
+		} else {
+			if err = json.NewDecoder(res.Body).Decode(&file); err != nil {
+				srv.logger.Errorf("could not parse forgotten file[%s]: %s", file.Key, err.Error())
+			} else {
+				file.Type = srv.Managers.ConversionManager.GetFileType(file.Url)
+				files = append(files, file)
+			}
+		}
+	}
+
+	data := map[string]interface{}{
+		"Files": files,
+	}
+
+	forgottenTemplate.Execute(w, data)
 }
 
 func (srv *DefaultServerEndpointsHandler) Formats(w http.ResponseWriter, r *http.Request) {
