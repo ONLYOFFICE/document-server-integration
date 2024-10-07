@@ -269,6 +269,7 @@ final class DocEditorView extends View
             }
         }
         $this->tagsValues = [
+            "fileName" => $filename,
             "docType" => getDocumentType($filename),
             "apiUrl" => $configManager->documentServerAPIURL()->string(),
             "dataInsertImage" => mb_strimwidth(
