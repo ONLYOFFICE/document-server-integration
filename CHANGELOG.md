@@ -1,6 +1,8 @@
 # Change Log
 
 - he-IL skin language
+- ConvertService.ashx address replaced with converter
+- coauthoring/CommandService.ashx address replaced with command
 
 - php-laravel: new integration example
 - php-laravel: upload files to the server

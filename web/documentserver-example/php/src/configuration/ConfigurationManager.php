@@ -73,7 +73,7 @@ class ConfigurationManager
     {
         $serverURL = $this->documentServerPrivateURL();
         $path = getenv('DOCUMENT_SERVER_COMMAND_PATH')
-            ?: 'coauthoring/CommandService.ashx';
+            ?: 'command';
         return $serverURL->joinPath($path);
     }
 
@@ -81,7 +81,7 @@ class ConfigurationManager
     {
         $serverURL = $this->documentServerPrivateURL();
         $path = getenv('DOCUMENT_SERVER_CONVERTER_PATH')
-            ?: 'ConvertService.ashx';
+            ?: 'converter';
         return $serverURL->joinPath($path);
     }
 
