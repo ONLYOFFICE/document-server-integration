@@ -175,7 +175,7 @@ class ConfigurationManagerDocumentServerConverterURITests < Test::Unit::TestCase
     uri = config_manager.document_server_converter_uri
     assert_equal(
       uri.to_s,
-      'http://documentserver/ConvertService.ashx'
+      'http://documentserver/converter'
     )
   end
 

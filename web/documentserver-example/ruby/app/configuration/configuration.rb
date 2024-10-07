@@ -84,7 +84,7 @@ class ConfigurationManager
   def document_server_converter_uri
     path =
       ENV['DOCUMENT_SERVER_CONVERTER_PATH'] ||
-      '/ConvertService.ashx'
+      '/converter'
     URI.join(document_server_private_uri, path)
   end
 

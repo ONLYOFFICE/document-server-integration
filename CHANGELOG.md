@@ -1,6 +1,7 @@
 # Change Log
 
 - he-IL skin language
+- ConvertService.ashx address replaced with converter
 
 ## 1.10.0
 - nodejs: converting function on index page

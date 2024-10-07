@@ -18,7 +18,7 @@
       "discovery": "hosting/discovery"
     },
     "commandUrl": "coauthoring/CommandService.ashx",
-    "converterUrl": "ConvertService.ashx",
+    "converterUrl": "converter",
     "apiUrl": "web-apps/apps/api/documents/api.js",
     "preloaderUrl": "web-apps/apps/api/documents/cache-scripts.html",
     "exampleUrl": null,

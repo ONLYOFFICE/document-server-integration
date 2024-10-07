@@ -176,7 +176,7 @@ class ConfigurationManagerDocumentServerConverterURLTests(TestCase):
         url = config_manager.document_server_converter_url()
         self.assertEqual(
             url.geturl(),
-            'http://localhost/ConvertService.ashx'
+            'http://localhost/converter'
         )
 
     @patch.object(

@@ -81,7 +81,7 @@ class ConfigurationManager:
         base_url = server_url.geturl()
         path = (
             environ.get('DOCUMENT_SERVER_CONVERTER_PATH') or
-            '/ConvertService.ashx'
+            '/converter'
         )
         url = urljoin(base_url, path)
         return urlparse(url)

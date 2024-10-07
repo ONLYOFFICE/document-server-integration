@@ -81,7 +81,7 @@ class ConfigurationManager
     {
         $serverURL = $this->documentServerPrivateURL();
         $path = getenv('DOCUMENT_SERVER_CONVERTER_PATH')
-            ?: 'ConvertService.ashx';
+            ?: 'converter';
         return $serverURL->joinPath($path);
     }
 
