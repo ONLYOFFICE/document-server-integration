@@ -27,7 +27,7 @@
         * limitations under the License.
         *
         -->
-        <title>ONLYOFFICE</title>
+        <title><%= Model.getDocument().getTitle() %> - ONLYOFFICE</title>
         <link rel="icon" href="css/img/<%= Model.getDocumentType() %>.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
 
@@ -52,8 +52,8 @@
 
         // the document is modified
         var onDocumentStateChange = function (event) {
-            var title = document.title.replace(/\*$/g, "");
-            document.title = title + (event.data ? "*" : "");
+            var title = document.title.replace(/^\*/g, "");
+            document.title = (event.data ? "*" : "") + title;
         };
 
         // the user is trying to switch the document from the viewing into the editing mode
