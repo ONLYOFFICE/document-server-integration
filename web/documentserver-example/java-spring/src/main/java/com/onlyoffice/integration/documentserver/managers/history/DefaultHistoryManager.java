@@ -147,7 +147,7 @@ public class DefaultHistoryManager implements HistoryManager {
 
     // todo: Refactoring
     @SneakyThrows
-    public String getHistoryData(final String fileName, final String version, final Boolean directUrl) {
+    public String getHistoryData(final String fileName, final String version) {
         // get history directory
         String histDir = storagePathBuilder.getHistoryDir(storagePathBuilder.getFileLocation(fileName));
         Integer curVer = storagePathBuilder.getFileVersion(histDir, false);  // get current file version
@@ -175,13 +175,6 @@ public class DefaultHistoryManager implements HistoryManager {
                                 .getExtension(fileName), true))
                         .build();
 
-                if (directUrl) {
-                    historyData.setDirectUrl(i == curVer
-                            ? urlManager.getDirectFileUrl(fileName)
-                            : urlManager.getHistoryFileUrl(fileName, i, "prev" + documentManager
-                            .getExtension(fileName), false)
-                    );
-                }
                 historyData.setVersion(String.valueOf(i));
 
                 if (i > 1) {  //check if the version number is greater than 1
@@ -193,9 +186,6 @@ public class DefaultHistoryManager implements HistoryManager {
                             .key(historyDataPrev.getKey())
                             .url(historyDataPrev.getUrl())
                             .build();
-                    if (directUrl) {
-                        previous.setDirectUrl(historyDataPrev.getDirectUrl());
-                    }
 
                     // write information about previous file version to the data object
                     historyData.setPrevious(previous);
