@@ -192,8 +192,12 @@ public final class TrackManager {
             ver.mkdirs();
         }
 
-        // get the path to the previous file version and rename the last file version with it
-        lastVersion.renameTo(new File(versionDir + File.separator + "prev." + curExt));
+        if (lastVersion.exists()) {
+            // get the path to the previous file version and rename the last file version with it
+            lastVersion.renameTo(new File(versionDir + File.separator + "prev." + curExt));
+        } else {
+            throw new Exception("The file not exist: " + lastVersion.getAbsolutePath());
+        }
 
         saveFile(byteArrayFile, toSave); // save document file
 

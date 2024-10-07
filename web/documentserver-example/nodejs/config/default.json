@@ -17,8 +17,8 @@
     "wopi": {
       "discovery": "hosting/discovery"
     },
-    "commandUrl": "coauthoring/CommandService.ashx",
-    "converterUrl": "ConvertService.ashx",
+    "commandUrl": "command",
+    "converterUrl": "converter",
     "apiUrl": "web-apps/apps/api/documents/api.js",
     "preloaderUrl": "web-apps/apps/api/documents/cache-scripts.html",
     "exampleUrl": null,
@@ -26,7 +26,7 @@
     "storagePath": "/files",
     "maxFileSize": 1073741824,
     "maxNameLength": 50,
-    "enableForgotten": false,
+    "enableForgotten": true,
     "mobileRegEx": "android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino",
     "token": {
         "enable": false,
@@ -58,6 +58,7 @@
       "gl": "Galego",
       "de": "German",
       "el": "Greek",
+      "he-IL": "Hebrew (Israel)",
       "hu": "Hungarian",
       "id": "Indonesian",
       "it": "Italian",

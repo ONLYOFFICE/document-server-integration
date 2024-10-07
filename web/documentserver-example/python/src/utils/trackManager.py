@@ -203,7 +203,7 @@ def commandRequest(method, key, meta=None):
                              verify=config_manager.ssl_verify_peer_mode_enabled(), timeout=5)
 
     error = response.json()["error"]
-    if not error == 0:
+    if error not in (4, 0):
         raise Exception(f"Command Service Error #{error}")
 
     return response

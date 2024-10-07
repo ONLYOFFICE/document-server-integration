@@ -379,6 +379,8 @@ function getStoredFiles()
  */
 function getForgottenFiles()
 {
+    $configManager = new ConfigurationManager();
+
     $files = [];
 
     try {
@@ -386,6 +388,11 @@ function getForgottenFiles()
         if ($response->error === 0) {
             foreach ($response->keys as $key) {
                 $file = json_decode(commandRequest('getForgotten', $key));
+                $publicURL = $configManager->documentServerPublicURL()->string();
+                $privateURL = $configManager->documentServerPrivateURL()->string();
+                if (strpos($file->url, $privateURL) !== false) {
+                    $file->url = str_replace($privateURL, $publicURL, $file->url);
+                }
                 $file->type = getDocumentType($file->url);
                 $files[] = $file;
             }
