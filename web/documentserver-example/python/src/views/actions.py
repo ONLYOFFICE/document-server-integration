@@ -207,7 +207,7 @@ def edit(request):
         edMode = 'fillForms'
         canEdit = True
     # if the Submit form button is displayed or hidden
-    submitForm = edMode in ['fillForms', 'embedded'] and user.id == 'uid-1'
+    submitForm = user.id == 'uid-1'
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'  # if the file can't be edited, the mode is view
 
     types = ['desktop', 'mobile', 'embedded']
