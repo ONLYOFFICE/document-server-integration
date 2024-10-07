@@ -26,7 +26,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <title>ONLYOFFICE</title>
+    <title>{{ fileName }} - ONLYOFFICE</title>
     <link rel="icon"
         href="{% static 'images/'|add:fileType|add:'.ico' %}"
         type="image/x-icon" />
@@ -58,8 +58,8 @@
 
         // the document is modified
         var onDocumentStateChange = function (event) {
-            var title = document.title.replace(/\*$/g, "");
-            document.title = title + (event.data ? "*" : "");
+            var title = document.title.replace(/^\*/g, "");
+            document.title = (event.data ? "*" : "") + title;
         };
 
         // the user is trying to switch the document from the viewing into the editing mode
