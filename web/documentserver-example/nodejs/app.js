@@ -1114,10 +1114,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       mode = 'view';
     }
 
-    let submitForm = false;
-    if (mode === 'fillForms' || mode === 'embedded') {
-      submitForm = userid === 'uid-1';
-    }
+    const submitForm = userid === 'uid-1';
 
     if (user.goback != null) {
       user.goback.url = `${req.DocManager.getServerUrl()}`;
