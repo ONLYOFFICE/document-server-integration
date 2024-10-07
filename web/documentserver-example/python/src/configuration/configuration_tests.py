@@ -145,7 +145,7 @@ class ConfigurationManagerDocumentServerCommandURLTests(TestCase):
         url = config_manager.document_server_command_url()
         self.assertEqual(
             url.geturl(),
-            'http://localhost/coauthoring/CommandService.ashx'
+            'http://localhost/command'
         )
 
     @patch.object(

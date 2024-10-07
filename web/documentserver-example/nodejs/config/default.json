@@ -17,7 +17,7 @@
     "wopi": {
       "discovery": "hosting/discovery"
     },
-    "commandUrl": "coauthoring/CommandService.ashx",
+    "commandUrl": "command",
     "converterUrl": "converter",
     "apiUrl": "web-apps/apps/api/documents/api.js",
     "preloaderUrl": "web-apps/apps/api/documents/cache-scripts.html",

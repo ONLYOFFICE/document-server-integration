@@ -2,6 +2,7 @@
 
 - he-IL skin language
 - ConvertService.ashx address replaced with converter
+- coauthoring/CommandService.ashx address replaced with command
 
 ## 1.10.0
 - nodejs: converting function on index page

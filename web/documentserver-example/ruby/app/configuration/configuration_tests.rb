@@ -151,7 +151,7 @@ class ConfigurationManagerDocumentServerCommandURITests < Test::Unit::TestCase
     uri = config_manager.document_server_command_uri
     assert_equal(
       uri.to_s,
-      'http://documentserver/coauthoring/CommandService.ashx'
+      'http://documentserver/command'
     )
   end
 

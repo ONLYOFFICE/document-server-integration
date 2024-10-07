@@ -71,7 +71,7 @@ class ConfigurationManager:
         base_url = server_url.geturl()
         path = (
             environ.get('DOCUMENT_SERVER_COMMAND_PATH') or
-            '/coauthoring/CommandService.ashx'
+            '/command'
         )
         url = urljoin(base_url, path)
         return urlparse(url)

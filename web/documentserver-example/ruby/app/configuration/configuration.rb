@@ -76,7 +76,7 @@ class ConfigurationManager
   def document_server_command_uri
     path =
       ENV['DOCUMENT_SERVER_COMMAND_PATH'] ||
-      '/coauthoring/CommandService.ashx'
+      '/command'
     URI.join(document_server_private_uri, path)
   end
 
