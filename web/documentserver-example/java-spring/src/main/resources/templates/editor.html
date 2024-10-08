@@ -194,8 +194,6 @@
                 var requestReference = function(data, callback) {
                     innerAlert(data);
 
-                    data.directUrl = !!config.document.directUrl;
-
                     let xhr = new XMLHttpRequest();
                     xhr.open("POST", "reference");
                     xhr.setRequestHeader("Content-Type", "application/json");
@@ -220,8 +218,7 @@
                 var onRequestHistoryData = function (event) {
                     var version = event.data;
                     var historyDataUri = "historydata?fileName=" + config.document.title
-                        + "&version=" + version
-                        + "&directUrl=" + !!config.document.directUrl;
+                        + "&version=" + version;
                     var xhr = new XMLHttpRequest();
                     xhr.open("GET", historyDataUri, false);
                     xhr.send();

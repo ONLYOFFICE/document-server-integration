@@ -33,7 +33,6 @@ import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.model.documenteditor.Config;
 import com.onlyoffice.model.documenteditor.config.document.Type;
-import com.onlyoffice.model.settings.SettingsConstants;
 import lombok.SneakyThrows;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,8 +88,6 @@ public class EditorController {
                         @RequestParam(value = "action", required = false) final String actionParam,
                         @RequestParam(value = "type", required = false) final String typeParam,
                         @RequestParam(value = "actionLink", required = false) final String actionLink,
-                        @RequestParam(value = "directUrl", required = false,
-                                defaultValue = "false") final Boolean directUrl,
                         @CookieValue(value = "uid") final String uid,
                         @CookieValue(value = "ulang") final String lang,
                         final Model model) throws JsonProcessingException {
@@ -104,8 +101,6 @@ public class EditorController {
         if (typeParam != null) {
             type = Type.valueOf(typeParam.toUpperCase());
         }
-
-        settingsManager.setSetting(SettingsConstants.DIRECT_URL, String.valueOf(directUrl));
 
         List<String> langsAndKeys = Arrays.asList(langs.split("\\|"));
         for (String langAndKey : langsAndKeys) {
@@ -144,13 +139,13 @@ public class EditorController {
         model.addAttribute("docserviceApiUrl", urlManager.getDocumentServerApiUrl());
 
         // get an image and add it to the model
-        model.addAttribute("dataInsertImage",  getInsertImage(directUrl));
+        model.addAttribute("dataInsertImage",  getInsertImage());
 
         // get a document for comparison and add it to the model
-        model.addAttribute("dataDocument",  getCompareFile(directUrl));
+        model.addAttribute("dataDocument",  getCompareFile());
 
         // get recipients data for mail merging and add it to the model
-        model.addAttribute("dataSpreadsheet", getSpreadsheet(directUrl));
+        model.addAttribute("dataSpreadsheet", getSpreadsheet());
 
         // get user data for mentions and add it to the model
         model.addAttribute("usersForMentions", getUserMentions(uid));
@@ -210,14 +205,10 @@ public class EditorController {
 
 
     @SneakyThrows
-    private String getInsertImage(final Boolean directUrl) {  // get an image that will be inserted into the document
+    private String getInsertImage() {  // get an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
         dataInsertImage.put("fileType", "svg");
         dataInsertImage.put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.svg");
-        if (directUrl) {
-            dataInsertImage.put("directUrl", storagePathBuilder
-                    .getServerUrl(false) + "/css/img/logo.svg");
-        }
 
         // check if the document token is enabled
         if (settingsManager.isSecurityEnabled()) {
@@ -232,14 +223,10 @@ public class EditorController {
 
     // get a document that will be compared with the current document
     @SneakyThrows
-    private String getCompareFile(final Boolean directUrl) {
+    private String getCompareFile() {
         Map<String, Object> dataDocument = new HashMap<>();
         dataDocument.put("fileType", "docx");
         dataDocument.put("url", storagePathBuilder.getServerUrl(true) + "/assets?name=sample.docx");
-        if (directUrl) {
-            dataDocument.put("directUrl", storagePathBuilder
-                    .getServerUrl(false) + "/assets?name=sample.docx");
-        }
 
         // check if the document token is enabled
         if (settingsManager.isSecurityEnabled()) {
@@ -252,13 +239,10 @@ public class EditorController {
     }
 
     @SneakyThrows
-    private String getSpreadsheet(final Boolean directUrl) {
+    private String getSpreadsheet() {
         Map<String, Object> dataSpreadsheet = new HashMap<>();  // get recipients data for mail merging
         dataSpreadsheet.put("fileType", "csv");
         dataSpreadsheet.put("url", storagePathBuilder.getServerUrl(true) + "/csv");
-        if (directUrl) {
-            dataSpreadsheet.put("directUrl", storagePathBuilder.getServerUrl(false) + "/csv");
-        }
 
         // check if the document token is enabled
         if (settingsManager.isSecurityEnabled()) {

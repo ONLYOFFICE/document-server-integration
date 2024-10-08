@@ -56,11 +56,6 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
     }
 
     @Override
-    public String getDirectFileUrl(final String fileId) {
-        return getDownloadUrl(fileId, false);
-    }
-
-    @Override
     public String getCreateUrl(final String fileId) {
         return getCreateUrl(fileId, false);
     }
