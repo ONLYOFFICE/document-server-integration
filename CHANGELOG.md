@@ -1,5 +1,6 @@
 # Change Log
 
+- filename in editor page title
 - he-IL skin language
 
 - php-laravel: new integration example
