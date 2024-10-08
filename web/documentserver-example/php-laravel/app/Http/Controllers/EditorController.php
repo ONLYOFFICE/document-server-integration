@@ -266,6 +266,7 @@ class EditorController extends Controller
         }
 
         $editorConfig = [
+            'fileName' => $file['filename'],
             'docType' => $file['format']->type,
             'apiUrl' => $this->serverConfig->get('url.api'),
             'dataInsertImage' => mb_strimwidth(
