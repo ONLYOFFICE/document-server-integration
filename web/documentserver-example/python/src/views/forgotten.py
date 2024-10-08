@@ -51,7 +51,7 @@ def getForgottenFiles():
             private_url = config_manager.document_server_private_url().geturl()
             public_url = config_manager.document_server_public_url().geturl()
             if private_url in file["url"]:
-                file["url"] = file["url"].replace(private_url, public_url) 
+                file["url"] = file["url"].replace(private_url, public_url)
             files.append(file)
     except (Exception, ValueError) as error:
         logging.error(error)
