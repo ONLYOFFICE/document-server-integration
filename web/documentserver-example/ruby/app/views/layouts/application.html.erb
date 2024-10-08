@@ -20,13 +20,15 @@
   -->
   <%
     favicon = "favicon.ico"
+    title = "ONLYOFFICE"
     if (@file)
       favicon = @file.document_type + ".ico"
+      title = @file.file_name + " - ONLYOFFICE"
     end
   %>
 
   <%= favicon_link_tag  favicon %>
-  <title>ONLYOFFICE</title>
+  <title><%= title %></title>
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans:900,800,700,600,500,400,300&subset=latin,cyrillic-ext,cyrillic,latin-ext" />
   <%= stylesheet_link_tag "stylesheet" %>
   <%= stylesheet_link_tag "jquery-ui" %>

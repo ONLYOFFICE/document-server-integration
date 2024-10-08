@@ -1,5 +1,6 @@
 # Change Log
 
+- filename in editor page title
 - he-IL skin language
 - ConvertService.ashx address replaced with converter
 - coauthoring/CommandService.ashx address replaced with command

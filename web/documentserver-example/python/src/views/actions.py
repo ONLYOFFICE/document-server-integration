@@ -380,6 +380,7 @@ def edit(request):
 
     context = {  # the data that will be passed to the template
         'cfg': json.dumps(edConfig),  # the document config in json format
+        'fileName': filename,
         'fileType': fileType,  # the file type of the document (text, spreadsheet or presentation)
         'apiUrl': config_manager.document_server_api_url().geturl(),  # the absolute URL to the api
         # the image which will be inserted into the document
