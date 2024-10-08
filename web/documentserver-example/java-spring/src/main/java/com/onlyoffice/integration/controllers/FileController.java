@@ -525,7 +525,6 @@ public class FileController {
                 if (!link.contains(storagePathBuilder.getServerUrl(true))) {
                     HashMap<String, String> data = new HashMap<>();
                     data.put("url", link);
-                    data.put("directUrl", link);
                     return gson.toJson(data);
                 }
 
@@ -571,7 +570,6 @@ public class FileController {
                 + new File(storagePathBuilder.getFileLocation(fileName)).lastModified()
                 ));
             data.put("url", urlManager.getFileUrl(fileName));
-            data.put("directUrl", body.getDirectUrl() ? urlManager.getDirectFileUrl(fileName) : null);
             data.put("referenceData", referenceData);
             data.put("path", fileName);
             data.put("link", storagePathBuilder.getServerUrl(true) + "/editor?fileName=" + fileName);
@@ -596,9 +594,8 @@ public class FileController {
     @GetMapping("/historydata")
     @ResponseBody
     public String history(@RequestParam("fileName") final String fileName,
-                          @RequestParam("version") final String version,
-                          @RequestParam(value = "directUrl", defaultValue = "false") final Boolean directUrl) {
-        return historyManager.getHistoryData(fileName, version, directUrl);
+                          @RequestParam("version") final String version) {
+        return historyManager.getHistoryData(fileName, version);
     }
 
     @PutMapping("/restore")

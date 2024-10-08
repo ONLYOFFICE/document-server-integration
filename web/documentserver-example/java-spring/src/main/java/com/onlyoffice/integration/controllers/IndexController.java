@@ -33,7 +33,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.http.ResponseEntity;
 
@@ -83,8 +82,7 @@ public class IndexController {
     private String enableForgotten;
 
     @GetMapping("${url.index}")
-    public String index(@RequestParam(value = "directUrl", required = false) final Boolean directUrl,
-                        final Model model) {
+    public String index(final Model model) {
         java.io.File[] files = storageMutator.getStoredFiles();  // get all the stored files from the storage
         List<String> docTypes = new ArrayList<>();
         List<Boolean> filesEditable = new ArrayList<>();
@@ -128,7 +126,6 @@ public class IndexController {
         model.addAttribute("tooltip", tooltip);
         model.addAttribute("users", users);
         model.addAttribute("languages", languages);
-        model.addAttribute("directUrl", directUrl);
         model.addAttribute("serverVersion", serverVersion);
         model.addAttribute("enableForgotten", Boolean.valueOf(enableForgotten));
 
