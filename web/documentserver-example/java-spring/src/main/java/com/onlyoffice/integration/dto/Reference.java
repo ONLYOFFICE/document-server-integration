@@ -31,7 +31,6 @@ import lombok.Setter;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Reference {
-    private Boolean directUrl;
     private ReferenceData referenceData;
     private String path;
     private String link;

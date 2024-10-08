@@ -275,7 +275,7 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
 
     @Override
     public Embedded getEmbedded(final String fileId) {
-        String url = getUrlManager().getDirectFileUrl(fileId);
+        String url = getUrlManager().getFileUrl(fileId);
 
         return Embedded.builder()
                    .embedUrl(url)
