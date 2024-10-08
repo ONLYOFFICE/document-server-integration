@@ -51,6 +51,7 @@ type StorageManager interface {
 	PathExists(path string) bool
 	DirExists(path string) bool
 	RemoveFile(filename string) error
+	RemoveAll() error
 	ReadFile(filePath string) ([]byte, error)
 	MoveFile(from, to string) error
 	SaveFileFromUri(body models.Callback) error
@@ -75,7 +76,8 @@ type ConversionManager interface {
 	GetFileType(filename string) string
 	GetInternalExtension(fileType string) string
 	IsCanConvert(ext string) bool
-	GetConverterUri(docUri, fromExt, toExt, docKey string, isAsync bool) (string, error)
+	IsCanFill(ext string) bool
+	GetConverterUri(docUri, fromExt, toExt, docKey string, isAsync bool) (string, string, error)
 }
 
 type CommandManager interface {

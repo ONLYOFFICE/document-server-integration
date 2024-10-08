@@ -136,10 +136,7 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 	if dm.config.Plugins != "" {
 		json.Unmarshal([]byte(dm.config.Plugins), &plugins)
 	}
-	submitForm := false
-	if parameters.Mode == "fillForms" {
-		submitForm = user.Id == "uid-1"
-	}
+	submitForm := user.Id == "uid-1"
 
 	dm.logger.Debugf("Generating file %s config", parameters.Filename)
 	dm.sanitizeEditorParameters(&parameters)

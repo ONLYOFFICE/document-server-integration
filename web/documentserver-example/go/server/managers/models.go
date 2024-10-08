@@ -71,8 +71,9 @@ func (ep *Editor) IsValid() error {
 }
 
 type ConvertRequest struct {
-	Filename string `schema:"filename"`
-	Filepass string `schema:"filePass"`
+	Filename string `json:"filename"`
+	Filepass string `json:"filePass"`
+	Filetype string `json:"fileExt"`
 }
 
 type ConvertResponse struct {
@@ -84,6 +85,7 @@ type ConvertResponse struct {
 type ConvertPayload struct {
 	IsConverted bool   `json:"endConvert"`
 	FileUrl     string `json:"fileUrl"`
+	FileType    string `json:"fileType"`
 	Percent     int    `json:"percent"`
 	Error       int    `json:"error"`
 }

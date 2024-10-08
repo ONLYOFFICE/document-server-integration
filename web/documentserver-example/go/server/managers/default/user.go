@@ -97,7 +97,7 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 			CommentGroups: map[string]interface{}{
 				"view":   []string{"group-3", "group-2"},
 				"edit":   []string{"group-2"},
-				"remove": nil,
+				"remove": "",
 			},
 			UserInfoGroups:    []string{"group-2"},
 			Favorite:          0,

@@ -132,7 +132,7 @@ class Editor
                 'comments' => true,
                 'feedback' => true,
                 'forcesave' => false,
-                'submitForm' => $this->config->mode === 'fillForms' && $this->user->id === 'uid-1',
+                'submitForm' => $this->user->id === 'uid-1',
                 'goback' => $this->user->goback !== null ? $this->user->goback : '',
             ],
         ];

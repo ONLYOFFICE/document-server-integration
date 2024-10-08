@@ -1,5 +1,10 @@
 # Change Log
 
+- he-IL skin language
+- ConvertService.ashx address replaced with converter
+- coauthoring/CommandService.ashx address replaced with command
+- submitForm for all modes
+
 - golang: new integration example
 - golang: upload files to the server
 - golang: create blank files and files with sample content

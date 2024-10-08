@@ -39,12 +39,15 @@ type DefaultFormatManager struct {
 }
 
 type FormatManager interface {
+	GetFormats() []Format
 	GetViewedExtensions() []string
 	GetEditedExtensions() []string
 	GetConvertedExtensions() []string
+	GetFilledExtensions() []string
 	GetDocumentExtensions() []string
 	GetSpreadsheetExtensions() []string
 	GetPresentationExtensions() []string
+	GetPdfExtensions() []string
 }
 
 func NewFormatManager() (FormatManager, error) {
@@ -69,6 +72,10 @@ func NewFormatManager() (FormatManager, error) {
 	return DefaultFormatManager{
 		formats,
 	}, err
+}
+
+func (fm DefaultFormatManager) GetFormats() []Format {
+	return fm.formats
 }
 
 func (fm DefaultFormatManager) GetViewedExtensions() (viewed []string) {
@@ -98,6 +105,15 @@ func (fm DefaultFormatManager) GetConvertedExtensions() (converted []string) {
 	return converted
 }
 
+func (fm DefaultFormatManager) GetFilledExtensions() (filled []string) {
+	for _, f := range fm.formats {
+		if slices.Contains(f.Actions, "fill") {
+			filled = append(filled, f.Name)
+		}
+	}
+	return filled
+}
+
 func (fm DefaultFormatManager) GetDocumentExtensions() (word []string) {
 	for _, f := range fm.formats {
 		if f.FormatType == "word" {
@@ -119,6 +135,15 @@ func (fm DefaultFormatManager) GetSpreadsheetExtensions() (cell []string) {
 func (fm DefaultFormatManager) GetPresentationExtensions() (slide []string) {
 	for _, f := range fm.formats {
 		if f.FormatType == "slide" {
+			slide = append(slide, f.Name)
+		}
+	}
+	return
+}
+
+func (fm DefaultFormatManager) GetPdfExtensions() (slide []string) {
+	for _, f := range fm.formats {
+		if f.FormatType == "pdf" {
 			slide = append(slide, f.Name)
 		}
 	}

@@ -57,6 +57,11 @@ class HomeController < ApplicationController
       files_list = TrackHelper.command_request('getForgottenList', '')
       (files_list['keys']).each do |key|
         file = TrackHelper.command_request('getForgotten', key)
+        public_uri = HomeController.config_manager.document_server_public_uri.to_s
+        private_uri = HomeController.config_manager.document_server_private_uri.to_s
+        if file['url'].include?(private_uri)
+          file['url'].gsub!(private_uri, public_uri)
+        end
         file['type'] = FileUtility.get_file_type(file['url'])
         @files.push(file)
       end

@@ -71,7 +71,7 @@ class ConfigurationManager:
         base_url = server_url.geturl()
         path = (
             environ.get('DOCUMENT_SERVER_COMMAND_PATH') or
-            '/coauthoring/CommandService.ashx'
+            '/command'
         )
         url = urljoin(base_url, path)
         return urlparse(url)
@@ -81,7 +81,7 @@ class ConfigurationManager:
         base_url = server_url.geturl()
         path = (
             environ.get('DOCUMENT_SERVER_CONVERTER_PATH') or
-            '/ConvertService.ashx'
+            '/converter'
         )
         url = urljoin(base_url, path)
         return urlparse(url)
@@ -145,6 +145,7 @@ class ConfigurationManager:
             'gl': 'Galego',
             'de': 'German',
             'el': 'Greek',
+            'he-IL': 'Hebrew (Israel)',
             'hu': 'Hungarian',
             'id': 'Indonesian',
             'it': 'Italian',

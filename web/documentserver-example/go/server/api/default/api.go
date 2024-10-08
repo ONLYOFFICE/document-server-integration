@@ -43,6 +43,7 @@ import (
 
 var decoder = schema.NewDecoder()
 var indexTemplate = template.Must(template.ParseFiles("templates/index.html"))
+var forgottenTemplate = template.Must(template.ParseFiles("templates/forgotten.html"))
 var editorTemplate = template.Must(template.ParseFiles("templates/editor.html"))
 
 type DefaultServerEndpointsHandler struct {
@@ -124,7 +125,7 @@ func (srv *DefaultServerEndpointsHandler) Upload(w http.ResponseWriter, r *http.
 	}
 
 	srv.HistoryManager.CreateMeta(fileName, models.History{
-		ServerVersion: "0.0.0",
+		ServerVersion: srv.config.Version,
 		Changes: []models.Changes{
 			{
 				Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
@@ -147,13 +148,84 @@ func (srv *DefaultServerEndpointsHandler) Index(w http.ResponseWriter, r *http.R
 	}
 
 	data := map[string]interface{}{
-		"Extensions": srv.specification.Extensions,
-		"Users":      srv.Managers.UserManager.GetUsers(),
-		"Files":      files,
-		"Preloader":  srv.config.DocumentServerHost + srv.config.DocumentServerPreloader,
+		"Extensions":       srv.specification.Extensions,
+		"Users":            srv.Managers.UserManager.GetUsers(),
+		"Files":            files,
+		"Preloader":        srv.config.DocumentServerHost + srv.config.DocumentServerPreloader,
+		"ForgottenEnabled": srv.config.ForgottenEnabled,
+		"Languages":        srv.config.Languages,
+		"ServerVersion":    srv.config.Version,
 	}
 
 	indexTemplate.Execute(w, data)
+}
+
+func (srv *DefaultServerEndpointsHandler) Forgotten(w http.ResponseWriter, r *http.Request) {
+	srv.logger.Debug("A new forgotten call")
+	if !srv.config.ForgottenEnabled {
+		shared.SendCustomErrorResponse(w, "The forgotten page is disabled")
+		return
+	}
+
+	if r.Method == "DELETE" {
+		filename := r.URL.Query().Get("fileName")
+		if filename == "" {
+			shared.SendCustomErrorResponse(w, "No filename")
+		} else {
+			_, err := srv.Managers.CommandManager.CommandRequest("deleteForgotten", filename, nil)
+			if err != nil {
+				srv.logger.Errorf("could not delete forgotten file: %s", err.Error())
+				shared.SendDocumentServerRespose(w, true)
+			} else {
+				w.WriteHeader(http.StatusNoContent)
+				shared.SendDocumentServerRespose(w, false)
+			}
+		}
+		return
+	}
+
+	var forgottenList models.ForgottenList
+	res, err := srv.Managers.CommandManager.CommandRequest("getForgottenList", "", nil)
+	if err != nil {
+		srv.logger.Errorf("could not fetch forgotten files: %s", err.Error())
+	}
+	if err = json.NewDecoder(res.Body).Decode(&forgottenList); err != nil {
+		srv.logger.Errorf("could not parse forgotten files: %s", err.Error())
+	}
+
+	var files []models.ForgottenFile
+	for _, key := range forgottenList.Keys {
+		var file models.ForgottenFile
+		res, err = srv.CommandRequest("getForgotten", key, nil)
+		if err != nil {
+			srv.logger.Errorf("could not fetch forgotten file[%s]: %s", file.Key, err.Error())
+		} else {
+			if err = json.NewDecoder(res.Body).Decode(&file); err != nil {
+				srv.logger.Errorf("could not parse forgotten file[%s]: %s", file.Key, err.Error())
+			} else {
+				file.Type = srv.Managers.ConversionManager.GetFileType(file.Url)
+				files = append(files, file)
+			}
+		}
+	}
+
+	data := map[string]interface{}{
+		"Files": files,
+	}
+
+	forgottenTemplate.Execute(w, data)
+}
+
+func (srv *DefaultServerEndpointsHandler) Formats(w http.ResponseWriter, r *http.Request) {
+	srv.logger.Debug("A new formats call")
+	fm, err := utils.NewFormatManager()
+	if err != nil {
+		srv.logger.Errorf("could not fetch formats: %s", err.Error())
+		shared.SendCustomErrorResponse(w, fmt.Sprintf("could not fetch formats: %s", err.Error()))
+		return
+	}
+
+	shared.SendResponse(w, fm.GetFormats())
 }
 
 func (srv *DefaultServerEndpointsHandler) Files(w http.ResponseWriter, r *http.Request) {
@@ -188,6 +260,19 @@ func (srv *DefaultServerEndpointsHandler) Download(w http.ResponseWriter, r *htt
 }
 
 func (srv *DefaultServerEndpointsHandler) Remove(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "DELETE" {
+		if err := srv.StorageManager.RemoveAll(); err != nil {
+			shared.SendDocumentServerRespose(w, true)
+			return
+		}
+
+		r := map[string]interface{}{
+			"success": true,
+		}
+		shared.SendResponse(w, r)
+		return
+	}
+
 	filename := r.URL.Query().Get("filename")
 	if filename == "" {
 		shared.SendDocumentServerRespose(w, true)
@@ -449,16 +534,10 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 		return
 	}
 
-	err = r.ParseForm()
 	srv.logger.Debug("A new convert call")
-	if err != nil {
-		srv.logger.Error(err.Error())
-		shared.SendDocumentServerRespose(w, true)
-		return
-	}
 
 	var payload managers.ConvertRequest
-	err = decoder.Decode(&payload, r.PostForm)
+	err = json.NewDecoder(r.Body).Decode(&payload)
 	if err != nil {
 		srv.logger.Error(err.Error())
 		shared.SendDocumentServerRespose(w, true)
@@ -476,8 +555,10 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 
 	fileUrl := srv.StorageManager.GeneratePublicFileUri(filename, remoteAddr, managers.FileMeta{})
 	fileExt := utils.GetFileExt(filename, true)
-	fileType := srv.ConversionManager.GetFileType(filename)
-	newExt := srv.ConversionManager.GetInternalExtension(fileType)
+	toExt := "ooxml"
+	if payload.Filetype != "" {
+		toExt = payload.Filetype
+	}
 
 	if srv.DocumentManager.IsDocumentConvertable(filename) {
 		key, err := srv.StorageManager.GenerateFileHash(filename)
@@ -487,7 +568,7 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 			return
 		}
 
-		newUrl, err := srv.ConversionManager.GetConverterUri(fileUrl, fileExt, newExt, key, true)
+		newUrl, newExt, err := srv.ConversionManager.GetConverterUri(fileUrl, fileExt, toExt, key, true)
 		if err != nil {
 			response.Error = err.Error()
 			srv.logger.Errorf("File conversion error: %s", err.Error())
@@ -497,7 +578,7 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 		if newUrl == "" {
 			response.Step = 1
 		} else {
-			correctName, err := srv.StorageManager.GenerateVersionedFilename(utils.GetFileNameWithoutExt(filename) + newExt)
+			correctName, err := srv.StorageManager.GenerateVersionedFilename(utils.GetFileNameWithoutExt(filename) + "." + newExt)
 			if err != nil {
 				response.Error = err.Error()
 				srv.logger.Errorf("File conversion error: %s", err.Error())
@@ -512,7 +593,7 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 			srv.StorageManager.RemoveFile(filename)
 			response.Filename = correctName
 			srv.HistoryManager.CreateMeta(response.Filename, models.History{
-				ServerVersion: "0.0.0",
+				ServerVersion: srv.config.Version,
 				Changes: []models.Changes{
 					{
 						Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
@@ -660,7 +741,7 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 			UserAddress: r.Host,
 		})
 		srv.HistoryManager.CreateMeta(correctName, models.History{
-			ServerVersion: "0.0.0",
+			ServerVersion: srv.config.Version,
 			Changes: []models.Changes{
 				{
 					Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
@@ -729,7 +810,7 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 
 	srv.StorageManager.CreateFile(file, fpath)
 	srv.HistoryManager.CreateMeta(filename, models.History{
-		ServerVersion: "0.0.0",
+		ServerVersion: srv.config.Version,
 		Changes: []models.Changes{
 			{
 				Created: time.Now().UTC().Format("2006-02-1 15:04:05"),

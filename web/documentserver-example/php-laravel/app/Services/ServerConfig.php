@@ -26,8 +26,8 @@ class ServerConfig extends Config
         $privateServerUrl = rtrim(env('DOCUMENT_SERVER_PRIVATE_URL', $publicServerUrl), '/');
         $apiUrl = $publicServerUrl.'/'.env('DOCUMENT_SERVER_API_PATH', 'web-apps/apps/api/documents/api.js');
         $preloaderUrl = $publicServerUrl.'/'.env('DOCUMENT_SERVER_PRELOADER_PATH', 'web-apps/apps/api/documents/cache-scripts.html');
-        $conversionUrl = $privateServerUrl.'/'.env('DOCUMENT_SERVER_CONVERTER_PATH', 'ConvertService.ashx');
-        $commandUrl = $privateServerUrl.'/'.env('DOCUMENT_SERVER_COMMAND_PATH', 'coauthoring/CommandService.ashx');
+        $conversionUrl = $privateServerUrl.'/'.env('DOCUMENT_SERVER_CONVERTER_PATH', 'convert');
+        $commandUrl = $privateServerUrl.'/'.env('DOCUMENT_SERVER_COMMAND_PATH', 'command');
         $jwtSecret = env('DOCUMENT_SERVER_JWT_SECRET', 'secret');
         $jwtUseForRequest = env('DOCUMENT_SERVER_JWT_USE_FOR_REQUEST', true);
 

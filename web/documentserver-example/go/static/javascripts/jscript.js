@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2023
+ * (c) Copyright Ascensio System SIA 2024
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,49 @@
  *
  */
 
-var language = getCookie('ulang') || 'en';
-var userid = getCookie('uid') || 'uid-1';
+var directUrl;
+var formatManager;
 
-if (typeof jQuery != "undefined") {
+window.onload = function () {
+    fetch('formats')
+        .then((response) => response.json())
+        .then((data) => {
+            if (data) {
+                let formats = [];
+                data.forEach(format => {
+                    formats.push(new Format(
+                        format.name,
+                        format.type,
+                        format.actions,
+                        format.convert,
+                        format.mime
+                    ));
+                });
+                formatManager = new FormatManager(formats);
+            }
+        })
+}
+
+if (typeof jQuery !== "undefined") {
     jq = jQuery.noConflict();
+
+    directUrl = getUrlVars()["directUrl"] == "true";
 
     mustReload = false;
 
-    if ("" != language && undefined != language)
-        jq("#language").val(language);
+    if (directUrl)
+        jq("#directUrl").prop("checked", directUrl);
     else
-        language = jq("#language").val();
+        directUrl = jq("#directUrl").prop("checked");
 
-
-    jq("#language").change(function() {
-        language = jq(this).val();
-        document.cookie =`ulang=${language}`;
-    });
-
-
-    if ("" != userid && undefined != userid)
-        jq("#user").val(userid);
-    else
-        userid = jq("#user").val();
-
-    jq("#user").change(function() {
-        userid = jq(this).val();
-        document.cookie =`uid=${userid}`;
+    jq("#directUrl").change(function() {
+        window.location = "?directUrl=" + jq(this).prop("checked");
     });
 
     jq(function () {
-        jq('#fileupload').fileupload({
-            dataType: 'json',
+        jq("#fileupload").fileupload({
+            dataType: "json",
             add: function (e, data) {
-                if (jq("#mainProgress").is(":visible")) {
-                    return;
-                }
                 jq(".error").removeClass("error");
                 jq(".done").removeClass("done");
                 jq(".current").removeClass("current");
@@ -78,10 +84,10 @@ if (typeof jQuery != "undefined") {
                     return;
                 }
                 var response = data.result;
-                if (!response || response.error) {
+                if (response.error) {
                     jq(".current").removeClass("current");
                     jq(".step:not(.done)").addClass("error");
-                    jq("#mainProgress .error-message").show().find("span").text(response ? response.error : "Undefined error");
+                    jq("#mainProgress .error-message").show().find("span").text(response.error);
                     jq('#hiddenFileName').val("");
                     return;
                 }
@@ -97,11 +103,14 @@ if (typeof jQuery != "undefined") {
                 checkConvert();
             }
         });
+
+        initSelectors();
     });
 
     var timer = null;
-    var checkConvert = function (filePass = null) {
-        if (timer != null) {
+    var checkConvert = function (filePass, fileType) {
+        filePass = filePass ? filePass : null;
+        if (timer !== null) {
             clearTimeout(timer);
         }
 
@@ -112,30 +121,26 @@ if (typeof jQuery != "undefined") {
         jq("#filePass").val("");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf('.');
-        posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
+        var posExt = fileName.lastIndexOf(".");
+        posExt = 0 <= posExt ? fileName.substring(posExt + 1).trim().toLowerCase() : "";
 
-        if (ConverExtList.indexOf(posExt.replace(".","")) == -1) {
+        if (!formatManager.isAutoConvertible(posExt)) {
             jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
         }
 
         timer = setTimeout(function () {
-            jq.ajaxSetup({ cache: false });
             jq.ajax({
                 async: true,
+                contentType: "text/xml",
                 type: "post",
                 dataType: "json",
-                data: {filename: fileName, filePass: filePass},
+                data: JSON.stringify({ filename: fileName, filePass: filePass, fileExt: fileType }),
                 url: UrlConverter,
                 complete: function (data) {
                     var responseText = data.responseText;
-                    try {
-                        var response = jq.parseJSON(responseText);
-                    } catch (e)	{
-                        response = { error: e };
-                    }
+                    var response = jq.parseJSON(responseText);
                     if (response.error) {
                         if (response.error.includes("Incorrect password")) {
                             jq(".current").removeClass("current");
@@ -147,6 +152,12 @@ if (typeof jQuery != "undefined") {
                             }
                             return;
                         } else {
+                            if (response.error.includes("-9")){
+                                jq("#select-file-type").removeClass("invisible");
+                                jq("#step2").removeClass("current");
+                                jq("#hiddenFileName").attr("placeholder",filePass);
+                                return;
+                            }
                             jq(".current").removeClass("current");
                             jq(".step:not(.done)").addClass("error");
                             jq("#mainProgress .error-message").show().find("span").text(response.error);
@@ -157,8 +168,8 @@ if (typeof jQuery != "undefined") {
 
                     jq("#hiddenFileName").val(response.filename);
 
-                    if (typeof response.step != "undefined" && response.step < 100) {
-                        checkConvert(filePass);
+                    if (response.step != undefined && response.step < 100) {
+                        checkConvert(filePass, fileType);
                     } else {
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
@@ -176,7 +187,7 @@ if (typeof jQuery != "undefined") {
 
         if (jq("#loadScripts").is(":empty")) {
             var urlScripts = jq("#loadScripts").attr("data-docs");
-            var frame = '<iframe id="iframeScripts" width=1 height=1 style="position: absolute; visibility: hidden;" ></iframe>';
+            var frame = "<iframe id=\"iframeScripts\" width=1 height=1 style=\"position: absolute; visibility: hidden;\" ></iframe>";
             jq("#loadScripts").html(frame);
             document.getElementById("iframeScripts").onload = onloadScripts;
             jq("#loadScripts iframe").attr("src", urlScripts);
@@ -193,20 +204,56 @@ if (typeof jQuery != "undefined") {
         jq("#beginView, #beginEmbedded").removeClass("disable");
 
         var fileName = jq("#hiddenFileName").val();
-        var posExt = fileName.lastIndexOf('.');
-        posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
+        var posExt = fileName.lastIndexOf(".") + 1;
+        posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
-        if (EditedExtList.indexOf(posExt) != -1) {
+        if (formatManager.isEditable(posExt) || formatManager.isFillable(posExt)) {
             jq("#beginEdit").removeClass("disable");
         }
     };
 
+    var initSelectors = function () {
+        var userSel = jq("#user");
+        var langSel = jq("#language");
+
+        function getCookie(name) {
+            let matches = document.cookie.match(new RegExp(
+                "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+            ));
+            return matches ? decodeURIComponent(matches[1]) : null;
+        }
+        function setCookie(name, value) {
+            document.cookie = name + "=" + value + "; expires=" + new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toUTCString(); //week
+        }
+
+        var userId = getCookie("uid");
+        if (userId) userSel.val(userId);
+        var langId = getCookie("ulang");
+        if (langId) langSel.val(langId);
+
+        userSel.on("change", function () {
+            setCookie("uid", userSel.val());
+        });
+        langSel.on("change", function () {
+            setCookie("ulang", langSel.val());
+        });
+    };
+
+    jq(document).on("click", ".file-type:not(.disable)", function () {
+        const currentElement = jq(this);
+        var fileType = currentElement.attr("data");
+        var filePass = jq("#hiddenFileName").attr("placeholder");
+        jq('.file-type').addClass(["disable", "pale"]);
+        currentElement.removeClass("pale");
+        checkConvert(filePass, fileType);
+    });
+
     jq(document).on("click", "#enterPass", function () {
-        var pass = jq("#filePass").val();
-        if (pass) {
+        var filePass = jq("#filePass").val();
+        if (filePass) {
             jq("#step2").removeClass("error");
             jq("#blockPassword").hide();
-            checkConvert(pass);
+            checkConvert(filePass);
         } else {
             jq("#filePass").addClass("errorInput");
             jq(".errorPass").text("Password can't be blank.");
@@ -219,26 +266,26 @@ if (typeof jQuery != "undefined") {
     });
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
-        var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?filename=" + fileId;
+        var fileId = encodeURIComponent(jq("#hiddenFileName").val());
+        var url = UrlEditor + "?mode=edit&fileName=" + fileId+ "&directUrl=" + directUrl;
         window.open(url, "_blank");
-        jq('#hiddenFileName').val("");
+        jq("#hiddenFileName").val("");
         jq.unblockUI();
         document.location.reload();
     });
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
-        var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?mode=view&filename=" + fileId;
+        var fileId = encodeURIComponent(jq("#hiddenFileName").val());
+        var url = UrlEditor + "?mode=view&fileName=" + fileId+ "&directUrl=" + directUrl;
         window.open(url, "_blank");
-        jq('#hiddenFileName').val("");
+        jq("#hiddenFileName").val("");
         jq.unblockUI();
         document.location.reload();
     });
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
-        var fileId = encodeURIComponent(jq('#hiddenFileName').val());
-        var url = UrlEditor + "?type=embedded&filename=" + fileId;
+        var fileId = encodeURIComponent(jq("#hiddenFileName").val());
+        var url = UrlEditor + "?type=embedded&mode=embedded&fileName=" + fileId + "&directUrl=" + directUrl;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -246,36 +293,33 @@ if (typeof jQuery != "undefined") {
         jq("#uploadSteps").after('<iframe id="embeddedView" src="' + url + '" height="345px" width="432px" frameborder="0" scrolling="no" allowtransparency></iframe>');
     });
 
-    jq(document).on("click", ".reload-page", function () {
-        setTimeout(function () { document.location.reload(); }, 1000);
-        return true;
-    });
-
-    jq(document).on("mouseup", ".reload-page", function (event) {
-        if (event.which == 2) {
-            setTimeout(function () { document.location.reload(); }, 1000);
-        }
-        return true;
-    });
-
     jq(document).on("click", "#cancelEdit, .dialog-close", function () {
         jq('#hiddenFileName').val("");
-        jq("#embeddedView").remove();
+        jq("#embeddedView").attr("src", "");
         jq.unblockUI();
         if (mustReload) {
             document.location.reload();
         }
     });
 
-    jq(document).on("click", ".delete-file", function () {
-        var fileName = jq(this).attr("data");
+    jq(document).on("click", ".try-editor", function (e) {
+        var url = "create?fileExt=" + e.target.attributes["data-type"].value;
+        if (jq("#createSample").is(":checked")) {
+            url += "&sample=true";
+        }
+        var w = window.open(url, "_blank");
+        w.onload = function () {
+            window.location.reload();
+        }
+    });
 
-        var requestAddress = "remove?filename=" + fileName;
+    jq(document).on("click", ".delete-file", function () {
+        var requestAddress = "remove"
+            + "?filename=" + encodeURIComponent(jq(this).attr("data-filename"));
 
         jq.ajax({
             async: true,
             contentType: "text/xml",
-            type: "delete",
             url: requestAddress,
             complete: function (data) {
                 document.location.reload();
@@ -283,53 +327,117 @@ if (typeof jQuery != "undefined") {
         });
     });
 
-    jq("#createSample").click(function () {
-        jq(".try-editor").each(function () {
-            var href = jq(this).attr("href");
-            if (jq("#createSample").is(":checked")) {
-                href += "&sample=true";
-            } else {
-                href = href.replace("&sample=true", "");
-            }
-            jq(this).attr("href", href);
-        });
+    jq(document).on("click", ".clear-all", function () {
+        if (confirm("Delete all the files?")) {
+            jq.ajax({
+                async: true,
+                contentType: "text/xml",
+                type: "delete",
+                url: "remove",
+                complete: function (data) {
+                    if (JSON.parse(data.responseText).success) {
+                        window.location.reload(true);
+                    }
+                }
+            });
+        }
     });
 
-    jq(".info").mouseover(function (event) {
+        function showUserTooltip (isMobile) {
+        if ( jq("div#portal-info").is(":hidden") ) {
+            jq("div#portal-info").show();
+            jq("div.stored-list").hide();
+        } else if (isMobile && jq("div#portal-info").is(":visible")) {
+            jq("div#portal-info").hide();
+            jq("div.stored-list").show();
+        }
+    };
+
+    var fileList = jq("tr.tableRow");
+
+    var mouseIsOverTooltip = false;
+    var hideTooltipTimeout = null;
+    if (/android|avantgo|playbook|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i
+        .test(navigator.userAgent)) {
+            if (fileList.length > 0) {
+                if (hideTooltipTimeout != null) {
+                    clearTimeout(hideTooltipTimeout);
+                }
+                jq("#info").on("touchend", function () {
+                    showUserTooltip(true);
+                });
+            }
+    } else {
+        jq("#info").mouseover(function (event) {
+            if (fileList.length > 0) {
+                if (hideTooltipTimeout != null) {
+                    clearTimeout(hideTooltipTimeout);
+                }
+                showUserTooltip(false);
+
+                jq("div#portal-info").mouseenter(function () {
+                    mouseIsOverTooltip = true;
+                }).mouseleave(function () {
+                    mouseIsOverTooltip = false;
+                    jq("div.stored-list").show();
+                    jq("div#portal-info").hide();
+                })
+            }
+        }).mouseleave(function () {
+            hideTooltipTimeout = setTimeout(function () {
+                if (mouseIsOverTooltip == false && fileList.length > 0) {
+                    jq("div.stored-list").show();
+                    jq("div#portal-info").hide();
+                }
+            }, 500);
+        });
+    }
+
+    function getUrlVars() {
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+        return vars;
+    };
+
+    jq(".info-tooltip").mouseover(function (event) {
         var target = event.target;
         var id = target.dataset.id ? target.dataset.id : target.id;
         var tooltip = target.dataset.tooltip;
 
-        jq("<div class='tooltip'>" + tooltip + "</div><div class='arrow'></div>").appendTo("body");
+        jq("<div class='tooltip'>" + tooltip + "<div class='arrow'></div></div>").appendTo("body");
 
-        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth();
-
-        var topElement = jq("#" + id).offset().top;
-        var halfHeightElement = jq("#" + id).outerHeight() / 2;
-
-        var heightToFooter = jq("footer").offset().top - (topElement + halfHeightElement);
-        var halfHeightTooltip = jq("div.tooltip").outerHeight() / 2;
-        if (heightToFooter > (halfHeightTooltip + 10)) {
-            var top = topElement + halfHeightElement - halfHeightTooltip;
-        } else {
-            var top = jq("footer").offset().top - jq("div.tooltip").outerHeight() - 10;
-        }
-
-        jq("div.tooltip").css({"top": top, "left": left + 10});
-        jq("div.arrow").css({"top": topElement + halfHeightElement, "left": left + 6});
+        var top = jq("#" + id).offset().top + jq("#" + id).outerHeight() / 2 - jq("div.tooltip").outerHeight() / 2;
+        var left = jq("#" + id).offset().left + jq("#" + id).outerWidth() + 20;
+        jq("div.tooltip").css({"top": top, "left": left});
     }).mouseout(function () {
         jq("div.tooltip").remove();
-        jq("div.arrow").remove();
     });
 }
 
-function getCookie(name){
-    const cookies = document.cookie.split(';');
-    for (let i = 0; i < cookies.length; i++) {
-        let c = cookies[i].trim().split('=');
-        if (c[0] === name) {
-            return c[1];
-        }
+function toggleSidePanel(event) {
+    event.preventDefault();
+    let sidePanel = document.querySelector(".left-panel");
+    let body = document.querySelector("body");
+    if (sidePanel.classList.contains("active")) {
+        sidePanel.classList.remove("active");
+        body.classList.remove("menu-open");
+    } else {
+        sidePanel.classList.add("active")
+        body.classList.add("menu-open");
     }
-    return "";
+}
+
+function toggleUserDescr(event) {
+    let list = event.currentTarget.querySelector("ul");
+    let cursor = window.getComputedStyle(event.currentTarget).getPropertyValue("cursor");
+
+    if (cursor === "pointer") {
+        if (list.classList.contains("active")) list.classList.remove("active");
+        else list.classList.add("active");
+    }
 }
