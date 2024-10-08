@@ -34,7 +34,7 @@
     />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-    <title>ONLYOFFICE</title>
+    <title>{{ .config.Document.Title }} - ONLYOFFICE</title>
     <link
       rel="icon"
       href="static/images/{{.docType}}.ico"
@@ -66,8 +66,8 @@
         };
 
         var onDocumentStateChange = function (event) {  // the document is modified
-            var title = document.title.replace(/\*$/g, "");
-            document.title = title + (event.data ? "*" : "");
+            var title = document.title.replace(/^\*/g, "");
+            document.title = (event.data ? "*" : "") + title;
         };
 
         var onRequestClose = function () {
