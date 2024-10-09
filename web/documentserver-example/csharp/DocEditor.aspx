@@ -124,6 +124,11 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));  // set the link to the document which contains a bookmark
         };
 
+        var onRequestClose = function () {  // close editor
+            docEditor.destroyEditor();
+            innerAlert("Document editor closed successfully");
+        };
+
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
             if (event.data.favorite !== undefined) {
@@ -287,6 +292,7 @@
 
         if (config.editorConfig.user.id) {
 
+            config.events['onRequestClose'] = onRequestClose;
             config.events['onRequestHistory'] = function (event) {  // the user is trying to show the document version history
 
                 let xhr = new XMLHttpRequest();
