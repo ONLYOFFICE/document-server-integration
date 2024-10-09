@@ -3,6 +3,7 @@
 - filename in editor page title
 - csharp: close editor
 - csharp-mvc: close editor
+- java: close editor
 - he-IL skin language
 - ConvertService.ashx address replaced with converter
 - coauthoring/CommandService.ashx address replaced with command
