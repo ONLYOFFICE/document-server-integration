@@ -47,6 +47,8 @@ final class User
 
     public ?array $goback;
 
+    public ?array $close;
+
     /**
      * Constructor
      *
@@ -66,7 +68,8 @@ final class User
         ?array $descriptions,
         ?bool $templates,
         ?bool $avatar,
-        ?array $goback
+        ?array $goback,
+        ?array $close
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -81,6 +84,7 @@ final class User
         $this->userInfoGroups = $userInfoGroups;
         $this->avatar = $avatar;
         $this->goback = $goback;
+        $this->close = $close;
     }
 
     public function toArray(): array
@@ -99,6 +103,7 @@ final class User
             'userInfoGroups' => $this->userInfoGroups,
             'avatar' => $this->avatar,
             'goback' => $this->goback,
+            'close' => $this->close,
         ];
     }
 }

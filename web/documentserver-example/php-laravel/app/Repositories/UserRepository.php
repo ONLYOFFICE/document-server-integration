@@ -90,7 +90,8 @@ class UserRepository
                 $descriptions[0],
                 true,
                 true,
-                ['blank' => false]
+                ['blank' => false],
+                ["visible" => false]
             ),
             new User(
                 'uid-2',
@@ -109,7 +110,8 @@ class UserRepository
                 $descriptions[1],
                 false,
                 true,
-                ['text' => 'Go to Documents']
+                ['text' => 'Go to Documents'],
+                ["visible" => true]
             ),
             new User(
                 'uid-3',
@@ -128,7 +130,8 @@ class UserRepository
                 $descriptions[2],
                 false,
                 false,
-                null
+                null,
+                ["visible" => true]
             ),
             new User(
                 'uid-0',
@@ -143,6 +146,7 @@ class UserRepository
                 $descriptions[3],
                 false,
                 false,
+                null,
                 null
             ),
         ];
