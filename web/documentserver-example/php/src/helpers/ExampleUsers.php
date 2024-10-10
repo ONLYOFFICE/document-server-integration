@@ -94,7 +94,8 @@ final class ExampleUsers
                 $this->user1Description,
                 true,
                 true,
-                ["blank" => false,]
+                ["blank" => false,],
+                ["visible" => false]
             ),
             new Users(
                 "uid-2",
@@ -113,7 +114,8 @@ final class ExampleUsers
                 $this->user2Description,
                 false,
                 true,
-                ["text" => "Go to Documents",]
+                ["text" => "Go to Documents",],
+                ["visible" => true]
             ),
             new Users(
                 "uid-3",
@@ -132,7 +134,8 @@ final class ExampleUsers
                 $this->user3Description,
                 false,
                 false,
-                null
+                null,
+                ["visible" => true]
             ),
             new Users(
                 "uid-0",
@@ -147,6 +150,7 @@ final class ExampleUsers
                 $this->user0Description,
                 false,
                 false,
+                null,
                 null
             ),
         ];
