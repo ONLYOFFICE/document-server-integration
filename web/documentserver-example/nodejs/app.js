@@ -275,7 +275,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
 
   const fileSizeLimit = configServer.get('maxFileSize');
   // create a new incoming form
-  const form = new formidable.IncomingForm({maxFileSize: fileSizeLimit, maxTotalFileSize: fileSizeLimit });
+  const form = new formidable.IncomingForm({ maxFileSize: fileSizeLimit, maxTotalFileSize: fileSizeLimit });
   form.uploadDir = uploadDirTmp; // and write there all the necessary parameters
   form.keepExtensions = true;
 
