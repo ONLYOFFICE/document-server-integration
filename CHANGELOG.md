@@ -6,6 +6,7 @@
 - java: close editor
 - php: close editor
 - php-laravel: close editor
+- python: close editor
 - he-IL skin language
 - ConvertService.ashx address replaced with converter
 - coauthoring/CommandService.ashx address replaced with command
