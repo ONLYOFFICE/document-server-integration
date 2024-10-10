@@ -94,7 +94,8 @@ namespace OnlineEditorsExample
                     descr_user_1,
                     true,
                     true,
-                    new Goback(null, false)
+                    new Goback(null, false),
+                    new Close(null, false)
                 ),
             new User(
                     "uid-2",
@@ -114,7 +115,8 @@ namespace OnlineEditorsExample
                     descr_user_2,
                     false,
                     true,
-                    new Goback("Go to Documents",null)
+                    new Goback("Go to Documents",null),
+                    new Close(null, true)
                 ),
             new User(
                     "uid-3",
@@ -134,7 +136,8 @@ namespace OnlineEditorsExample
                     descr_user_3,
                     false,
                     false,
-                    null
+                    null,
+                    new Close(null, true)
                 ),
             new User(
                     "uid-0",
@@ -149,6 +152,7 @@ namespace OnlineEditorsExample
                     descr_user_0,
                     false,
                     false,
+                    null,
                     null
                 )
         };
@@ -242,8 +246,9 @@ namespace OnlineEditorsExample
         public List<string> userInfoGroups;
         public bool avatar;
         public Goback goback;
+        public Close close;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates, bool avatar, Goback goback)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates, bool avatar, Goback goback, Close close)
         {
             this.id = id;
             this.name = name;
@@ -258,6 +263,7 @@ namespace OnlineEditorsExample
             this.userInfoGroups = userInfoGroups;
             this.avatar = avatar;
             this.goback = goback;
+            this.close = close;
         }
     }
 
@@ -272,6 +278,20 @@ namespace OnlineEditorsExample
         {
             this.text = text;
             this.blank = blank;
+        }
+    }
+
+    public class Close
+    {
+        public string text;
+        public bool visible;
+
+        public Close(){}
+
+        public Close(string text, bool visible)
+        {
+            this.text = text;
+            this.visible = visible;
         }
     }
 }

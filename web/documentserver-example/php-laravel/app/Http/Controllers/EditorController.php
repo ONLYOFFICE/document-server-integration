@@ -249,6 +249,7 @@ class EditorController extends Controller
 
         if ($user['id'] != 'uid-0') {
             $historyLayout .= "// add mentions for not anonymous users
+                config.events['onRequestClose'] = onRequestClose;
                 config.events['onRequestUsers'] = onRequestUsers;
                 config.events['onRequestSaveAs'] = onRequestSaveAs;
                 // the user is mentioned in a comment
@@ -266,6 +267,7 @@ class EditorController extends Controller
         }
 
         $editorConfig = [
+            'fileName' => $file['filename'],
             'docType' => $file['format']->type,
             'apiUrl' => $this->serverConfig->get('url.api'),
             'dataInsertImage' => mb_strimwidth(

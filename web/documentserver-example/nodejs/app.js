@@ -274,7 +274,8 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
   req.DocManager.createDirectory(uploadDirTmp);
 
   const fileSizeLimit = configServer.get('maxFileSize');
-  const form = new formidable.IncomingForm({maxFileSize: fileSizeLimit, maxTotalFileSize: fileSizeLimit }); // create a new incoming form
+  // create a new incoming form
+  const form = new formidable.IncomingForm({ maxFileSize: fileSizeLimit, maxTotalFileSize: fileSizeLimit });
   form.uploadDir = uploadDirTmp; // and write there all the necessary parameters
   form.keepExtensions = true;
 
@@ -459,7 +460,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
       if (fileUtility.getFileType(correctName) !== null) {
         fileSystem.writeFileSync(req.DocManager.storagePath(correctName), data);
       } else {
-        writeResult(newFileUri, result, 'FileTypeIsNotSupported');
+        writeResult(newFileUri.replace('http://localhost', siteUrl), result, 'FileTypeIsNotSupported');
         return;
       }
       // remove file with the origin extension

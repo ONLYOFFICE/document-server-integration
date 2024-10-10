@@ -134,6 +134,7 @@ class Editor
                 'forcesave' => false,
                 'submitForm' => $this->user->id === 'uid-1',
                 'goback' => $this->user->goback !== null ? $this->user->goback : '',
+                'close' => $this->user->close !== null ? $this->user->close : '',
             ],
         ];
     }

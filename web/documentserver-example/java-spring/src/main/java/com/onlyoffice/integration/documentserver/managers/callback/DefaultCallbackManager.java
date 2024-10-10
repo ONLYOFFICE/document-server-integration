@@ -135,6 +135,11 @@ public class DefaultCallbackManager implements CallbackManager {
 
         String curExt = documentManager.getExtension(fileName);  // get current file extension
         String downloadExt = callback.getFiletype(); // get an extension of the downloaded file
+        String storagePath = storagePathBuilder.getFileLocation(newFileName);  // get the path to a new file
+
+        if (!Paths.get(storagePath).toFile().exists()) {
+            throw new RuntimeException("{\"error\":1, \"message\":\"file does not exist\"}");
+        }
 
         downloadUri = urlManager.replaceToInnerDocumentServerUrl(downloadUri);
         changesUri = urlManager.replaceToInnerDocumentServerUrl(changesUri);
@@ -170,7 +175,6 @@ public class DefaultCallbackManager implements CallbackManager {
 
         byte[] byteArrayFile = getDownloadFile(downloadUri);  // download document file
 
-        String storagePath = storagePathBuilder.getFileLocation(newFileName);  // get the path to a new file
         Path lastVersion = Paths.get(storagePathBuilder
                 .getFileLocation(fileName));  // get the path to the last file version
 

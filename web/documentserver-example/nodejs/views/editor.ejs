@@ -23,7 +23,7 @@
     * limitations under the License.
     *
     -->
-    <title>ONLYOFFICE</title>
+    <title><%- file.name %> - ONLYOFFICE</title>
     <link rel="icon"
         href="images/<%- editor.documentType %>.ico"
         type="image/x-icon" />
@@ -53,8 +53,8 @@
         };
 
         var onDocumentStateChange = function (event) {  // the document is modified
-            var title = document.title.replace(/\*$/g, "");
-            document.title = title + (event.data ? "*" : "");
+            var title = document.title.replace(/^\*/g, "");
+            document.title = (event.data ? "*" : "") + title;
         };
 
         var onRequestClose = function () {  // close editor

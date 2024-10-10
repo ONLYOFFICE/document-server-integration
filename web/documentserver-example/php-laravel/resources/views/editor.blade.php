@@ -26,7 +26,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="icon" href="/images/favicon.ico" type="image/x-icon" />
-    <title>ONLYOFFICE</title>
+    <title>{!! $fileName !!} - ONLYOFFICE</title>
 
     <style>
         html {
@@ -78,8 +78,8 @@
 
         // the document is modified
         var onDocumentStateChange = function(event) {
-            var title = document.title.replace(/\*$/g, "");
-            document.title = title + (event.data ? "*" : "");
+            var title = document.title.replace(/^\*/g, "");
+            document.title = (event.data ? "*" : "") + title;
         };
 
         // the user is trying to switch the document from the viewing into the editing mode
@@ -164,6 +164,11 @@
             var linkParam = JSON.stringify(actionData);
             // set the link to the document which contains a bookmark
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
+        };
+
+        var onRequestClose = function () {  // close editor
+            docEditor.destroyEditor();
+            innerAlert("Document editor closed successfully");
         };
 
         // the meta information of the document is changed via the meta command

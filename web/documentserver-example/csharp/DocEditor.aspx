@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="icon" href="<%= "app_themes/images/" + DocumentType + ".ico" %>" type="image/x-icon" />
-    <title>ONLYOFFICE</title>
+    <title><%= FileName + " - ONLYOFFICE" %></title>
     <!--
     *
     * (c) Copyright Ascensio System SIA 2024
@@ -80,8 +80,8 @@
 
         // the document is modified
         var onDocumentStateChange = function (event) {
-            var title = document.title.replace(/\*$/g, "");
-            document.title = title + (event.data ? "*" : "");
+            var title = document.title.replace(/^\*/g, "");
+            document.title = (event.data ? "*" : "") + title;
         };
 
         // the user is trying to switch the document from the viewing into the editing mode
@@ -122,6 +122,11 @@
             var actionData = event.data;
             var linkParam = JSON.stringify(actionData);
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));  // set the link to the document which contains a bookmark
+        };
+
+        var onRequestClose = function () {  // close editor
+            docEditor.destroyEditor();
+            innerAlert("Document editor closed successfully");
         };
 
         // the meta information of the document is changed via the meta command
@@ -287,6 +292,7 @@
 
         if (config.editorConfig.user.id) {
 
+            config.events['onRequestClose'] = onRequestClose;
             config.events['onRequestHistory'] = function (event) {  // the user is trying to show the document version history
 
                 let xhr = new XMLHttpRequest();

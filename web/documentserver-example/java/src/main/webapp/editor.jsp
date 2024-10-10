@@ -27,7 +27,7 @@
         * limitations under the License.
         *
         -->
-        <title>ONLYOFFICE</title>
+        <title><%= Model.getDocument().getTitle() %> - ONLYOFFICE</title>
         <link rel="icon" href="css/img/<%= Model.getDocumentType() %>.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
 
@@ -52,8 +52,8 @@
 
         // the document is modified
         var onDocumentStateChange = function (event) {
-            var title = document.title.replace(/\*$/g, "");
-            document.title = title + (event.data ? "*" : "");
+            var title = document.title.replace(/^\*/g, "");
+            document.title = (event.data ? "*" : "") + title;
         };
 
         // the user is trying to switch the document from the viewing into the editing mode
@@ -94,6 +94,11 @@
             var actionData = event.data;
             var linkParam = JSON.stringify(actionData);
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));  // set the link to the document which contains a bookmark
+        };
+
+        var onRequestClose = function () {  // close editor
+            docEditor.destroyEditor();
+            innerAlert("Document editor closed successfully");
         };
 
         // the meta information of the document is changed via the meta command
@@ -315,6 +320,7 @@
         };
 
         if (config.editorConfig.user.id) {
+            config.events['onRequestClose'] = onRequestClose;
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = onRequestUsers;
             config.events['onRequestSaveAs'] = onRequestSaveAs;

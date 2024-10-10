@@ -184,6 +184,7 @@ final class DocEditorView extends View
                     "submitForm" => $submitForm,  // if the Submit form button is displayed or not
                     // settings for the Open file location menu button and upper right corner button
                     "goback" => $user->goback !== null ? $user->goback : "",
+                    "close" => $user->close != null ? $user->close : "",
                 ],
             ],
         ];
@@ -262,13 +263,15 @@ final class DocEditorView extends View
                 // prevent switch the document from the viewing into the editing mode for anonymous users
                 config.events['onRequestEditRights'] = onRequestEditRights;
                 config.events['onRequestHistory'] = onRequestHistory;
-                config.events['onRequestHistoryData'] = onRequestHistoryData;";
+                config.events['onRequestHistoryData'] = onRequestHistoryData;
+                config.events['onRequestClose'] = onRequestClose;";
             if ($user->id != "uid-3") {
                 $historyLayout .= "config.events['onRequestHistoryClose'] = onRequestHistoryClose;
                 config.events['onRequestRestore'] = onRequestRestore;";
             }
         }
         $this->tagsValues = [
+            "fileName" => $filename,
             "docType" => getDocumentType($filename),
             "apiUrl" => $configManager->documentServerAPIURL()->string(),
             "dataInsertImage" => mb_strimwidth(

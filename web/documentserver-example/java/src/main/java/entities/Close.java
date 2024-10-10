@@ -16,22 +16,32 @@
  *
  */
 
-package com.onlyoffice.integration.dto;
+package entities;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.onlyoffice.model.documenteditor.config.document.ReferenceData;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+public class Close {
+    private String text;
+    private Boolean visible;
 
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Reference {
-    private ReferenceData referenceData;
-    private String path;
-    private String link;
+    public Close() { }
+
+    public Close(final String textParam, final Boolean visibleParam) {
+        this.text = textParam;
+        this.visible = visibleParam;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public void setText(final String textParam) {
+        this.text = textParam;
+    }
+
+    public Boolean isVisible() {
+        return visible;
+    }
+
+    public void setVisible(final Boolean visibleParam) {
+        this.visible = visibleParam;
+    }
 }
