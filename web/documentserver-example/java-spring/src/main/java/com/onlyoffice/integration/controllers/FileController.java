@@ -436,8 +436,11 @@ public class FileController {
 
             callbackService.processCallback(callback, fileName);
         } catch (Exception e) {
-            e.printStackTrace();
-            return e.getMessage();
+            String message = e.getMessage();
+            if (!message.contains("\"error\":1")) {
+                e.printStackTrace();
+            }
+            return message;
         }
 
         return "{\"error\":\"0\"}";
