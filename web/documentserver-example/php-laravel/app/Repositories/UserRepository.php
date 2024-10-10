@@ -91,7 +91,7 @@ class UserRepository
                 true,
                 true,
                 ['blank' => false],
-                ["visible" => false]
+                ['visible' => false]
             ),
             new User(
                 'uid-2',
@@ -111,7 +111,7 @@ class UserRepository
                 false,
                 true,
                 ['text' => 'Go to Documents'],
-                ["visible" => true]
+                ['visible' => true]
             ),
             new User(
                 'uid-3',
@@ -131,7 +131,7 @@ class UserRepository
                 false,
                 false,
                 null,
-                ["visible" => true]
+                ['visible' => true]
             ),
             new User(
                 'uid-0',
