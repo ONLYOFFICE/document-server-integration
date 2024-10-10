@@ -4,6 +4,7 @@
 - csharp: close editor
 - csharp-mvc: close editor
 - java: close editor
+- java-spring: close editor
 - php: close editor
 - php-laravel: close editor
 - python: close editor
