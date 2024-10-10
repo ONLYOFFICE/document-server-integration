@@ -1029,6 +1029,7 @@ app.get('/config', async (req, res) => {
         key: req.DocManager.getKey(fileName),
         title: fileName,
         url: req.DocManager.getDownloadUrl(fileName, true),
+        permissions: JSON.parse(req.query.permissions || '{}'),
         referenceData: {
           fileKey: JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }),
           instanceId: req.DocManager.getInstanceId(),
