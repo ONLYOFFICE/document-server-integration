@@ -200,7 +200,8 @@ class FileModel
           feedback: true, # the Feedback & Support menu button display
           forcesave: false, # adding the request for the forced file saving to the callback handler
           submitForm: submit_form, # the Submit form button state
-          goback: @user.goback.nil? ? '' : @user.goback
+          goback: @user.goback.nil? ? '' : @user.goback,
+          close: @user.close.nil? ? '' : @user.close
         }
       }
     }

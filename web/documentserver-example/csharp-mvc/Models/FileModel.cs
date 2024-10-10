@@ -221,6 +221,13 @@ namespace OnlineEditorsExampleMVC.Models
                                                         { "text", user.goback.text },
                                                         { "blank", user.goback.blank }
                                                     } : new Dictionary<string, object>{}
+                                            },
+                                            {
+                                                "close", user.close != null ? new Dictionary<string, object>
+                                                    {
+                                                        { "text", user.close.text },
+                                                        { "visible", user.close. visible }
+                                                    } : new Dictionary<string, object>{}
                                             }
                                         }
                                 }

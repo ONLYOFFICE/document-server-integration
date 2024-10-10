@@ -333,6 +333,7 @@ def edit(request):
                 'submitForm': submitForm,  # if the Submit form button is displayed or not
                 # settings for the Open file location menu button and upper right corner button
                 'goback':  user.goback if user.goback is not None else '',
+                'close':  user.close if user.close is not None else '',
             }
         }
     }

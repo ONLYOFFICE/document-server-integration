@@ -148,6 +148,11 @@
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
         };
 
+        var onRequestClose = function () {  // close editor
+            docEditor.destroyEditor();
+            innerAlert("Document editor closed successfully");
+        };
+
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
             if (event.data.favorite !== undefined) {

@@ -41,6 +41,7 @@ import com.onlyoffice.model.documenteditor.config.editorconfig.Embedded;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Mode;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Template;
 import com.onlyoffice.model.documenteditor.config.editorconfig.customization.Goback;
+import com.onlyoffice.model.documenteditor.config.editorconfig.customization.Close;
 import com.onlyoffice.model.documenteditor.config.editorconfig.embedded.Toolbar;
 import com.onlyoffice.service.documenteditor.config.DefaultConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -241,6 +242,14 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
             goback.setUrl("");
         }
 
+        Close close = Close.builder()
+            .build();
+
+        if (appUser != null && appUser.getClose() != null) {
+            close.setText(appUser.getClose().getText());
+            close.setVisible(appUser.getClose().getVisible());
+        }
+
         Customization customization = Customization.builder()
                 .autosave(true) // if the Autosave menu option is enabled or disabled
                 .comments(true) // if the Comments menu button is displayed or hidden
@@ -254,6 +263,7 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
                 .hideRulers(false) // if the editor rulers are displayed or hidden
                 .feedback(true)
                 .goback(goback)
+                .close(close)
                 .build();
 
         return customization;

@@ -124,6 +124,10 @@ public class FileModel {
                 .setBlank(user.getGoback().getBlank());
         }
 
+        if (user.getClose() != null) {
+            editorConfig.getCustomization().setClose(user.getClose());
+        }
+
         changeType(mode, type, user, fileName);
     }
 
@@ -566,6 +570,7 @@ public class FileModel {
         // customization parameters
         public class Customization {
             private Goback goback;
+            private Close close;
             private Boolean forcesave;
             private Boolean submitForm;
             private Boolean about;
@@ -576,16 +581,25 @@ public class FileModel {
                 this.submitForm = submitFormParam;
             }
 
+            public void setClose(final Close closeParam) {
+                this.close = closeParam;
+            }
+
             public Customization() {
                 about = true;
                 comments = true;
                 feedback = true;
                 forcesave = false;
                 goback = new Goback();
+                close = new Close();
             }
 
             public Goback getGoback() {
                 return goback;
+            }
+
+            public Close getClose() {
+                return close;
             }
 
             public Boolean getForcesave() {

@@ -288,6 +288,13 @@ namespace OnlineEditorsExample
                                                         { "text", user.goback.text },
                                                         { "blank", user.goback.blank }
                                                     } : new Dictionary<string, object>{}
+                                            },
+                                            {
+                                                "close", user.close != null ? new Dictionary<string, object>
+                                                    {
+                                                        { "visible", user.close.visible },
+                                                        { "text", user.close.text }
+                                                    } : new Dictionary<string, object>{}
                                             }
                                         }
                                 }
