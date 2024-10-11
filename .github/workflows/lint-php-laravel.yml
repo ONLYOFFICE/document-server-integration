@@ -1,0 +1,37 @@
+name: Laravel Pint
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, main]
+    paths: ['web/documentserver-example/php-laravel/**']
+  pull_request:
+    branches: [master, main, develop]
+    paths: ['web/documentserver-example/php-laravel/**']
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [8.2]
+    defaults:
+      run:
+        working-directory: ./web/documentserver-example/php-laravel
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json, dom, curl, libxml, mbstring
+          coverage: none
+
+      - name: Install Pint
+        run: composer global require laravel/pint
+          
+      - name: Run Pint
+        run: pint --test
