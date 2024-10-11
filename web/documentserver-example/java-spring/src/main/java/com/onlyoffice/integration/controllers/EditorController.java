@@ -20,19 +20,21 @@ package com.onlyoffice.integration.controllers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.onlyoffice.integration.documentserver.managers.jwt.JwtManager;
 import com.onlyoffice.integration.documentserver.models.enums.Action;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
-import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.dto.Mentions;
-import com.onlyoffice.integration.dto.UserInfo;
 import com.onlyoffice.integration.dto.Protect;
-import com.onlyoffice.integration.documentserver.models.enums.Type;
-import com.onlyoffice.integration.documentserver.models.filemodel.FileModel;
+import com.onlyoffice.integration.dto.UserInfo;
+import com.onlyoffice.integration.entities.User;
+import com.onlyoffice.integration.sdk.manager.UrlManager;
+import com.onlyoffice.integration.sdk.service.ConfigService;
 import com.onlyoffice.integration.services.UserServices;
-import com.onlyoffice.integration.services.configurers.FileConfigurer;
-import com.onlyoffice.integration.services.configurers.wrappers.DefaultFileWrapper;
+import com.onlyoffice.manager.security.JwtManager;
+import com.onlyoffice.manager.settings.SettingsManager;
+import com.onlyoffice.model.documenteditor.Config;
+import com.onlyoffice.model.documenteditor.config.document.Type;
 import lombok.SneakyThrows;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -56,12 +58,6 @@ import static com.onlyoffice.integration.documentserver.util.Constants.ANONYMOUS
 @Controller
 public class EditorController {
 
-    @Value("${files.docservice.url.site}")
-    private String docserviceSite;
-
-    @Value("${files.docservice.url.api}")
-    private String docserviceApiUrl;
-
     @Value("${files.docservice.languages}")
     private String langs;
 
@@ -78,7 +74,13 @@ public class EditorController {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private FileConfigurer<DefaultFileWrapper> fileConfigurer;
+    private SettingsManager settingsManager;
+
+    @Autowired
+    private ConfigService configService;
+
+    @Autowired
+    private UrlManager urlManager;
 
     @GetMapping(path = "${url.editor}")
     // process request to open the editor page
@@ -86,20 +88,18 @@ public class EditorController {
                         @RequestParam(value = "action", required = false) final String actionParam,
                         @RequestParam(value = "type", required = false) final String typeParam,
                         @RequestParam(value = "actionLink", required = false) final String actionLink,
-                        @RequestParam(value = "directUrl", required = false,
-                                defaultValue = "false") final Boolean directUrl,
                         @CookieValue(value = "uid") final String uid,
                         @CookieValue(value = "ulang") final String lang,
                         final Model model) throws JsonProcessingException {
-        Action action = Action.edit;
-        Type type = Type.desktop;
+        Action action = null;
+        Type type = Type.DESKTOP;
         Locale locale = new Locale("en");
 
         if (actionParam != null) {
             action = Action.valueOf(actionParam);
         }
         if (typeParam != null) {
-            type = Type.valueOf(typeParam);
+            type = Type.valueOf(typeParam.toUpperCase());
         }
 
         List<String> langsAndKeys = Arrays.asList(langs.split("\\|"));
@@ -118,39 +118,34 @@ public class EditorController {
             return "index.html";
         }
 
-        User user = optionalUser.get();
-        user.setImage(user.getAvatar() ? storagePathBuilder.getServerUrl(true) + "/css/img/uid-"
-                + user.getId() + ".png" : null);
-
-        // get file model with the default file parameters
-        FileModel fileModel = fileConfigurer.getFileModel(
-                DefaultFileWrapper
-                        .builder()
-                        .fileName(fileName)
-                        .type(type)
-                        .lang(locale.toLanguageTag())
-                        .action(action)
-                        .user(user)
-                        .actionData(actionLink)
-                        .isEnableDirectUrl(directUrl)
-                        .build()
+        Config config = configService.createConfig(
+                fileName,
+                action,
+                type
         );
 
-        // add attributes to the specified model
-        // add file model with the default parameters to the original model
-        model.addAttribute("model", fileModel);
+        JSONObject actionData = null;
+
+        if (actionLink != null && !actionLink.isEmpty()) {
+            actionData = new JSONObject(actionLink);
+        }
+
+        config.getEditorConfig().setActionLink(actionData);
+        config.getEditorConfig().setLang(locale.toLanguageTag());
+
+        model.addAttribute("model", config);
 
         // create the document service api URL and add it to the model
-        model.addAttribute("docserviceApiUrl", docserviceSite + docserviceApiUrl);
+        model.addAttribute("docserviceApiUrl", urlManager.getDocumentServerApiUrl());
 
         // get an image and add it to the model
-        model.addAttribute("dataInsertImage",  getInsertImage(directUrl));
+        model.addAttribute("dataInsertImage",  getInsertImage());
 
         // get a document for comparison and add it to the model
-        model.addAttribute("dataDocument",  getCompareFile(directUrl));
+        model.addAttribute("dataDocument",  getCompareFile());
 
         // get recipients data for mail merging and add it to the model
-        model.addAttribute("dataSpreadsheet", getSpreadsheet(directUrl));
+        model.addAttribute("dataSpreadsheet", getSpreadsheet());
 
         // get user data for mentions and add it to the model
         model.addAttribute("usersForMentions", getUserMentions(uid));
@@ -210,17 +205,13 @@ public class EditorController {
 
 
     @SneakyThrows
-    private String getInsertImage(final Boolean directUrl) {  // get an image that will be inserted into the document
+    private String getInsertImage() {  // get an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
-        dataInsertImage.put("fileType", "png");
-        dataInsertImage.put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.png");
-        if (directUrl) {
-            dataInsertImage.put("directUrl", storagePathBuilder
-                    .getServerUrl(false) + "/css/img/logo.png");
-        }
+        dataInsertImage.put("fileType", "svg");
+        dataInsertImage.put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.svg");
 
         // check if the document token is enabled
-        if (jwtManager.tokenEnabled()) {
+        if (settingsManager.isSecurityEnabled()) {
 
             // create token from the dataInsertImage object
             dataInsertImage.put("token", jwtManager.createToken(dataInsertImage));
@@ -232,17 +223,13 @@ public class EditorController {
 
     // get a document that will be compared with the current document
     @SneakyThrows
-    private String getCompareFile(final Boolean directUrl) {
+    private String getCompareFile() {
         Map<String, Object> dataDocument = new HashMap<>();
         dataDocument.put("fileType", "docx");
         dataDocument.put("url", storagePathBuilder.getServerUrl(true) + "/assets?name=sample.docx");
-        if (directUrl) {
-            dataDocument.put("directUrl", storagePathBuilder
-                    .getServerUrl(false) + "/assets?name=sample.docx");
-        }
 
         // check if the document token is enabled
-        if (jwtManager.tokenEnabled()) {
+        if (settingsManager.isSecurityEnabled()) {
 
             // create token from the dataDocument object
             dataDocument.put("token", jwtManager.createToken(dataDocument));
@@ -252,16 +239,13 @@ public class EditorController {
     }
 
     @SneakyThrows
-    private String getSpreadsheet(final Boolean directUrl) {
+    private String getSpreadsheet() {
         Map<String, Object> dataSpreadsheet = new HashMap<>();  // get recipients data for mail merging
         dataSpreadsheet.put("fileType", "csv");
         dataSpreadsheet.put("url", storagePathBuilder.getServerUrl(true) + "/csv");
-        if (directUrl) {
-            dataSpreadsheet.put("directUrl", storagePathBuilder.getServerUrl(false) + "/csv");
-        }
 
         // check if the document token is enabled
-        if (jwtManager.tokenEnabled()) {
+        if (settingsManager.isSecurityEnabled()) {
 
             // create token from the dataSpreadsheet object
             dataSpreadsheet.put("token", jwtManager.createToken(dataSpreadsheet));

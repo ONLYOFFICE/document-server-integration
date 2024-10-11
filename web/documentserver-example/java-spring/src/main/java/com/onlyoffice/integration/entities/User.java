@@ -47,4 +47,5 @@ public class User extends AbstractEntity {
     private List<String> descriptions;
     private Boolean avatar;
     private String image;
+    private Goback goback;
 }

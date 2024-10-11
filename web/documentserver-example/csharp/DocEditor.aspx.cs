@@ -135,14 +135,14 @@ namespace OnlineEditorsExample
             {
                 // create demo document of a specified file type
                 Try(type, Request["sample"], Request);
-                Response.Redirect("doceditor.aspx?fileID=" + HttpUtility.UrlEncode(FileName));
+                Response.Redirect("doceditor.aspx?editorsMode=edit&fileID=" + HttpUtility.UrlEncode(FileName));
             }
 
             // get file extension
             var ext = Path.GetExtension(FileName).ToLower();
-
+            var canFill = _Default.FillFormsExts.Contains(ext);
             // get editor mode or set the default one (edit)
-            var editorsMode = Request.GetOrDefault("editorsMode", "edit");
+            var editorsMode = Request.GetOrDefault("editorsMode", canFill ? "fillForms" : "edit");
 
             var canEdit = _Default.EditedExts.Contains(ext);  // check if this file can be edited
             var editorsType = Request.GetOrDefault("editorsType", "desktop");
@@ -150,11 +150,11 @@ namespace OnlineEditorsExample
             var id = Request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
             
-            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && _Default.FillFormsExts.Contains(ext)) {
+            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && canFill) {
                 editorsMode = "fillForms";
                 canEdit = true;
             }            
-            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1");  // check if the Submit form button is displayed or hidden
+            var submitForm = (editorsMode.Equals("fillForms") || editorsMode.Equals("embedded")) && user.id.Equals("uid-1");  // check if the Submit form button is displayed or hidden
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // get the editor opening mode (edit or view)
 
             var jss = new JavaScriptSerializer();
@@ -282,10 +282,12 @@ namespace OnlineEditorsExample
                                             { "forcesave", false },  // adds the request for the forced file saving to the callback handler
                                             { "submitForm", submitForm },  // if the Submit form button is displayed or not
                                             {
-                                                "goback", new Dictionary<string, object>  // settings for the Open file location menu button and upper right corner button
+                                                "goback", user.goback != null ? new Dictionary<string, object>  // settings for the Open file location menu button and upper right corner button
                                                     {
-                                                        { "url", _Default.GetServerUrl(false) + "default.aspx" }  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
-                                                    }
+                                                        { "url", _Default.GetServerUrl(false) + "default.aspx" }, // the absolute URL to the website address which will be opened when clicking the Open file location menu button
+                                                        { "text", user.goback.text },
+                                                        { "blank", user.goback.blank }
+                                                    } : new Dictionary<string, object>{}
                                             }
                                         }
                                 }
@@ -338,17 +340,17 @@ namespace OnlineEditorsExample
             var InsertImageUrl = new UriBuilder(_Default.GetServerUrl(true));
             InsertImageUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                + "App_Themes\\images\\logo.png";
+                + "App_Themes\\images\\logo.svg";
 
             var DirectImageUrl = new UriBuilder(_Default.GetServerUrl(false));
             DirectImageUrl.Path = HttpRuntime.AppDomainAppVirtualPath
                 + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                + "App_Themes\\images\\logo.png";
+                + "App_Themes\\images\\logo.svg";
 
             // create a logo config
             Dictionary<string, object> logoConfig = new Dictionary<string, object>
                 {
-                    { "fileType", "png"},
+                    { "fileType", "svg"},
                     { "url", InsertImageUrl.ToString()}
                 };
 
@@ -487,8 +489,8 @@ namespace OnlineEditorsExample
                 case "slide":
                     ext = ".pptx";  // .pptx for slide document type
                     break;
-                case "docxf":
-                    ext = ".docxf";
+                case "pdf":
+                    ext = ".pdf";
                     break;
                 default:
                     return;

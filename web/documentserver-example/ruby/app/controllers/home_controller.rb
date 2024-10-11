@@ -46,12 +46,50 @@ class HomeController < ApplicationController
     )
   end
 
+  def forgotten
+    unless HomeController.config_manager.enable_forgotten
+      render(status: :forbidden, plain: '{"error": "The forgotten page is disabled"}')
+      return
+    end
+
+    @files = []
+    begin
+      files_list = TrackHelper.command_request('getForgottenList', '')
+      (files_list['keys']).each do |key|
+        file = TrackHelper.command_request('getForgotten', key)
+        public_uri = HomeController.config_manager.document_server_public_uri.to_s
+        private_uri = HomeController.config_manager.document_server_private_uri.to_s
+        if file['url'].include?(private_uri)
+          file['url'].gsub!(private_uri, public_uri)
+        end
+        file['type'] = FileUtility.get_file_type(file['url'])
+        @files.push(file)
+      end
+    rescue StandardError => e
+      Rails.logger.error(e.message)
+    end
+  end
+
+  def delete_forgotten
+    unless HomeController.config_manager.enable_forgotten
+      render(status: :forbidden)
+      return
+    end
+
+    if params[:filename].present?
+      TrackHelper.command_request('deleteForgotten', params[:filename])
+    end
+    render(status: :no_content)
+  rescue StandardError
+    render(plain: '{"error": "Server error"}')
+  end
+
   # creating a sample document
   def sample
     DocumentHelper.init(request.remote_ip, request.base_url)
     user = Users.get_user(params[:userId])
     file_name = DocumentHelper.create_demo(params[:fileExt], params[:sample], user)
-    redirect_to(controller: 'home', action: 'editor', fileName: file_name, userId: user.id)
+    redirect_to(controller: 'home', action: 'editor', fileName: file_name, userId: user.id, editorsMode: 'edit')
   end
 
   # uploading a file
@@ -102,14 +140,15 @@ class HomeController < ApplicationController
     file_pass = body['filePass'] || nil
     file_uri = DocumentHelper.get_download_url(file_name)
     extension = File.extname(file_name).downcase
-    internal_extension = 'ooxml'
+    # get an auto-conversion extension from the request body or set it to the ooxml extension
+    conversion_extension = body['fileExt'] || 'ooxml'
 
     if DocumentHelper.convert_exts.include?(extension) # check if the file with such an extension can be converted
       key = ServiceConverter.generate_revision_id(file_uri) # generate document key
       percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(
         file_uri,
         extension.delete('.'),
-        internal_extension.delete('.'),
+        conversion_extension.delete('.'),
         key,
         true,
         file_pass,
@@ -251,24 +290,31 @@ class HomeController < ApplicationController
 
   # removing a file
   def remove
-    file_name = File.basename(params[:filename]) # get the file name
-    unless file_name # if it doesn't exist
-      render(plain: '{"success":false}') # report that the operation is unsuccessful
-      return
-    end
-
     DocumentHelper.init(request.remote_ip, request.base_url)
-    storage_path = DocumentHelper.storage_path(file_name, nil)
-    hist_dir = DocumentHelper.history_dir(storage_path)
 
-    # if the file exists
-    FileUtils.rm_f(storage_path) # delete it from the storage path
+    if params[:filename].present?
+      file_name = File.basename(params[:filename]) # get the file name
+      unless file_name # if it doesn't exist
+        render(plain: '{"success":false}') # report that the operation is unsuccessful
+        return
+      end
 
-    # if the history directory of this file exists
-    FileUtils.rm_rf(hist_dir) # delete it
+      storage_path = DocumentHelper.storage_path(file_name, nil)
+      hist_dir = DocumentHelper.history_dir(storage_path)
 
+      # if the file exists
+      FileUtils.rm_f(storage_path) # delete it from the storage path
+
+      # if the history directory of this file exists
+      FileUtils.rm_rf(hist_dir) # delete it
+    else
+      storage_path = DocumentHelper.storage_path('', nil)
+      FileUtils.rm_rf(storage_path) # remove the user's directory and all the containing files
+    end
     render(plain: '{"success":true}') # report that the operation is successful
     nil
+  rescue StandardError
+    render(plain: '{"error": "Server error"}')
   end
 
   # getting files information
@@ -537,6 +583,17 @@ class HomeController < ApplicationController
         error: e.message,
         success: false
       }
+    )
+  end
+
+  # return all supported formats
+  def formats
+    render(
+      json: JSON.generate(
+        {
+          formats: FormatManager.new.all.map(&:serialize)
+        }
+      )
     )
   end
 end

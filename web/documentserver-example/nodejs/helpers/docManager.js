@@ -51,7 +51,7 @@ DocManager.prototype.createDirectory = function createDirectory(directory) {
 
 // get the language from the request
 DocManager.prototype.getLang = function getLang() {
-  if (/^[a-z]{2}(-[A-z]{4})?(-[A-Z]{2})?$/.test(this.req.query.lang)) {
+  if (/^[a-z]{2}(-[a-zA-z]{4})?(-[A-Z]{2})?$/.test(this.req.query.lang)) {
     return this.req.query.lang;
   } // the default language value is English
   return 'en';
@@ -86,7 +86,8 @@ DocManager.prototype.getCustomParams = function getCustomParams() {
 DocManager.prototype.getCorrectName = function getCorrectName(fileName, userAddress) {
   // get file name from the url without extension
   const maxName = configServer.get('maxNameLength');
-  const baseName = fileUtility.getFileName(fileName, true).substr(0, maxName)
+  let baseName = fileUtility.getFileName(fileName, true);
+  baseName = baseName.replace(/[/\\?%*:|"<>]/g, '_').substr(0, maxName)
     + (fileName.length > maxName ? '[...]' : '');
   const ext = fileUtility.getFileExtension(fileName); // get file extension from the url
   let name = baseName + ext; // get full file name
@@ -464,8 +465,12 @@ DocManager.prototype.getHistoryObject = function getHistoryObject(fileName, user
     for (let i = 1; i <= countVersion; i++) { // get keys to all the file versions
       if (i < countVersion) {
         const keyPath = this.keyPath(fileName, userAddress, i);
-        if (!fileSystem.existsSync(keyPath)) continue;
-        keyVersion = `${fileSystem.readFileSync(keyPath)}`;
+        if (!fileSystem.existsSync(keyPath)) {
+          keyVersion = userAddress + fileName + Date.now();
+          keyVersion = documentService.generateRevisionId(keyVersion);
+        } else {
+          keyVersion = `${fileSystem.readFileSync(keyPath)}`;
+        }
       } else {
         keyVersion = key;
       }

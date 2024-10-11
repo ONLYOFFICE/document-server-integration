@@ -108,7 +108,7 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
-            if (event.data.favorite) {
+            if (event.data.favorite !== undefined) {
                 var favorite = !!event.data.favorite;
                 var title = document.title.replace(/^\☆/g, "");
                 document.title = (favorite ? "☆" : "") + title;
@@ -259,6 +259,48 @@
             }
         }
 
+        <% string usersForMentions; %>
+        <% Model.GetUsersMentions(Request, out usersForMentions); %>
+        <% string usersInfo; %>
+        <% Model.GetUsersInfo(Request, out usersInfo); %>
+        <% string usersForProtect; %>
+        <% Model.GetUsersProtect(Request, out usersForProtect); %>
+
+        var onRequestUsers = function (event) {
+            if (event && event.data){
+                var c = event.data.c;
+            }
+            switch (c) {
+                case "info":
+                    users = [];
+                    var allUsers = <%= usersInfo %>;
+                    for (var i = 0; i < event.data.id.length; i++) {
+                        for (var j = 0; j < allUsers.length; j++) {
+                            if (allUsers[j].id == event.data.id[i]) {
+                                users.push(allUsers[j]);
+                                break;
+                            }
+                        }
+                    }
+                    break;
+                case "protect":
+                    var users = <%= usersForProtect %>;
+                    break;
+                default:
+                    users = <%= usersForMentions %>;
+            }
+            docEditor.setUsers({
+                "c": c,
+                "users": users,
+            });
+        };
+
+        var onRequestSendNotify = function (event) {
+            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+            var data = JSON.stringify(event.data);
+            innerAlert("onRequestSendNotify: " + data);
+        };
+
         config = <%= Model.GetDocConfig(Request, Url) %>;
 
         config.width = "100%";
@@ -276,63 +318,28 @@
             "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
         };
 
-        <% string usersForMentions; %>
-        <% Model.GetUsersMentions(Request, out usersForMentions); %>
-        <% string usersInfo; %>
-        <% Model.GetUsersInfo(Request, out usersInfo); %>
-        <% string usersForProtect; %>
-        <% Model.GetUsersProtect(Request, out usersForProtect); %>
-
         if (config.editorConfig.user.id) {
             // the user is trying to show the document version history
             config.events['onRequestHistory'] = onRequestHistory;
             // the user is trying to click the specific document version in the document version history
             config.events['onRequestHistoryData'] = onRequestHistoryData;
             // the user is trying to go back to the document from viewing the document version history
-            config.events['onRequestHistoryClose'] = function () {
-                document.location.reload();
-            };
-            config.events['onRequestRestore'] = onRequestRestore;
+            if (config.editorConfig.user.id !== "uid-3") {
+                config.events['onRequestHistoryClose'] = function () {
+                    document.location.reload();
+                };
+                config.events['onRequestRestore'] = onRequestRestore;
+            }
 
             // add mentions for not anonymous users
             <% if (!string.IsNullOrEmpty(usersForMentions))
             { %>
-                config.events['onRequestUsers'] = function (event) {
-                    if (event && event.data){
-                        var c = event.data.c;
-                    }
-                    switch (c) {
-                        case "info":
-                            users = [];
-                            var allUsers = <%= usersInfo %>;
-                            for (var i = 0; i < event.data.id.length; i++) {
-                                for (var j = 0; j < allUsers.length; j++) {
-                                    if (allUsers[j].id == event.data.id[i]) {
-                                        users.push(allUsers[j]);
-                                        break;
-                                    }
-                                }
-                            }
-                            break;
-                        case "protect":
-                            var users = <%= usersForProtect %>;
-                            break;
-                        default:
-                            users = <%= usersForMentions %>;
-                    }
-                    docEditor.setUsers({
-                        "c": c,
-                        "users": users,
-                    });
-                };
+                config.events['onRequestUsers'] = onRequestUsers;
             <% } %>
 
+            config.events['onRequestSaveAs'] = onRequestSaveAs;
             // the user is mentioned in a comment
-            config.events['onRequestSendNotify'] = function (event) {
-                event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-                var data = JSON.stringify(event.data);
-                innerAlert("onRequestSendNotify: " + data);
-            };
+            config.events['onRequestSendNotify'] = onRequestSendNotify;
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
             config.events['onRequestReferenceData'] = onRequestReferenceData;
@@ -341,17 +348,7 @@
             config.events['onRequestOpen'] = onRequestOpen;
         }
 
-        if (config.editorConfig.createUrl) {
-            config.events.onRequestSaveAs = onRequestSaveAs;
-        };
-
         var сonnectEditor = function () {
-            if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
-                && DocsAPI.DocEditor.version().split(".")[0] < 7) {
-                innerAlert("Please update ONLYOFFICE Docs to version 7.0 to work on fillable forms online.");
-                return;
-            }
-
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 

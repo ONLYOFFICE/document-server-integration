@@ -45,11 +45,23 @@
 <body>
     <form id="form1" runat="server">
         <header>
-            <div class="center">
-                <a href="">
+            <div class="center main-nav">
+                <a href="./">
                     <img src ="app_themes/images/logo.svg" alt="ONLYOFFICE" />
                 </a>
             </div>
+            <menu class="responsive-nav">
+                <li>
+                  <a href="#" onclick="toggleSidePanel(event)">
+                    <img src="app_themes/images/mobile-menu.svg" alt="ONLYOFFICE" />
+                  </a>
+                </li>
+                <li>
+                  <a href="./">
+                    <img src ="app_themes/images/mobile-logo.svg" alt="ONLYOFFICE" />
+                  </a>
+                </li>
+            </menu>
         </header>
         <div class="center main">
             <table class="table-main">
@@ -71,7 +83,7 @@
                                                 <a class="try-editor slide" data-type="slide">Presentation</a>
                                             </li>
                                             <li>
-                                                <a class="try-editor form" data-type="docxf">PDF form</a>
+                                                <a class="try-editor form" data-type="pdf">PDF form</a>
                                             </li>
                                         </ul>
                                         <label class="side-option">
@@ -124,10 +136,25 @@
                                     </tbody>
                                 </table>
                             </div>
+                            <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                                <img src="app_themes/images/close.svg" alt="">
+                            </button>
                         </td>
                         <td class="section">
                         <% var storedFiles = GetStoredFiles(); %>
                             <div class="main-panel">
+                                <menu class="links">
+                                    <li class="home-link active" >
+                                      <a href="./">
+                                        <img src="app_themes/images/home.svg" alt="Home"/>
+                                      </a>
+                                    </li>
+                                    <% if (bool.Parse(WebConfigurationManager.AppSettings["enable-forgotten"])) { %>
+                                        <li>
+                                            <a href="/Forgotten.aspx">Forgotten files</a>
+                                        </li>
+                                    <% } %>
+                                </menu>
                                 <div id="portal-info" style="display: <%= storedFiles.Any() ? "none" : "table-cell" %>">
                                     <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                     <span class="portal-descr">
@@ -138,7 +165,7 @@
                                     <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                     <% foreach (User user in Users.getAllUsers())
                                       { %>
-                                      <div class="user-descr">
+                                      <div class="user-descr" onclick="toggleUserDescr(event)">
                                        <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
                                            <ul>
                                            <% foreach (string description in user.descriptions)
@@ -153,7 +180,14 @@
                                 if (storedFiles.Any())
                                 { %>
                                     <div class="stored-list">
-                                        <span class="header-list">Your documents</span>
+                                        <div class="storedHeader">
+                                            <div class="storedHeaderText">
+                                                <span class="header-list">Your documents</span>
+                                            </div>
+                                            <div class="storedHeaderClearAll">
+                                                <div class="clear-all">Clear all</div>
+                                            </div>
+                                        </div>
                                         <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
                                             <thead>
                                                 <tr >
@@ -195,11 +229,13 @@
                                                                         <img src="app_themes/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                     </a>
                                                                 </td>
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="<%= editUrl + "&editorsType=desktop&editorsMode=comment" %>" target="_blank">
-                                                                         <img src="app_themes/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
-                                                                    </a>
-                                                                </td>
+                                                                <% if (docType != "pdf") { %>
+                                                                    <td class="contentCells contentCells-icon">
+                                                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=comment" %>" target="_blank">
+                                                                            <img src="app_themes/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                        </a>
+                                                                    </td>
+                                                                <% } %>
                                                                 <% if (docType == "word") { %>
                                                                     <td class="contentCells contentCells-icon">
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=review" %>" target="_blank">
@@ -297,6 +333,15 @@
                 <div class="describeUpload">After these steps are completed, you can work with your document.</div>
                 <span id="step1" class="step">1. Loading the file.</span>
                 <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+                <div id="select-file-type" class="invisible">
+                    <br />
+                    <span class="step">Please select the current document type</span>
+                    <div class="buttonsMobile indent">
+                        <div class="button file-type document" data="docx">Document</div>
+                        <div class="button file-type spreadsheet" data="xlsx">Spreadsheet</div>
+                        <div class="button file-type presentation" data="pptx">Presentation</div>
+                    </div>
+                </div>
                 <br />
                 <span id="step2" class="step">2. Conversion.</span>
                 <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
@@ -364,12 +409,8 @@
     <script language="javascript" type="text/javascript" src="script/jquery.iframe-transport.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery.fileupload.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery.dropdownToggle.js"></script>
+    <script language="javascript" type="text/javascript" src="script/formats.js"></script>
     <script language="javascript" type="text/javascript" src="script/jscript.js"></script>
-    <script language="javascript" type="text/javascript">
-        var FillFormExtList = '<%= string.Join(",", FillFormsExts.ToArray()) %>';
-        var ConverExtList = '<%= string.Join(",", ConvertExts.ToArray()) %>';
-        var EditedExtList = '<%= string.Join(",", EditedExts.ToArray()) %>';
-    </script>
 
 </body>
 </html>

@@ -116,6 +116,7 @@
     <Compile Include="Helpers\Utils.cs" />
     <Compile Include="Models\FileModel.cs" />
     <Compile Include="Models\FileUtility.cs" />
+    <Compile Include="Models\ForgottenFilesModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WebEditor.ashx.cs">
       <DependentUpon>WebEditor.ashx</DependentUpon>
@@ -123,6 +124,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\editor.css" />
+    <Content Include="Content\forgotten.css" />
     <Content Include="Content\images\block-content.svg" />
     <Content Include="Content\images\cell.ico" />
     <Content Include="Content\images\close.svg" />
@@ -140,18 +142,20 @@
     <Content Include="Content\images\file_xlsx.svg" />
     <Content Include="Content\images\fill-forms.svg" />
     <Content Include="Content\images\filter.svg" />
+    <Content Include="Content\images\home.svg" />
     <Content Include="Content\images\icon_docx.svg" />
     <Content Include="Content\images\icon_pptx.svg" />
     <Content Include="Content\images\icon_xlsx.svg" />
     <Content Include="Content\images\info.svg" />
     <Content Include="Content\images\loader16.gif" />
-    <Content Include="Content\images\logo.png" />
     <Content Include="Content\images\logo.svg" />
     <Content Include="Content\images\mobile-fill-forms.svg" />
     <Content Include="Content\images\mobile.svg" />
     <Content Include="Content\images\notdone.svg" />
     <Content Include="Content\images\review.svg" />
     <Content Include="Content\images\slide.ico" />
+    <Content Include="Content\images\uid-1.png" />
+    <Content Include="Content\images\uid-2.png" />
     <Content Include="Content\images\word.ico" />
     <Content Include="Content\jquery-ui.css" />
     <Content Include="Content\media.css" />
@@ -159,6 +163,10 @@
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="LICENSE" />
+    <Content Include="Scripts\forgotten.js" />
+    <Content Include="Scripts\formats.js" />
+    <Content Include="Scripts\jquery-3.6.4.js" />
+    <Content Include="Scripts\jquery-migrate-3.4.1.js" />
     <Content Include="Scripts\jquery-ui.js" />
     <Content Include="Scripts\jquery.blockUI.js" />
     <Content Include="Scripts\jquery.dropdownToggle.js" />
@@ -166,17 +174,13 @@
     <Content Include="Scripts\jquery.iframe-transport.js" />
     <Content Include="Scripts\jscript.js" />
     <Content Include="Views\Home\Editor.aspx" />
+    <Content Include="Views\Home\Forgotten.aspx" />
     <Content Include="Views\Home\Index.aspx" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
     <Content Include="Views\Web.config" />
     <Content Include="Views\Shared\Error.aspx" />
-    <Content Include="licenses\EntityFramework.license" />
-    <Content Include="licenses\Microsoft.Web.Infrastructure.license" />
-    <Content Include="licenses\Newtonsoft.Json.license" />
-    <Content Include="licenses\jquery.license" />
-    <Content Include="licenses\WebGrease.license" />
     <Content Include="web.appsettings.config" />
     <Content Include="WebEditor.ashx" />
   </ItemGroup>

@@ -29,6 +29,7 @@ import helpers.FileUtility;
 import helpers.ServiceConverter;
 import helpers.TrackManager;
 import helpers.Users;
+import format.FormatManager;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -138,6 +139,9 @@ public class IndexServlet extends HttpServlet {
                 break;
             case "historydata":
                 historyData(request, response, writer);
+                break;
+            case "formats":
+                formats(request, response, writer);
                 break;
             default:
                 break;
@@ -283,7 +287,8 @@ public class IndexServlet extends HttpServlet {
             String fileUri = DocumentManager.getDownloadUrl(fileName, true);
             String fileExt = FileUtility.getFileExtension(fileName);
             FileType fileType = FileUtility.getFileType(fileName);
-            String internalFileExt = "ooxml";
+            // get an auto-conversion extension from the request body or set it to the ooxml extension
+            String conversionExtension = body.get("fileExt") != null ? (String) body.get("fileExt") : "ooxml";
 
             // check if the file with such an extension can be converted
             if (DocumentManager.getConvertExts().contains(fileExt)) {
@@ -292,7 +297,7 @@ public class IndexServlet extends HttpServlet {
 
                 // get the url and file type to the converted file
                 Map<String, String> newFileData = ServiceConverter
-                        .getConvertedData(fileUri, fileExt, internalFileExt, key, filePass, true, lang);
+                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang);
                 String newFileUri = newFileData.get("fileUrl");
                 String newFileType = "." + newFileData.get("fileType");
 
@@ -416,17 +421,23 @@ public class IndexServlet extends HttpServlet {
                                final HttpServletResponse response,
                                final PrintWriter writer) {
         try {
-            String fileName = FileUtility.getFileName(request.getParameter("filename"));
-            String path = DocumentManager.storagePath(fileName, null);
+            String fileName = request.getParameter("filename");
+            if (fileName != null && !fileName.isEmpty()) {
+                fileName = FileUtility.getFileName(fileName);
+                String path = DocumentManager.storagePath(fileName, null);
 
-            // delete file
-            File f = new File(path);
-            delete(f);
+                // delete file
+                File f = new File(path);
+                delete(f);
 
-            // delete file history
-            File hist = new File(DocumentManager.historyDir(path));
-            delete(hist);
-
+                // delete file history
+                File hist = new File(DocumentManager.historyDir(path));
+                delete(hist);
+            } else {
+                // delete the user's folder and all the containing files
+                File userFolder = new File(DocumentManager.storagePath(null, null));
+                delete(userFolder);
+            }
             writer.write("{ \"success\": true }");
         } catch (Exception e) {
             writer.write("{ \"error\": \"" + e.getMessage() + "\"}");
@@ -1037,6 +1048,16 @@ public class IndexServlet extends HttpServlet {
             return;
         }
         writer.write("{}");
+    }
+
+    private static void formats(final HttpServletRequest request,
+                                final HttpServletResponse response,
+                                final PrintWriter writer) {
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("formats", (new FormatManager()).getFormats());
+        response.setContentType("application/json");
+        Gson gson = new Gson();
+        writer.write(gson.toJson(data));
     }
 
     // process get request

@@ -37,6 +37,7 @@ const users = require('./helpers/users');
 
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl');
+const enableForgotten = configServer.get('enableForgotten');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : '';
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
@@ -93,19 +94,91 @@ app.get('/', (req, res) => { // define a handler for default page
 
     res.render('index', { // render index template with the parameters specified
       preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-      convertExts: fileUtility.getConvertExtensions(),
-      editedExts: fileUtility.getEditExtensions(),
       fillExts: fileUtility.getFillExtensions(),
       storedFiles: req.DocManager.getStoredFiles(),
       params: req.DocManager.getCustomParams(),
       users,
       languages: configServer.get('languages'),
       serverVersion: config.get('version'),
+      enableForgotten,
     });
   } catch (ex) {
     console.log(ex); // display error message in the console
     res.status(500); // write status parameter to the response
     res.render('error', { message: 'Server error' }); // render error template with the message parameter specified
+  }
+});
+
+app.get('/forgotten', async (req, res) => {
+  if (!enableForgotten) {
+    res.status(403);
+    res.render(
+      'error',
+      { message: 'The forgotten page is disabled.' },
+    );
+    return;
+  }
+
+  let forgottenFiles = [];
+
+  function getForgottenList() {
+    return new Promise((resolve, reject) => {
+      documentService.commandRequest('getForgottenList', '', (err, data, ress) => {
+        if (err) {
+          reject(err);
+        } else {
+          resolve(JSON.parse(ress.data));
+        }
+      });
+    });
+  }
+
+  function getForgottenFile(key) {
+    return new Promise((resolve, reject) => {
+      documentService.commandRequest('getForgotten', key, (err, data) => {
+        if (err) {
+          reject(err);
+        } else {
+          const parsedData = JSON.parse(data);
+          resolve({
+            name: parsedData.key,
+            documentType: fileUtility.getFileType(parsedData.url),
+            url: parsedData.url,
+          });
+        }
+      });
+    });
+  }
+
+  try {
+    const forgottenListResponse = await getForgottenList();
+
+    const { keys } = forgottenListResponse;
+    forgottenFiles = await Promise.all(keys.map(getForgottenFile));
+  } catch (error) {
+    console.error(error);
+  }
+
+  req.DocManager = new DocManager(req, res);
+  res.render('forgotten', { forgottenFiles });
+});
+
+app.delete('/forgotten', (req, res) => { // define a handler for removing forgotten file
+  if (!enableForgotten) {
+    res.sendStatus(403);
+    return;
+  }
+
+  try {
+    const fileName = req.query.filename;
+    if (fileName && typeof fileName === 'string') { // if the forgotten file name is defined
+      documentService.commandRequest('deleteForgotten', fileName);
+      res.status(204).send();
+    }
+  } catch (ex) {
+    console.log(ex);
+    res.write('Server error');
+    res.status(500).send();
   }
 });
 
@@ -213,7 +286,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    const file = files.uploadedFile;
+    const file = files.uploadedFile[0];
 
     if (file === undefined) { // if file parameter is undefined
       res.writeHead(200, { 'Content-Type': 'text/plain' }); // write the error status and message to the response
@@ -222,7 +295,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    file.name = req.DocManager.getCorrectName(file.name);
+    file.originalFilename = req.DocManager.getCorrectName(file.originalFilename);
 
     // check if the file size exceeds the maximum file size
     if (configServer.get('maxFileSize') < file.size || file.size <= 0) {
@@ -234,10 +307,10 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     }
 
     const exts = fileUtility.getSuppotredExtensions(); // all the supported file extensions
-    const curExt = fileUtility.getFileExtension(file.name, true);
-    const documentType = fileUtility.getFileType(file.name);
+    const curExt = fileUtility.getFileExtension(file.originalFilename, true);
+    const documentType = fileUtility.getFileType(file.originalFilename);
 
-    if (exts.indexOf(curExt) === -1) { // check if the file extension is supported
+    if (exts.indexOf(curExt) === -1 || fileUtility.getFormatActions(curExt).length === 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' }); // and write the error status and message to the response
       res.write('{ "error": "File type is not supported"}');
@@ -245,19 +318,19 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    fileSystem.rename(file.path, `${uploadDir}/${file.name}`, (error) => { // rename a file
+    fileSystem.rename(file.filepath, `${uploadDir}/${file.originalFilename}`, (error) => { // rename a file
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       if (error) { // if an error occurs
         res.write(`{ "error": "${error}"}`); // write an error message to the response
       } else {
         // otherwise, write a new file name to the response
-        res.write(`{ "filename": "${file.name}", "documentType": "${documentType}" }`);
+        res.write(`{ "filename": "${file.originalFilename}", "documentType": "${documentType}" }`);
 
         // get user id and name parameters or set them to the default values
         const user = users.getUser(req.query.userid);
 
-        req.DocManager.saveFileData(file.name, user.id, user.name);
+        req.DocManager.saveFileData(file.originalFilename, user.id, user.name);
       }
       res.end();
     });
@@ -300,7 +373,7 @@ app.post('/create', (req, res) => {
       const exts = fileUtility.getSuppotredExtensions(); // all the supported file extensions
       const curExt = fileUtility.getFileExtension(fileName, true);
 
-      if (exts.indexOf(curExt) === -1) { // check if the file extension is supported
+      if (exts.indexOf(curExt) === -1 || fileUtility.getFormatActions(curExt).length === 0) {
         // and write the error status and message to the response
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.write(JSON.stringify({ error: 'File type is not supported' }));
@@ -333,6 +406,8 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   const fileUri = req.DocManager.getDownloadUrl(fileName, true);
   const fileExt = fileUtility.getFileExtension(fileName, true);
   const internalFileExt = 'ooxml';
+  const convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
+  const { keepOriginal } = req.body;
   const response = res;
 
   const writeResult = function writeResult(filename, step, error) {
@@ -380,38 +455,50 @@ app.post('/convert', (req, res) => { // define a handler for converting files
       if (status !== 200) throw new Error(`Conversion service returned status: ${status}`);
 
       // write a file with a new extension, but with the content from the origin file
-      fileSystem.writeFileSync(req.DocManager.storagePath(correctName), data);
-      fileSystem.unlinkSync(req.DocManager.storagePath(fileName)); // remove file with the origin extension
+      if (fileUtility.getFileType(correctName) !== null) {
+        fileSystem.writeFileSync(req.DocManager.storagePath(correctName), data);
+      } else {
+        writeResult(newFileUri.replace('http://localhost', siteUrl), result, 'FileTypeIsNotSupported');
+        return;
+      }
+      // remove file with the origin extension
+      if (!keepOriginal) fileSystem.unlinkSync(req.DocManager.storagePath(fileName));
 
       const userAddress = req.DocManager.curUserHostAddress();
       const historyPath = req.DocManager.historyPath(fileName, userAddress, true);
       // get the history path to the file with a new extension
       const correctHistoryPath = req.DocManager.historyPath(correctName, userAddress, true);
 
-      fileSystem.renameSync(historyPath, correctHistoryPath); // change the previous history path
+      if (!keepOriginal) {
+        fileSystem.renameSync(historyPath, correctHistoryPath); // change the previous history path
 
-      fileSystem.renameSync(
-        path.join(correctHistoryPath, `${fileName}.txt`),
-        path.join(correctHistoryPath, `${correctName}.txt`),
-      ); // change the name of the .txt file with document information
+        fileSystem.renameSync(
+          path.join(correctHistoryPath, `${fileName}.txt`),
+          path.join(correctHistoryPath, `${correctName}.txt`),
+        ); // change the name of the .txt file with document information
+      } else if (newFileType !== null) {
+        const user = users.getUser(req.query.userid);
+
+        req.DocManager.saveFileData(correctName, user.id, user.name);
+      }
 
       writeResult(correctName, result, null); // write a file with a new name to the result object
     } catch (e) {
-      console.log(e); // display error message in the console
+      if (!e.message.includes('-9')) console.log(e); // display error message in the console
       writeResult(null, null, e.message);
     }
   };
 
   try {
     // check if the file with such an extension can be converted
-    if (fileUtility.getConvertExtensions().indexOf(fileExt) !== -1) {
+    if ((fileUtility.getConvertExtensions().indexOf(fileExt) !== -1) || ('fileExt' in req.body)) {
       const storagePath = req.DocManager.storagePath(fileName);
       const stat = fileSystem.statSync(storagePath);
       let key = fileUri + stat.mtime.getTime();
 
       key = documentService.generateRevisionId(key); // get document key
       // get the url to the converted file
-      documentService.getConvertedUri(fileUri, fileExt, internalFileExt, key, true, callback, filePass, lang);
+      documentService.getConvertedUri(fileUri, fileExt, convExt, key, true, callback, filePass, lang);
     } else {
       // if the file with such an extension can't be converted, write the origin file to the result object
       writeResult(fileName, null, null);
@@ -497,18 +584,25 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
   const { referenceData } = req.body;
   let fileName = '';
-  let userAddress = '';
   if (referenceData) {
     const { instanceId } = referenceData;
 
     if (instanceId === req.DocManager.getInstanceId()) {
       const fileKey = JSON.parse(referenceData.fileKey);
-      ({ userAddress } = fileKey);
+      const { userAddress } = fileKey;
 
       if (userAddress === req.DocManager.curUserHostAddress()
-                && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName, userAddress))) {
+                && req.DocManager.existsSync(req.DocManager.storagePath(fileKey.fileName))) {
         ({ fileName } = fileKey);
       }
+    }
+  }
+
+  if (!fileName && !!req.body.path) {
+    const filePath = fileUtility.getFileName(req.body.path);
+
+    if (req.DocManager.existsSync(req.DocManager.storagePath(filePath))) {
+      fileName = filePath;
     }
   }
 
@@ -523,17 +617,9 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
 
     const urlObj = urlModule.parse(req.body.link, true);
     fileName = urlObj.query.fileName;
-    if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
+    if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName))) {
       result({ error: 'File is not exist' });
       return;
-    }
-  }
-
-  if (!fileName && !!req.body.path) {
-    const filePath = fileUtility.getFileName(req.body.path);
-
-    if (req.DocManager.existsSync(req.DocManager.storagePath(filePath, userAddress))) {
-      fileName = filePath;
     }
   }
 
@@ -618,6 +704,13 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       newFileName,
     ) {
       try {
+        if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
+          console.log(`callbackProcessSave error: name = ${fileName} userAddress = ${userAddress} is not exist`);
+          response.write('{"error":1, "message":"file is not exist"}');
+          response.end();
+          return;
+        }
+
         const { status, data } = await urllib.request(downloadUri, { method: 'GET' });
 
         if (status !== 200) throw new Error(`Document editing service returned status: ${status}`);
@@ -643,7 +736,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           const zip = await urllib.request(downloadZip, { method: 'GET' });
           const statusZip = zip.status;
           const dataZip = zip.data;
-          if (status === 200) {
+          if (statusZip === 200) {
             fileSystem.writeFileSync(pathChanges, dataZip); // write the document version differences to the archive
           } else {
             emitWarning(`Document editing service returned status: ${statusZip}`);
@@ -674,7 +767,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         }
       } catch (ex) {
         console.log(ex);
-        response.write('{"error":1}');
+        response.write(`{"error":1,"message":${JSON.stringify(ex)}}`);
         response.end();
         return;
       }
@@ -686,7 +779,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     // file saving process
     const processSave = async function processSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
-        response.write('{"error":1}');
+        response.write('{"error":1,"message":"save uri is empty"}');
         response.end();
         return;
       }
@@ -797,7 +890,8 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           }
         }
       } catch (ex) {
-        response.write('{"error":1}');
+        console.log(ex);
+        response.write(`{"error":1,"message":${JSON.stringify(ex)}}`);
         response.end();
         return;
       }
@@ -809,7 +903,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     // file force saving process
     const processForceSave = async function processForceSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
-        response.write('{"error":1}');
+        response.write('{"error":1,"message":"forcesave uri is empty"}');
         response.end();
         return;
       }
@@ -901,7 +995,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       }
     }
     if (!body) {
-      res.write('{"error":1}');
+      res.write('{"error":1,"message":"body is empty"}');
       res.end();
       return;
     }
@@ -920,14 +1014,26 @@ app.get('/editor', (req, res) => { // define a handler for editing document
   try {
     req.DocManager = new DocManager(req, res);
 
-    const fileName = fileUtility.getFileName(req.query.fileName);
     let { fileExt } = req.query;
-    const lang = req.DocManager.getLang();
     const user = users.getUser(req.query.userid);
-    const userDirectUrl = req.query.directUrl === 'true';
-
     const userid = user.id;
     const { name } = user;
+
+    if (fileExt) {
+      fileExt = fileUtility.getFileExtension(fileUtility.getFileName(fileExt), true);
+      // create demo document of a given extension
+      const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
+
+      // get the redirect path
+      const redirectPath = `${req.DocManager.getServerUrl()}/editor?mode=edit&fileName=`
+      + `${encodeURIComponent(fName)}${req.DocManager.getCustomParams()}`;
+      res.redirect(redirectPath);
+      return;
+    }
+
+    const fileName = fileUtility.getFileName(req.query.fileName);
+    const lang = req.DocManager.getLang();
+    const userDirectUrl = req.query.directUrl === 'true';
 
     let actionData = 'null';
     if (req.query.action) {
@@ -970,25 +1076,21 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const { userInfoGroups } = user;
 
     const usersInfo = [];
+    const usersForProtect = [];
     if (user.id !== 'uid-0') {
       users.getAllUsers().forEach((userInfo) => {
         const u = userInfo;
         u.image = userInfo.avatar ? `${req.DocManager.getServerUrl()}/images/${userInfo.id}.png` : null;
         usersInfo.push(u);
       }, usersInfo);
+
+      users.getUsersForProtect(user.id).forEach((userInfo) => {
+        const u = userInfo;
+        u.image = userInfo.avatar ? `${req.DocManager.getServerUrl()}/images/${userInfo.id}.png` : null;
+        usersForProtect.push(u);
+      }, usersForProtect);
     }
 
-    if (fileExt) {
-      fileExt = fileUtility.getFileExtension(fileUtility.getFileName(fileExt), true);
-      // create demo document of a given extension
-      const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
-
-      // get the redirect path
-      const redirectPath = `${req.DocManager.getServerUrl()}/editor?mode=edit&fileName=`
-      + `${encodeURIComponent(fName)}${req.DocManager.getCustomParams()}`;
-      res.redirect(redirectPath);
-      return;
-    }
     fileExt = fileUtility.getFileExtension(fileName);
 
     const userAddress = req.DocManager.curUserHostAddress();
@@ -1017,6 +1119,10 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     let submitForm = false;
     if (mode === 'fillForms' || mode === 'embedded') {
       submitForm = userid === 'uid-1';
+    }
+
+    if (user.goback != null) {
+      user.goback.url = `${req.DocManager.getServerUrl()}`;
     }
 
     // file config data
@@ -1052,7 +1158,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         print: !user.deniedPermissions.includes('print'),
         mode: mode !== 'view' ? 'edit' : 'view',
         canBackToFolder: type !== 'embedded',
-        backUrl: `${req.DocManager.getServerUrl()}/`,
         curUserHostAddress: req.DocManager.curUserHostAddress(),
         lang,
         userid: userid !== 'uid-0' ? userid : null,
@@ -1070,12 +1175,13 @@ app.get('/editor', (req, res) => { // define a handler for editing document
           ? JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }) : null,
         instanceId: userid !== 'uid-0' ? req.DocManager.getInstanceId() : null,
         protect: !user.deniedPermissions.includes('protect'),
+        goback: user.goback != null ? user.goback : '',
         close: user.close,
       },
       dataInsertImage: {
-        fileType: 'png',
-        url: `${req.DocManager.getServerUrl(true)}/images/logo.png`,
-        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.png`,
+        fileType: 'svg',
+        url: `${req.DocManager.getServerUrl(true)}/images/logo.svg`,
+        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.svg`,
       },
       dataDocument: {
         fileType: 'docx',
@@ -1090,7 +1196,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/csv`,
       },
       usersForMentions: user.id !== 'uid-0' ? users.getUsersForMentions(user.id) : null,
-      usersForProtect: user.id !== 'uid-0' ? users.getUsersForProtect(user.id) : null,
+      usersForProtect,
       usersInfo,
     };
 
@@ -1172,6 +1278,19 @@ app.post('/historyObj', (req, res) => {
   res.writeHead(200, { 'Content-Type': 'application/json' });
   res.write(JSON.stringify(historyObj));
   res.end();
+});
+
+app.get('/formats', (req, res) => {
+  try {
+    const formats = fileUtility.getFormats();
+    res.json({
+      formats,
+    });
+  } catch (ex) {
+    console.log(ex); // display error message in the console
+    res.status(500); // write status parameter to the response
+    res.render('error', { message: 'Server error' }); // render error template with the message parameter specified
+  }
 });
 
 wopiApp.registerRoutes(app);

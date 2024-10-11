@@ -69,6 +69,9 @@ namespace OnlineEditorsExample
                 case "remove":
                     Remove(context);
                     break;
+                case "removeforgotten":
+                    RemoveForgotten(context);
+                    break;
                 case "assets":
                     Assets(context);
                     break;
@@ -86,6 +89,9 @@ namespace OnlineEditorsExample
                     break;
                 case "reference":
                     Reference(context);
+                    break;
+                case "formats":
+                    Formats(context);
                     break;
             }
         }
@@ -222,12 +228,22 @@ namespace OnlineEditorsExample
             context.Response.ContentType = "text/plain";
             try
             {
-                var fileName = Path.GetFileName(context.Request["fileName"]);
-                var path = _Default.StoragePath(fileName, HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress)));
-                var histDir = _Default.HistoryDir(path);
+                string fileName = context.Request["fileName"];
+                string userAddress = HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
 
-                if (File.Exists(path)) File.Delete(path);  // delete file
-                if (Directory.Exists(histDir)) Directory.Delete(histDir, true);  // delete file history
+                if (!String.IsNullOrEmpty(fileName))
+                {
+                    fileName = Path.GetFileName(fileName);
+                    var path = _Default.StoragePath(fileName, userAddress);
+                    var histDir = _Default.HistoryDir(path);
+
+                    if (File.Exists(path)) File.Delete(path);  // delete file
+                    if (Directory.Exists(histDir)) Directory.Delete(histDir, true);  // delete file history
+                } else
+                {
+                    string userDir = _Default.StoragePath("", userAddress);
+                    if (Directory.Exists(userDir)) Directory.Delete(userDir, true);  // delete the user's directory
+                }
 
                 context.Response.Write("{ \"success\": true }");
             }
@@ -777,6 +793,51 @@ namespace OnlineEditorsExample
                 + "&ver=" + version + "&file=" + file
                 + userAddress;
             return fileUrl.ToString();
+        }
+
+        // return all the supported formats
+        private static void Formats(HttpContext context)
+        {
+            try
+            {
+                Dictionary<string, object> data = new Dictionary<string, object>
+                {
+                    { "formats", FormatManager.All() }
+                };
+                context.Response.ContentType = "application/json";
+                var jss = new JavaScriptSerializer();
+
+                context.Response.Write(jss.Serialize(data));
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
+
+        // delete a forgotten file from the document server
+        private static void RemoveForgotten(HttpContext context)
+        {
+            try
+            {
+                if (!bool.Parse(WebConfigurationManager.AppSettings["enable-forgotten"]))
+                {
+                    throw new HttpException(403, "The forgotten page is disabled");
+                }
+
+                string filename = context.Request["filename"];
+
+                if (!String.IsNullOrEmpty(filename))
+                {
+                    TrackManager.commandRequest("deleteForgotten", filename);
+                }
+
+                context.Response.StatusCode = 204;
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
         }
     }
 }

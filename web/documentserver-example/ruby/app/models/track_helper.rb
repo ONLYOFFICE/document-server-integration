@@ -294,7 +294,6 @@ class TrackHelper
 
     payload.merge!({ meta: }) unless meta.nil?
 
-    data = nil
     begin
       uri = URI.parse(@document_command_url) # parse the document command url
       http = Net::HTTP.new(uri.host, uri.port) # create a connection to the http server
@@ -314,11 +313,13 @@ class TrackHelper
       req.body = payload.to_json # convert the payload object into the json format
       res = http.request(req) # get the response
       data = res.body # and take its body
+      result = JSON.parse(data) # convert the response body into the json format
+      raise("Command service error: #{result['error']}") if [4, 0].exclude?(result['error'])
     rescue StandardError => e
       raise(e.message)
     end
 
-    JSON.parse(data) # convert the response body into the json format
+    result
   end
 
   # save file from the url

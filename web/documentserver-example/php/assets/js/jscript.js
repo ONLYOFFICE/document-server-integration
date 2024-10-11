@@ -17,6 +17,27 @@
  */
 
 var directUrl;
+var formatManager;
+
+window.onload = function () {
+    fetch('formats')
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.formats) {
+                let formats = [];
+                JSON.parse(data.formats).forEach(format => {
+                    formats.push(new Format(
+                        format.name,
+                        format.type,
+                        format.actions,
+                        format.convert,
+                        format.mime
+                    ));
+                });
+                formatManager = new FormatManager(formats);
+            }
+        })
+}
 
 if (typeof jQuery != "undefined") {
     jq = jQuery.noConflict();
@@ -97,7 +118,7 @@ if (typeof jQuery != "undefined") {
     });
 
     var timer = null;
-    var checkConvert = function (fileUri, filePass) {
+    var checkConvert = function (fileUri, filePass, fileExt) {
 		filePass = filePass ? filePass : null;
         if (timer != null) {
             clearTimeout(timer);
@@ -111,7 +132,7 @@ if (typeof jQuery != "undefined") {
         var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        if (ConverExtList.indexOf(posExt) == -1) {
+        if (!formatManager.isAutoConvertible(posExt)) {
             jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
@@ -132,7 +153,7 @@ if (typeof jQuery != "undefined") {
                 contentType: "text/xml",
                 type: "post",
                 dataType: "json",
-                data: JSON.stringify({filename : fileName, fileUri : fileUri || "", filePass: filePass}),
+                data: JSON.stringify({filename: fileName, fileUri: fileUri || "", filePass: filePass, fileExt: fileExt}),
                 url: requestAddress,
                 complete: function (data) {
                     var responseText = data.responseText;
@@ -153,6 +174,12 @@ if (typeof jQuery != "undefined") {
                             }
                             return;
                         } else {
+                            if (response.error.includes("Error conversion output format")){
+                                jq("#select-file-type").removeClass("invisible");
+                                jq("#step2").removeClass("current");
+                                jq("#hiddenFileName").attr("placeholder",filePass);
+                                return;
+                            }
                             jq(".current").removeClass("current");
                             jq(".step:not(.done)").addClass("error");
                             jq("#mainProgress .error-message").show().find("span").text(response.error);
@@ -164,7 +191,7 @@ if (typeof jQuery != "undefined") {
                     jq("#hiddenFileName").val(response.filename);
 
                     if (response.step < 100) {
-                        checkConvert(response.fileUri, filePass);
+                        checkConvert(response.fileUri, filePass, fileExt);
                     } else {
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
@@ -202,7 +229,7 @@ if (typeof jQuery != "undefined") {
         var posExt = fileName.lastIndexOf('.') + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : '';
 
-        if (EditedExtList.indexOf(posExt) != -1 || FillFormsExtList.indexOf(posExt) != -1) {
+        if (formatManager.isEditable(posExt) || formatManager.isFillable(posExt)) {
             jq("#beginEdit").removeClass("disable");
         }
     };
@@ -227,6 +254,15 @@ if (typeof jQuery != "undefined") {
             setCookie("ulang", langSel.val());
         });
     };
+
+    jq(document).on("click", ".file-type:not(.disable)", function () {
+        const currentElement = jq(this);
+        var fileExt = currentElement.attr("data");
+        var filePass = jq("#hiddenFileName").attr("placeholder");
+        jq('.file-type').addClass(["disable", "pale"]);
+        currentElement.removeClass("pale");
+        checkConvert(null, filePass, fileExt);
+    });
 
     jq(document).on("click", "#enterPass", function () {
         var filePass = jq("#filePass").val();
@@ -308,6 +344,22 @@ if (typeof jQuery != "undefined") {
                 document.location.reload(true);
             }
         });
+    });
+
+    jq(document).on("click", ".clear-all", function () {
+        if (confirm("Delete all the files?")) {
+            jq.ajax({
+                async: true,
+                contentType: "text/xml",
+                type: "delete",
+                url: "delete",
+                complete: function (data) {
+                    if (JSON.parse(data.responseText).status == 'success') {
+                        window.location.reload(true);
+                    }
+                }
+            });
+        }
     });
 
     jq(document).on("click", "#createSample", function () {
@@ -398,3 +450,26 @@ function getUrlVars() {
     }
     return vars;
 };
+
+function toggleSidePanel(event) {
+    event.preventDefault();
+    let sidePanel = document.querySelector(".left-panel");
+    let body = document.querySelector("body");
+    if (sidePanel.classList.contains("active")) {
+        sidePanel.classList.remove("active");
+        body.classList.remove("menu-open");
+    } else {
+        sidePanel.classList.add("active")
+        body.classList.add("menu-open");
+    }
+}
+
+function toggleUserDescr(event) {
+    let list = event.currentTarget.querySelector("ul");
+    let cursor = window.getComputedStyle(event.currentTarget).getPropertyValue("cursor");
+
+    if (cursor === "pointer") {
+        if (list.classList.contains("active")) list.classList.remove("active");
+        else list.classList.add("active");
+    }
+}

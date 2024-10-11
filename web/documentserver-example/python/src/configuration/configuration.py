@@ -22,7 +22,7 @@ from src.common import string
 
 
 class ConfigurationManager:
-    version = '1.9.0'
+    version = '1.10.0'
 
     def getVersion(self) -> str:
         return self.version
@@ -36,7 +36,7 @@ class ConfigurationManager:
     def document_server_public_url(self) -> ParseResult:
         url = (
             environ.get('DOCUMENT_SERVER_PUBLIC_URL') or
-            'http://document-server'
+            'http://documentserver'
         )
         return urlparse(url)
 
@@ -120,6 +120,9 @@ class ConfigurationManager:
         if timeout:
             return int(timeout)
         return 120 * 1000
+
+    def enable_forgotten(self) -> bool:
+        return environ.get('ENABLE_FORGOTTEN', True)
 
     def languages(self) -> dict[str, str]:
         return {

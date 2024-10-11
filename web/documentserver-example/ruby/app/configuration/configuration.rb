@@ -31,7 +31,7 @@ class ConfigurationManager
 
   sig { void }
   def initialize
-    @version = '1.9.0'
+    @version = '1.10.0'
   end
 
   sig { returns(T.nilable(URI::Generic)) }
@@ -44,7 +44,7 @@ class ConfigurationManager
 
   sig { returns(URI::Generic) }
   def document_server_public_uri
-    url = ENV['DOCUMENT_SERVER_PUBLIC_URL'] || 'http://document-server'
+    url = ENV['DOCUMENT_SERVER_PUBLIC_URL'] || 'http://documentserver'
     URI(url)
   end
 
@@ -112,6 +112,14 @@ class ConfigurationManager
     return ActiveModel::Type::Boolean.new.cast(env) if env
 
     false
+  end
+
+  sig { returns(T::Boolean) }
+  def enable_forgotten
+    env = ENV.fetch('ENABLE_FORGOTTEN', nil)
+    return ActiveModel::Type::Boolean.new.cast(env) if env
+
+    true
   end
 
   sig { returns(Pathname) }

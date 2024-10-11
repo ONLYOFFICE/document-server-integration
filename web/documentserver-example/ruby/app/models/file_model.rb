@@ -99,14 +99,14 @@ class FileModel
 
   # get config parameters
   def config
-    editors_mode = @mode || 'edit' # mode: view/edit/review/comment/fillForms/embedded
+    can_fill = DocumentHelper.fill_forms_exts.include?(file_ext) # check if the document can be filled
+    editors_mode = @mode || (can_fill ? 'fillForms' : 'edit') # mode: view/edit/review/comment/fillForms/embedded
     can_edit = DocumentHelper.edited_exts.include?(file_ext) # check if the document can be edited
-    if ((!can_edit && editors_mode.eql?('edit')) || editors_mode.eql?('fillForms')) &&
-       DocumentHelper.fill_forms_exts.include?(file_ext)
+    if ((!can_edit && editors_mode.eql?('edit')) || editors_mode.eql?('fillForms')) && can_fill
       editors_mode = 'fillForms'
       can_edit = true
     end
-    submit_form = editors_mode.eql?('fillForms') && @user.id.eql?('uid-1') # the Submit form button state
+    submit_form = ['fillForms', 'embedded'].include?(editors_mode) && @user.id.eql?('uid-1') # Submit form button state
     mode = can_edit && !editors_mode.eql?('view') ? 'edit' : 'view'
     # templates image url in the "From Template" section
     templates_image_url = DocumentHelper.get_template_image_url(document_type)
@@ -122,6 +122,9 @@ class FileModel
         url: "#{create_url}&sample=true"
       }
     ]
+    unless @user.goback.nil?
+      @user.goback[:url] = DocumentHelper.get_server_url(false)
+    end
 
     config = {
       type:,
@@ -197,9 +200,7 @@ class FileModel
           feedback: true, # the Feedback & Support menu button display
           forcesave: false, # adding the request for the forced file saving to the callback handler
           submitForm: submit_form, # the Submit form button state
-          goback: {
-            url: DocumentHelper.get_server_url(false)
-          }
+          goback: @user.goback.nil? ? '' : @user.goback
         }
       }
     }
@@ -303,19 +304,19 @@ class FileModel
           prev = hist_data[(i - 2).to_s] # get the history data from the previous file version
           # write key and url information about previous file version with optional direct url
           data_obj['previous'] = if enable_direct_url? == true
-                              { # write key and url information about previous file version with optional directUrl
-                                fileType: prev['fileType'],
-                                key: prev['key'],
-                                url: prev['url'],
-                                directUrl: prev['directUrl']
-                              }
-                            else
-                              {
-                                fileType: prev['fileType'],
-                                key: prev['key'],
-                                url: prev['url']
-                              }
-                            end
+                                   { # write key and url information about previous file version with optional directUrl
+                                     fileType: prev['fileType'],
+                                     key: prev['key'],
+                                     url: prev['url'],
+                                     directUrl: prev['directUrl']
+                                   }
+                                 else
+                                   {
+                                     fileType: prev['fileType'],
+                                     key: prev['key'],
+                                     url: prev['url']
+                                   }
+                                 end
 
           diff_path = [hist_dir, (i - 1).to_s, 'diff.zip'].join(File::SEPARATOR)
           if File.exist?(diff_path)
@@ -352,14 +353,14 @@ class FileModel
     # direct url to the image
     insert_image = if enable_direct_url? == true
                      {
-                       fileType: 'png', # image file type
-                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.png", # server url to the image
-                       directUrl: "#{DocumentHelper.get_server_url(false)}/assets/logo.png" # direct url to the image
+                       fileType: 'svg', # image file type
+                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.svg", # server url to the image
+                       directUrl: "#{DocumentHelper.get_server_url(false)}/assets/logo.svg" # direct url to the image
                      }
                    else
                      {
-                       fileType: 'png', # image file type
-                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.png" # server url to the image
+                       fileType: 'svg', # image file type
+                       url: "#{DocumentHelper.get_server_url(true)}/assets/logo.svg" # server url to the image
                      }
                    end
 

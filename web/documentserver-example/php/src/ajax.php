@@ -61,7 +61,7 @@ function saveas()
         $formatManager = new FormatManager();
 
         $post = json_decode(file_get_contents('php://input'), true);
-        $fileurl = $post["url"];
+        $fileurl = str_replace("//localhost", "//proxy", $post["url"]);
         $title = $post["title"];
         $extension = mb_strtolower(pathinfo($title, PATHINFO_EXTENSION));
         $allexts = $formatManager->allExtensions();
@@ -228,6 +228,7 @@ function convert()
     $lang = $_COOKIE["ulang"] ?? "";
     $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = "ooxml";
+    $conversionExtension = $post['fileExt'] ?? $internalExtension;
 
     // check if the file with such an extension can be converted
     if (in_array($extension, $formatManager->convertibleExtensions()) &&
@@ -245,7 +246,7 @@ function convert()
             $convertedData = getConvertedData(
                 $fileUri,
                 $extension,
-                $internalExtension,
+                $conversionExtension,
                 $key,
                 true,
                 $newFileUri,
@@ -299,14 +300,38 @@ function convert()
 function delete()
 {
     try {
-        $fileName = basename($_GET["fileName"]);
+        if (isset($_GET["fileName"]) && !empty($_GET["fileName"])) {
+            $fileName = basename($_GET["fileName"]);
+            $filePath = getStoragePath($fileName);
 
-        $filePath = getStoragePath($fileName);
-
-        unlink($filePath);  // delete a file
-        delTree(getHistoryDir($filePath));  // delete all the elements from the history directory
+            unlink($filePath);  // delete a file
+            delTree(getHistoryDir($filePath));  // delete all the elements from the history directory
+        } else {
+            delTree(getStoragePath('')); // delete the user's folder and all the containing files
+        }
     } catch (Exception $e) {
         sendlog("Deletion ".$e->getMessage(), "webedior-ajax.log");
+        $result["error"] = "error: " . $e->getMessage();
+        return $result;
+    }
+}
+
+/**
+ * Delete a forgotten file from the document server
+ *
+ * @return array|void
+ */
+function deleteForgotten()
+{
+    try {
+        $filename = isset($_GET["filename"]) && !empty($_GET["filename"])
+            ? $_GET["filename"] : null;
+        if ($filename) {
+            commandRequest('deleteForgotten', $filename);
+            http_response_code(204);
+        }
+    } catch (Exception $e) {
+        sendlog("Delete Forgotten File ".$e->getMessage(), "webedior-ajax.log");
         $result["error"] = "error: " . $e->getMessage();
         return $result;
     }
@@ -322,7 +347,7 @@ function files()
     try {
         @header("Content-Type", "application/json");
 
-        $fileId = $_GET["fileId"];
+        $fileId = isset($_GET["fileId"]) && !empty($_GET["fileId"]) ? $_GET["fileId"] : null;
         $result = getFileInfo($fileId);
 
         return $result;
@@ -652,6 +677,22 @@ function restore()
         return [
             'error' => $message,
             'success' => false
+        ];
+    }
+}
+
+function formats()
+{
+    try {
+        $formatManager = new FormatManager();
+        $formats = $formatManager->all();
+
+        return [
+            'formats' => json_encode($formats)
+        ];
+    } catch (Exception $error) {
+        return [
+            'error' => 'Server error'
         ];
     }
 }

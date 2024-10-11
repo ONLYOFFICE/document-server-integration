@@ -21,6 +21,6 @@ package com.onlyoffice.integration.documentserver.managers.history;
 // specify the history manager functions
 public interface HistoryManager {
     String getHistory(String fileName);  // get document history
-
-    String getHistoryData(String fileName, String version, Boolean directUrl); // get document history data
+    String getHistoryData(String fileName, String version); // get document history data
+    String versionDir(String path, Integer version, boolean historyPath);
 }

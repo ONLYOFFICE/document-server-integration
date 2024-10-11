@@ -58,7 +58,9 @@ namespace OnlineEditorsExample
             "Can’t print the file",
             "Can create new files from the editor",
             "Can see the information about Group2 users",
-            "Can’t submit forms"
+            "Can’t submit forms",
+            "Can't close history",
+            "Can't restore the file version"
         };
 
         static List<string> descr_user_0 = new List<string>()
@@ -91,7 +93,8 @@ namespace OnlineEditorsExample
                     new List<string>(),
                     descr_user_1,
                     true,
-                    true
+                    true,
+                    new Goback(null, false)
                 ),
             new User(
                     "uid-2",
@@ -110,7 +113,8 @@ namespace OnlineEditorsExample
                     new List<string>(),
                     descr_user_2,
                     false,
-                    true
+                    true,
+                    new Goback("Go to Documents",null)
                 ),
             new User(
                     "uid-3",
@@ -129,7 +133,8 @@ namespace OnlineEditorsExample
                     new List<string>() { "copy", "download", "print" },
                     descr_user_3,
                     false,
-                    false
+                    false,
+                    null
                 ),
             new User(
                     "uid-0",
@@ -143,7 +148,8 @@ namespace OnlineEditorsExample
                     new List<string>() { "protect" },
                     descr_user_0,
                     false,
-                    false
+                    false,
+                    null
                 )
         };
 
@@ -235,8 +241,9 @@ namespace OnlineEditorsExample
         public bool templates;
         public List<string> userInfoGroups;
         public bool avatar;
+        public Goback goback;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates, bool avatar)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates, bool avatar, Goback goback)
         {
             this.id = id;
             this.name = name;
@@ -250,6 +257,21 @@ namespace OnlineEditorsExample
             this.templates = templates;
             this.userInfoGroups = userInfoGroups;
             this.avatar = avatar;
+            this.goback = goback;
+        }
+    }
+
+    public class Goback
+    {
+        public string text;
+        public bool? blank;
+
+        public Goback(){}
+
+        public Goback(string text, bool? blank)
+        {
+            this.text = text;
+            this.blank = blank;
         }
     }
 }

@@ -192,8 +192,12 @@ public final class TrackManager {
             ver.mkdirs();
         }
 
-        // get the path to the previous file version and rename the last file version with it
-        lastVersion.renameTo(new File(versionDir + File.separator + "prev." + curExt));
+        if (lastVersion.exists()) {
+            // get the path to the previous file version and rename the last file version with it
+            lastVersion.renameTo(new File(versionDir + File.separator + "prev." + curExt));
+        } else {
+            throw new Exception("The file not exist: " + lastVersion.getAbsolutePath());
+        }
 
         saveFile(byteArrayFile, toSave); // save document file
 
@@ -390,7 +394,9 @@ public final class TrackManager {
     }
 
     // create a command request
-    public static void commandRequest(final String method, final String key, final HashMap meta) throws Exception {
+    public static JSONObject commandRequest(final String method,
+                                            final String key,
+                                            final HashMap meta) throws Exception {
         String documentCommandUrl = ConfigManager.getProperty("files.docservice.url.site") + ConfigManager
                 .getProperty("files.docservice.url.command");
 
@@ -448,5 +454,6 @@ public final class TrackManager {
         if (!response.get("error").toString().equals("0")) {
             throw new Exception(response.toJSONString());
         }
+        return response;
     }
 }

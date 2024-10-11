@@ -41,11 +41,23 @@
 </head>
 <body>
     <header>
-        <div class="center">
-            <a href="">
+        <div class="center main-nav">
+            <a href="./">
                 <img src ="content/images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
+        <menu class="responsive-nav">
+            <li>
+              <a href="#" onclick="toggleSidePanel(event)">
+                <img src="content/images/mobile-menu.svg" alt="ONLYOFFICE" />
+              </a>
+            </li>
+            <li>
+              <a href="./">
+                <img src ="content/images/mobile-logo.svg" alt="ONLYOFFICE" />
+              </a>
+            </li>
+        </menu>
     </header>
 
     <div class="center main">
@@ -68,7 +80,7 @@
                                             <a class="try-editor slide" data-type="pptx">Presentation</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor form" data-type="docxf">PDF form</a>
+                                            <a class="try-editor form" data-type="pdf">PDF form</a>
                                         </li>
                                     </ul>
                                     <label class="side-option">
@@ -122,9 +134,24 @@
                                 </tbody>
                             </table>
                         </div>
+                        <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                            <img src="content/images/close.svg" alt="">
+                        </button>
                     </td>
                     <td class="section">
                         <div class="main-panel">
+                            <menu class="links">
+                                <li class="home-link active" >
+                                  <a href="./">
+                                    <img src="content/images/home.svg" alt="Home"/>
+                                  </a>
+                                </li>
+                                <% if (bool.Parse(WebConfigurationManager.AppSettings["enable-forgotten"])) { %>
+                                    <li>
+                                        <a href="/Forgotten">Forgotten files</a>
+                                    </li>
+                                <% } %>
+                            </menu>
                             <% var storedFiles = DocManagerHelper.GetStoredFiles(); %>
                             <div id="portal-info"  style="display: <%= storedFiles.Any() ? "none" : "table-cell" %>">
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
@@ -136,7 +163,7 @@
                                 <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                 <% foreach (User user in Users.getAllUsers())
                                   { %>
-                                  <div class="user-descr">
+                                  <div class="user-descr" onclick="toggleUserDescr(event)">
                                    <b><%= user.name.IsEmpty() ? "Anonymous" : user.name %></b>
                                        <ul>
                                        <% foreach (string description in user.descriptions)
@@ -151,7 +178,14 @@
                                 if (storedFiles.Any())
                                 { %>
                                 <div class="stored-list">
-                                    <span class="header-list">Your documents</span>
+                                    <div class="storedHeader">
+                                        <div class="storedHeaderText">
+                                            <span class="header-list">Your documents</span>
+                                        </div>
+                                        <div class="storedHeaderClearAll">
+                                            <div class="clear-all">Clear all</div>
+                                        </div>
+                                    </div>
                                     <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
                                         <thead>
                                             <tr>
@@ -193,11 +227,13 @@
                                                                             <img src="content/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                         </a>
                                                                     </td>
-                                                                    <td class="contentCells contentCells-icon">
-                                                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "comment", directUrl = isEnabledDirectUrl }) %>" target="_blank">
-                                                                            <img src="content/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
-                                                                        </a>
-                                                                    </td>
+                                                                    <% if (docType != "pdf") { %>
+                                                                        <td class="contentCells contentCells-icon">
+                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "comment", directUrl = isEnabledDirectUrl }) %>" target="_blank">
+                                                                                <img src="content/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                            </a>
+                                                                        </td>
+                                                                    <% } %>
                                                                     <% if (docType == "word") { %>
                                                                         <td class="contentCells contentCells-icon">
                                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review", directUrl = isEnabledDirectUrl }) %>" target="_blank">
@@ -295,6 +331,15 @@
             <div class="describeUpload">After these steps are completed, you can work with your document.</div>
             <span id="step1" class="step">1. Loading the file.</span>
             <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+            <div id="select-file-type" class="invisible">
+                <br />
+                <span class="step">Please select the current document type</span>
+                <div class="buttonsMobile indent">
+                    <div class="button file-type document" data="docx">Document</div>
+                    <div class="button file-type spreadsheet" data="xlsx">Spreadsheet</div>
+                    <div class="button file-type presentation" data="pptx">Presentation</div>
+                </div>
+            </div>
             <br />
             <span id="step2" class="step">2. Conversion.</span>
             <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
@@ -357,9 +402,6 @@
     <%: Scripts.Render("~/bundles/jquery", "~/bundles/scripts") %>
 
     <script language="javascript" type="text/javascript">
-        var FillExtList = '<%= string.Join(",", DocManagerHelper.FillFormExts.ToArray()) %>';
-        var ConverExtList = '<%= string.Join(",", DocManagerHelper.ConvertExts.ToArray()) %>';
-        var EditedExtList = '<%= string.Join(",", DocManagerHelper.EditedExts.ToArray()) %>';
         var UrlConverter = '<%= Url.Content("~/webeditor.ashx?type=convert") %>';
         var UrlEditor = '<%= Url.Action("editor", "Home") %>';
     </script>

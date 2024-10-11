@@ -42,9 +42,7 @@
         "close": <%- JSON.stringify(editor.close) %>,
         "feedback": true,
         "forcesave": false,
-        "goback": {
-            "url": "<%- editor.backUrl %>"
-        },
+        "goback": <%- JSON.stringify(editor.goback) %>,
         "submitForm": <%- editor.submitForm %>
     },
     "embedded": {

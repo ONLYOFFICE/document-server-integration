@@ -18,11 +18,23 @@
 <body>
 <form id="form1">
     <header>
-        <div class="center">
-            <a href="">
+        <div class="center main-nav">
+            <a href="./">
                 <img src ="assets/images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
+        <menu class="responsive-nav">
+            <li>
+                <a href="#" onclick="toggleSidePanel(event)">
+                    <img src ="assets/images/mobile-menu.svg" alt="ONLYOFFICE" />
+                </a>
+            </li>
+            <li>
+                <a href="./">
+                    <img src ="assets/images/mobile-logo.svg" alt="ONLYOFFICE" />
+                </a>
+            </li>
+        </menu>
     </header>
     <div class="center main">
         <table class="table-main">
@@ -48,7 +60,7 @@
                                     </li>
                                     <li>
                                         <a class="try-editor form reload-page" target="_blank"
-                                           href="editor?fileExt=docxf&user={user}">PDF form</a>
+                                           href="editor?fileExt=pdf&user={user}">PDF form</a>
                                     </li>
                                 </ul>
                                 <label class="side-option">
@@ -100,9 +112,20 @@
                             </table>
                         </div>
                     </div>
+                    <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                        <img src="assets/images/close.svg" alt="">
+                    </button>
                 </td>
                 <td class="section">
                     <div class="main-panel">
+                        <menu class="links">
+                            <li class="home-link active" >
+                                <a href="./">
+                                    <img src="assets/images/home.svg" alt="Home"/>
+                            </a>
+                            </li>
+                            {forgottenLink}
+                        </menu>
                         <div id="portal-info" style="display: {portalInfoDisplay}">
                             <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                             <span class="portal-descr">
@@ -140,6 +163,15 @@
             <span id="step1" class="step">1. Loading the file.</span>
             <span class="step-descr">The loading speed depends on file size
                         and additional elements it contains.</span>
+            <div id="select-file-type" class="invisible">
+                <br />
+                <span class="step">Please select the current document type</span>
+                <div class="buttonsMobile indent">
+                    <div class="button file-type document" data="docx">Document</div>
+                    <div class="button file-type spreadsheet" data="xlsx">Spreadsheet</div>
+                    <div class="button file-type presentation" data="pptx">Presentation</div>
+                </div>
+            </div>
             <br />
             <span id="step2" class="step">2. Conversion.</span>
             <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
@@ -211,11 +243,7 @@
 <script type="text/javascript" src="assets/js/jquery.iframe-transport.js"></script>
 <script type="text/javascript" src="assets/js/jquery.fileupload.js"></script>
 <script type="text/javascript" src="assets/js/jquery.dropdownToggle.js"></script>
+<script type="text/javascript" src="assets/js/formats.js"></script>
 <script type="text/javascript" src="assets/js/jscript.js"></script>
-<script type="text/javascript">
-    var FillFormsExtList = '{fillFormsExtList}';
-    var ConverExtList = '{converExtList}';
-    var EditedExtList = '{editedExtList}';
-</script>
 </body>
 </html>

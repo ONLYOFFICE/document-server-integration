@@ -41,7 +41,7 @@ final class ConfigurationManagerDocumentServerPrivateURLTests extends TestCase
     {
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerPrivateURL();
-        $this->assertEquals('http://document-server', $url->string());
+        $this->assertEquals('http://documentserver', $url->string());
     }
 
     public function testAssignsAValueFromTheEnvironment()

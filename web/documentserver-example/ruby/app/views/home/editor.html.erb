@@ -89,7 +89,7 @@
 
     // the meta information of the document is changed via the meta command
     var onMetaChange = function (event) {
-        if (event.data.favorite) {
+        if (event.data.favorite !== undefined) {
                 var favorite = !!event.data.favorite;
                 var title = document.title.replace(/^\☆/g, "");
                 document.title = (favorite ? "☆" : "") + title;
@@ -195,6 +195,43 @@
 
     };
 
+    var onRequestUsers = function (event) {
+        if (event && event.data) {
+            var c = event.data.c;
+        }    
+
+        switch (c) {
+            case "protect":
+                var users = <%= raw @file.users_protect.to_json %>;
+                break;
+            case "info":
+                users = [];
+                var allUsers = <%= raw @file.users_info.to_json %>;
+                for (var i = 0; i < event.data.id.length; i++) {
+                    for (var j = 0; j < allUsers.length; j++) {
+                        if (allUsers[j].id == event.data.id[i]) {
+                            users.push(allUsers[j]);
+                            break;
+                        }
+                    }
+                }
+                break;
+            default:
+                users = <%= raw @file.users_mentions.to_json %>;
+        }
+
+        docEditor.setUsers({
+            "c": c,
+            "users": users,
+        });
+    };
+
+    var onRequestSendNotify = function(event) {  // the user is mentioned in a comment
+            event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
+            var data = JSON.stringify(event.data);
+            innerAlert("onRequestSendNotify: " + data);
+    };
+
     function onRequestRestore(event) {
       const query = new URLSearchParams(window.location.search)
       const payload = {
@@ -251,68 +288,28 @@
             'onMetaChange': onMetaChange,
             'onRequestInsertImage': onRequestInsertImage,
             'onRequestSelectDocument': onRequestSelectDocument,
-            'onRequestSelectSpreadsheet': onRequestSelectSpreadsheet,
-            'onRequestRestore': onRequestRestore,
-            'onRequestHistory': onRequestHistory,
-            'onRequestHistoryData': onRequestHistoryData,
-            'onRequestHistoryClose': onRequestHistoryClose
+            'onRequestSelectSpreadsheet': onRequestSelectSpreadsheet
         };
 
-        <%
-            usersMentions = @file.users_mentions %>
+        if (config.editorConfig.user.id) {
 
-            if (config.editorConfig.user.id) {
             // add mentions for not anonymous users
-            config.events['onRequestUsers'] = function (event) {
-                if (event && event.data){
-                    var c = event.data.c;
-                }
-                switch (c) {
-                    case "info":
-                        users = [];
-                        var allUsers = <%= raw @file.users_info.to_json %>;
-                        for (var i = 0; i < event.data.id.length; i++) {
-                            for (var j = 0; j < allUsers.length; j++) {
-                                if (allUsers[j].id == event.data.id[i]) {
-                                    users.push(allUsers[j]);
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    case "protect":
-                        var users = <%= raw @file.users_protect.to_json %>;
-                        break;
-                    default:
-                        users = <%= raw @file.users_mentions.to_json %>;
-                }
-                docEditor.setUsers({
-                    "c": c,
-                    "users": users,
-                });
-            };
+            config.events['onRequestUsers'] = onRequestUsers;
+            config.events['onRequestSaveAs'] = onRequestSaveAs;
             // the user is mentioned in a comment
-            config.events['onRequestSendNotify'] = function (event) {
-                event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
-                var data = JSON.stringify(event.data);
-                innerAlert("onRequestSendNotify: " + data);
-            };
+            config.events['onRequestSendNotify'] = onRequestSendNotify;
             // prevent file renaming for anonymous users
             config.events['onRequestRename'] = onRequestRename;
             config.events['onRequestReferenceData'] = onRequestReferenceData;
             // prevent switch the document from the viewing into the editing mode for anonymous users
             config.events['onRequestEditRights'] = onRequestEditRights;
             config.events['onRequestOpen'] = onRequestOpen;
-        }
-
-        if (config.editorConfig.createUrl) {
-            config.events.onRequestSaveAs = onRequestSaveAs;
-        };
-
-        if ((config.document.fileType === "docxf" || config.document.fileType === "oform")
-            && DocsAPI.DocEditor.version().split(".")[0] < 7) {
-            innerAlert("Please update ONLYOFFICE Docs to version 7.0 to work on fillable forms online.");
-            return;
+            config.events['onRequestHistory'] = onRequestHistory;
+            config.events['onRequestHistoryData'] = onRequestHistoryData;
+            if (config.editorConfig.user.id != "uid-3") {
+                config.events['onRequestHistoryClose'] = onRequestHistoryClose;
+                config.events['onRequestRestore'] = onRequestRestore;
+            }
         }
 
         docEditor = new DocsAPI.DocEditor("iframeEditor", config);

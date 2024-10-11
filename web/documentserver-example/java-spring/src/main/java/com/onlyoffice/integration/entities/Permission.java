@@ -37,6 +37,7 @@ public class Permission extends AbstractEntity {
     private Boolean edit = true;
     private Boolean print = true;
     private Boolean fillForms = true;
+    private Boolean submitForm = true;
     private Boolean modifyFilter = true;
     private Boolean modifyContentControl = true;
     private Boolean review = true;

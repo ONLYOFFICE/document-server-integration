@@ -17,20 +17,21 @@
     "url": "https://github.com/ONLYOFFICE/document-server-integration/issues"
   },
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "config": "^3.3.2",
-    "debug": "^4.2.0",
-    "ejs": "^3.1.5",
-    "express": "^4.17.1",
-    "fast-xml-parser": "^4.3.1",
-    "formidable": "^1.2.2",
+    "body-parser": "^1.20.2",
+    "config": "^3.3.11",
+    "debug": "^4.3.4",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "fast-xml-parser": "^4.3.4",
+    "formidable": "^3.2.4",
     "he": "^1.2.0",
-    "jsonwebtoken": "^9.0.0",
+    "jsonwebtoken": "^9.0.2",
     "jwa": "^2.0.0",
-    "log4js": "^6.3.0",
+    "log4js": "^6.9.1",
     "mime": "^2.4.6",
     "serve-favicon": "^2.5.0",
-    "urllib": "^2.36.1"
+    "urllib": "^2.36.1",
+    "utf7": "^1.0.2"
   },
   "license": "Apache",
   "repository": {
@@ -44,8 +45,16 @@
     ]
   },
   "devDependencies": {
-    "eslint": "^8.28.0",
+    "eslint": "^8.56.0",
     "eslint-config-airbnb-base": "^15.0.0",
-    "eslint-plugin-import": "^2.26.0"
+    "eslint-plugin-import": "^2.29.1"
+  },
+  "overrides": {
+    "semver": "7.5.2",
+    "word-wrap": "1.2.4",
+    "pac-resolver": "7.0.0",
+    "degenerator": "3.0.1",
+    "qs": "6.7.3",
+    "json5": "2.2.3"
   }
 }

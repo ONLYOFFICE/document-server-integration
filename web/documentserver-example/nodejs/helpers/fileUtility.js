@@ -20,15 +20,27 @@ const supportedFormats = require('../public/assets/document-formats/onlyoffice-d
 
 const fileUtility = {};
 
+fileUtility.getFormats = function getFormats() {
+  return supportedFormats;
+};
+
 // get file name from the given url
-fileUtility.getFileName = function getFileName(url, withoutExtension) {
+fileUtility.getFileNameFromUrl = function getFileNameFromUrl(url, withoutExtension) {
   if (!url) return '';
 
   let parts = url.split('\\');
   parts = parts.pop();
-  parts = parts.split('/');
-  let fileName = parts.pop(); // get the file name from the last part of the url
-  [fileName] = fileName.split('?');
+  const path = parts.split('?')[0];
+
+  return fileUtility.getFileName(path, withoutExtension);
+};
+
+// get file name
+fileUtility.getFileName = function getFileName(path, withoutExtension) {
+  if (!path) return '';
+
+  const parts = path.split('/');
+  const fileName = parts.pop(); // get the file name from the last part of the path
 
   // get file name without extension
   if (withoutExtension) {
@@ -38,26 +50,27 @@ fileUtility.getFileName = function getFileName(url, withoutExtension) {
   return fileName;
 };
 
-// get file extension from the given url
-fileUtility.getFileExtension = function getFileExtension(url, withoutDot) {
-  if (!url) return null;
+// get file extension from the given path
+fileUtility.getFileExtension = function getFileExtension(path, withoutDot, isUrl) {
+  if (!path) return null;
 
-  const fileName = fileUtility.getFileName(url); // get file name from the given url
+  // get file name from the given path
+  const fileName = isUrl ? fileUtility.getFileNameFromUrl(path) : fileUtility.getFileName(path);
 
   const parts = fileName.toLowerCase().split('.');
 
   return withoutDot ? parts.pop() : `.${parts.pop()}`; // get the extension from the file name with or without dot
 };
 
-// get file type from the given url
-fileUtility.getFileType = function getFileType(url) {
-  const ext = fileUtility.getFileExtension(url, true); // get the file extension from the given url
+// get file type from the given path
+fileUtility.getFileType = function getFileType(path) {
+  const ext = fileUtility.getFileExtension(path, true); // get the file extension from the given path
 
   for (let i = 0; i < supportedFormats.length; i++) {
-    if (supportedFormats[i].name === ext) return supportedFormats[i].type;
+    if (supportedFormats[i].name === ext && supportedFormats[i].type !== '') return supportedFormats[i].type;
   }
 
-  return fileUtility.fileType.word; // the default file type is word
+  return null; // the default file type is null
 };
 
 fileUtility.fileType = {
@@ -65,6 +78,10 @@ fileUtility.fileType = {
   cell: 'cell',
   slide: 'slide',
   pdf: 'pdf',
+};
+
+fileUtility.getFormatActions = function getExtensionActions(ext) {
+  return supportedFormats.filter((format) => format.name === ext)[0]?.actions || [];
 };
 
 fileUtility.getSuppotredExtensions = function getSuppotredExtensions() {

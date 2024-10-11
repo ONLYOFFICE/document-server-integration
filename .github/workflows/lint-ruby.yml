@@ -30,7 +30,7 @@ jobs:
 
     - name: Install Dependencies
       run: |
-        bundle update
+        bundle install
 
     - name: Rubocop
       run: |

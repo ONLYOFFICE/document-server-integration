@@ -42,7 +42,7 @@ final class ConfigurationManagerDocumentServerPreloaderURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerPreloaderURL();
         $this->assertEquals(
-            'http://document-server/web-apps/apps/api/documents/cache-scripts.html',
+            'http://documentserver/web-apps/apps/api/documents/cache-scripts.html',
             $url->string()
         );
     }
@@ -53,7 +53,7 @@ final class ConfigurationManagerDocumentServerPreloaderURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerPreloaderURL();
         $this->assertEquals(
-            'http://document-server/preloader',
+            'http://documentserver/preloader',
             $url->string()
         );
     }

@@ -32,11 +32,23 @@
 </head>
 <body>
     <header>
-        <div class="center">
+        <div class="center main-nav">
             <a href="./">
                 <img src ="images/logo.svg" alt="ONLYOFFICE" />
             </a>
         </div>
+        <menu class="responsive-nav">
+            <li>
+                <a href="#" onclick="toggleSidePanel(event)">
+                    <img src ="images/mobile-menu.svg" alt="ONLYOFFICE" />
+                </a>
+            </li>
+            <li>
+                <a href="./">
+                    <img src ="images/mobile-logo.svg" alt="ONLYOFFICE" />
+                </a>
+            </li>
+        </menu>
     </header>
     <div class="center main">
         <table class="table-main">
@@ -58,7 +70,7 @@
                                             <a class="try-editor slide reload-page action-link" target="_blank" href="editor?fileExt=pptx" title="Create new presentation">Presentation</a>
                                         </li>
                                         <li>
-                                            <a class="try-editor form reload-page action-link" target="_blank" href="editor?fileExt=pdf" title="Create new PDF form">PDF form</a>
+                                            <a class="try-editor pdf reload-page action-link" target="_blank" href="editor?fileExt=pdf" title="Create new PDF form">PDF form</a>
                                         </li>
                                     </ul>
                                     <label class="side-option">
@@ -106,15 +118,29 @@
                                         </tr>
                                     </tbody>
                                 </table>
-
-                                <div class="links-panel links-panel-border clearFix">
-                                    <a href="wopi" class="">Go to WOPI page</a>
-                                </div>
                             </div>
                         </div>
+                        <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                            <img src="images/close.svg" alt="">
+                        </button>
                     </td>
                     <td class="section">
                         <div class="main-panel">
+                            <menu class="links">
+                                <li class="home-link active" >
+                                    <a href="./">
+                                        <img src="images/home.svg" alt="Home"/>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="wopi">WOPI</a>
+                                </li>
+                                <% if (enableForgotten) { %>
+                                    <li>
+                                        <a href="forgotten">Forgotten files</a>
+                                    </li>
+                                <% } %>
+                            </menu>
                             <div id="portal-info" style="display: <%= storedFiles.length > 0 ? "none" : "table-cell" %>">
                                 <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
                                 <span class="portal-descr">
@@ -124,7 +150,7 @@
                                 <span class="portal-descr">Please do NOT use this integration example on your own server without proper code modifications, it is intended for testing purposes only. In case you enabled this test example, disable it before going for production.</span>
                                 <span class="portal-descr">You can open the same document using different users in different Web browser sessions, so you can check out multi-user editing functions.</span>
                                 <% users.forEach(user => { %>
-                                    <div class="user-descr">
+                                    <div class="user-descr" onclick="toggleUserDescr(event)">
                                         <b><%= user.name == null ? 'Anonymous' : user.name %></b>
                                         <ul>
                                             <% user.descriptions.forEach(description => { %>
@@ -137,15 +163,21 @@
                             <%if (storedFiles.length > 0)
                                 {%>
                                 <div class="stored-list">
-                                    <span class="header-list">Your documents</span>
+                                    <div class="storedHeader">
+                                        <div class="storedHeaderText">
+                                            <span class="header-list">Your documents</span>
+                                        </div>
+                                        <div class="storedHeaderClearAll">
+                                            <div class="clear-all">Clear all</div>
+                                        </div>
+                                    </div>
                                     <table class="tableHeader" cellspacing="0" cellpadding="0" width="100%">
                                         <thead>
                                         <tr>
                                             <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
                                             <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
                                             <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
-                                            <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
-                                            <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
+                                            <td class="tableHeaderCell tableHeaderCellAction">Action</td>
                                         </tr>
                                         </thead>
                                     </table>
@@ -234,13 +266,21 @@
                                                         <a class="action-link" href="editor?type=embedded&mode=embedded&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                             <img src="images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode" /></a>
                                                     </td>
-                                                    <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">
+                                                    <% if (storedFiles[i].documentType != null ) {%>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a class="convert-file" data="<%= encodeURIComponent(storedFiles[i].name) %>" data-type="<%= storedFiles[i].documentType %>">
+                                                                <img class="icon-action" src="images/convert.svg" alt="Convert" title="Convert" /></a>
+                                                        </td>
+                                                    <% } else { %>
+                                                        <td class="contentCells contentCells-icon downloadContentCellShift"></td>
+                                                    <% } %>
+                                                    <td class="contentCells contentCells-icon downloadContentCellShift">
                                                         <a href="download?fileName=<%= encodeURIComponent(storedFiles[i].name) %>">
                                                             <img class="icon-download" src="images/download.svg" alt="Download" title="Download" /></a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon contentCells-shift">
                                                         <a class="delete-file" data="<%= encodeURIComponent(storedFiles[i].name) %>">
-                                                            <img class="icon-delete" src="images/delete.svg" alt="Delete" title="Delete" /></a>
+                                                            <img class="icon-action" src="images/delete.svg" alt="Delete" title="Delete" /></a>
                                                     </td>
                                                 </tr>
                                             <% } %>
@@ -262,6 +302,15 @@
             <div class="describeUpload">After these steps are completed, you can work with your document.</div>
             <span id="step1" class="step">1. Loading the file.</span>
             <span class="step-descr">The loading speed depends on file size and additional elements it contains.</span>
+            <div id="select-file-type" class="invisible">
+                <br />
+                <span class="step">Please select the current document type</span>
+                <div class="buttonsMobile indent">
+                    <div class="button file-type document" data="docx">Document</div>
+                    <div class="button file-type spreadsheet" data="xlsx">Spreadsheet</div>
+                    <div class="button file-type presentation" data="pptx">Presentation</div>
+                </div>
+            </div>
             <br />
             <span id="step2" class="step">2. Conversion.</span>
             <span class="step-descr">The file is converted to OOXML so that you can edit it.</span>
@@ -298,6 +347,32 @@
         </div>
     </div>
 
+    <div id="convertingProgress">
+        <div id="convertingSteps">
+            <span id="convertFileName" class="convertFileName"></span>
+            <span id="convertStep1" class="step">1. Select a format file to convert</span>
+            <span class="step-descr">The converting speed depends on file size and additional elements it contains.</span>
+            <table cellspacing="0" cellpadding="0" width="100%" class="convertTable">
+                <tbody>
+                    <tr class="typeButtonsRow" id="convTypes"></tr>
+                </tbody>
+            </table>
+            <br />
+            <span id="convertStep2" class="step">2. File conversion</span>
+            <span class="step-descr disable" id="convert-descr">The file is converted <div class="convertPercent" id="convertPercent">0 %</div></span>
+            <span class="step-error hidden" id="convert-error"></span>
+            <div class="describeUpload">Note the speed of all operations depends on your connection quality and server location.</div>
+            <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
+        </div>
+        <br />
+        <div class="buttonsMobile">
+            <div id="downloadConverted" class="button converting orange disable">DOWNLOAD</div>
+            <div id="beginViewConverted" class="button converting wide gray disable">VIEW</div>
+            <div id="beginEditConverted" class="button converting wide gray disable">EDIT</div>
+            <div id="cancelEdit" class="button converting gray">CANCEL</div>
+        </div>
+    </div>
+
     <span id="loadScripts" data-docs="<%= preloaderUrl %>"></span>
 
     <footer>
@@ -327,12 +402,10 @@
     <script type="text/javascript" src="javascripts/jquery.iframe-transport.js"></script>
     <script type="text/javascript" src="javascripts/jquery.fileupload.js"></script>
     <script type="text/javascript" src="javascripts/jquery.dropdownToggle.js"></script>
+    <script type="text/javascript" src="javascripts/formats.js"></script>
     <script type="text/javascript" src="javascripts/jscript.js"></script>
 
     <script type="text/javascript">
-        var ConverExtList = "<%= convertExts %>";
-        var EditedExtList = "<%= editedExts %>";
-        var FilledExtList = "<%= fillExts %>";
         var UrlConverter = "convert";
         var UrlEditor = "editor";
     </script>

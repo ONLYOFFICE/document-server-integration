@@ -21,9 +21,11 @@ package com.onlyoffice.integration.controllers;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.documentserver.util.Misc;
-import com.onlyoffice.integration.documentserver.util.file.FileUtility;
 import com.onlyoffice.integration.entities.User;
+import com.onlyoffice.integration.sdk.manager.DocumentManager;
+import com.onlyoffice.integration.sdk.manager.UrlManager;
 import com.onlyoffice.integration.services.UserServices;
+import com.onlyoffice.integration.dto.FormatsList;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -31,8 +33,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.http.ResponseEntity;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -53,19 +55,16 @@ public class IndexController {
     private FileStoragePathBuilder storagePathBuilder;
 
     @Autowired
-    private FileUtility fileUtility;
-
-    @Autowired
     private Misc mistUtility;
 
     @Autowired
     private UserServices userService;
 
-    @Value("${files.docservice.url.site}")
-    private String docserviceSite;
+    @Autowired
+    private DocumentManager documentManager;
 
-    @Value("${files.docservice.url.preloader}")
-    private String docservicePreloader;
+    @Autowired
+    private UrlManager urlManager;
 
     @Value("${url.converter}")
     private String urlConverter;
@@ -79,9 +78,11 @@ public class IndexController {
     @Value("${server.version}")
     private String serverVersion;
 
+    @Value("${enable-forgotten}")
+    private String enableForgotten;
+
     @GetMapping("${url.index}")
-    public String index(@RequestParam(value = "directUrl", required = false) final Boolean directUrl,
-                        final Model model) {
+    public String index(final Model model) {
         java.io.File[] files = storageMutator.getStoredFiles();  // get all the stored files from the storage
         List<String> docTypes = new ArrayList<>();
         List<Boolean> filesEditable = new ArrayList<>();
@@ -105,15 +106,14 @@ public class IndexController {
 
         for (java.io.File file:files) {  // run through all the files
             String fileName = file.getName();  // get file name
-            docTypes.add(fileUtility
+            docTypes.add(documentManager
                     .getDocumentType(fileName)
                     .toString()
                     .toLowerCase());  // add a document type of each file to the list
-            filesEditable.add(fileUtility.getEditedExts()
-                    .contains(fileUtility.getFileExtension(fileName)));  // specify if a file is editable or not
+            filesEditable.add(documentManager.isEditable(fileName));  // specify if a file is editable or not
             versions.add(" [" + storagePathBuilder.
                     getFileVersion(fileName, true) + "]");  // add a file version to the list
-            isFillFormDoc.add(fileUtility.getFillExts().contains(fileUtility.getFileExtension(fileName)));
+            isFillFormDoc.add(documentManager.isFillable(fileName));
         }
 
         // add all the parameters to the model
@@ -122,12 +122,12 @@ public class IndexController {
         model.addAttribute("files", files);
         model.addAttribute("docTypes", docTypes);
         model.addAttribute("filesEditable", filesEditable);
-        model.addAttribute("datadocs", docserviceSite + docservicePreloader);
+        model.addAttribute("datadocs", urlManager.getDocumentServerPreloaderApiUrl());
         model.addAttribute("tooltip", tooltip);
         model.addAttribute("users", users);
         model.addAttribute("languages", languages);
-        model.addAttribute("directUrl", directUrl);
         model.addAttribute("serverVersion", serverVersion);
+        model.addAttribute("enableForgotten", Boolean.valueOf(enableForgotten));
 
         return "index.html";
     }
@@ -136,16 +136,16 @@ public class IndexController {
     @ResponseBody
     public HashMap<String, String> configParameters() {  // get configuration parameters
         HashMap<String, String> configuration = new HashMap<>();
-
-        configuration.put("FillExtList", String.join(",", fileUtility
-                .getFillExts()));  // put a list of the extensions that can be filled to config
-        configuration.put("ConverExtList", String.join(",", fileUtility
-                .getConvertExts()));  // put a list of the extensions that can be converted to config
-        configuration.put("EditedExtList", String.join(",", fileUtility
-                .getEditedExts()));  // put a list of the extensions that can be edited to config
         configuration.put("UrlConverter", urlConverter);
         configuration.put("UrlEditor", urlEditor);
 
         return configuration;
+    }
+
+    @GetMapping("/formats")
+    @ResponseBody
+    public ResponseEntity<FormatsList> formats() {  // return all the supported formats
+        FormatsList list = new FormatsList(documentManager.getFormats());
+        return ResponseEntity.ok(list);
     }
 }

@@ -77,18 +77,19 @@ namespace OnlineEditorsExampleMVC.Models
             var jss = new JavaScriptSerializer();
 
             var ext = Path.GetExtension(FileName).ToLower();  // get file extension
-            var editorsMode = Mode ?? "edit";  // get editor mode
+            var canFill = DocManagerHelper.FillFormExts.Contains(ext);
+            var editorsMode = Mode ?? (canFill ? "fillForms" : "edit");  // get editor mode
 
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);  // check if the file with such an extension can be edited
 
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
             
-            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && DocManagerHelper.FillFormExts.Contains(ext)) {
+            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && canFill) {
                 editorsMode = "fillForms";
                 canEdit = true;
             }
-            var submitForm = editorsMode.Equals("fillForms") && id.Equals("uid-1");  // check if the Submit form button is displayed or not
+            var submitForm = (editorsMode.Equals("fillForms") || editorsMode.Equals("embedded")) && user.id.Equals("uid-1");  // check if the Submit form button is displayed or not
             var mode = canEdit && editorsMode != "view" ? "edit" : "view";  // set the mode parameter: change it to view if the document can't be edited
 
             // favorite icon state
@@ -214,10 +215,12 @@ namespace OnlineEditorsExampleMVC.Models
                                             { "forcesave", false },  // adds the request for the forced file saving to the callback handler
                                             { "submitForm", submitForm },  // if the Submit form button is displayed or not
                                             {
-                                                "goback", new Dictionary<string, object>  // settings for the Open file location menu button and upper right corner button
+                                                "goback", user.goback != null ? new Dictionary<string, object>  // settings for the Open file location menu button and upper right corner button
                                                     {
-                                                        { "url", DocManagerHelper.GetServerUrl(false) }  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
-                                                    }
+                                                        { "url", DocManagerHelper.GetServerUrl(false) },  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
+                                                        { "text", user.goback.text },
+                                                        { "blank", user.goback.blank }
+                                                    } : new Dictionary<string, object>{}
                                             }
                                         }
                                 }
@@ -289,20 +292,20 @@ namespace OnlineEditorsExampleMVC.Models
             {
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "Content\\images\\logo.png"
+                    + "Content\\images\\logo.svg"
             };
 
             var directMailMergeUrl = new UriBuilder(DocManagerHelper.GetServerUrl(false))
             {
                 Path = HttpRuntime.AppDomainAppVirtualPath
                     + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
-                    + "Content\\images\\logo.png"
+                    + "Content\\images\\logo.svg"
             };
 
             // create a logo config
             var logoConfig = new Dictionary<string, object>
             {
-                { "fileType", "png"},
+                { "fileType", "svg"},
                 { "url", mailMergeUrl.ToString()}
             };
 

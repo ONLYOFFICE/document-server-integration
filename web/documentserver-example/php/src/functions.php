@@ -373,6 +373,38 @@ function getStoredFiles()
 }
 
 /**
+ * Get forgotten files from documentserver
+ *
+ * @return array
+ */
+function getForgottenFiles()
+{
+    $configManager = new ConfigurationManager();
+
+    $files = [];
+
+    try {
+        $response = json_decode(commandRequest('getForgottenList', ''));
+        if ($response->error === 0) {
+            foreach ($response->keys as $key) {
+                $file = json_decode(commandRequest('getForgotten', $key));
+                $publicURL = $configManager->documentServerPublicURL()->string();
+                $privateURL = $configManager->documentServerPrivateURL()->string();
+                if (strpos($file->url, $privateURL) !== false) {
+                    $file->url = str_replace($privateURL, $publicURL, $file->url);
+                }
+                $file->type = getDocumentType($file->url);
+                $files[] = $file;
+            }
+        }
+    } catch (Exception $e) {
+        sendlog($e->getMessage(), "common.log");
+    }
+    
+    return $files;
+}
+
+/**
  * Get the virtual path
  *
  * @param string $forDocumentServer
@@ -553,6 +585,9 @@ function processConvServResponceError($errorCode)
 
     // add the error message to the error message template depending on the error code
     switch ($errorCode) {
+        case -9:
+            $errorMessage = $errorMessageTemplate . "Error conversion output format";
+            break;
         case -8:
             $errorMessage = $errorMessageTemplate . "Error document VKey";
             break;

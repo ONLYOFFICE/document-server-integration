@@ -16,23 +16,32 @@
  *
  */
 
-var directUrl;
+var formatManager;
+
+window.onload = function () {
+    fetch('/formats')
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.formats) {
+                let formats = [];
+                data.formats.forEach(format => {
+                    formats.push(new Format(
+                        format.name,
+                        format.type,
+                        format.actions,
+                        format.convert,
+                        format.mime
+                    ));
+                });
+                formatManager = new FormatManager(formats);
+            }
+        })
+}
 
 if (typeof jQuery !== "undefined") {
     jq = jQuery.noConflict();
 
-    directUrl = getUrlVars()["directUrl"] == "true";
-
     mustReload = false;
-
-    if (directUrl)
-        jq("#directUrl").prop("checked", directUrl);
-    else
-        directUrl = jq("#directUrl").prop("checked");
-
-    jq("#directUrl").change(function() {
-        window.location = "?directUrl=" + jq(this).prop("checked");
-    });
 
     jq(function () {
         jq("#fileupload").fileupload({
@@ -87,7 +96,7 @@ if (typeof jQuery !== "undefined") {
     });
 
     var timer = null;
-    var checkConvert = function (filePass) {
+    var checkConvert = function (filePass, fileType) {
         filePass = filePass ? filePass : null;
         if (timer !== null) {
             clearTimeout(timer);
@@ -103,7 +112,7 @@ if (typeof jQuery !== "undefined") {
         var posExt = fileName.lastIndexOf(".") + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
-        if (ConverExtList.includes(posExt) === -1) {
+        if (!formatManager.isAutoConvertible(posExt)) {
             jq("#step2").addClass("done").removeClass("current");
             loadScripts();
             return;
@@ -115,13 +124,13 @@ if (typeof jQuery !== "undefined") {
                 contentType: "application/json",
                 type: "post",
                 dataType: "json",
-                data: JSON.stringify({filename: fileName, filePass: filePass}),
+                data: JSON.stringify({filename: fileName, filePass: filePass, fileExt: fileType}),
                 url: UrlConverter,
                 complete: function (data) {
                     var responseText = data.responseText;
                     var response = jq.parseJSON(responseText);
                     if (response.error) {
-                        if (response.error.includes("Incorrect password")) {
+                        if (response.error == "PASSWORD") {
                             jq(".current").removeClass("current");
                             jq("#step2").addClass("error");
                             jq("#blockPassword").show();
@@ -131,19 +140,24 @@ if (typeof jQuery !== "undefined") {
                             }
                             return;
                         } else {
+                            if (response.error == "OOXML_OUTPUT_TYPE"){
+                                jq("#select-file-type").removeClass("invisible");
+                                jq("#step2").removeClass("current");
+                                jq("#hiddenFileName").attr("placeholder",filePass);
+                                return;
+                            }
                             jq(".current").removeClass("current");
                             jq(".step:not(.done)").addClass("error");
-                            jq("#mainProgress .error-message").show().find("span").text(response.error);
+                            jq("#mainProgress .error-message").show().find("span").text("Error automatically determine the output file format");
                             jq('#hiddenFileName').val("");
                             return;
                         }
                     }
 
-                    jq("#hiddenFileName").val(response.filename);
-
-                    if (response.step && response.step < 100) {
-                        checkConvert(filePass);
+                    if (response.hasOwnProperty("percent") && response.percent < 100) {
+                        checkConvert(filePass, fileType);
                     } else {
+                        jq("#hiddenFileName").val(response.filename);
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
                     }
@@ -180,7 +194,7 @@ if (typeof jQuery !== "undefined") {
         var posExt = fileName.lastIndexOf(".") + 1;
         posExt = 0 <= posExt ? fileName.substring(posExt).trim().toLowerCase() : "";
 
-        if (EditedExtList.includes(posExt) !== -1 || FillExtList.includes(posExt) !== -1) {
+        if (formatManager.isEditable(posExt) || formatManager.isFillable(posExt)) {
             jq("#beginEdit").removeClass("disable");
         }
     };
@@ -218,6 +232,15 @@ if (typeof jQuery !== "undefined") {
         }
     };
 
+    jq(document).on("click", ".file-type:not(.disable)", function () {
+        const currentElement = jq(this);
+        var fileType = currentElement.attr("data");
+        var filePass = jq("#hiddenFileName").attr("placeholder");
+        jq('.file-type').addClass(["disable", "pale"]);
+        currentElement.removeClass("pale");
+        checkConvert(filePass, fileType);
+    });
+
     jq(document).on("click", "#enterPass", function () {
         var pass = jq("#filePass").val();
         if (pass) {
@@ -237,7 +260,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?action=edit&fileName=" + fileId + "&directUrl=" + directUrl;
+        var url = UrlEditor + "?action=edit&fileName=" + fileId;
         window.open(url, "_blank");
         jq("#hiddenFileName").val("");
         jq.unblockUI();
@@ -245,7 +268,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?action=view&fileName=" + fileId + "&directUrl=" + directUrl;
+        var url = UrlEditor + "?action=view&fileName=" + fileId;
         window.open(url, "_blank");
         jq("#hiddenFileName").val("");
         jq.unblockUI();
@@ -253,7 +276,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?type=embedded&action=embedded&fileName=" + fileId + "&directUrl=" + directUrl;
+        var url = UrlEditor + "?type=embedded&action=embedded&fileName=" + fileId;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -297,6 +320,24 @@ if (typeof jQuery !== "undefined") {
                 document.location.reload();
             }
         });
+    });
+
+    jq(document).on("click", ".clear-all", function () {
+        if (confirm("Delete all the files?")) {
+            jq.ajax({
+                async: true,
+                contentType: "application/json",
+                type: "post",
+                dataType: "json",
+                data: JSON.stringify({filename: null, filePass: null}),
+                url: "/delete",
+                complete: function (data) {
+                    if (JSON.parse(data.responseText).success) {
+                        window.location.reload(true);
+                    }
+                }
+            });
+        }
     });
 
     function showUserTooltip (isMobile) {
@@ -376,4 +417,27 @@ if (typeof jQuery !== "undefined") {
         jq("div.tooltip").remove();
     });
 
+}
+
+function toggleSidePanel(event) {
+    event.preventDefault();
+    let sidePanel = document.querySelector(".left-panel");
+    let body = document.querySelector("body");
+    if (sidePanel.classList.contains("active")) {
+        sidePanel.classList.remove("active");
+        body.classList.remove("menu-open");
+    } else {
+        sidePanel.classList.add("active")
+        body.classList.add("menu-open");
+    }
+}
+
+function toggleUserDescr(event) {
+    let list = event.currentTarget.querySelector("ul");
+    let cursor = window.getComputedStyle(event.currentTarget).getPropertyValue("cursor");
+
+    if (cursor === "pointer") {
+        if (list.classList.contains("active")) list.classList.remove("active");
+        else list.classList.add("active");
+    }
 }

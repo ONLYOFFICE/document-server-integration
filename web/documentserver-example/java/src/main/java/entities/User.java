@@ -33,12 +33,13 @@ public class User {
     private final Boolean templates;
     private final List<String> userInfoGroups;
     private final Boolean avatar;
+    private final Goback goback;
 
     public User(final String idParam, final String nameParam, final String emailParam, final String groupParam,
                 final List<String> reviewGroupsParam, final CommentGroups commentGroupsParam,
                 final List<String> userInfoGroupsParam, final Boolean favoriteParam,
                 final List<String> deniedPermissionsParam, final List<String> descriptionsParam,
-                final Boolean templatesParam, final Boolean avatarParam) {
+                final Boolean templatesParam, final Boolean avatarParam, final Goback gobackParam) {
         this.id = idParam;
         this.name = nameParam;
         this.email = emailParam;
@@ -51,6 +52,7 @@ public class User {
         this.templates = templatesParam;
         this.userInfoGroups = userInfoGroupsParam;
         this.avatar = avatarParam;
+        this.goback = gobackParam;
     }
 
     public String getId() {
@@ -99,5 +101,9 @@ public class User {
 
     public Boolean getAvatar() {
         return avatar;
+    }
+
+    public Goback getGoback() {
+        return goback;
     }
 }

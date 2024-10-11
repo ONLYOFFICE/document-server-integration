@@ -38,7 +38,13 @@ namespace OnlineEditorsExampleMVC
 
             // create the main script bundle
             bundles.Add(new ScriptBundle("~/bundles/scripts").Include(
+                "~/Scripts/formats.js",
                 "~/Scripts/jscript.js"
+                            ));
+
+            // create the forgotten page script bundle
+            bundles.Add(new ScriptBundle("~/bundles/forgotten").Include(
+                "~/Scripts/forgotten.js"
                             ));
 
             // create a style bundle
@@ -51,6 +57,11 @@ namespace OnlineEditorsExampleMVC
             // create an editor style bundle
             bundles.Add(new StyleBundle("~/Content/editor").Include(
                 "~/Content/editor.css"
+                            ));
+
+            // create the forgotten page style bundle
+            bundles.Add(new StyleBundle("~/Content/forgotten").Include(
+                "~/Content/forgotten.css"
                             ));
         }
     }

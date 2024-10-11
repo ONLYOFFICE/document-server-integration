@@ -150,6 +150,20 @@ namespace OnlineEditorsExample
                 .ToList();
         }
 
+        public static List<string> PdfExtensions()
+        {
+            return Pdfs()
+                .Select(format => format.Extension())
+                .ToList();
+        }
+
+        public static List<Format> Pdfs()
+        {
+            return All()
+                .Where(format => format.Type == "pdf")
+                .ToList();
+        }
+
         public static List<string> AllExtensions()
         {
             return All()

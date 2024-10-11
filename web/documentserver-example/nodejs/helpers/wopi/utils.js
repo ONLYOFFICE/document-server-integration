@@ -27,57 +27,72 @@ const siteUrl = configServer.get('siteUrl'); // the path to the editors installa
 
 let cache = null;
 
-const requestDiscovery = async function requestDiscovery(url) {
+const requestDiscovery = async function requestDiscovery(DocManager) {
+  let absSiteUrl = siteUrl;
+  if (absSiteUrl.indexOf('/') === 0) {
+    absSiteUrl = DocManager.getServerHost() + siteUrl;
+  }
+
   // eslint-disable-next-line no-unused-vars
   return new Promise((resolve, reject) => {
+    const uri = absSiteUrl + configServer.get('wopi.discovery');
     const actions = [];
-    urllib.request(urlModule.parse(url + configServer.get('wopi.discovery')), { method: 'GET' }, (err, data) => {
-      if (data) {
-        // create the discovery XML file with the parameters from the response
-        const xmlParseOptions = {
-          attributeNamePrefix: '',
-          ignoreAttributes: false,
-          parseAttributeValue: true,
-          attrValueProcessor: (val) => he.decode(val, { isAttributeValue: true }),
-        };
-        const parser = new xmlParser.XMLParser(xmlParseOptions);
-        // create the discovery XML file with the parameters from the response
-        const discovery = parser.parse(data.toString());
-        if (discovery['wopi-discovery']) {
-          discovery['wopi-discovery']['net-zone'].app.forEach((app) => {
-            let appAction = app.action;
-            if (!Array.isArray(appAction)) {
-              appAction = [appAction];
-            }
-            appAction.forEach((action) => {
-              actions.push({ // write all the parameters to the actions element
-                app: app.name,
-                favIconUrl: app.favIconUrl,
-                checkLicense: app.checkLicense === 'true',
-                name: action.name,
-                ext: action.ext || '',
-                progid: action.progid || '',
-                isDefault: !!action.default,
-                urlsrc: action.urlsrc,
-                requires: action.requires || '',
+
+    // parse url to allow request by relative url after
+    // https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
+    urllib.request(
+      urlModule.parse(uri),
+      {
+        method: 'GET',
+      },
+      (err, data) => {
+        if (data) {
+          // create the discovery XML file with the parameters from the response
+          const xmlParseOptions = {
+            attributeNamePrefix: '',
+            ignoreAttributes: false,
+            parseAttributeValue: true,
+            attrValueProcessor: (val) => he.decode(val, { isAttributeValue: true }),
+          };
+          const parser = new xmlParser.XMLParser(xmlParseOptions);
+          // create the discovery XML file with the parameters from the response
+          const discovery = parser.parse(data.toString());
+          if (discovery['wopi-discovery']) {
+            discovery['wopi-discovery']['net-zone'].app.forEach((app) => {
+              let appAction = app.action;
+              if (!Array.isArray(appAction)) {
+                appAction = [appAction];
+              }
+              appAction.forEach((action) => {
+                actions.push({ // write all the parameters to the actions element
+                  app: app.name,
+                  favIconUrl: app.favIconUrl,
+                  checkLicense: app.checkLicense === 'true',
+                  name: action.name,
+                  ext: action.ext || '',
+                  progid: action.progid || '',
+                  isDefault: !!action.default,
+                  urlsrc: action.urlsrc,
+                  requires: action.requires || '',
+                });
               });
             });
-          });
+          }
         }
-      }
-      resolve(actions);
-    });
+        resolve(actions);
+      },
+    );
   });
 };
 
 // get the wopi discovery information
-const getDiscoveryInfo = async function getDiscoveryInfo(url) {
+const getDiscoveryInfo = async function getDiscoveryInfo(DocManager) {
   let actions = [];
 
   if (cache) return cache;
 
   try {
-    actions = await requestDiscovery(url);
+    actions = await requestDiscovery(DocManager);
   } catch (e) {
     return actions;
   }
@@ -91,19 +106,9 @@ const getDiscoveryInfo = async function getDiscoveryInfo(url) {
   return actions;
 };
 
-const initWopi = async function initWopi(DocManager) {
-  let absSiteUrl = siteUrl;
-  if (absSiteUrl.indexOf('/') === 0) {
-    absSiteUrl = DocManager.getServerHost() + siteUrl;
-  }
-
-  // get the wopi discovery information
-  await getDiscoveryInfo(absSiteUrl);
-};
-
 // get actions of the specified extension
-const getActions = async function getActions(ext) {
-  const actions = await getDiscoveryInfo(); // get the wopi discovery information
+const getActions = async function getActions(DocManager, ext) {
+  const actions = await getDiscoveryInfo(DocManager); // get the wopi discovery information
   const filtered = [];
 
   actions.forEach((action) => { // and filter it by the specified extention
@@ -116,8 +121,8 @@ const getActions = async function getActions(ext) {
 };
 
 // get an action for the specified extension and name
-const getAction = async function getAction(ext, name) {
-  const actions = await getDiscoveryInfo();
+const getAction = async function getAction(DocManager, ext, name) {
+  const actions = await getDiscoveryInfo(DocManager);
   let act = null;
 
   actions.forEach((action) => {
@@ -130,8 +135,8 @@ const getAction = async function getAction(ext, name) {
 };
 
 // get the default action for the specified extension
-const getDefaultAction = async function getDefaultAction(ext) {
-  const actions = await getDiscoveryInfo();
+const getDefaultAction = async function getDefaultAction(DocManager, ext) {
+  const actions = await getDiscoveryInfo(DocManager);
   let act = null;
 
   actions.forEach((action) => {
@@ -149,7 +154,23 @@ const getActionUrl = function getActionUrl(host, userAddress, action, filename) 
   return `${action.urlsrc.replace(/<.*&>/g, '')}WOPISrc=${encodeURIComponent(WOPISrc)}`;
 };
 
-exports.initWopi = initWopi;
+const getEditNewText = function getEditNewText(ext) {
+  if (typeof ext !== 'string') return null;
+  switch (ext) {
+    case 'docx':
+      return 'Document';
+    case 'xlsx':
+      return 'Spreadsheet';
+    case 'pptx':
+      return 'Presentation';
+    case 'pdf':
+      return 'PDF form';
+    default:
+      return ext.toUpperCase();
+  }
+};
+
+exports.getEditNewText = getEditNewText;
 exports.getDiscoveryInfo = getDiscoveryInfo;
 exports.getAction = getAction;
 exports.getActions = getActions;
