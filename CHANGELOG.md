@@ -4,6 +4,7 @@
 - csharp-mvc: change reference source
 - java: change reference source
 - java-spring: change reference source
+- php: change reference source
 - filename in editor page title
 - close editor
 - he-IL skin language

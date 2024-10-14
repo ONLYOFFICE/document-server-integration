@@ -264,7 +264,8 @@ final class DocEditorView extends View
                 config.events['onRequestEditRights'] = onRequestEditRights;
                 config.events['onRequestHistory'] = onRequestHistory;
                 config.events['onRequestHistoryData'] = onRequestHistoryData;
-                config.events['onRequestClose'] = onRequestClose;";
+                config.events['onRequestClose'] = onRequestClose;
+                config.events['onRequestReferenceSource'] = onRequestReferenceSource;";
             if ($user->id != "uid-3") {
                 $historyLayout .= "config.events['onRequestHistoryClose'] = onRequestHistoryClose;
                 config.events['onRequestRestore'] = onRequestRestore;";
