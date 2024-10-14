@@ -196,14 +196,10 @@
                                                             <a class="action-link" href="editor?type=desktop&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
                                                         </td>
-                                                        <% if (storedFiles[i].documentType !== "pdf") { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment" /></a>
                                                         </td>
-                                                        <% } else { %>
-                                                            <td class="contentCells contentCells-icon"></td>
-                                                        <% } %>
                                                         <% if (storedFiles[i].documentType == "word") { %>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a class="action-link" href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
