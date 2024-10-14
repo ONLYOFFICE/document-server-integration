@@ -6,6 +6,7 @@
 - java-spring: change reference source
 - php: change reference source
 - python: change reference source
+- ruby: change reference source
 - filename in editor page title
 - close editor
 - he-IL skin language
