@@ -106,7 +106,7 @@ class FileModel
       editors_mode = 'fillForms'
       can_edit = true
     end
-    submit_form = @user.id.eql?('uid-1') # Submit form button state
+    submit_form = !editors_mode.eql?('view') && @user.id.eql?('uid-1') # Submit form button state
     mode = can_edit && !editors_mode.eql?('view') ? 'edit' : 'view'
     # templates image url in the "From Template" section
     templates_image_url = DocumentHelper.get_template_image_url(document_type)
