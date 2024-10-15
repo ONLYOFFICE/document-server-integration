@@ -168,7 +168,9 @@ public class FileModel {
         }
 
         // check if the Submit form button is displayed or not
-        editorConfig.getCustomization().setSubmitForm(user.getId().equals("uid-1"));
+        if (!mode.equals("view")) {
+            editorConfig.getCustomization().setSubmitForm(user.getId().equals("uid-1"));
+        }
 
         if ((!canEdit && mode.equals("edit") || mode.equals("fillForms")) && canFill) {
             canEdit = true;
