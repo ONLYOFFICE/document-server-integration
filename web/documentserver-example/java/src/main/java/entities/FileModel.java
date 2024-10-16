@@ -155,13 +155,12 @@ public class FileModel {
     public void changeType(final String modeParam, final String typeParam, final User user, final String fileName) {
         // check if the file with such an extension can be edited
         String fileExt = FileUtility.getFileExtension(document.getTitle());
-        Boolean canFill = DocumentManager.getFillExts().contains(fileExt);
         Boolean canEdit = DocumentManager.getEditedExts().contains(fileExt);
 
         if (modeParam != null) {
             mode = modeParam;
         } else {
-            mode = canFill ? "fillForms" : "edit";
+            mode = "edit";
         }
         if (typeParam != null) {
             type = typeParam;
@@ -172,7 +171,8 @@ public class FileModel {
             editorConfig.getCustomization().setSubmitForm(user.getId().equals("uid-1"));
         }
 
-        if ((!canEdit && mode.equals("edit") || mode.equals("fillForms")) && canFill) {
+        if ((!canEdit && mode.equals("edit") || mode.equals("fillForms"))
+        && DocumentManager.getFillExts().contains(fileExt)) {
             canEdit = true;
             mode = "fillForms";
         }
