@@ -99,10 +99,10 @@ class FileModel
 
   # get config parameters
   def config
-    can_fill = DocumentHelper.fill_forms_exts.include?(file_ext) # check if the document can be filled
-    editors_mode = @mode || (can_fill ? 'fillForms' : 'edit') # mode: view/edit/review/comment/fillForms/embedded
+    editors_mode = @mode || 'edit' # mode: view/edit/review/comment/fillForms/embedded
     can_edit = DocumentHelper.edited_exts.include?(file_ext) # check if the document can be edited
-    if ((!can_edit && editors_mode.eql?('edit')) || editors_mode.eql?('fillForms')) && can_fill
+    if ((!can_edit && editors_mode.eql?('edit')) || editors_mode.eql?('fillForms')) &&
+       DocumentHelper.fill_forms_exts.include?(file_ext)
       editors_mode = 'fillForms'
       can_edit = true
     end
