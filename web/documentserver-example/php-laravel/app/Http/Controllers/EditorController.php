@@ -159,10 +159,6 @@ class EditorController extends Controller
 
         $mode = $request->action ?? 'edit';
 
-        if ($request->action === null && $file['format']->extension() === 'pdf') {
-            $mode = 'fillForms';
-        }
-
         $config = app(CreateConfigCommand::class)
             ->__invoke(new CreateConfigRequest(
                 filename: $filename,

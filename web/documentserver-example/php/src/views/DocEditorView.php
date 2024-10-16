@@ -74,10 +74,10 @@ final class DocEditorView extends View
         $filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
         $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        $canFill = in_array($ext, $formatManager->fillableExtensions());
-        $editorsMode = empty($request["action"]) ? ($canFill ? "fillForms" : "edit") : $request["action"];
+        $editorsMode = empty($request["action"]) ? "edit" : $request["action"];
         $canEdit = in_array($ext, $formatManager->editableExtensions());  // check if the file can be edited
-        if ((!$canEdit && $editorsMode == "edit" || $editorsMode == "fillForms") && $canFill) {
+        if ((!$canEdit && $editorsMode == "edit" || $editorsMode == "fillForms")
+            && in_array($ext, $formatManager->fillableExtensions())) {
             $editorsMode = "fillForms";
             $canEdit = true;
         }

@@ -1,5 +1,6 @@
 # Change Log
 
+- editing by default
 - filename in editor page title
 - close editor
 - he-IL skin language

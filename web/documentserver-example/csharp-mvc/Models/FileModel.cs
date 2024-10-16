@@ -77,15 +77,14 @@ namespace OnlineEditorsExampleMVC.Models
             var jss = new JavaScriptSerializer();
 
             var ext = Path.GetExtension(FileName).ToLower();  // get file extension
-            var canFill = DocManagerHelper.FillFormExts.Contains(ext);
-            var editorsMode = Mode ?? (canFill ? "fillForms" : "edit");  // get editor mode
+            var editorsMode = Mode ?? "edit";  // get editor mode
 
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);  // check if the file with such an extension can be edited
 
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
             
-            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && canFill) {
+            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && DocManagerHelper.FillFormExts.Contains(ext)) {
                 editorsMode = "fillForms";
                 canEdit = true;
             }
