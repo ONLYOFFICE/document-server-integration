@@ -9,10 +9,7 @@
   },
   "bin": "bin/www",
   "description": "OnlineEditorsExampleNodeJS",
-  "author": {
-    "name": "ONLYOFFICE",
-    "email": ""
-  },
+  "author": "Ascensio System SIA <integration@onlyoffice.com> (https://www.onlyoffice.com)",
   "bugs": {
     "url": "https://github.com/ONLYOFFICE/document-server-integration/issues"
   },
