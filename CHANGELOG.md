@@ -3,10 +3,6 @@
 - editing by default
 - filename in editor page title
 - close editor
-- he-IL skin language
-- ConvertService.ashx address replaced with converter
-- coauthoring/CommandService.ashx address replaced with command
-- without submitForm in viewer
 - php-laravel: new integration example
 - php-laravel: upload files to the server
 - php-laravel: create blank files and files with sample content
@@ -14,6 +10,12 @@
 - php-laravel: delete files on the server
 - php-laravel: create, edit, and submit pdf forms
 - php-laravel: show forgotten files on a seperate page
+
+## 1.11.0
+- he-IL skin language
+- ConvertService.ashx address replaced with converter
+- coauthoring/CommandService.ashx address replaced with command
+- without submitForm in viewer
 
 ## 1.10.0
 - nodejs: converting function on index page
