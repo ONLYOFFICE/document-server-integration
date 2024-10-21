@@ -208,6 +208,52 @@
             }
         };
 
+        var onRequestReferenceSource = function (event) {
+          innerAlert("onRequestReferenceSource");
+          let xhr = new XMLHttpRequest();
+          xhr.open("GET", "IndexServlet?type=files");
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.send();
+          xhr.onload = function () {
+            if (xhr.status === 200) {
+              innerAlert(JSON.parse(xhr.responseText));
+              let fileList = JSON.parse(xhr.responseText);
+              let firstXlsxName;
+              let file;
+              for (file of fileList) {
+                if (file["title"]) {
+                  if (getFileExt(file["title"]) === "xlsx")
+                  {
+                    firstXlsxName = file["title"];
+                    break;
+                  }
+                }
+              }
+              if (firstXlsxName) {
+                let data = {
+                  directUrl : !!config.document.directUrl,
+                  path : firstXlsxName
+                };
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", "IndexServlet?type=reference");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(data));
+                xhr.onload = function () {
+                  if (xhr.status === 200) {
+                    docEditor.setReferenceSource(JSON.parse(xhr.responseText));
+                  } else {
+                    innerAlert("/reference - bad status");
+                  }
+                }
+              } else {
+                innerAlert("No *.xlsx files");
+              }
+            } else {
+              innerAlert("/files - bad status");
+            }
+          }
+        };
+
         function onRequestRestore(event) {
           const query = new URLSearchParams(window.location.search)
           const payload = {
@@ -334,6 +380,7 @@
             config.events['onRequestOpen'] = onRequestOpen;
             config.events['onRequestHistory'] = onRequestHistory;
             config.events['onRequestHistoryData'] = onRequestHistoryData;
+            config.events['onRequestReferenceSource'] = onRequestReferenceSource;
             if (config.editorConfig.user.id != "uid-3") {
                 config.events['onRequestHistoryClose'] = onRequestHistoryClose;
                 config.events['onRequestRestore'] = onRequestRestore;
@@ -342,6 +389,13 @@
 
         var сonnectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
+        };
+
+        const getFileExt = function (fileName) {
+          if (fileName.indexOf(".")) {
+            return fileName.split('.').reverse()[0];
+          }
+          return false;
         };
 
         if (window.addEventListener) {

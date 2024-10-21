@@ -34,6 +34,8 @@ use App\UseCases\Document\Delete\DeleteAllDocumentsCommand;
 use App\UseCases\Document\Delete\DeleteAllDocumentsRequest;
 use App\UseCases\Document\Delete\DeleteDocumentCommand;
 use App\UseCases\Document\Delete\DeleteDocumentRequest;
+use App\UseCases\Document\Find\FindAllDocumentsQuery;
+use App\UseCases\Document\Find\FindAllDocumentsQueryHandler;
 use App\UseCases\Document\Find\FindDocumentHistoryQuery;
 use App\UseCases\Document\Find\FindDocumentHistoryQueryHandler;
 use App\UseCases\Document\Find\FindDocumentQuery;
@@ -49,6 +51,30 @@ class FileController extends Controller
         private ServerConfig $serverConfig,
         private StorageConfig $storageConfig,
     ) {}
+
+    public function index(Request $request)
+    {
+        $files = app(FindAllDocumentsQueryHandler::class)
+            ->__invoke(new FindAllDocumentsQuery($request->ip()));
+
+        $res = [];
+
+        foreach ($files as $file) {
+            $f = app(FindDocumentQueryHandler::class)
+                ->__invoke(new FindDocumentQuery($file['filename'], $request->ip()));
+
+            array_push($res, [
+                'version' => $file['version'],
+                'id' => $f['key'],
+                'contentLength' => $f['size'].' KB',
+                'pureContentLength' => $f['size'],
+                'title' => $file['filename'],
+                'updated' => $file['lastModified'],
+            ]);
+        }
+
+        return response()->json($res);
+    }
 
     public function upload(Request $request)
     {

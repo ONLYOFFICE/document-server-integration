@@ -1,6 +1,7 @@
 # Change Log
 
 - editing by default
+- change reference source
 - filename in editor page title
 - close editor
 - php-laravel: new integration example
@@ -10,6 +11,7 @@
 - php-laravel: delete files on the server
 - php-laravel: create, edit, and submit pdf forms
 - php-laravel: show forgotten files on a seperate page
+- php-laravel: fetch files
 
 ## 1.11.0
 - he-IL skin language

@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(EnsureUserDirectoryExists::class)->group(function () {
     Route::get('/', [IndexController::class, 'index'])->name('home');
     Route::prefix('files')->name('files.')->group(function () {
+        Route::get('/', [FileController::class, 'index'])->name('index');
         Route::post('/upload', [FileController::class, 'upload'])->name('upload');
         Route::post('/convert', [FileController::class, 'convert'])->name('convert');
         Route::delete('/delete', [FileController::class, 'destroy'])->name('delete');
