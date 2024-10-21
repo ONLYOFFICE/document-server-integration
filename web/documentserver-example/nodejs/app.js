@@ -460,7 +460,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
       if (fileUtility.getFileType(correctName) !== null) {
         fileSystem.writeFileSync(req.DocManager.storagePath(correctName), data);
       } else {
-        writeResult(newFileUri.replace('http://localhost', siteUrl), result, 'FileTypeIsNotSupported');
+        writeResult(newFileUri.replace('http://localhost/', siteUrl), result, 'FileTypeIsNotSupported');
         return;
       }
       // remove file with the origin extension
@@ -1115,7 +1115,10 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       mode = 'view';
     }
 
-    const submitForm = userid === 'uid-1';
+    let submitForm = false;
+    if (mode !== 'view') {
+      submitForm = userid === 'uid-1';
+    }
 
     if (user.goback != null) {
       user.goback.url = `${req.DocManager.getServerUrl()}`;

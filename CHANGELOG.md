@@ -1,20 +1,9 @@
 # Change Log
 
-- php-laravel: fetch files
-- csharp: change reference source
-- csharp-mvc: change reference source
-- java: change reference source
-- java-spring: change reference source
-- php: change reference source
-- php-laravel: change reference source
-- python: change reference source
-- ruby: change reference source
+- editing by default
+- change reference source
 - filename in editor page title
 - close editor
-- he-IL skin language
-- ConvertService.ashx address replaced with converter
-- coauthoring/CommandService.ashx address replaced with command
-- submitForm for all modes
 - php-laravel: new integration example
 - php-laravel: upload files to the server
 - php-laravel: create blank files and files with sample content
@@ -22,6 +11,13 @@
 - php-laravel: delete files on the server
 - php-laravel: create, edit, and submit pdf forms
 - php-laravel: show forgotten files on a seperate page
+- php-laravel: fetch files
+
+## 1.11.0
+- he-IL skin language
+- ConvertService.ashx address replaced with converter
+- coauthoring/CommandService.ashx address replaced with command
+- without submitForm in viewer
 
 ## 1.10.0
 - nodejs: converting function on index page

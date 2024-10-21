@@ -198,16 +198,15 @@ def edit(request):
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)  # get user
-    canFill = docManager.isCanFillForms(ext)
     # get the editor mode: view/edit/review/comment/fillForms/embedded (the default mode is edit)
-    edMode = request.GET.get('mode') if request.GET.get('mode') else ('fillForms' if canFill else 'edit')
+    edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'
     canEdit = docManager.isCanEdit(ext)  # check if the file with this extension can be edited
 
-    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and canFill:
+    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and docManager.isCanFillForms(ext):
         edMode = 'fillForms'
         canEdit = True
     # if the Submit form button is displayed or hidden
-    submitForm = user.id == 'uid-1'
+    submitForm = edMode != 'view' and user.id == 'uid-1'
     mode = 'edit' if canEdit & (edMode != 'view') else 'view'  # if the file can't be edited, the mode is view
 
     types = ['desktop', 'mobile', 'embedded']
