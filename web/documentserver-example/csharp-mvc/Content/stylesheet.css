@@ -238,6 +238,52 @@ label .checkbox {
     color: #FF6F3D;
 }
 
+.button.converting {
+    margin-top: -20px;
+    padding: 16px 16px;
+}
+
+.button.converting.wide {
+    padding: 16px 29px;
+}
+
+.button.hoar {
+    background: #EFEFEF;
+    border: 1px solid #EFEFEF;
+    margin-right: 7px;
+    margin-bottom: 7px;
+    width: 13%;
+    padding-left: 0;
+    padding-right: 0;
+    font-size: 11px;
+}
+
+.button.hoar.disable {
+    opacity: 30%;
+    cursor: default;
+}
+
+.button.hoar:not(.disable):hover {
+    background: #FF6F3D;
+    border: 1px solid #FF6F3D;
+    color: #FFFFFF;
+}
+
+.button.hoar.orange {
+    background: #FF6F3D;
+    border: 1px solid #FF6F3D;
+    color: #FFFFFF;
+    cursor: default;
+}
+
+.button.hoar.orange.disable {
+    background: #444444;
+    border: 1px solid #444444;
+    color: #FFFFFF;
+    cursor: default;
+    opacity: 100%;
+}
+
 .button.file-type {
     font-size: 11px;
     color: #FFFFFF;
@@ -380,6 +426,32 @@ label .checkbox {
     display: none;
 }
 
+#convertingProgress {
+    color: #333333;
+    display: none;
+    font-size: 12px;
+    margin: 30px 35px;
+}
+
+#convertingProgress .convertFileName{
+    background-position: left center;
+    background-repeat: no-repeat;
+    display: block;
+    font-size: 14px;
+    line-height: 160%;
+    overflow: hidden;
+    padding-left: 28px;
+    margin-bottom: 16px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+#convertingProgress .describeUpload {
+    line-height: 150%;
+    letter-spacing: -0.02em;
+    padding: 16px 0;
+}
+
 .error-message {
     background: url("images/error.svg") no-repeat scroll 4px 10px;
     color: #CB0000;
@@ -401,6 +473,10 @@ label .checkbox {
     padding-left: 35px;
 }
 
+.waiting {
+    opacity: 30%;
+}
+
 .current {
     background-image: url("images/loader16.gif");
 }
@@ -413,11 +489,21 @@ label .checkbox {
     background-image: url("images/notdone.svg");
 }
 
+.convertPercent {
+    color: #FF6F3D;
+    font-weight: 700;
+    display: inline;
+}
+
 .step-descr {
     display: block;
     margin-left: 35px;
     font-size: 11px;
     line-height: 188%;
+}
+
+.step-descr.disable {
+    display: none;
 }
 
 .progress-descr {
@@ -521,21 +607,25 @@ footer table tr td:first-child {
     white-space: nowrap;
 }
 
+.convertFileName.word,
 .stored-edit.word,
 .uploadFileName.word {
     background-image: url("images/icon_docx.svg");
 }
 
+.convertFileName.cell,
 .stored-edit.cell,
 .uploadFileName.cell {
     background-image: url("images/icon_xlsx.svg");
 }
 
+.convertFileName.slide,
 .stored-edit.slide,
 .uploadFileName.slide {
     background-image: url("images/icon_pptx.svg");
 }
 
+.convertFileName.pdf,
 .stored-edit.pdf,
 .uploadFileName.pdf {
     background-image: url("images/icon_pdf.svg");
@@ -592,6 +682,11 @@ footer table tr td:first-child {
     visibility: hidden;
 }
 
+.convertTable {
+    margin-top: 10px;
+    margin-left: 35px;
+}
+
 .tableRow {
     background: transparent;
     -moz-transition: all 0.2s ease-in-out;
@@ -638,6 +733,12 @@ footer table tr td:first-child {
     width: 11%;
 }
 
+.tableHeaderCellAction{
+    width: 13%;
+    text-align: right;
+    padding-right: 88px;
+}
+
 .tableHeaderCellDownload {
     width: 13%;
     text-align: right;
@@ -662,7 +763,7 @@ footer table tr td:first-child {
 }
 
 .contentCells-shift {
-    padding-right: 44px;
+    padding-right: 43px;
 }
 
 .contentCells-icon {
@@ -726,7 +827,7 @@ footer table tr td:first-child {
     width: 100%;
 }
 
-.icon-delete {
+.icon-action {
     cursor: pointer;
 }
 
@@ -805,6 +906,13 @@ html {
     position: relative;
 }
 
+.typeButtonsRow {
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    position: relative;
+}
 
     .tableRow td:first-child {
         display: flex;
@@ -813,11 +921,11 @@ html {
     }
 
 .tableHeaderCellFileName {
-    width: 30%;
+    width: 20%;
 }
 
 .tableHeaderCellEditors {
-    width: 28%;
+    width: 20%;
 }
 
 .tableHeaderCellViewers {
