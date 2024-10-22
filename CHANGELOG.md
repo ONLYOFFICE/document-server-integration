@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: converting function on index page
 - editing by default
 - change reference source
 - filename in editor page title
