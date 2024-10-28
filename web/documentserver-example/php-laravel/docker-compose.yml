@@ -11,7 +11,7 @@ services:
 
   documentserver:
     container_name: documentserver
-    image: onlyoffice/documentserver:8.1
+    image: onlyoffice/documentserver:8.2
     expose:
       - "80"
     environment:
