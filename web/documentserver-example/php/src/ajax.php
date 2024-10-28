@@ -229,11 +229,12 @@ function convert()
     $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = "ooxml";
     $conversionExtension = $post['fileExt'] ?? $internalExtension;
+    $keepOriginal = $post['keepOriginal'] ?? false;
 
     // check if the file with such an extension can be converted
-    if (in_array($extension, $formatManager->convertibleExtensions()) &&
-        $internalExtension != "") {
-        $fileUri = $post["fileUri"];
+    if ((in_array($extension, $formatManager->convertibleExtensions()) &&
+        $internalExtension != "") || $conversionExtension != "ooxml") {
+        $fileUri = $post["fileUri"] ?? null;
         if ($fileUri == null || $fileUri == "") {
             $fileUri = serverPath(true) . '/'
                 . "download"
@@ -265,6 +266,13 @@ function convert()
             return $result;
         }
 
+        if (!in_array($convertedData["fileType"], $formatManager->viewableExtensions())) {
+            $result["step"] = $convertedData["percent"];
+            $result["filename"] = $newFileUri;
+            $result["error"] = 'FileTypeIsNotSupported';
+            return $result;
+        }
+
         // get file name without extension
         $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($extension) - 1);
 
@@ -280,12 +288,15 @@ function convert()
         $user = $userList->getUser($_GET["user"]);
         createMeta($newFileName, $user->id, $user->name);  // and create meta data for this file
 
-        // delete the original file and its history
-        $stPath = getStoragePath($fileName);
-        unlink($stPath);
-        delTree(getHistoryDir($stPath));
+        if (!$keepOriginal) {
+            // delete the original file and its history
+            $stPath = getStoragePath($fileName);
+            unlink($stPath);
+            delTree(getHistoryDir($stPath));
+        }
 
         $fileName = $newFileName;
+        $result['step'] = 100;
     }
 
     $result["filename"] = $fileName;
