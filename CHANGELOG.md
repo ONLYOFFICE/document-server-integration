@@ -6,6 +6,7 @@
 - java-spring: converting function on index page
 - php: converting function on index page
 - php-laravel: converting function on index page
+- python: converting function on index page
 - editing by default
 - change reference source
 - filename in editor page title

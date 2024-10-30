@@ -79,8 +79,9 @@ def convert(request):
         fileExt = fileUtils.getFileExt(filename)
         # get an auto-conversion extension from the request body or set it to the ooxml extension
         conversionExtension = body.get('fileExt') or 'ooxml'
+        keepOriginal = body.get('keepOriginal') or False
 
-        if docManager.isCanConvert(fileExt):  # check if the file extension is available for converting
+        if docManager.isCanConvert(fileExt) or conversionExtension != 'ooxml':
             key = docManager.generateFileKey(filename, request)  # generate the file key
 
             # get the url of the converted file
@@ -93,14 +94,21 @@ def convert(request):
                 response.setdefault('step', '0')
                 response.setdefault('filename', filename)
             else:
-                correctName = docManager.getCorrectName(
-                    fileUtils.getFileNameWithoutExt(filename) + '.' + convertedData['fileType'], request
-                    )  # otherwise, create a new name with the necessary extension
-                path = docManager.getStoragePath(correctName, request)
-                # save the file from the new url in the storage directory
-                docManager.downloadFileFromUri(convertedData['uri'], path, True)
-                docManager.removeFile(filename, request)  # remove the original file
-                response.setdefault('filename', correctName)  # pass the name of the converted file to the response
+                if not any(f.name == convertedData['fileType'] and len(f.actions) > 0 for f in FormatManager().all()):
+                    response.setdefault('step', '100')
+                    response.setdefault('filename', convertedData['uri'])
+                    response.setdefault('error', 'FileTypeIsNotSupported')
+                else:
+                    correctName = docManager.getCorrectName(
+                        fileUtils.getFileNameWithoutExt(filename) + '.' + convertedData['fileType'], request
+                        )  # otherwise, create a new name with the necessary extension
+                    path = docManager.getStoragePath(correctName, request)
+                    # save the file from the new url in the storage directory
+                    docManager.downloadFileFromUri(convertedData['uri'], path, True)
+                    if not keepOriginal:
+                        docManager.removeFile(filename, request)  # remove the original file
+                    response.setdefault('filename', correctName)  # pass the name of the converted file to the response
+                    response.setdefault('step', '100')
         else:
             # if the file can't be converted, the original file name is passed to the response
             response.setdefault('filename', filename)
