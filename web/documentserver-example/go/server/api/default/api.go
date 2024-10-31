@@ -560,7 +560,9 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 		toExt = payload.Filetype
 	}
 
-	if srv.DocumentManager.IsDocumentConvertable(filename) {
+	keepOriginal := payload.Keeporiginal
+
+	if srv.DocumentManager.IsDocumentConvertable(filename) || payload.Filetype != "" {
 		key, err := srv.StorageManager.GenerateFileHash(filename)
 		if err != nil {
 			response.Error = err.Error()
@@ -578,6 +580,26 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 		if newUrl == "" {
 			response.Step = 1
 		} else {
+			response.Step = 100
+
+			supportedExt := true
+			fm, err := utils.NewFormatManager()
+			for _, f := range fm.GetFormats() {
+				if f.Name == newExt && len(f.Actions) == 0 {
+					supportedExt = false
+					break
+				}
+			}
+
+			if !supportedExt && err == nil {
+				response.Error = "FileTypeIsNotSupported"
+				response.Filename = newUrl
+				return
+			} else if err != nil {
+				response.Error = err.Error()
+				return
+			}
+
 			correctName, err := srv.StorageManager.GenerateVersionedFilename(utils.GetFileNameWithoutExt(filename) + "." + newExt)
 			if err != nil {
 				response.Error = err.Error()
@@ -590,7 +612,9 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 				Filename:    correctName,
 				UserAddress: r.Host,
 			})
-			srv.StorageManager.RemoveFile(filename)
+			if !keepOriginal {
+				srv.StorageManager.RemoveFile(filename)
+			}
 			response.Filename = correctName
 			srv.HistoryManager.CreateMeta(response.Filename, models.History{
 				ServerVersion: srv.config.Version,

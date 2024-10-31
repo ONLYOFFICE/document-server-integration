@@ -71,9 +71,10 @@ func (ep *Editor) IsValid() error {
 }
 
 type ConvertRequest struct {
-	Filename string `json:"filename"`
-	Filepass string `json:"filePass"`
-	Filetype string `json:"fileExt"`
+	Filename     string `json:"filename"`
+	Filepass     string `json:"filePass"`
+	Filetype     string `json:"fileExt"`
+	Keeporiginal bool   `json:"keepOriginal"`
 }
 
 type ConvertResponse struct {
