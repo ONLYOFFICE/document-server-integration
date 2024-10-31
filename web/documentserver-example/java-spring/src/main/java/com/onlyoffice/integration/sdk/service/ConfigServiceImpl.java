@@ -93,7 +93,7 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
 
         Config config = super.createConfig(fileId, mode, type);
 
-        if ((currentAction.equals(Action.fillForms) || currentAction.equals(Action.embedded))
+        if (!currentAction.equals(Action.view)
                 && appUser.getPermissions().getSubmitForm()) {
             config.getEditorConfig().getCustomization().setSubmitForm(true);
         }

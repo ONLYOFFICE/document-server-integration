@@ -1,5 +1,5 @@
 {
-  "version": "1.10.0",
+  "version": "1.11.0",
   "log": {
     "appenders": [
       {
@@ -17,8 +17,8 @@
     "wopi": {
       "discovery": "hosting/discovery"
     },
-    "commandUrl": "coauthoring/CommandService.ashx",
-    "converterUrl": "ConvertService.ashx",
+    "commandUrl": "command",
+    "converterUrl": "converter",
     "apiUrl": "web-apps/apps/api/documents/api.js",
     "preloaderUrl": "web-apps/apps/api/documents/cache-scripts.html",
     "exampleUrl": null,
@@ -58,6 +58,7 @@
       "gl": "Galego",
       "de": "German",
       "el": "Greek",
+      "he-IL": "Hebrew (Israel)",
       "hu": "Hungarian",
       "id": "Indonesian",
       "it": "Italian",

@@ -227,7 +227,7 @@ namespace ASC.Api.DocumentConverter
         private static void ProcessResponseError(int errorCode)
         {
             var errorMessage = string.Empty;
-            const string errorMessageTemplate = "Error occurred in the ConvertService.ashx: {0}";
+            const string errorMessageTemplate = "Error occurred in the ConvertService: {0}";
 
             switch (errorCode)
             {

@@ -1,5 +1,11 @@
 # Change Log
 
+## 1.11.0
+- he-IL skin language
+- ConvertService.ashx address replaced with converter
+- coauthoring/CommandService.ashx address replaced with command
+- without submitForm in viewer
+
 ## 1.10.0
 - nodejs: converting function on index page
 - java-spring: using java docs-integration-sdk

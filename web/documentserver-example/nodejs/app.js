@@ -273,7 +273,9 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
   const uploadDirTmp = path.join(uploadDir, 'tmp'); // and create directory for temporary files if it doesn't exist
   req.DocManager.createDirectory(uploadDirTmp);
 
-  const form = new formidable.IncomingForm(); // create a new incoming form
+  const fileSizeLimit = configServer.get('maxFileSize');
+  // create a new incoming form
+  const form = new formidable.IncomingForm({ maxFileSize: fileSizeLimit, maxTotalFileSize: fileSizeLimit });
   form.uploadDir = uploadDirTmp; // and write there all the necessary parameters
   form.keepExtensions = true;
 
@@ -298,7 +300,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     file.originalFilename = req.DocManager.getCorrectName(file.originalFilename);
 
     // check if the file size exceeds the maximum file size
-    if (configServer.get('maxFileSize') < file.size || file.size <= 0) {
+    if (fileSizeLimit < file.size || file.size <= 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'text/plain' });
       res.write('{ "error": "File size is incorrect"}');
@@ -458,7 +460,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
       if (fileUtility.getFileType(correctName) !== null) {
         fileSystem.writeFileSync(req.DocManager.storagePath(correctName), data);
       } else {
-        writeResult(newFileUri.replace('http://localhost', siteUrl), result, 'FileTypeIsNotSupported');
+        writeResult(newFileUri.replace('http://localhost/', siteUrl), result, 'FileTypeIsNotSupported');
         return;
       }
       // remove file with the origin extension
@@ -1101,14 +1103,11 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const key = req.DocManager.getKey(fileName);
     const url = req.DocManager.getDownloadUrl(fileName, true);
     const directUrl = req.DocManager.getDownloadUrl(fileName);
-
-    // check if this file can be filled
-    const canFill = fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1;
-    let mode = req.query.mode || (canFill ? 'fillForms' : 'edit'); // mode: view/edit/review/comment/fillForms/embedded
+    let mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
 
     let canEdit = fileUtility.getEditExtensions().indexOf(fileExt.slice(1)) !== -1; // check if this file can be edited
     if (((!canEdit && mode === 'edit') || mode === 'fillForms')
-      && canFill) {
+      && fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1) {
       mode = 'fillForms';
       canEdit = true;
     }
@@ -1117,7 +1116,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     let submitForm = false;
-    if (mode === 'fillForms' || mode === 'embedded') {
+    if (mode !== 'view') {
       submitForm = userid === 'uid-1';
     }
 

@@ -31,7 +31,7 @@ class ConfigurationManager
 
   sig { void }
   def initialize
-    @version = '1.10.0'
+    @version = '1.11.0'
   end
 
   sig { returns(T.nilable(URI::Generic)) }
@@ -76,7 +76,7 @@ class ConfigurationManager
   def document_server_command_uri
     path =
       ENV['DOCUMENT_SERVER_COMMAND_PATH'] ||
-      '/coauthoring/CommandService.ashx'
+      '/command'
     URI.join(document_server_private_uri, path)
   end
 
@@ -84,7 +84,7 @@ class ConfigurationManager
   def document_server_converter_uri
     path =
       ENV['DOCUMENT_SERVER_CONVERTER_PATH'] ||
-      '/ConvertService.ashx'
+      '/converter'
     URI.join(document_server_private_uri, path)
   end
 
@@ -168,6 +168,7 @@ class ConfigurationManager
       gl: 'Galego',
       de: 'German',
       el: 'Greek',
+      'he-IL': 'Hebrew (Israel)',
       hu: 'Hungarian',
       id: 'Indonesian',
       it: 'Italian',

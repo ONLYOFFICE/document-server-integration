@@ -164,7 +164,7 @@ public class FileModel {
         }
 
         // check if the Submit form button is displayed or not
-        if (mode.equals("fillForms") || mode.equals("embedded")) {
+        if (!mode.equals("view")) {
             editorConfig.getCustomization().setSubmitForm(user.getId().equals("uid-1"));
         }
 

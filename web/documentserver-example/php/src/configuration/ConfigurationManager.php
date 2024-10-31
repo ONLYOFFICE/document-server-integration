@@ -22,7 +22,7 @@ use Example\Common\URL;
 
 class ConfigurationManager
 {
-    public string $version = '1.10.0';
+    public string $version = '1.11.0';
 
     public function getVersion(): string
     {
@@ -73,7 +73,7 @@ class ConfigurationManager
     {
         $serverURL = $this->documentServerPrivateURL();
         $path = getenv('DOCUMENT_SERVER_COMMAND_PATH')
-            ?: 'coauthoring/CommandService.ashx';
+            ?: 'command';
         return $serverURL->joinPath($path);
     }
 
@@ -81,7 +81,7 @@ class ConfigurationManager
     {
         $serverURL = $this->documentServerPrivateURL();
         $path = getenv('DOCUMENT_SERVER_CONVERTER_PATH')
-            ?: 'ConvertService.ashx';
+            ?: 'converter';
         return $serverURL->joinPath($path);
     }
 
@@ -188,6 +188,7 @@ class ConfigurationManager
             'gl' => 'Galego',
             'de' => 'German',
             'el' => 'Greek',
+            'he-IL' => 'Hebrew (Israel)',
             'hu' => 'Hungarian',
             'id' => 'Indonesian',
             'it' => 'Italian',

@@ -42,7 +42,7 @@ final class ConfigurationManagerDocumentServerCommandURLTests extends TestCase
         $configManager = new ConfigurationManager();
         $url = $configManager->documentServerCommandURL();
         $this->assertEquals(
-            'http://documentserver/coauthoring/CommandService.ashx',
+            'http://documentserver/command',
             $url->string()
         );
     }
