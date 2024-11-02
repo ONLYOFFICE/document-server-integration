@@ -21,23 +21,35 @@ import (
 	"net/http"
 )
 
-type ServerEndpointsHandler interface {
-	Index(w http.ResponseWriter, r *http.Request)
-	Editor(w http.ResponseWriter, r *http.Request)
-	Remove(w http.ResponseWriter, r *http.Request)
-	Upload(w http.ResponseWriter, r *http.Request)
-	Download(w http.ResponseWriter, r *http.Request)
-	History(w http.ResponseWriter, r *http.Request)
-	Convert(w http.ResponseWriter, r *http.Request)
+type FileOperationsEndpointsHandler interface {
 	Callback(w http.ResponseWriter, r *http.Request)
+	Convert(w http.ResponseWriter, r *http.Request)
 	Create(w http.ResponseWriter, r *http.Request)
-	Reference(w http.ResponseWriter, r *http.Request)
-	Files(w http.ResponseWriter, r *http.Request)
+	Download(w http.ResponseWriter, r *http.Request)
+	Remove(w http.ResponseWriter, r *http.Request)
 	Rename(w http.ResponseWriter, r *http.Request)
-	HistoryObj(w http.ResponseWriter, r *http.Request)
 	Restore(w http.ResponseWriter, r *http.Request)
+	Upload(w http.ResponseWriter, r *http.Request)
+}
+
+type InfoEndpointsHandler interface {
+	Files(w http.ResponseWriter, r *http.Request)
 	Formats(w http.ResponseWriter, r *http.Request)
+	History(w http.ResponseWriter, r *http.Request)
+	HistoryObj(w http.ResponseWriter, r *http.Request)
+	Reference(w http.ResponseWriter, r *http.Request)
+}
+
+type PagesEndpointsHandler interface {
+	Editor(w http.ResponseWriter, r *http.Request)
 	Forgotten(w http.ResponseWriter, r *http.Request)
+	Index(w http.ResponseWriter, r *http.Request)
+}
+
+type ServerEndpointsHandler interface {
+	FileOperationsEndpointsHandler
+	InfoEndpointsHandler
+	PagesEndpointsHandler
 }
 
 type ServerAPI struct {
