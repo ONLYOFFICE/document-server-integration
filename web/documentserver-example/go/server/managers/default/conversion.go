@@ -104,7 +104,7 @@ func (cm DefaultConversionManager) GetConverterUri(
 
 	payload := managers.ConvertRequestPayload{
 		DocUrl:     docUri,
-		OutputType: strings.Replace(toExt, ".", "", -1),
+		OutputType: strings.ReplaceAll(toExt, ".", ""),
 		FileType:   fromExt,
 		Title:      utils.GetFileName(docUri),
 		Key:        docKey,

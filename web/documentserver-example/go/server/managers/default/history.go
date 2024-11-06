@@ -69,7 +69,7 @@ func (hm DefaultHistoryManager) readHistoryFileKey(keyPath string) (string, erro
 		return "", err
 	}
 
-	return string(key[:]), nil
+	return string(key), nil
 }
 
 func (hm DefaultHistoryManager) buildNextHistory(hist models.History, key string, version int) models.History {
