@@ -91,7 +91,13 @@ func (cm DefaultConversionManager) IsCanConvert(ext string) bool {
 	return utils.IsInList(ext, cm.specification.Extensions.Converted)
 }
 
-func (cm DefaultConversionManager) GetConverterUri(docUri string, fromExt string, toExt string, docKey string, isAsync bool) (string, string, error) {
+func (cm DefaultConversionManager) GetConverterUri(
+	docUri string,
+	fromExt string,
+	toExt string,
+	docKey string,
+	isAsync bool,
+) (string, string, error) {
 	if fromExt == "" {
 		fromExt = utils.GetFileExt(docUri, true)
 	}
@@ -129,7 +135,11 @@ func (cm DefaultConversionManager) GetConverterUri(docUri string, fromExt string
 		return "", "", err
 	}
 
-	req, err := http.NewRequest("POST", cm.config.DocumentServerHost+cm.config.DocumentServerConverter, bytes.NewReader(requestBody))
+	req, err := http.NewRequest(
+		"POST",
+		cm.config.DocumentServerHost+cm.config.DocumentServerConverter,
+		bytes.NewReader(requestBody),
+	)
 	if err != nil {
 		return "", "", err
 	}

@@ -109,7 +109,9 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 				return
 			}
 
-			correctName, err := srv.StorageManager.GenerateVersionedFilename(utils.GetFileNameWithoutExt(filename) + "." + newExt)
+			correctName, err := srv.StorageManager.GenerateVersionedFilename(
+				utils.GetFileNameWithoutExt(filename) + "." + newExt,
+			)
 			if err != nil {
 				response.Error = err.Error()
 				srv.logger.Errorf("File conversion error: %s", err.Error())

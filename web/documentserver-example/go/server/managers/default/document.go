@@ -86,7 +86,10 @@ func (dm DefaultDocumentManager) sanitizeEditorParameters(parameters *managers.E
 	}
 }
 
-func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor, remoteAddress string) (*models.Config, error) {
+func (dm DefaultDocumentManager) BuildDocumentConfig(
+	parameters managers.Editor,
+	remoteAddress string,
+) (*models.Config, error) {
 	user, err := dm.GetUserById(parameters.UserId)
 	if err != nil {
 		return nil, err
@@ -164,22 +167,28 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 			},
 			Permissions: models.Permissions{
 				Chat: user.Id != "uid-1",
-				Comment: parameters.PermissionsMode != onlyoffice_permission_view && parameters.PermissionsMode != onlyoffice_permission_fill_forms &&
-					parameters.PermissionsMode != onlyoffice_permission_embedded && parameters.PermissionsMode != onlyoffice_permission_blockcontent,
+				Comment: parameters.PermissionsMode != onlyoffice_permission_view &&
+					parameters.PermissionsMode != onlyoffice_permission_fill_forms &&
+					parameters.PermissionsMode != onlyoffice_permission_embedded &&
+					parameters.PermissionsMode != onlyoffice_permission_blockcontent,
 				Copy:     !slices.Contains(user.DeniedPermissions, "copy"),
 				Download: true,
 				Edit: parameters.CanEdit && (parameters.PermissionsMode == onlyoffice_permission_edit ||
-					parameters.PermissionsMode == onlyoffice_permission_filter || parameters.PermissionsMode == onlyoffice_permission_blockcontent),
-				FillForms: parameters.PermissionsMode != onlyoffice_permission_view && parameters.PermissionsMode != onlyoffice_permission_comment &&
-					parameters.PermissionsMode != onlyoffice_permission_embedded && parameters.PermissionsMode != onlyoffice_permission_blockcontent,
+					parameters.PermissionsMode == onlyoffice_permission_filter ||
+					parameters.PermissionsMode == onlyoffice_permission_blockcontent),
+				FillForms: parameters.PermissionsMode != onlyoffice_permission_view &&
+					parameters.PermissionsMode != onlyoffice_permission_comment &&
+					parameters.PermissionsMode != onlyoffice_permission_embedded &&
+					parameters.PermissionsMode != onlyoffice_permission_blockcontent,
 				ModifyFilter:         parameters.PermissionsMode != onlyoffice_permission_filter,
 				ModifyContentControl: parameters.PermissionsMode != onlyoffice_permission_blockcontent,
 				Print:                !slices.Contains(user.DeniedPermissions, "print"),
-				Review:               parameters.PermissionsMode == onlyoffice_permission_edit || parameters.PermissionsMode == onlyoffice_permission_review,
-				RewiewGroups:         user.ReviewGroups,
-				CommentGroups:        user.CommentGroups,
-				UserInfoGroups:       user.UserInfoGroups,
-				Protect:              !slices.Contains(user.DeniedPermissions, "protect"),
+				Review: parameters.PermissionsMode == onlyoffice_permission_edit ||
+					parameters.PermissionsMode == onlyoffice_permission_review,
+				RewiewGroups:   user.ReviewGroups,
+				CommentGroups:  user.CommentGroups,
+				UserInfoGroups: user.UserInfoGroups,
+				Protect:        !slices.Contains(user.DeniedPermissions, "protect"),
 			},
 			ReferenceData: models.ReferenceData{
 				FileKey:    fmt.Sprintf("{\"fileName\":\"%s\"}", parameters.Filename),

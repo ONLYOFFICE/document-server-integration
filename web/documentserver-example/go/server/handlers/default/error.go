@@ -30,7 +30,11 @@ type DefaultSavingErrorHandler struct {
 	reg *handlers.CallbackRegistry
 }
 
-func NewDefaultSavingErrorHandler(logger *zap.SugaredLogger, smanager managers.StorageManager, reg *handlers.CallbackRegistry) *DefaultSavingErrorHandler {
+func NewDefaultSavingErrorHandler(
+	logger *zap.SugaredLogger,
+	smanager managers.StorageManager,
+	reg *handlers.CallbackRegistry,
+) *DefaultSavingErrorHandler {
 	shandler := DefaultSavingErrorHandler{
 		logger,
 		smanager,

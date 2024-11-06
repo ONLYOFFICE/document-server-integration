@@ -153,7 +153,11 @@ func (sm DefaultStorageManager) GenerateFilestoreUri(originalName string, meta m
 	)
 }
 
-func (sm DefaultStorageManager) GeneratePublicFileUri(originalName string, remoteAddress string, meta managers.FileMeta) string {
+func (sm DefaultStorageManager) GeneratePublicFileUri(
+	originalName string,
+	remoteAddress string,
+	meta managers.FileMeta,
+) string {
 	if meta.Version == 0 || meta.DestinationPath == "" {
 		sm.logger.Debugf("Generating file %s uri", originalName)
 		return fmt.Sprintf(

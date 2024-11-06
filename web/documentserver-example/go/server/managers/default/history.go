@@ -118,7 +118,11 @@ func (hm DefaultHistoryManager) signHistorySet(set *managers.HistorySet) error {
 	return nil
 }
 
-func (hm DefaultHistoryManager) fetchNextHistoryEntry(remoteAddress, filename string, version int) (models.History, managers.HistorySet, error) {
+func (hm DefaultHistoryManager) fetchNextHistoryEntry(
+	remoteAddress,
+	filename string,
+	version int,
+) (models.History, managers.HistorySet, error) {
 	var (
 		hresp  models.History
 		hsresp managers.HistorySet
@@ -168,7 +172,9 @@ func (hm DefaultHistoryManager) fetchNextHistoryEntry(remoteAddress, filename st
 		})
 
 		var changesUrl string
-		if hm.StorageManager.PathExists(path.Join(storagePath, filename+shared.ONLYOFFICE_HISTORY_POSTFIX, fmt.Sprint(version-1), "diff.zip")) {
+		if hm.StorageManager.PathExists(
+			path.Join(storagePath, filename+shared.ONLYOFFICE_HISTORY_POSTFIX, fmt.Sprint(version-1), "diff.zip"),
+		) {
 			changesUrl = hm.StorageManager.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{
 				Version:         version - 1,
 				DestinationPath: "diff.zip",
@@ -199,7 +205,10 @@ func (hm DefaultHistoryManager) fetchNextHistoryEntry(remoteAddress, filename st
 	return hm.buildNextHistory(mchanges, key, version), hset, nil
 }
 
-func (hm DefaultHistoryManager) GetHistory(filename, remoteAddress string) (managers.HistoryRefresh, []managers.HistorySet, error) {
+func (hm DefaultHistoryManager) GetHistory(
+	filename,
+	remoteAddress string,
+) (managers.HistoryRefresh, []managers.HistorySet, error) {
 	var (
 		version int = 1
 		rhist   managers.HistoryRefresh
@@ -239,7 +248,9 @@ func (hm DefaultHistoryManager) GetHistory(filename, remoteAddress string) (mana
 	}
 
 	var changesUrl string
-	if hm.StorageManager.PathExists(path.Join(rootPath, filename+shared.ONLYOFFICE_HISTORY_POSTFIX, fmt.Sprint(version-1), "diff.zip")) {
+	if hm.StorageManager.PathExists(
+		path.Join(rootPath, filename+shared.ONLYOFFICE_HISTORY_POSTFIX, fmt.Sprint(version-1), "diff.zip"),
+	) {
 		changesUrl = hm.StorageManager.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{
 			Version:         version - 1,
 			DestinationPath: "diff.zip",
@@ -379,7 +390,10 @@ func (hm DefaultHistoryManager) CreateHistory(cbody models.Callback) error {
 				return err
 			}
 
-			err = hm.StorageManager.MoveFile(prevFilePath, path.Join(histDirVersion, "prev"+utils.GetFileExt(cbody.Filename, false)))
+			err = hm.StorageManager.MoveFile(
+				prevFilePath,
+				path.Join(histDirVersion, "prev"+utils.GetFileExt(cbody.Filename, false)),
+			)
 			if err != nil {
 				return err
 			}
