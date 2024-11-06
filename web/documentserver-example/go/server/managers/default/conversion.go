@@ -21,7 +21,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"strings"
 
@@ -156,7 +156,7 @@ func (cm DefaultConversionManager) GetConverterUri(
 	}
 
 	defer response.Body.Close()
-	jsonBody, err := ioutil.ReadAll(response.Body)
+	jsonBody, err := io.ReadAll(response.Body)
 	if err != nil {
 		return "", "", err
 	}

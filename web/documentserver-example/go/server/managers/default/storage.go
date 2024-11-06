@@ -21,7 +21,6 @@ import (
 	"crypto/md5"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"path"
@@ -79,9 +78,19 @@ func (sm DefaultStorageManager) GetStoredFiles(remoteAddress string) ([]models.D
 		return documents, err
 	}
 
-	files, err := ioutil.ReadDir(dir)
+	directory, err := os.ReadDir(dir)
 	if err != nil {
 		return documents, err
+	}
+
+	var files []os.FileInfo
+	for _, d := range directory {
+		f, err := d.Info()
+		if err != nil {
+			return documents, err
+		}
+
+		files = append(files, f)
 	}
 
 	sort.Slice(files, func(i, j int) bool {
@@ -275,7 +284,7 @@ func (sm DefaultStorageManager) RemoveAll() error {
 }
 
 func (sm DefaultStorageManager) ReadFile(fpath string) ([]byte, error) {
-	file, err := ioutil.ReadFile(fpath)
+	file, err := os.ReadFile(fpath)
 
 	if err != nil {
 		return nil, err
