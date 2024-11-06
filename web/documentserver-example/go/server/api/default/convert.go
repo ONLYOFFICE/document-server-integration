@@ -116,16 +116,24 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 				return
 			}
 
-			srv.StorageManager.SaveFileFromUri(models.Callback{
+			err = srv.StorageManager.SaveFileFromUri(models.Callback{
 				Url:         newUrl,
 				Filename:    correctName,
 				UserAddress: r.Host,
 			})
+			if err != nil {
+				response.Error = err.Error()
+				return
+			}
+
 			if !keepOriginal {
-				srv.StorageManager.RemoveFile(filename)
+				err = srv.StorageManager.RemoveFile(filename)
+				if err != nil {
+					srv.logger.Errorf("File deletion error: %s", err.Error())
+				}
 			}
 			response.Filename = correctName
-			srv.HistoryManager.CreateMeta(response.Filename, models.History{
+			err = srv.HistoryManager.CreateMeta(response.Filename, models.History{
 				ServerVersion: srv.config.Version,
 				Changes: []models.Changes{
 					{
@@ -137,6 +145,9 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 					},
 				},
 			})
+			if err != nil {
+				srv.logger.Errorf("Meta creation error: %s", err.Error())
+			}
 		}
 	}
 }

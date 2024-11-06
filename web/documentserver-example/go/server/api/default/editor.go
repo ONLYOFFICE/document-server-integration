@@ -80,5 +80,5 @@ func (srv *DefaultServerEndpointsHandler) Editor(w http.ResponseWriter, r *http.
 		},
 	}
 
-	editorTemplate.Execute(w, data)
+	editorTemplate.Execute(w, data) // nolint: errcheck
 }

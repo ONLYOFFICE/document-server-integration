@@ -354,23 +354,47 @@ func (hm DefaultHistoryManager) CreateHistory(cbody models.Callback) error {
 	for {
 		histDirVersion := path.Join(hdir, fmt.Sprint(version))
 		if !hm.StorageManager.PathExists(histDirVersion) {
-			hm.StorageManager.CreateDirectory(histDirVersion)
-			hm.StorageManager.MoveFile(path.Join(hdir, cbody.Filename+".json"), path.Join(histDirVersion, "changes.json"))
+			err = hm.StorageManager.CreateDirectory(histDirVersion)
+			if err != nil {
+				return err
+			}
+
+			err = hm.StorageManager.MoveFile(path.Join(hdir, cbody.Filename+".json"), path.Join(histDirVersion, "changes.json"))
+			if err != nil {
+				return err
+			}
+
 			cbytes, err := json.Marshal(cbody.History)
 			if err != nil {
 				return err
 			}
 
-			hm.StorageManager.CreateFile(bytes.NewReader(cbytes), path.Join(hdir, cbody.Filename+".json"))
-			hm.StorageManager.CreateFile(bytes.NewReader([]byte(cbody.Key)), path.Join(histDirVersion, "key.txt"))
-			hm.StorageManager.MoveFile(prevFilePath, path.Join(histDirVersion, "prev"+utils.GetFileExt(cbody.Filename, false)))
+			err = hm.StorageManager.CreateFile(bytes.NewReader(cbytes), path.Join(hdir, cbody.Filename+".json"))
+			if err != nil {
+				return err
+			}
+
+			err = hm.StorageManager.CreateFile(bytes.NewReader([]byte(cbody.Key)), path.Join(histDirVersion, "key.txt"))
+			if err != nil {
+				return err
+			}
+
+			err = hm.StorageManager.MoveFile(prevFilePath, path.Join(histDirVersion, "prev"+utils.GetFileExt(cbody.Filename, false)))
+			if err != nil {
+				return err
+			}
+
 			resp, err := http.Get(cbody.ChangesUrl)
 			if err != nil {
 				return err
 			}
 
 			defer resp.Body.Close()
-			hm.StorageManager.CreateFile(resp.Body, path.Join(histDirVersion, "diff.zip"))
+			err = hm.StorageManager.CreateFile(resp.Body, path.Join(histDirVersion, "diff.zip"))
+			if err != nil {
+				return err
+			}
+
 			break
 		}
 		version += 1

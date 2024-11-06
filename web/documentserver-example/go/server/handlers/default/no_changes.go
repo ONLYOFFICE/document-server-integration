@@ -33,7 +33,7 @@ func NewDefaultNoChangesHandler(logger *zap.SugaredLogger, reg *handlers.Callbac
 		logger,
 		reg,
 	}
-	handler.reg.RegisterCallbackHandler(handler)
+	handler.reg.RegisterCallbackHandler(handler) // nolint: errcheck
 	return &handler
 }
 

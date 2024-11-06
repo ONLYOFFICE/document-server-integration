@@ -64,17 +64,23 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 
 		correctName, err := srv.StorageManager.GenerateVersionedFilename(fileName)
 		if err != nil {
-			srv.logger.Errorf("file saving error: ", err)
+			srv.logger.Errorf("file saving error: %s", err.Error())
 			shared.SendCustomErrorResponse(w, "file saving error")
 			return
 		}
 
-		srv.StorageManager.SaveFileFromUri(models.Callback{
+		err = srv.StorageManager.SaveFileFromUri(models.Callback{
 			Url:         url,
 			Filename:    correctName,
 			UserAddress: r.Host,
 		})
-		srv.HistoryManager.CreateMeta(correctName, models.History{
+		if err != nil {
+			srv.logger.Errorf("file saving error: %s", err.Error())
+			shared.SendCustomErrorResponse(w, "file saving error")
+			return
+		}
+
+		err = srv.HistoryManager.CreateMeta(correctName, models.History{
 			ServerVersion: srv.config.Version,
 			Changes: []models.Changes{
 				{
@@ -86,6 +92,9 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 				},
 			},
 		})
+		if err != nil {
+			srv.logger.Errorf("meta creation error: %s", err.Error())
+		}
 
 		return
 	}
@@ -142,8 +151,14 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 		return
 	}
 
-	srv.StorageManager.CreateFile(file, fpath)
-	srv.HistoryManager.CreateMeta(filename, models.History{
+	err = srv.StorageManager.CreateFile(file, fpath)
+	if err != nil {
+		srv.logger.Errorf("could not create file: %s", filename)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	err = srv.HistoryManager.CreateMeta(filename, models.History{
 		ServerVersion: srv.config.Version,
 		Changes: []models.Changes{
 			{
@@ -155,6 +170,9 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 			},
 		},
 	})
+	if err != nil {
+		srv.logger.Errorf("could not create file meta: %s", filename)
+	}
 
 	http.Redirect(w, r, "/editor?filename="+filename, http.StatusSeeOther)
 }

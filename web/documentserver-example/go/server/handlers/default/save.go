@@ -39,7 +39,7 @@ func NewDefaultSaveHandler(logger *zap.SugaredLogger, smanager managers.StorageM
 		hmanager,
 		reg,
 	}
-	shandler.reg.RegisterCallbackHandler(shandler)
+	shandler.reg.RegisterCallbackHandler(shandler) // nolint: errcheck
 	return &shandler
 }
 

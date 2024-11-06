@@ -73,14 +73,37 @@ func (srv *DefaultServerEndpointsHandler) Restore(w http.ResponseWriter, r *http
 		return
 	}
 
-	srv.Managers.StorageManager.CreateDirectory(newVersionPath)
+	err = srv.Managers.StorageManager.CreateDirectory(newVersionPath)
+	if err != nil {
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
+
 	currFile, _ := srv.Managers.StorageManager.ReadFile(filePath)
-	srv.Managers.StorageManager.CreateFile(
+	err = srv.Managers.StorageManager.CreateFile(
 		bytes.NewBuffer(currFile),
 		path.Join(newVersionPath, "prev"+utils.GetFileExt(fileName, false)))
-	srv.Managers.StorageManager.CreateFile(bytes.NewBuffer([]byte(key)), path.Join(newVersionPath, "key.txt"))
+	if err != nil {
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
+
+	err = srv.Managers.StorageManager.CreateFile(bytes.NewBuffer([]byte(key)), path.Join(newVersionPath, "key.txt"))
+	if err != nil {
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
+
 	verFile, _ := srv.Managers.StorageManager.ReadFile(versionPath)
-	srv.Managers.StorageManager.CreateFile(bytes.NewBuffer(verFile), filePath)
+	err = srv.Managers.StorageManager.CreateFile(bytes.NewBuffer(verFile), filePath)
+	if err != nil {
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
 
 	result["success"] = true
 	shared.SendResponse(w, result)

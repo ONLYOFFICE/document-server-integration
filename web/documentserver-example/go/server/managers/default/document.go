@@ -134,7 +134,10 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(parameters managers.Editor,
 	}
 	var plugins map[string]interface{}
 	if dm.config.Plugins != "" {
-		json.Unmarshal([]byte(dm.config.Plugins), &plugins)
+		err = json.Unmarshal([]byte(dm.config.Plugins), &plugins)
+		if err != nil {
+			plugins = nil
+		}
 	}
 	submitForm := user.Id == "uid-1"
 

@@ -38,5 +38,5 @@ func (srv *DefaultServerEndpointsHandler) Index(w http.ResponseWriter, r *http.R
 		"ServerVersion":    srv.config.Version,
 	}
 
-	indexTemplate.Execute(w, data)
+	indexTemplate.Execute(w, data) // nolint: errcheck
 }

@@ -78,5 +78,5 @@ func (srv *DefaultServerEndpointsHandler) Forgotten(w http.ResponseWriter, r *ht
 		"Files": files,
 	}
 
-	forgottenTemplate.Execute(w, data)
+	forgottenTemplate.Execute(w, data) // nolint: errcheck
 }

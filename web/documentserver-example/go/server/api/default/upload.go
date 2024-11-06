@@ -27,7 +27,12 @@ import (
 )
 
 func (srv *DefaultServerEndpointsHandler) Upload(w http.ResponseWriter, r *http.Request) {
-	r.ParseMultipartForm(32 << 20)
+	err := r.ParseMultipartForm(32 << 20)
+	if err != nil {
+		srv.logger.Error(err.Error())
+		return
+	}
+
 	file, handler, err := r.FormFile("uploadedFile")
 	w.Header().Set("Content-Type", "application/json")
 
@@ -71,7 +76,7 @@ func (srv *DefaultServerEndpointsHandler) Upload(w http.ResponseWriter, r *http.
 		return
 	}
 
-	srv.HistoryManager.CreateMeta(fileName, models.History{
+	err = srv.HistoryManager.CreateMeta(fileName, models.History{
 		ServerVersion: srv.config.Version,
 		Changes: []models.Changes{
 			{
@@ -83,6 +88,9 @@ func (srv *DefaultServerEndpointsHandler) Upload(w http.ResponseWriter, r *http.
 			},
 		},
 	})
+	if err != nil {
+		srv.logger.Errorf("could not create meta")
+	}
 
 	fmt.Fprintf(w, "{\"filename\":\"%s\"}", fileName)
 }

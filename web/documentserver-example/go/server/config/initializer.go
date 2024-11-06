@@ -39,8 +39,16 @@ func Initialize(
 			},
 			OnStop: func(c context.Context) error {
 				logger.Info("Shutting down the server")
-				logger.Sync()
-				server.Http.Shutdown(c)
+				err := logger.Sync()
+				if err != nil {
+					return err
+				}
+
+				err = server.Http.Shutdown(c)
+				if err != nil {
+					return err
+				}
+
 				return nil
 			},
 		},
