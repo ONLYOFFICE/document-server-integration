@@ -33,7 +33,6 @@ var _ErrJwtSigning = errors.New("jwt could not create a signed string with the g
 var _ErrJwtEmpty = errors.New("jwt string is empty")
 var _ErrUnexpectedJwtSigningMethod = errors.New("unexpected JWT signing method")
 var _ErrJwtInvalid = errors.New("jwt token is not valid")
-var _ErrCallbackJwtProcessing = errors.New("could not process JWT in callback body")
 
 type DefaultJwtManager struct {
 	config config.ApplicationConfig

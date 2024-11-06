@@ -26,7 +26,6 @@ import (
 	"os"
 	"path"
 	"sort"
-	"strings"
 	"time"
 
 	"github.com/ONLYOFFICE/document-server-integration/config"
@@ -302,10 +301,4 @@ func (sm DefaultStorageManager) SaveFileFromUri(body models.Callback) error {
 	}
 
 	return sm.CreateFile(resp.Body, fpath)
-}
-
-func sanitiazeRemoteAddress(remoteAddress string) string {
-	remoteAddress = strings.Replace(remoteAddress, "https://", "", 1)
-	remoteAddress = strings.Replace(remoteAddress, "http://", "", 1)
-	return remoteAddress
 }
