@@ -66,7 +66,7 @@ func NewDefaultDocumentManager(config config.ApplicationConfig, specification co
 	}
 }
 
-// TODO: Use 'enums' instead of strings
+// TODO: Use 'enums' instead of strings.
 func (dm DefaultDocumentManager) sanitizeEditorParameters(parameters *managers.Editor) {
 	parameters.PermissionsMode = parameters.Mode
 	parameters.Mode = "view"
