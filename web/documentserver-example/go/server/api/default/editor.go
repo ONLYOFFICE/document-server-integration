@@ -47,7 +47,7 @@ func (srv *DefaultServerEndpointsHandler) Editor(w http.ResponseWriter, r *http.
 
 	config, err := srv.Managers.DocumentManager.BuildDocumentConfig(editorParameters, remoteAddr)
 	if err != nil {
-		srv.logger.Errorf("A document manager error has occured: %s", err.Error())
+		srv.logger.Errorf("A document manager error has occurred: %s", err.Error())
 		return
 	}
 
