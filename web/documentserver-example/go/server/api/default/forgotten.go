@@ -37,11 +37,12 @@ func (srv *DefaultServerEndpointsHandler) Forgotten(w http.ResponseWriter, r *ht
 		if filename == "" {
 			shared.SendCustomErrorResponse(w, "No filename")
 		} else {
-			_, err := srv.Managers.CommandManager.CommandRequest("deleteForgotten", filename, nil)
+			r, err := srv.Managers.CommandManager.CommandRequest("deleteForgotten", filename, nil)
 			if err != nil {
 				srv.logger.Errorf("could not delete forgotten file: %s", err.Error())
 				shared.SendDocumentServerRespose(w, true)
 			} else {
+				defer r.Body.Close()
 				w.WriteHeader(http.StatusNoContent)
 				shared.SendDocumentServerRespose(w, false)
 			}
@@ -54,6 +55,7 @@ func (srv *DefaultServerEndpointsHandler) Forgotten(w http.ResponseWriter, r *ht
 	if err != nil {
 		srv.logger.Errorf("could not fetch forgotten files: %s", err.Error())
 	}
+	defer res.Body.Close()
 	if err = json.NewDecoder(res.Body).Decode(&forgottenList); err != nil {
 		srv.logger.Errorf("could not parse forgotten files: %s", err.Error())
 	}
@@ -65,6 +67,7 @@ func (srv *DefaultServerEndpointsHandler) Forgotten(w http.ResponseWriter, r *ht
 		if err != nil {
 			srv.logger.Errorf("could not fetch forgotten file[%s]: %s", file.Key, err.Error())
 		} else {
+			defer res.Body.Close()
 			if err = json.NewDecoder(res.Body).Decode(&file); err != nil {
 				srv.logger.Errorf("could not parse forgotten file[%s]: %s", file.Key, err.Error())
 			} else {

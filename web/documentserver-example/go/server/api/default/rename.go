@@ -53,6 +53,7 @@ func (srv *DefaultServerEndpointsHandler) Rename(w http.ResponseWriter, r *http.
 		shared.SendCustomErrorResponse(w, err.Error())
 		return
 	}
+	defer commandResponse.Body.Close()
 
 	var res map[string]interface{}
 	if err := json.NewDecoder(commandResponse.Body).Decode(&res); err != nil {
