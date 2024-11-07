@@ -75,7 +75,7 @@ func (hm DefaultHistoryManager) readHistoryFileKey(keyPath string) (string, erro
 func (hm DefaultHistoryManager) buildNextHistory(hist models.History, key string, version int) models.History {
 	if len(hist.Changes) == 0 {
 		return models.History{
-			Changes: []models.Changes{models.Changes{
+			Changes: []models.Changes{{
 				Created: hist.Created,
 				User:    *hist.User,
 			}},
