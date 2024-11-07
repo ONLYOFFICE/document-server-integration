@@ -32,7 +32,7 @@ import (
 )
 
 func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "POST" {
+	if r.Method == http.MethodPost {
 		var body map[string]string
 		if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
 			srv.logger.Error("Reference body decoding error")

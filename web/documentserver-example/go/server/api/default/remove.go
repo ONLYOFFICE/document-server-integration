@@ -24,7 +24,7 @@ import (
 )
 
 func (srv *DefaultServerEndpointsHandler) Remove(w http.ResponseWriter, r *http.Request) {
-	if r.Method == "DELETE" {
+	if r.Method == http.MethodDelete {
 		if err := srv.StorageManager.RemoveAll(); err != nil {
 			shared.SendDocumentServerRespose(w, true)
 			return

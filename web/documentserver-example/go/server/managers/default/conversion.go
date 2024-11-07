@@ -136,7 +136,7 @@ func (cm DefaultConversionManager) GetConverterUri(
 	}
 
 	req, err := http.NewRequest(
-		"POST",
+		http.MethodPost,
 		cm.config.DocumentServerHost+cm.config.DocumentServerConverter,
 		bytes.NewReader(requestBody),
 	)

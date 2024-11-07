@@ -32,7 +32,7 @@ func (srv *DefaultServerEndpointsHandler) Forgotten(w http.ResponseWriter, r *ht
 		return
 	}
 
-	if r.Method == "DELETE" {
+	if r.Method == http.MethodDelete {
 		filename := r.URL.Query().Get("fileName")
 		if filename == "" {
 			shared.SendCustomErrorResponse(w, "No filename")

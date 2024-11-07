@@ -84,7 +84,7 @@ func (cm DefaultCommandManager) CommandRequest(method string, docKey string, met
 		return nil, err
 	}
 
-	req, err := http.NewRequest("POST", uri, bytes.NewReader(requestBody))
+	req, err := http.NewRequest(http.MethodPost, uri, bytes.NewReader(requestBody))
 	if err != nil {
 		return nil, err
 	}
