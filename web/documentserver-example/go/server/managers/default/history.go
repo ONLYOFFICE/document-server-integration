@@ -210,7 +210,7 @@ func (hm DefaultHistoryManager) GetHistory(
 	remoteAddress string,
 ) (managers.HistoryRefresh, []managers.HistorySet, error) {
 	var (
-		version int = 1
+		version = 1
 		rhist   managers.HistoryRefresh
 		setHist []managers.HistorySet
 	)
@@ -346,7 +346,7 @@ func (hm DefaultHistoryManager) GetFileData(filename string) map[string]string {
 }
 
 func (hm DefaultHistoryManager) CreateHistory(cbody models.Callback) error {
-	var version int = 1
+	var version = 1
 	spath, err := hm.StorageManager.GetRootFolder()
 	if err != nil {
 		return err
