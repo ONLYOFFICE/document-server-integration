@@ -106,7 +106,7 @@ func (cm DefaultCommandManager) CommandRequest(method string, docKey string, met
 func fillJwtByUrl(uri string, payload CommandPayload) CommandRequestHeaderPayload {
 	urlObj, _ := url.Parse(uri)
 	query, _ := url.ParseQuery(urlObj.RawQuery)
-	var queryMap map[string]string
+	queryMap := make(map[string]string)
 	for k, v := range query {
 		queryMap[k] = v[0]
 	}

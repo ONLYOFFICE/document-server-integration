@@ -100,7 +100,7 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(
 	if user.Favorite != -1 {
 		favorite = (user.Favorite == 1)
 	}
-	var coEditing map[string]interface{}
+	coEditing := make(map[string]interface{})
 	if parameters.Mode == "view" && user.Id == "uid-0" {
 		coEditing["mode"] = "strict"
 		coEditing["change"] = false
