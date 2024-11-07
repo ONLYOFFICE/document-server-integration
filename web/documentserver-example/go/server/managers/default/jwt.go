@@ -29,10 +29,10 @@ import (
 	"go.uber.org/zap"
 )
 
-var _ErrJwtSigning = errors.New("jwt could not create a signed string with the given key")
-var _ErrJwtEmpty = errors.New("jwt string is empty")
-var _ErrUnexpectedJwtSigningMethod = errors.New("unexpected JWT signing method")
-var _ErrJwtInvalid = errors.New("jwt token is not valid")
+var ErrJwtSigning = errors.New("jwt could not create a signed string with the given key")
+var ErrJwtEmpty = errors.New("jwt string is empty")
+var ErrUnexpectedJwtSigningMethod = errors.New("unexpected JWT signing method")
+var ErrJwtInvalid = errors.New("jwt token is not valid")
 
 type DefaultJwtManager struct {
 	config config.ApplicationConfig
@@ -50,7 +50,7 @@ func (jm *DefaultJwtManager) JwtSign(payload jwt.Claims, key []byte) (string, er
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, payload)
 	ss, err := token.SignedString(key)
 	if err != nil {
-		return "", _ErrJwtSigning
+		return "", ErrJwtSigning
 	}
 
 	return ss, nil
@@ -58,12 +58,12 @@ func (jm *DefaultJwtManager) JwtSign(payload jwt.Claims, key []byte) (string, er
 
 func (jm *DefaultJwtManager) JwtDecode(jwtString string, key []byte) (jwt.MapClaims, error) {
 	if jwtString == "" {
-		return nil, _ErrJwtEmpty
+		return nil, ErrJwtEmpty
 	}
 
 	token, err := jwt.Parse(jwtString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, _ErrUnexpectedJwtSigningMethod
+			return nil, ErrUnexpectedJwtSigningMethod
 		}
 		return key, nil
 	})
@@ -75,7 +75,7 @@ func (jm *DefaultJwtManager) JwtDecode(jwtString string, key []byte) (jwt.MapCla
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
 		return claims, nil
 	} else {
-		return nil, _ErrJwtInvalid
+		return nil, ErrJwtInvalid
 	}
 }
 
