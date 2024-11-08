@@ -1,11 +1,9 @@
 # Change Log
 
+- editing by default
+- change reference source
 - filename in editor page title
 - close editor
-- he-IL skin language
-- ConvertService.ashx address replaced with converter
-- coauthoring/CommandService.ashx address replaced with command
-- submitForm for all modes
 - golang: new integration example
 - golang: upload files to the server
 - golang: create blank files and files with sample content
@@ -20,6 +18,13 @@
 - php-laravel: delete files on the server
 - php-laravel: create, edit, and submit pdf forms
 - php-laravel: show forgotten files on a seperate page
+- php-laravel: fetch files
+
+## 1.11.0
+- he-IL skin language
+- ConvertService.ashx address replaced with converter
+- coauthoring/CommandService.ashx address replaced with command
+- without submitForm in viewer
 
 ## 1.10.0
 - nodejs: converting function on index page

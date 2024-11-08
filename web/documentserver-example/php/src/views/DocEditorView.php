@@ -74,16 +74,16 @@ final class DocEditorView extends View
         $filetype = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
 
         $ext = mb_strtolower(pathinfo($filename, PATHINFO_EXTENSION));
-        $canFill = in_array($ext, $formatManager->fillableExtensions());
-        $editorsMode = empty($request["action"]) ? ($canFill ? "fillForms" : "edit") : $request["action"];
+        $editorsMode = empty($request["action"]) ? "edit" : $request["action"];
         $canEdit = in_array($ext, $formatManager->editableExtensions());  // check if the file can be edited
-        if ((!$canEdit && $editorsMode == "edit" || $editorsMode == "fillForms") && $canFill) {
+        if ((!$canEdit && $editorsMode == "edit" || $editorsMode == "fillForms")
+            && in_array($ext, $formatManager->fillableExtensions())) {
             $editorsMode = "fillForms";
             $canEdit = true;
         }
 
         // check if the Submit form button is displayed or not
-        $submitForm = $user->id == "uid-1";
+        $submitForm = $editorsMode != "view" && $user->id == "uid-1";
         $mode = $canEdit && $editorsMode != "view" ? "edit" : "view";  // define if the editing mode is edit or view
         $type = empty($request["type"]) ? "desktop" : $request["type"];
 
@@ -264,7 +264,8 @@ final class DocEditorView extends View
                 config.events['onRequestEditRights'] = onRequestEditRights;
                 config.events['onRequestHistory'] = onRequestHistory;
                 config.events['onRequestHistoryData'] = onRequestHistoryData;
-                config.events['onRequestClose'] = onRequestClose;";
+                config.events['onRequestClose'] = onRequestClose;
+                config.events['onRequestReferenceSource'] = onRequestReferenceSource;";
             if ($user->id != "uid-3") {
                 $historyLayout .= "config.events['onRequestHistoryClose'] = onRequestHistoryClose;
                 config.events['onRequestRestore'] = onRequestRestore;";

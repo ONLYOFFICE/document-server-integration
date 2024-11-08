@@ -159,10 +159,6 @@ class EditorController extends Controller
 
         $mode = $request->action ?? 'edit';
 
-        if ($request->action === null && $file['format']->extension() === 'pdf') {
-            $mode = 'fillForms';
-        }
-
         $config = app(CreateConfigCommand::class)
             ->__invoke(new CreateConfigRequest(
                 filename: $filename,
@@ -259,7 +255,8 @@ class EditorController extends Controller
                 // prevent switch the document from the viewing into the editing mode for anonymous users
                 config.events['onRequestEditRights'] = onRequestEditRights;
                 config.events['onRequestHistory'] = onRequestHistory;
-                config.events['onRequestHistoryData'] = onRequestHistoryData;";
+                config.events['onRequestHistoryData'] = onRequestHistoryData;
+                config.events['onRequestReferenceSource'] = onRequestReferenceSource;";
             if ($user['id'] != 'uid-3') {
                 $historyLayout .= "config.events['onRequestHistoryClose'] = onRequestHistoryClose;
                 config.events['onRequestRestore'] = onRequestRestore;";

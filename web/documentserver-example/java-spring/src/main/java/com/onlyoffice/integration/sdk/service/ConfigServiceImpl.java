@@ -80,12 +80,12 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
         com.onlyoffice.integration.entities.User appUser = userService.getCurrentUser();
         Action currentAction = action;
         String fileName = getDocumentManager().getDocumentName(fileId);
-        Boolean canFill = getDocumentManager().isFillable(fileName);
         if (currentAction == null) {
-            currentAction = canFill ? Action.fillForms : Action.edit;
+            currentAction = Action.edit;
         }
         Boolean isEditable = getDocumentManager().isEditable(fileName);
-        if ((!isEditable && currentAction.equals(Action.edit) || currentAction.equals(Action.fillForms)) && canFill) {
+        if ((!isEditable && currentAction.equals(Action.edit) || currentAction.equals(Action.fillForms))
+            && getDocumentManager().isFillable(fileName)) {
             isEditable = true;
             currentAction = Action.fillForms;
         }
@@ -94,7 +94,8 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
 
         Config config = super.createConfig(fileId, mode, type);
 
-        if (appUser.getPermissions().getSubmitForm()) {
+        if (!currentAction.equals(Action.view)
+                && appUser.getPermissions().getSubmitForm()) {
             config.getEditorConfig().getCustomization().setSubmitForm(true);
         }
 
