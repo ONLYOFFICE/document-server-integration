@@ -165,6 +165,8 @@ const getEditNewText = function getEditNewText(ext) {
       return 'Presentation';
     case 'pdf':
       return 'PDF form';
+    case 'visio':
+      return 'Visio';
     default:
       return ext.toUpperCase();
   }

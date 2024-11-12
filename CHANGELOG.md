@@ -1,5 +1,7 @@
 # Change Log
 
+- nodejs: support vsdx in visio editor
+
 ## 1.12.0
 - nodejs: refresh config
 - nodejs: support pages, numbers, key formats
