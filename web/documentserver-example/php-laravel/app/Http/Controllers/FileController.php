@@ -20,8 +20,8 @@ namespace App\Http\Controllers;
 use App\Helpers\Path\Path;
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\URL;
-use App\Services\ServerConfig;
-use App\Services\StorageConfig;
+use App\OnlyOffice\Managers\SettingsManager;
+use App\Repositories\FormatRepository;
 use App\UseCases\Common\Http\DownloadFileCommand;
 use App\UseCases\Common\Http\DownloadFileRequest;
 use App\UseCases\Docs\Command\UpdateMetaCommand;
@@ -48,8 +48,8 @@ use Illuminate\Support\Str;
 class FileController extends Controller
 {
     public function __construct(
-        private ServerConfig $serverConfig,
-        private StorageConfig $storageConfig,
+        private SettingsManager $settings,
+        private FormatRepository $formatRepository,
     ) {}
 
     public function index(Request $request)
@@ -123,7 +123,7 @@ class FileController extends Controller
 
         $user = $request->input('user', '');
 
-        $url = Str::replace(URL::origin($request->url), $this->serverConfig->get('url.private'), $request->url);
+        $url = Str::replace(URL::origin($request->url), $this->settings->getSetting('url.server.private'), $request->url);
 
         $downloadedFile = app(DownloadFileCommand::class)
             ->__invoke(new DownloadFileRequest(url: $url));

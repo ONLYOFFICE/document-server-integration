@@ -22,9 +22,8 @@ use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\FileURL;
 use App\Helpers\URL\TemplateURL;
 use App\Helpers\URL\URL;
-use App\Services\JWT;
-use App\Services\ServerConfig;
-use App\Services\StorageConfig;
+use App\OnlyOffice\Managers\JWTManager;
+use App\OnlyOffice\Managers\SettingsManager;
 use App\UseCases\Common\Http\DownloadFileCommand;
 use App\UseCases\Common\Http\DownloadFileRequest;
 use App\UseCases\Docs\Command\ForceSaveCommad;
@@ -58,12 +57,9 @@ use Illuminate\Support\Str;
 
 class EditorController extends Controller
 {
-    public function __construct(
-        private StorageConfig $storageConfig,
-        private ServerConfig $serverConfig,
-    ) {}
+    public function __construct(private SettingsManager $settings) {}
 
-    public function index(Request $request, JWT $jwt)
+    public function index(Request $request, JWTManager $jwt)
     {
         $request->validate([
             'fileUrl' => 'required_without_all:fileID,fileExt|string',
@@ -85,8 +81,8 @@ class EditorController extends Controller
         $lang = $request->cookie('ulang', 'en');
         $fileExt = $request->input('fileExt');
         $withSample = $request->has('sample') && $request->sample === 'true';
-        $storagePublicUrl = $this->storageConfig->get('url.public');
-        $storagePrivateUrl = $this->storageConfig->get('url.private');
+        $storagePublicUrl = $this->settings->getSetting('url.storage.public');
+        $storagePrivateUrl = $this->settings->getSetting('url.storage.private');
 
         $user = app(FindUserQueryHandler::class)
             ->__invoke(new FindUserQuery($userId));
@@ -226,14 +222,15 @@ class EditorController extends Controller
         }
 
         // check if the secret key to generate token exists
-        if ($this->serverConfig->get('jwt.enabled')) {
-            $config['token'] = $jwt->encode($config);  // encode config into the token
+        if ($this->settings->getSetting('jwt.enabled')) {
+            // encode config into the token
+            $config['token'] = $jwt->encode($config, $this->settings->getSetting('jwt.secret'));
             // encode the dataInsertImage object into the token
-            $dataInsertImage['token'] = $jwt->encode($dataInsertImage);
+            $dataInsertImage['token'] = $jwt->encode($dataInsertImage, $this->settings->getSetting('jwt.secret'));
             // encode the dataDocument object into the token
-            $dataDocument['token'] = $jwt->encode($dataDocument);
+            $dataDocument['token'] = $jwt->encode($dataDocument, $this->settings->getSetting('jwt.secret'));
             // encode the dataSpreadsheet object into the token
-            $dataSpreadsheet['token'] = $jwt->encode($dataSpreadsheet);
+            $dataSpreadsheet['token'] = $jwt->encode($dataSpreadsheet, $this->settings->getSetting('jwt.secret'));
         }
 
         $historyLayout = '';
@@ -266,7 +263,7 @@ class EditorController extends Controller
         $editorConfig = [
             'fileName' => $file['filename'],
             'docType' => $file['format']->type,
-            'apiUrl' => $this->serverConfig->get('url.api'),
+            'apiUrl' => $this->settings->getSetting('url.api'),
             'dataInsertImage' => mb_strimwidth(
                 json_encode($dataInsertImage),
                 1,
@@ -325,7 +322,7 @@ class EditorController extends Controller
                 $user = $data['users'][0];
                 $changes = null;
 
-                $url = Str::replace(URL::origin($url), $this->serverConfig->get('url.private'), $url);
+                $url = Str::replace(URL::origin($url), $this->settings->getSetting('url.server.private'), $url);
 
                 $fileExtension = PathInfo::extension($filename);
                 $downloadExtension = PathInfo::extension($url);
@@ -354,7 +351,7 @@ class EditorController extends Controller
 
                 if (array_key_exists('changesurl', $data)) {
                     $changesUrl = $data['changesurl'];
-                    $changesUrl = Str::replace(URL::origin($changesUrl), $this->serverConfig->get('url.private'), $changesUrl);
+                    $changesUrl = Str::replace(URL::origin($changesUrl), $this->settings->getSetting('url.server.private'), $changesUrl);
 
                     $changes = app(DownloadFileCommand::class)
                         ->__invoke(new DownloadFileRequest(url: $changesUrl))['content'];
@@ -390,7 +387,7 @@ class EditorController extends Controller
                 $key = $data['key'];
                 $user = $data['users'][0];
 
-                $url = Str::replace(URL::origin($url), $this->serverConfig->get('url.private'), $url);
+                $url = Str::replace(URL::origin($url), $this->settings->getSetting('url.server.private'), $url);
 
                 $fileExtension = PathInfo::extension($filename);
                 $downloadExtension = PathInfo::extension($url);
@@ -421,7 +418,7 @@ class EditorController extends Controller
                     $formsDataUrl = $data['formsdataurl'];
                     $formsDataUrl = Str::replace(
                         URL::origin($formsDataUrl),
-                        $this->serverConfig->get('url.private'),
+                        $this->settings->getSetting('url.server.private'),
                         $formsDataUrl
                     );
 

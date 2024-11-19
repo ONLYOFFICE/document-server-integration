@@ -18,8 +18,8 @@
 namespace App\Services\Docs\Command;
 
 use App\Exceptions\CommandServiceError;
-use App\Services\JWT;
-use App\Services\ServerConfig;
+use App\OnlyOffice\Managers\JWTManager;
+use App\OnlyOffice\Managers\SettingsManager;
 use Exception;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Str;
@@ -28,29 +28,29 @@ class CommandRequest
 {
     private array $headers = [];
 
-    public function __construct(private ServerConfig $config, private JWT $jwt) {}
+    public function __construct(private SettingsManager $settings, private JWTManager $jwt) {}
 
     private function withJWTHeader(array $content): void
     {
-        $token = $this->jwt->encode(['payload' => $content]);
-        $this->headers = [$this->config->get('jwt.header') => "Bearer $token"];
+        $token = $this->jwt->encode(['payload' => $content], $this->settings->getSetting('jwt.secret'));
+        $this->headers = [$this->settings->getSetting('jwt.header') => "Bearer $token"];
     }
 
     public function send(array $content, ?string $key = null): mixed
     {
-        if ($this->config->get('jwt.enabled')) {
+        if ($this->settings->getSetting('jwt.enabled')) {
             $this->withJWTHeader($content);
-            $content['token'] = $this->jwt->encode($content);
+            $content['token'] = $this->jwt->encode($content, $this->settings->getSetting('jwt.secret'));
         }
 
         $client = Http::withHeaders($this->headers)
             ->asJson()
             ->acceptJson();
 
-        $url = $this->config->get('url.command');
+        $url = $this->settings->getSetting('url.command');
 
         if (Str::of($url)->isUrl(['https'])
-            && ! $this->config->get('ssl_verify')) {
+            && ! $this->settings->getSetting('ssl_verify')) {
             $client = $client->withoutVerifying();
         }
 

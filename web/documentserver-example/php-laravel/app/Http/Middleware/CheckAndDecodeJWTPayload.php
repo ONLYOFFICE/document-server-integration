@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\JWT;
-use App\Services\ServerConfig;
+use App\OnlyOffice\Managers\JWTManager;
+use App\OnlyOffice\Managers\SettingsManager;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,18 +17,17 @@ class CheckAndDecodeJWTPayload
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $config = app(ServerConfig::class);
-        $jwt = app(JWT::class);
+        $jwt = app(JWTManager::class);
+        $settings = app(SettingsManager::class);
         $payload = null;
         $embeded = $request->has('dmode');
 
-        if ($config->get('jwt.enabled') && $embeded == null && $config->get('jwt.use_for_request')) {
+        if ($settings->getSetting('jwt.enabled') && $embeded == null && $settings->getSetting('jwt.use_for_request')) {
             if ($request->token) {
-                $payload = $jwt->decode($request->token);
+                $payload = $jwt->decode($request->token, $settings->getSetting('jwt.secret'));
                 $payload = json_decode(json_encode($payload), true);
-            } elseif ($request->hasHeader($config->get('jwt.header'))) {
-                $payload = $jwt->decode($request->bearerToken());
-                $payload = json_decode($payload);
+            } elseif ($request->hasHeader($settings->getSetting('jwt.header'))) {
+                $payload = $jwt->decode($request->bearerToken(), $settings->getSetting('jwt.secret'));
             } else {
                 abort(499, 'Expected JWT token');
             }

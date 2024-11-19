@@ -23,18 +23,12 @@ use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\FileURL;
 use App\Repositories\FormatRepository;
 use App\Services\Docs\Conversion\ConversionRequest;
-use App\Services\JWT;
-use App\Services\ServerConfig;
 use Exception;
 use Illuminate\Support\Str;
 
 class ConvertCommand
 {
-    public function __construct(
-        private ServerConfig $serverConfig,
-        private FormatRepository $formatRepository,
-        private JWT $jwt,
-    ) {}
+    public function __construct(private FormatRepository $formatRepository) {}
 
     public function __invoke(ConvertRequest $request): mixed
     {

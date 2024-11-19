@@ -19,16 +19,16 @@ namespace App\UseCases\Forgotten\Find;
 
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\URL;
+use App\OnlyOffice\Managers\SettingsManager;
 use App\Repositories\FormatRepository;
 use App\Services\Docs\Command\ForgottenFileRequest;
 use App\Services\Docs\Command\ForgottenListRequest;
-use App\Services\ServerConfig;
 use Illuminate\Support\Str;
 
 class FindAllForgottenFilesQueryHandler
 {
     public function __construct(
-        private ServerConfig $serverConfig,
+        private SettingsManager $settings,
         private FormatRepository $formatRepository,
     ) {}
 
@@ -46,7 +46,7 @@ class FindAllForgottenFilesQueryHandler
 
         foreach ($filesList as $fileItem) {
             $url = $fileItem['url'];
-            $url = Str::replace(URL::origin($url), $this->serverConfig->get('url.public'), $url);
+            $url = Str::replace(URL::origin($url), $this->settings->getSetting('url.server.public'), $url);
 
             $files[] = [
                 'key' => $fileItem['key'],

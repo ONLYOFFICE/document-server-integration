@@ -5,9 +5,8 @@ namespace App\Http\Controllers\API\Files;
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\URL;
 use App\Http\Controllers\Controller;
-use App\Services\JWT;
-use App\Services\ServerConfig;
-use App\Services\StorageConfig;
+use App\OnlyOffice\Managers\JWTManager;
+use App\OnlyOffice\Managers\SettingsManager;
 use App\UseCases\Document\Find\FindDocumentQuery;
 use App\UseCases\Document\Find\FindDocumentQueryHandler;
 use Exception;
@@ -17,10 +16,10 @@ use Illuminate\Support\Str;
 
 class ReferenceController extends Controller
 {
-    public function get(Request $request, StorageConfig $storageConfig, ServerConfig $serverConfig, JWT $jwt)
+    public function get(Request $request, SettingsManager $settings, JWTManager $jwt)
     {
-        $storagePrivateUrl = $storageConfig->get('url.private');
-        $storagePublicUrl = $storageConfig->get('url.public');
+        $storagePrivateUrl = $settings->getSetting('url.storage.private');
+        $storagePublicUrl = $settings->getSetting('url.storage.public');
         $referenceData = $request->input('referenceData');
         $link = $request->input('link');
         $path = $request->input('path');
@@ -94,8 +93,8 @@ class ReferenceController extends Controller
             'link' => "$storagePublicUrl/editor?fileID=$filename",
         ];
 
-        if ($serverConfig->get('jwt.enabled')) {
-            $data['token'] = $jwt->encode($data);
+        if ($settings->getSetting('jwt.enabled')) {
+            $data['token'] = $jwt->encode($data, $settings->getSetting('jwt.secret'));
         }
 
         return response()->json($data);
