@@ -268,7 +268,7 @@ function convert()
 
         if (!in_array($convertedData["fileType"], $formatManager->viewableExtensions())) {
             $result["step"] = $convertedData["percent"];
-            $result["filename"] = $newFileUri;
+            $result["filename"] = str_replace("//proxy", "//localhost", $newFileUri);
             $result["error"] = 'FileTypeIsNotSupported';
             return $result;
         }
