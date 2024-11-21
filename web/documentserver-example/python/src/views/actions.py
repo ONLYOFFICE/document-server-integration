@@ -96,7 +96,11 @@ def convert(request):
             else:
                 if not any(f.name == convertedData['fileType'] and len(f.actions) > 0 for f in FormatManager().all()):
                     response.setdefault('step', '100')
-                    response.setdefault('filename', convertedData['uri'])
+                    downloadUrl = convertedData['uri'].replace(
+                        config_manager.document_server_private_url().geturl(),
+                        config_manager.document_server_public_url().geturl()
+                    )
+                    response.setdefault('filename', downloadUrl)
                     response.setdefault('error', 'FileTypeIsNotSupported')
                 else:
                     correctName = docManager.getCorrectName(
