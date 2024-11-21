@@ -1,5 +1,6 @@
 # Change Log
 
+- on uploading xml convert to supported type only
 - converting function on index page
 - editing by default
 - change reference source
