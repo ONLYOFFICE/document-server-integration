@@ -1,0 +1,32 @@
+name: Artifact Golang
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master]
+    paths: ['web/documentserver-example/go/**']
+  pull_request:
+    branches: [master]
+    paths: ['web/documentserver-example/go/**']
+
+jobs:
+  artifact:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Build Artifact
+        run: |
+          cd ${{ github.workspace }}
+          cwd=$(pwd)
+          git submodule update --init --recursive
+          cd ./web/documentserver-example/go
+          mkdir -p ./deploy/'Go Example'
+          rsync -av --exclude='deploy' ./ ./deploy/'Go Example'
+          rm -rf ./deploy/'Go Example'/static/assets/document-formats/.git
+          rm -rf ./deploy/'Go Example'/static/assets/document-templates/.git
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Go.Example
+          path: ${{ github.workspace }}/web/documentserver-example/go/deploy
