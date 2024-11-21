@@ -138,14 +138,22 @@ class IndexStoredListView extends View
                     '  <a href="editor?fileID='.urlencode($storeFile->name).'&user='.htmlentities($user).
                         $directUrlArg.'&action=embedded&type=embedded" target="_blank">'.
                     '   <img src="assets/images/embeded.svg" alt="Open in embedded mode"'.
-                    ' title="Open in embedded mode" /></a>'.
-                    ' <td class="contentCells contentCells-icon contentCells-shift  downloadContentCellShift">'.
+                    ' title="Open in embedded mode" /></a>';
+                if ($storeFile->documentType != null) {
+                    $layout .= '<td class="contentCells contentCells-icon">'.
+                        '<a class="convert-file" data="'.$storeFile->name.'" data-type="'.$storeFile->documentType.'">'.
+                            '<img class="icon-action" src="assets/images/convert.svg" alt="Convert" title="Convert" />'.
+                        '</a></td>';
+                } else {
+                    $layout .= '<td class="contentCells contentCells-icon downloadContentCellShift"></td>';
+                }
+                $layout .= ' <td class="contentCells contentCells-icon downloadContentCellShift">'.
                     '<a href="download?fileName='.urlencode($storeFile->name).'">'.
                     '   <img class="icon-download" src="assets/images/download.svg"  alt="Download" title="Download"'.
                     ' /></a></td>'.
                     '<td class="contentCells contentCells-icon contentCells-shift">'.
                     '  <a class="delete-file" data="'.$storeFile->name.'">'.
-                    '   <img class="icon-delete" src="assets/images/delete.svg" alt="Delete" title="Delete" /></a>'.
+                    '   <img class="icon-action" src="assets/images/delete.svg" alt="Delete" title="Delete" /></a>'.
                     '</td></tr>';
             }
         }

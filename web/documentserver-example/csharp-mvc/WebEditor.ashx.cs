@@ -254,8 +254,15 @@ namespace OnlineEditorsExampleMVC
                     conversionExtension = fileExt.ToString();
                 }
 
+                object keepOriginal;
+                bool removeOriginal = true;
+                if (body.TryGetValue("keepOriginal", out keepOriginal) && !String.IsNullOrEmpty(keepOriginal.ToString()))
+                {
+                    removeOriginal = keepOriginal.ToString().ToLower() != "true";
+                }
+
                 // check if the file with such an extension can be converted
-                if (DocManagerHelper.ConvertExts.Contains("." + extension))
+                if (DocManagerHelper.ConvertExts.Contains("." + extension) || conversionExtension != "ooxml")
                 {
                     // generate document key
                     var key = ServiceConverter.GenerateRevisionId(fileUri);
@@ -278,9 +285,14 @@ namespace OnlineEditorsExampleMVC
                     }
 
                     var newFileUri = newFileData["fileUrl"];
-                    var newFileType = "." + newFileData["fileType"];
+                    var newFileType = newFileData["fileType"];
+                    if (!FormatManager.All().Any(f => f.Name == newFileType && f.Type != FileUtility.FileType.Null))
+                    {
+                        context.Response.Write("{\"step\": \"" + result + "\", \"filename\": \"" + newFileUri + "\", \"error\": \"FileTypeIsNotSupported\"}");
+                        return;
+                    }
                     // get a file name of an internal file extension with an index if the file with such a name already exists
-                    var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + newFileType);
+                    var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "." + newFileType);
 
                     var req = (HttpWebRequest)WebRequest.Create(newFileUri);
 
@@ -302,11 +314,14 @@ namespace OnlineEditorsExampleMVC
                         }
                     }
 
-                    Remove(fileName);  // remove the original file and its history if it exists
+                    if (removeOriginal) Remove(fileName);  // remove the original file and its history if it exists
                     fileName = correctName;  // create meta information about the converted file with user id and name specified
                     var id = context.Request.Cookies.GetOrDefault("uid", null);
                     var user = Users.getUser(id);
                     DocManagerHelper.CreateMeta(fileName, user.id, user.name);
+
+                    context.Response.Write("{ \"filename\" : \"" + fileName + "\", \"step\": \"" + result + "\" }");
+                    return;
                 }
 
                 var documentType = FileUtility.GetFileType(fileName).ToString().ToLower();

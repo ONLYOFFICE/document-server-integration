@@ -27,6 +27,8 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 public class Converter {
+    @JsonProperty("keepOriginal")
+    private Boolean keepOriginal;
     @JsonProperty("filename")
     private String fileName;
     @JsonProperty("filePass")

@@ -156,11 +156,8 @@
                                                 <td class="tableHeaderCell tableHeaderCellViewers">
                                                     Viewers
                                                 </td>
-                                                <td class="tableHeaderCell tableHeaderCellDownload">
-                                                    Download
-                                                </td>
-                                                <td class="tableHeaderCell tableHeaderCellRemove">
-                                                    Remove
+                                                <td class="tableHeaderCell tableHeaderCellAction">
+                                                    Action
                                                 </td>
                                             </tr>
                                         </thead>
@@ -255,14 +252,23 @@
                                                             <img src="/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode" />
                                                         </a>
                                                     </td>
-                                                    <td class="contentCells contentCells-icon contentCells-shift  downloadContentCellShift">
+                                                    @if ($file['format']->type != null)
+                                                    <td class="contentCells contentCells-icon">
+                                                        <a class="convert-file" data="{{ $file['filename'] }}" data-type="{{ $file['format']->type }}">
+                                                            <img class="icon-action" src="/images/convert.svg" alt="Convert" title="Convert" />
+                                                        </a>
+                                                    </td>
+                                                    @else
+                                                    <td class="contentCells contentCells-icon downloadContentCellShift"></td>
+                                                    @endif
+                                                    <td class="contentCells contentCells-icon downloadContentCellShift">
                                                         <a href="{{ $file['url'] }}">
                                                             <img class="icon-download" src="/images/download.svg" alt="Download" title="Download" />
                                                         </a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon contentCells-shift">
                                                         <a class="delete-file" data="{{ $file['filename'] }}">
-                                                            <img class="icon-delete" src="/images/delete.svg" alt="Delete" title="Delete" /></a>
+                                                            <img class="icon-action" src="/images/delete.svg" alt="Delete" title="Delete" /></a>
                                                     </td>
                                                 </tr>
                                                 @endforeach
@@ -362,6 +368,32 @@
                 <div id="cancelEdit" class="button gray">Cancel</div>
             </div>
         </div>
+
+        <div id="convertingProgress">
+            <div id="convertingSteps">
+                <span id="convertFileName" class="convertFileName"></span>
+                <span id="convertStep1" class="step">1. Select a format file to convert</span>
+                <span class="step-descr">The converting speed depends on file size and additional elements it contains.</span>
+                <table cellspacing="0" cellpadding="0" width="100%" class="convertTable">
+                    <tbody>
+                        <tr class="typeButtonsRow" id="convTypes"></tr>
+                    </tbody>
+                </table>
+                <br />
+                <span id="convertStep2" class="step">2. File conversion</span>
+                <span class="step-descr disable" id="convert-descr">The file is converted <div class="convertPercent" id="convertPercent">0 %</div></span>
+                <span class="step-error hidden" id="convert-error"></span>
+                <div class="describeUpload">Note the speed of all operations depends on your connection quality and server location.</div>
+                <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
+            </div>
+            <br />
+            <div class="buttonsMobile">
+                <div id="downloadConverted" class="button converting orange disable">DOWNLOAD</div>
+                <div id="beginViewConverted" class="button converting wide gray disable">VIEW</div>
+                <div id="beginEditConverted" class="button converting wide gray disable">EDIT</div>
+                <div id="cancelEdit" class="button converting gray">CANCEL</div>
+            </div>
+        </div>form>
 
         <span id="loadScripts" data-docs="{{ $preloaderUrl }}"></span>
 
