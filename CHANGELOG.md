@@ -1,13 +1,6 @@
 # Change Log
 
-- csharp: converting function on index page
-- csharp-mvc: converting function on index page
-- java: converting function on index page
-- java-spring: converting function on index page
-- php: converting function on index page
-- php-laravel: converting function on index page
-- python: converting function on index page
-- ruby: converting function on index page
+- converting function on index page
 - editing by default
 - change reference source
 - filename in editor page title
@@ -18,7 +11,6 @@
 - glang: edit uploaded files in onlyoffice editor
 - golang: delete files on the server
 - golang: show files history
-- golang: converting function on index page
 - php-laravel: new integration example
 - php-laravel: upload files to the server
 - php-laravel: create blank files and files with sample content
