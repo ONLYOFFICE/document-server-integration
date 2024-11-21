@@ -289,9 +289,10 @@ public class IndexServlet extends HttpServlet {
             FileType fileType = FileUtility.getFileType(fileName);
             // get an auto-conversion extension from the request body or set it to the ooxml extension
             String conversionExtension = body.get("fileExt") != null ? (String) body.get("fileExt") : "ooxml";
+            Boolean keepOriginal = body.get("keepOriginal") != null ? (Boolean) body.get("keepOriginal") : false;
 
             // check if the file with such an extension can be converted
-            if (DocumentManager.getConvertExts().contains(fileExt)) {
+            if (DocumentManager.getConvertExts().contains(fileExt) || body.get("fileExt") != null) {
                 // generate document key
                 String key = ServiceConverter.generateRevisionId(fileUri);
 
@@ -299,17 +300,25 @@ public class IndexServlet extends HttpServlet {
                 Map<String, String> newFileData = ServiceConverter
                         .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang);
                 String newFileUri = newFileData.get("fileUrl");
-                String newFileType = "." + newFileData.get("fileType");
+                String newFileType = newFileData.get("fileType");
 
                 if (newFileUri.isEmpty()) {
                     writer.write("{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}");
                     return;
                 }
 
+                if (!new FormatManager().getFormats().stream().anyMatch(
+                    f -> newFileType.equals(f.getName()) && f.getType() != null
+                    )) {
+                        writer.write("{ \"step\" : \"100\", \"filename\" : \"" + newFileUri
+                                     + "\", \"error\":\"FileTypeIsNotSupported\"}");
+                        return;
+                }
+
                 /* get a file name of an internal file extension with an index if the file
                  with such a name already exists */
                 String correctName = DocumentManager.getCorrectName(FileUtility
-                                .getFileNameWithoutExtension(fileName) + newFileType, null);
+                                .getFileNameWithoutExtension(fileName) + "." + newFileType, null);
 
                 URL url = new URL(newFileUri);
                 java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
@@ -333,9 +342,11 @@ public class IndexServlet extends HttpServlet {
 
                 connection.disconnect();
 
-                // remove source file
-                File sourceFile = new File(DocumentManager.storagePath(fileName, null));
-                sourceFile.delete();
+                if (!keepOriginal) {
+                    // remove source file
+                    File sourceFile = new File(DocumentManager.storagePath(fileName, null));
+                    sourceFile.delete();
+                }
 
                 fileName = correctName;
 
@@ -343,6 +354,9 @@ public class IndexServlet extends HttpServlet {
                 User user = Users.getUser(cm.getCookie("uid"));
 
                 DocumentManager.createMeta(fileName, user.getId(), user.getName(), null);
+
+                writer.write("{ \"step\" : \"100\", \"filename\" : \"" + fileName + "\"}");
+                return;
             }
 
             writer.write("{ \"filename\" : \"" + fileName + "\"}");

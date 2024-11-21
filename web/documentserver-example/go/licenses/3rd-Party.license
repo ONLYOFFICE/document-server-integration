@@ -1,0 +1,29 @@
+ONLYOFFICE Applications example uses code from the following 3rd party projects:
+
+fx              - An application framework for Go that makes dependency injection easy. (https://github.com/uber-go/fx).
+License:        MIT
+License File:   fx.license
+
+golang-jwt      - A go implementation of JSON Web Tokens. (https://github.com/golang-jwt/jwt).
+License:        MIT
+License File:   golang-jwt.license
+
+gorilla/mux     - Package gorilla/mux implements a request router and dispatcher for matching incoming requests to their respective handler. (https://github.com/gorilla/mux).
+License:        BSD-3-Clause License
+License File:   mux.license
+
+mapstructure    - Go library for decoding generic map values into native Go structures and vice versa. (https://github.com/mitchellh/mapstructure)
+License:        MIT
+License File:   mapstructure.license
+
+schema          - Package gorilla/schema fills a struct with form values. (https://github.com/gorilla/schema)
+License:        BSD-3-Clause License
+License File:   schema.license
+
+viper           - Viper is a complete configuration solution for Go applications including 12-Factor apps. It is designed to work within an application, and can handle all types of configuration needs and formats. (https://github.com/spf13/viper).
+License:        MIT
+License File:   viper.license
+
+zap             - Blazing fast, structured, leveled logging in Go. (https://github.com/uber-go/zap).
+License:        MIT
+License File:   zap.license

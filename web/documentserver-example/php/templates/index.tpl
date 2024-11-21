@@ -211,6 +211,32 @@
         </div>
     </div>
 
+    <div id="convertingProgress">
+        <div id="convertingSteps">
+            <span id="convertFileName" class="convertFileName"></span>
+            <span id="convertStep1" class="step">1. Select a format file to convert</span>
+            <span class="step-descr">The converting speed depends on file size and additional elements it contains.</span>
+            <table cellspacing="0" cellpadding="0" width="100%" class="convertTable">
+                <tbody>
+                    <tr class="typeButtonsRow" id="convTypes"></tr>
+                </tbody>
+            </table>
+            <br />
+            <span id="convertStep2" class="step">2. File conversion</span>
+            <span class="step-descr disable" id="convert-descr">The file is converted <div class="convertPercent" id="convertPercent">0 %</div></span>
+            <span class="step-error hidden" id="convert-error"></span>
+            <div class="describeUpload">Note the speed of all operations depends on your connection quality and server location.</div>
+            <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
+        </div>
+        <br />
+        <div class="buttonsMobile">
+            <div id="downloadConverted" class="button converting orange disable">DOWNLOAD</div>
+            <div id="beginViewConverted" class="button converting wide gray disable">VIEW</div>
+            <div id="beginEditConverted" class="button converting wide gray disable">EDIT</div>
+            <div id="cancelEdit" class="button converting gray">CANCEL</div>
+        </div>
+    </div>
+
     <span id="loadScripts" data-docs="{dataDocs}"></span>
 
     <footer>

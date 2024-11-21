@@ -40,7 +40,7 @@ class ConvertCommand
     {
         $format = $this->formatRepository->find($request->fileType);
 
-        if (! $format->convertible()) {
+        if (! $format->convertible() && $request->outputType == 'ooxml') {
             throw new Exception("The format $request->fileType is not convertible.");
         }
 

@@ -20,6 +20,7 @@ namespace App\Http\Controllers;
 use App\Helpers\Path\Path;
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\URL;
+use App\Repositories\FormatRepository;
 use App\Services\ServerConfig;
 use App\Services\StorageConfig;
 use App\UseCases\Common\Http\DownloadFileCommand;
@@ -50,6 +51,7 @@ class FileController extends Controller
     public function __construct(
         private ServerConfig $serverConfig,
         private StorageConfig $storageConfig,
+        private FormatRepository $formatRepository,
     ) {}
 
     public function index(Request $request)
@@ -150,6 +152,7 @@ class FileController extends Controller
             'fileUri' => 'nullable|string',
             'password' => 'nullable|string',
             'fileExt' => 'nullable|string',
+            'keepOriginal' => 'nullable|bool',
         ]);
 
         try {
@@ -180,6 +183,19 @@ class FileController extends Controller
                     ], 500);
             }
 
+            if (empty($this->formatRepository->find($result['fileType'])->actions)) {
+                return response()
+                    ->json([
+                        'step' => 100,
+                        'filename' => str_replace(
+                            $this->serverConfig->get('url.private'),
+                            $this->serverConfig->get('url.public'),
+                            $result['fileUrl']
+                        ),
+                        'error' => 'FileTypeIsNotSupported',
+                    ]);
+            }
+
             $convertedFileContent = app(DownloadFileCommand::class)
                 ->__invoke(new DownloadFileRequest($result['fileUrl']));
 
@@ -194,18 +210,21 @@ class FileController extends Controller
                 )
             );
 
-            app(DeleteDocumentCommand::class)->__invoke(
-                new DeleteDocumentRequest(
-                    filename: $request->filename,
-                    userDirectory: $request->ip(),
-                )
-            );
+            if (! $request->input('keepOriginal', false)) {
+                app(DeleteDocumentCommand::class)->__invoke(
+                    new DeleteDocumentRequest(
+                        filename: $request->filename,
+                        userDirectory: $request->ip(),
+                    )
+                );
+            }
         } catch (Exception $e) {
             abort(500, $e->getMessage());
         }
 
         return response()->json([
             'filename' => $file['filename'],
+            'step' => 100,
         ]);
     }
 

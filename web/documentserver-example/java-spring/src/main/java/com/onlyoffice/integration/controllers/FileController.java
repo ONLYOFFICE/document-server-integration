@@ -25,6 +25,7 @@ import com.onlyoffice.integration.documentserver.managers.history.HistoryManager
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.dto.Converter;
+import com.onlyoffice.integration.dto.FormatsList;
 import com.onlyoffice.integration.dto.Reference;
 import com.onlyoffice.integration.dto.Rename;
 import com.onlyoffice.integration.dto.Restore;
@@ -133,7 +134,7 @@ public class FileController {
             storageMutator.createMeta(fullFileName,  // create meta information with the user ID and name specified
                     String.valueOf(user.getId()), user.getName());
         }
-        return "{ \"filename\": \"" + fullFileName + "\", \"documentType\": \"" + documentType + "\" }";
+        return "{ \"filename\": \"" + fullFileName + "\", \"documentType\": \"" + documentType + "\",\"percent\":100}";
     }
 
     // download data from the specified file
@@ -237,10 +238,11 @@ public class FileController {
         String filePass = body.getFilePass() != null ? body.getFilePass() : null;
         // get an auto-conversion extension from the request body or set it to the ooxml extension
         String conversionExtension = body.getFileExt() != null ? body.getFileExt() : "ooxml";
+        Boolean keepOriginal = body.getKeepOriginal() != null ? body.getKeepOriginal() : false;
 
         try {
             // check if the file with such an extension can be converted
-            if (documentManager.getDefaultConvertExtension(fileName) != null) {
+            if (documentManager.getDefaultConvertExtension(fileName) != null || body.getFileExt() != null) {
                 ConvertRequest convertRequest = ConvertRequest.builder()
                         .password(filePass)
                         .outputtype(conversionExtension)
@@ -256,6 +258,13 @@ public class FileController {
 
                 String newFileUri = convertResponse.getFileUrl();
                 String newFileType = convertResponse.getFileType();
+
+                if (!new FormatsList(documentManager.getFormats()).getFormats().stream().anyMatch(
+                        f -> newFileType.equals(f.getName()) && f.getType() != null)
+                    ) {
+                        return "{ \"percent\" : \"100\", \"filename\" : \"" + newFileUri
+                                     + "\", \"error\":\"FileTypeIsNotSupported\"}";
+                }
 
                 /* get a file name of an internal file extension with an index if the file
                  with such a name already exists */
@@ -274,7 +283,9 @@ public class FileController {
 
 
                         // remove source file
-                        storageMutator.deleteFile(oldFileName);
+                        if (!keepOriginal) {
+                            storageMutator.deleteFile(oldFileName);
+                        }
 
                         // create the converted file with input stream
                         storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(correctedName)), stream);
