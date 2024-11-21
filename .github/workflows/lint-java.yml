@@ -3,10 +3,10 @@ name: Lint Java
 on:
   workflow_dispatch:
   push:
-    branches: [master, main]
+    branches: [master]
     paths: ['web/documentserver-example/java/**']
   pull_request:
-    branches: [master, main, develop]
+    branches: [master, develop]
     paths: ['web/documentserver-example/java/**']
 
 jobs:

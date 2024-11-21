@@ -12,6 +12,13 @@
 - change reference source
 - filename in editor page title
 - close editor
+- golang: new integration example
+- golang: upload files to the server
+- golang: create blank files and files with sample content
+- glang: edit uploaded files in onlyoffice editor
+- golang: delete files on the server
+- golang: show files history
+- golang: converting function on index page
 - php-laravel: new integration example
 - php-laravel: upload files to the server
 - php-laravel: create blank files and files with sample content
