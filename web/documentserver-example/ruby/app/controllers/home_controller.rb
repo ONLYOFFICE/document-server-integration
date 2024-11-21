@@ -163,6 +163,10 @@ class HomeController < ApplicationController
       end
 
       unless FormatManager.new.all.map(&:serialize).any? { |f| f['name'] == new_file_type && f['actions'].any? }
+        new_file_uri = new_file_uri.sub(
+          HomeController.config_manager.document_server_private_uri.to_s,
+          HomeController.config_manager.document_server_public_uri.to_s
+        )
         render(plain: "{\"step\":\"#{percent}\",\"filename\":\"#{new_file_uri}\",\"error\":\"FileTypeIsNotSupported\"}")
         return
       end
