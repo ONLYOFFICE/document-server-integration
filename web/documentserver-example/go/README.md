@@ -42,19 +42,19 @@ To run the Go example code, install the Go compiler:
 
 Having installed the compiler, update golang env variables:
 
-	```
-	export GOPATH=$HOME/go
-    export PATH=$PATH:$GOPATH/bin
-    export PATH=$PATH:/usr/local/go/bin
-	```
+```
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+export PATH=$PATH:/usr/local/go/bin
+```
 
 ### Step 5. Start the application
 
 1. Go to the project root.
 2. Run:
-	```
+    ```
     go run main.go
-	```
+    ```
 3. In your browser go to **server.address** and **server.port**:
 
 ### Step 6. Check accessibility
