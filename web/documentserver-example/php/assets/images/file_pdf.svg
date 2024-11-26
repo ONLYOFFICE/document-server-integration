@@ -1,5 +1,8 @@
 <svg width="30" height="40" viewBox="0 0 30 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M0 3C0 1.34315 1.34315 0 3 0H23L30 7V37C30 38.6569 28.6569 40 27 40H3C1.34315 40 0 38.6569 0 37V3Z" fill="#9E1919"/>
-<path fill-rule="evenodd" clip-rule="evenodd" d="M17.0062 15V16.0065H24V15H17.0062ZM17.0062 19V20.0163H24V19H17.0062ZM24 23H17.0062V24.0261H24V23ZM6 28V27.0293H24V28H6ZM7 16H14V23H7V16ZM6 15H7H14H15V16V23V24H14H7H6V23V16V15Z" fill="white"/>
-<path d="M23 0L30 7H26C24.3431 7 23 5.65685 23 4V0Z" fill="black" fill-opacity="0.25"/>
+    <path d="M0 2.5A2.5 2.5 0 0 1 2.5 0H21l9 9v28.5a2.5 2.5 0 0 1-2.5 2.5h-25A2.5 2.5 0 0 1 0 37.5z" fill="#E54D39"/>
+    <path d="m21 0 9 9h-6.5A2.5 2.5 0 0 1 21 6.5z" fill="#000" fill-opacity=".25"/>
+    <rect x="7" y="28" width="16" height="2" rx="1" fill="#fff"/>
+    <rect x="18" y="22" width="5" height="2" rx="1" fill="#fff"/>
+    <rect x="18" y="16" width="5" height="2" rx="1" fill="#fff"/>
+    <rect x="8" y="17" width="6" height="6" rx=".833" stroke="#fff" stroke-width="2"/>
 </svg>
