@@ -1,6 +1,7 @@
 # Change Log
 
 - nodejs: refresh config
+- nodejs: support pages, numbers, key formats
 
 ## 1.11.0
 - he-IL skin language
