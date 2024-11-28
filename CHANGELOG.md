@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: support pages, numbers, key formats
 - on uploading xml convert to supported type only
 - converting function on index page
 - editing by default
