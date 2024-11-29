@@ -1,5 +1,7 @@
 # Change Log
 
+- nodejs: support vsdx in visio editor
+- nodejs: support pages, numbers, key formats
 - on uploading xml convert to supported type only
 - converting function on index page
 - editing by default
