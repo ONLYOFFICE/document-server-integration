@@ -384,7 +384,6 @@
             "onRequestSelectDocument": onRequestSelectDocument,
             "onRequestSelectSpreadsheet": onRequestSelectSpreadsheet,
             "onRequestOpen": onRequestOpen,
-            "onRequestRefreshFile": onRequestRefreshFile,
         };
 
         if (<%- JSON.stringify(editor.userid) %> != null) {
@@ -398,6 +397,7 @@
             config.events.onRequestSendNotify = onRequestSendNotify;
             config.events.onRequestReferenceData = onRequestReferenceData;
             config.events.onRequestReferenceSource = onRequestReferenceSource;
+            config.events.onRequestRefreshFile = onRequestRefreshFile;
             if (<%- JSON.stringify(editor.userid) %> != "uid-3") {
                 config.events.onRequestHistoryClose = onRequestHistoryClose;
                 config.events.onRequestRestore = onRequestRestore;
