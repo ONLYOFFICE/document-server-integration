@@ -93,6 +93,9 @@ namespace OnlineEditorsExample
                 case "formats":
                     Formats(context);
                     break;
+                case "config":
+                    Config(context);
+                    break;
             }
         }
 
@@ -808,6 +811,83 @@ namespace OnlineEditorsExample
                 var jss = new JavaScriptSerializer();
 
                 context.Response.Write(jss.Serialize(data));
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
+
+        private static void Config(HttpContext context) {
+            try
+            {
+                var fileName = context.Request.QueryString.Get("fileName");
+                var directUrl = context.Request.QueryString.Get("directUrl").ToLower() == "true";
+                var permissions = context.Request.QueryString.Get("permissions") != null
+                    ? context.Request.QueryString.Get("permissions")
+                    : "{}";
+                var userAdress = HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
+
+                if (string.IsNullOrEmpty(fileName) || !File.Exists(_Default.StoragePath(fileName, userAdress)))
+                {
+                    context.Response.Write("{ \"error\": \"File is not exist\"}");
+                    return;
+                }
+
+                var id = context.Request.Cookies.GetOrDefault("uid", null);
+                var user = Users.getUser(id);
+                var callbackUrl = new UriBuilder(_Default.GetServerUrl(true));
+                callbackUrl.Path = HttpRuntime.AppDomainAppVirtualPath
+                    + (HttpRuntime.AppDomainAppVirtualPath.EndsWith("/") ? "" : "/")
+                    + "webeditor.ashx";
+                callbackUrl.Query = "type=track" + "&fileName="
+                    + HttpUtility.UrlEncode(fileName)
+                    + "&userAddress=" + HttpUtility.UrlEncode(_Default.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress));
+                var callback = callbackUrl.ToString();
+
+                var jss = new JavaScriptSerializer();
+
+                var config = new Dictionary<string, object>
+                {
+                    {
+                        "document", new Dictionary<string, object>
+                        {
+                            {"key", ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null)
+                                    + "/" + Path.GetFileName(_Default.FileUri(fileName, true))
+                                    + "/" + File.GetLastWriteTime(_Default.StoragePath(fileName, null)).GetHashCode())},
+                            {"title", fileName},
+                            {"url", DocEditor.getDownloadUrl(fileName)},
+                            {"permissions", JsonConvert.DeserializeObject<Dictionary<string, object>>(permissions)},
+                            {"directUrl", directUrl ?  DocEditor.getDownloadUrl(fileName, false) : null},
+                            {
+                                "referenceData", new Dictionary<string, object>
+                                {
+                                    {"fileKey", !user.id.Equals("uid-0") ?
+                                            jss.Serialize(new Dictionary<string, object>{
+                                                {"fileName", fileName},
+                                                {"userAddress", userAdress}
+                                            }) : null },
+                                    {"instanceId", _Default.GetServerUrl(false)}
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "editorConfig", new Dictionary<string, object>
+                        {
+                            {"callbackUrl", callback},
+                            {"mode", "edit"}
+                        }
+                    }
+                };
+
+                if (JwtManager.Enabled)
+                {
+                    var token = JwtManager.Encode(config);
+                    config.Add("token", token);
+                }
+
+                context.Response.Write(jss.Serialize(config));
             }
             catch (Exception e)
             {

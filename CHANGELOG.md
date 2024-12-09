@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: refresh config
 - nodejs: refresh config
 - nodejs: support vsdx in visio editor
 - nodejs: support pages, numbers, key formats
