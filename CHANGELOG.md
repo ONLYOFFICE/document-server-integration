@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp-mvc: refresh config
 - csharp: refresh config
 - nodejs: refresh config
 - nodejs: support vsdx in visio editor
