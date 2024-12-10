@@ -1,5 +1,6 @@
 # Change Log
 
+- go: refresh config
 - csharp-mvc: refresh config
 - csharp: refresh config
 - nodejs: refresh config
