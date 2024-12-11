@@ -899,7 +899,7 @@ footer table tr td:first-child {
     position: absolute;
     right: 0;
     top: 75px;
-    height: 390px;
+    height: calc(100% - 130px);
     scrollbar-color: #D0D5DA transparent;
     scrollbar-width: thin;
 }
