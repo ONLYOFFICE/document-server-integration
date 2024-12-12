@@ -1,5 +1,6 @@
 # Change Log
 
+- java-spring: refresh config
 - java: refresh config
 - go: refresh config
 - csharp-mvc: refresh config
