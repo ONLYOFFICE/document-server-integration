@@ -1,5 +1,6 @@
 # Change Log
 
+- java: refresh config
 - go: refresh config
 - csharp-mvc: refresh config
 - csharp: refresh config

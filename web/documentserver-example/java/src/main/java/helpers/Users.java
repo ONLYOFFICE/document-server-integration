@@ -84,6 +84,7 @@ public final class Users {
         add("Can't protect file");
         add("View file without collaboration");
         add("Can’t submit forms");
+        add("Can't refresh outdated file");
     }};
 
     private static List<User> users = new ArrayList<User>() {{
