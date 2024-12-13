@@ -707,3 +707,48 @@ function formats()
         ];
     }
 }
+
+function config()
+{
+    try {
+        $fileName = $_GET["fileName"];
+        $directUrl = $_GET["directUrl"] == "true";
+        $permissions = $_GET["permissions"];
+
+        if (!file_exists(getStoragePath($fileName))) {
+            throw new Exception("File not found ".$fileName);
+        }
+
+        $config = [
+            "document" => [
+                "title" => $fileName,
+                "key" => getDocEditorKey($fileName),
+                "url" => getDownloadUrl($fileName),
+                "directUrl" => $directUrl ? getDownloadUrl($fileName, false) : null,
+                "permissions" => json_decode($permissions),
+                "referenceData" => [
+                    "fileKey" => json_encode([
+                        "fileName" => $fileName,
+                        "userAddress" =>  getCurUserHostAddress()
+                    ]),
+                    "instanceId" => serverPath(),
+                ]
+            ],
+            "editorConfig" => [
+                "mode" => "edit",
+                "callbackUrl" => getCallbackUrl($fileName)
+            ]
+        ];
+
+        $jwtManager = new JwtManager();
+        if ($jwtManager->isJwtEnabled()) {
+            $config["token"] = $jwtManager->jwtEncode($config);
+        }
+
+        return $config;
+    } catch (Exception $error) {
+        return [
+            'error' => $error->getMessage()
+        ];
+    }
+}
