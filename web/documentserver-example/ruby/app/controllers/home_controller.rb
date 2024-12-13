@@ -608,4 +608,53 @@ class HomeController < ApplicationController
       )
     )
   end
+
+  def refresh_config
+    file_name = params[:fileName]
+    direct_url = params[:directUrl] == 'true'
+    permissions = params[:permissions]
+
+    unless File.exist?(DocumentHelper.storage_path(file_name, nil))
+      render(
+        json: JSON.generate(
+          {
+            error: 'File not found'
+          }
+        )
+      )
+    end
+
+    uri = "#{DocumentHelper.cur_user_host_address(nil)}/#{file_name}"
+    stat = File.mtime(DocumentHelper.storage_path(file_name, nil))
+    key = ServiceConverter.generate_revision_id("#{uri}.#{stat}")
+
+    config = {
+      document: {
+        title: file_name,
+        url: DocumentHelper.get_download_url(file_name),
+        directUrl: direct_url ? DocumentHelper.get_download_url(file_name, false) : nil,
+        key:,
+        permissions: JSON.parse(permissions),
+        referenceData: {
+          instanceId: DocumentHelper.get_server_url(false),
+          fileKey: {
+            fileName: file_name,
+            userAddress: DocumentHelper.cur_user_host_address(nil)
+          }.to_json
+        }
+      },
+      editorConfig: {
+        mode: 'edit',
+        callbackUrl: DocumentHelper.get_callback(file_name)
+      }
+    }
+
+    if JwtHelper.enabled?
+      config['token'] = JwtHelper.encode(config)
+    end
+
+    render(
+      json: JSON.generate(config)
+    )
+  end
 end

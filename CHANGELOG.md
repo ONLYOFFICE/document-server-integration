@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: refresh config
 - python: refresh config
 - java-spring: refresh config
 - java: refresh config
