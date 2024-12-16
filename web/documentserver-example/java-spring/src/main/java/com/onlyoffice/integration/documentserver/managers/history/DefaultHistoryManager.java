@@ -121,11 +121,14 @@ public class DefaultHistoryManager implements HistoryManager {
 
                     History changes = objectMapper.readValue(changesSteam, History.class);
 
+                    List<Object> historyChanges = changes.getChanges();
+                    Map<String, Object> historyChange = objectMapper.convertValue(historyChanges.get(0), Map.class);
+
                     // write information about changes to the object
                     version.setChanges(changes.getChanges());
                     version.setServerVersion(changes.getServerVersion());
-                    version.setCreated(changes.getChanges().get(0).getCreated());
-                    version.setUser(changes.getChanges().get(0).getUser());
+                    version.setCreated((String) historyChange.get("created"));
+                    version.setUser(objectMapper.convertValue(historyChange.get("user"), User.class));
                 }
 
                 history.add(version);
