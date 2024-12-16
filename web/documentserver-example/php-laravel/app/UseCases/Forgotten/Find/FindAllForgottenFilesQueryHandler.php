@@ -20,9 +20,9 @@ namespace App\UseCases\Forgotten\Find;
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\URL;
 use App\OnlyOffice\Managers\SettingsManager;
+use App\OnlyOffice\Miscellaneous\CommandRequest;
 use App\Repositories\FormatRepository;
 use App\Services\Docs\Command\ForgottenFileRequest;
-use App\Services\Docs\Command\ForgottenListRequest;
 use Illuminate\Support\Str;
 
 class FindAllForgottenFilesQueryHandler
@@ -36,7 +36,8 @@ class FindAllForgottenFilesQueryHandler
     {
         $filesList = [];
 
-        $keys = app()->make(ForgottenListRequest::class)->get();
+        $result = app(CommandRequest::class)->getForgottenList();
+        $keys = $result->keys;
 
         foreach ($keys as $key) {
             $filesList[] = app()->make(ForgottenFileRequest::class)->get($key);
