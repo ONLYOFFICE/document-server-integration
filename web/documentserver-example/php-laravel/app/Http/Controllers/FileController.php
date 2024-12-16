@@ -19,8 +19,10 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Path\Path;
 use App\Helpers\Path\PathInfo;
+use App\Helpers\URL\FileURL;
 use App\Helpers\URL\URL;
 use App\Repositories\FormatRepository;
+use App\Services\JWT;
 use App\Services\ServerConfig;
 use App\Services\StorageConfig;
 use App\UseCases\Common\Http\DownloadFileCommand;
@@ -41,6 +43,8 @@ use App\UseCases\Document\Find\FindDocumentHistoryQuery;
 use App\UseCases\Document\Find\FindDocumentHistoryQueryHandler;
 use App\UseCases\Document\Find\FindDocumentQuery;
 use App\UseCases\Document\Find\FindDocumentQueryHandler;
+use App\UseCases\File\Find\FileExistsQuery;
+use App\UseCases\File\Find\FileExistsQueryHandler;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -310,5 +314,63 @@ class FileController extends Controller
         }
 
         return response(status: 201);
+    }
+
+    public function config(Request $request, JWT $jwt)
+    {
+        try {
+            $request->validate([
+                'fileName' => 'string',
+                'directUrl' => 'nullable|string',
+                'permissions' => 'nullable|string',
+            ]);
+
+            $fileName = $request->fileName;
+            $directUrl = $request->directUrl == 'true';
+
+            $fileExists = app(FileExistsQueryHandler::class)
+                ->__invoke(new FileExistsQuery($fileName, $request->ip()));
+
+            if (! $fileExists) {
+                throw new Exception('File not found: '.$fileName);
+            }
+
+            $file = app(FindDocumentQueryHandler::class)
+                ->__invoke(new FindDocumentQuery($fileName, $request->ip()));
+            $url = FileURL::download($fileName, $request->ip());
+
+            $config = [
+                'document' => [
+                    'title' => $fileName,
+                    'key' => $file['key'],
+                    'url' => $url,
+                    'directUrl' => $directUrl ? $url : null,
+                    'permissions' => json_decode($request->permissions),
+                    'referenceData' => [
+                        'fileKey' => json_encode([
+                            'fileName' => $fileName,
+                            'userAddress' => $request->ip(),
+                        ]),
+                        'instanceId' => $request->serverAddress,
+                    ],
+                ],
+                'editorConfig' => [
+                    'mode' => 'edit',
+                    'callbackUrl' => FileURL::callback($fileName, $request->ip()),
+                ],
+            ];
+
+            if ($this->serverConfig->get('jwt.enabled')) {
+                $config['token'] = $jwt->encode($config);
+            }
+
+            return response()
+                ->json($config);
+        } catch (Exception $e) {
+            return response()
+                ->json([
+                    'error' => $e->getMessage(),
+                ], 500);
+        }
     }
 }

@@ -1,5 +1,6 @@
 # Change Log
 
+- php-laravel: refresh config
 - php: refresh config
 - ruby: refresh config
 - python: refresh config
