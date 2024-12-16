@@ -36,7 +36,7 @@ import com.onlyoffice.model.documenteditor.callback.action.Type;
 import com.onlyoffice.service.command.CommandService;
 import com.onlyoffice.service.convert.ConvertService;
 import lombok.SneakyThrows;
-import org.apache.http.HttpEntity;
+import org.apache.hc.core5.http.HttpEntity;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
