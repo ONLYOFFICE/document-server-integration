@@ -41,6 +41,9 @@ class SettingsManager extends OnlyOfficeSettingsManager
 
         $this->config = [
             'documentServerInternalUrl' => $privateServerUrl,
+            'jwtKey' => $jwtSecret,
+            'jwtHeader' => env('DOCUMENT_SERVER_JWT_HEADER', 'Authorization'),
+            'jwtPrefix' => env('DOCUMENT_SERVER_JWT_HEADER', 'Bearer '),
             'conversion' => [
                 'timeout' => env('DOCUMENT_SERVER_CONVERSION_TIMEOUT', 120 * 1000),
                 'url' => $conversionUrl,
