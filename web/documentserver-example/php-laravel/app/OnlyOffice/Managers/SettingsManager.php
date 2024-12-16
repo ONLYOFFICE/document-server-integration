@@ -40,6 +40,7 @@ class SettingsManager extends OnlyOfficeSettingsManager
         $privateStorageUrl = rtrim(env('DOCUMENT_STORAGE_PRIVATE_URL', $publicStorageUrl), '/');
 
         $this->config = [
+            'documentServerInternalUrl' => $privateServerUrl,
             'conversion' => [
                 'timeout' => env('DOCUMENT_SERVER_CONVERSION_TIMEOUT', 120 * 1000),
                 'url' => $conversionUrl,
