@@ -21,17 +21,22 @@ package com.onlyoffice.integration.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.dto.Converter;
 import com.onlyoffice.integration.dto.FormatsList;
 import com.onlyoffice.integration.dto.Reference;
+import com.onlyoffice.integration.dto.RefreshConfig;
 import com.onlyoffice.integration.dto.Rename;
 import com.onlyoffice.integration.dto.Restore;
 import com.onlyoffice.integration.dto.SaveAs;
+import com.onlyoffice.integration.dto.RefreshConfig.Document;
+import com.onlyoffice.integration.dto.RefreshConfig.EditorConfig;
 import com.onlyoffice.integration.entities.User;
 import com.onlyoffice.integration.sdk.manager.DocumentManager;
+import com.onlyoffice.integration.sdk.service.ConfigService;
 import com.onlyoffice.integration.services.UserServices;
 
 import com.onlyoffice.manager.request.RequestManager;
@@ -121,6 +126,8 @@ public class FileController {
     private CallbackService callbackService;
     @Autowired
     private CommandService commandService;
+    @Autowired
+    private ConfigService configService;
     @Autowired
     private UrlManager urlManager;
 
@@ -692,6 +699,42 @@ public class FileController {
             responseBody.put("error", error.getMessage());
             responseBody.put("success", false);
             return responseBody.toJSONString();
+        }
+    }
+
+    @GetMapping("/config")
+    public ResponseEntity<RefreshConfig> config(@RequestParam("fileName") final String fileName,
+                            @RequestParam("permissions") final String permissions,
+                            @CookieValue(value = "uid", required = false) final String uid) {
+        try {
+            if (!new File(storagePathBuilder.getFileLocation(fileName)).exists()) {
+                throw(new Exception("File not found"));
+            }
+
+            Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+
+            Document document = new Document();
+            document.setTitle(fileName);
+            document.setKey(documentManager.getDocumentKey(fileName, false));
+            document.setUrl(urlManager.getFileUrl(fileName));
+            document.setReferenceData(configService.getReferenceData(fileName));
+            document.setPermissions(gson.fromJson(permissions, new TypeToken<Map<String, Object>>() { }.getType()));
+
+            EditorConfig editorConfig = new EditorConfig();
+            editorConfig.setCallbackUrl(urlManager.getCallbackUrl(fileName));
+
+            RefreshConfig config = new RefreshConfig();
+            config.setDocument(document);
+            config.setEditorConfig(editorConfig);
+            if (settingsManager.isSecurityEnabled()) {
+                config.setToken(jwtManager.createToken(config));
+            }
+
+            return ResponseEntity.ok(config);
+        } catch (Exception e) {
+            RefreshConfig error = new RefreshConfig();
+            error.setError(e.getMessage());
+            return ResponseEntity.internalServerError().body(error);
         }
     }
 }

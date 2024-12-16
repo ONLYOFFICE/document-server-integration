@@ -20,6 +20,8 @@ package controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import entities.FileModel;
 import entities.FileType;
 import entities.User;
 import helpers.ConfigManager;
@@ -142,6 +144,9 @@ public class IndexServlet extends HttpServlet {
                 break;
             case "formats":
                 formats(request, response, writer);
+                break;
+            case "config":
+                config(request, response, writer);
                 break;
             default:
                 break;
@@ -1072,6 +1077,57 @@ public class IndexServlet extends HttpServlet {
         response.setContentType("application/json");
         Gson gson = new Gson();
         writer.write(gson.toJson(data));
+    }
+
+    private static void config(final HttpServletRequest request,
+                                final HttpServletResponse response,
+                                final PrintWriter writer) {
+        try {
+            String fileName = FileUtility.getFileName(request.getParameter("fileName"));
+            String permissions = FileUtility.getFileName(request.getParameter("permissions"));
+            Boolean directUrl = request.getParameter("directUrl").toLowerCase() == "true";
+
+            if (!new File(DocumentManager.storagePath(fileName, null)).exists()) {
+                throw(new Exception("File not found"));
+            }
+
+            CookieManager cm = new CookieManager(request);
+            User user = Users.getUser(cm.getCookie("uid"));
+            Gson gson = new Gson();
+
+            Map<String, Object> document = new HashMap<>();
+            document.put("title", fileName);
+            document.put("key", ServiceConverter
+                .generateRevisionId(DocumentManager
+                    .curUserHostAddress(null) + "/" + fileName + "/"
+                    + Long.toString(new File(DocumentManager.storagePath(fileName, null))
+                    .lastModified())));
+            document.put("url", DocumentManager.getDownloadUrl(fileName, true));
+            document.put("referenceData", new FileModel.ReferenceData(
+                fileName, DocumentManager.curUserHostAddress(null), user));
+            document.put("permissions", gson.fromJson(permissions, new TypeToken<Map<String, Object>>() { }.getType()));
+            if (directUrl) {
+                document.put("directUrl", DocumentManager.getDownloadUrl(fileName, false));
+            }
+
+            Map<String, Object> editorConfig = new HashMap<>();
+            editorConfig.put("mode", "edit");
+            editorConfig.put("callbackUrl", DocumentManager.getCallback(fileName));
+
+            Map<String, Object> config = new HashMap<>();
+            config.put("document", document);
+            config.put("editorConfig", editorConfig);
+            if (DocumentManager.tokenEnabled()) {
+                config.put("token", DocumentManager.createToken(config));
+            }
+
+            writer.write(gson.toJson(config));
+        } catch (Exception ex) {
+            JSONObject responseBody = new JSONObject();
+            responseBody.put("error", ex.getMessage());
+            String responseContent = responseBody.toJSONString();
+            writer.write(responseContent);
+        }
     }
 
     // process get request

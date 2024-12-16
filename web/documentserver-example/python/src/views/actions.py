@@ -691,3 +691,45 @@ def formats(request: HttpRequest) -> HttpResponse:
     }
 
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+@http.GET()
+def config(request: HttpRequest) -> HttpResponse:
+    try:
+        filename = fileUtils.getFileName(request.GET['fileName'])
+        directUrl = fileUtils.getFileName(request.GET['directUrl']) == "true"
+        permissions = fileUtils.getFileName(request.GET['permissions'])
+
+        if not os.path.exists(docManager.getStoragePath(filename, request)):
+            raise Exception("File not found")
+
+        user = users.getUserFromReq(request)
+
+        config = {
+            'document': {
+                'title': filename,
+                'key': docManager.generateFileKey(filename, request),
+                'url': docManager.getDownloadUrl(filename, request),
+                'permissions': json.loads(permissions),
+                'directUrl': docManager.getDownloadUrl(filename, request, False) if directUrl else None,
+                'referenceData': {
+                    'instanceId': docManager.getServerUrl(False, request),
+                    'fileKey': json.dumps({'fileName': filename,
+                                           'userAddress': request.META['REMOTE_ADDR']}) if user.id != 'uid-0' else None
+                },
+            },
+            'editorConfig': {
+                'mode': 'edit',
+                'callbackUrl': docManager.getCallbackUrl(filename, request)
+            }
+        }
+
+        if jwtManager.isEnabled():
+            config['token'] = jwtManager.encode(config)
+
+        return HttpResponse(json.dumps(config), content_type='application/json')
+    except Exception as error:
+        return ErrorResponse(
+            message=f'{type(error)}: {error}',
+            status=HTTPStatus.INTERNAL_SERVER_ERROR
+        )

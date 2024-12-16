@@ -24,6 +24,7 @@ Route::middleware(EnsureUserDirectoryExists::class)->group(function () {
         Route::post('/saveas', [FileController::class, 'saveAs'])->name('saveas');
         Route::get('/history', [FileController::class, 'history'])->name('history');
         Route::post('/rename', [FileController::class, 'rename'])->name('rename');
+        Route::get('/config', [FileController::class, 'config'])->name('config');
 
         Route::middleware(EnsureJWTTokenIsPresent::class)->group(function () {
             Route::get('/download', [FileController::class, 'download'])->name('download');

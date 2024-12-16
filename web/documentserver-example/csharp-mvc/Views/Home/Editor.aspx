@@ -187,6 +187,18 @@
             }
         };
 
+        var onRequestRefreshFile = function(event) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "webeditor.ashx?type=config&fileName=" + encodeURIComponent(config.document.title) +
+                "&directUrl=" + !!config.document.directUrl +
+                "&permissions=" + encodeURIComponent(JSON.stringify(config.document.permissions)));
+            xhr.send();
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                docEditor.refreshFile(JSON.parse(xhr.responseText));
+            };
+        };
+
         var onRequestOpen = function (event) {  // user open external data source
             innerAlert("onRequestOpen");
             var windowName = event.data.windowName;
@@ -370,6 +382,7 @@
         };
 
         if (config.editorConfig.user.id) {
+            config.events['onRequestRefreshFile'] = onRequestRefreshFile;
             config.events['onRequestClose'] = onRequestClose;
             // the user is trying to show the document version history
             config.events['onRequestHistory'] = onRequestHistory;

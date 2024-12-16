@@ -77,7 +77,8 @@ namespace OnlineEditorsExample
             "Can't view chat",
             "Can't protect file",
             "View file without collaboration",
-            "Can’t submit forms"
+            "Can’t submit forms",
+            "Can’t refresh outdated file"
         };
 
         private static List<User> users = new List<User>() {

@@ -33,6 +33,7 @@ type FileOperationsEndpointsHandler interface {
 }
 
 type InfoEndpointsHandler interface {
+	Config(w http.ResponseWriter, r *http.Request)
 	Files(w http.ResponseWriter, r *http.Request)
 	Formats(w http.ResponseWriter, r *http.Request)
 	History(w http.ResponseWriter, r *http.Request)

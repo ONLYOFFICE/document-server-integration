@@ -1,6 +1,5 @@
 # Change Log
 
-- nodejs: refresh config
 - nodejs: support vsdx in visio editor
 - nodejs: support pages, numbers, key formats
 - golang: new integration example
@@ -17,6 +16,7 @@
 - php-laravel: create, edit, and submit pdf forms
 - php-laravel: show forgotten files on a seperate page
 - php-laravel: fetch files
+- refresh config
 - on uploading xml convert to supported type only
 - converting function on index page
 - editing by default

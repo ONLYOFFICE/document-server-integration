@@ -93,6 +93,9 @@ namespace OnlineEditorsExampleMVC
                 case "formats":
                     Formats(context);
                     break;
+                case "config":
+                    Config(context);
+                    break;
             }
         }
 
@@ -1008,6 +1011,74 @@ namespace OnlineEditorsExampleMVC
                 var jss = new JavaScriptSerializer();
 
                 context.Response.Write(jss.Serialize(data));
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
+
+        private static void Config(HttpContext context)
+        {
+            try
+            {
+                var fileName = context.Request.QueryString.Get("fileName");
+                var directUrl = context.Request.QueryString.Get("directUrl").ToLower() == "true";
+                var permissions = context.Request.QueryString.Get("permissions") != null
+                    ? context.Request.QueryString.Get("permissions")
+                    : "{}";
+
+                if (string.IsNullOrEmpty(fileName) || !File.Exists(DocManagerHelper.StoragePath(fileName)))
+                {
+                    context.Response.Write("{ \"error\": \"File is not exist\"}");
+                    return;
+                }
+
+                var id = context.Request.Cookies.GetOrDefault("uid", null);
+                var user = Users.getUser(id);
+
+                var jss = new JavaScriptSerializer();
+
+                var config = new Dictionary<string, object>
+                {
+                    {
+                        "document", new Dictionary<string, object>
+                        {
+                            {"key", ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + fileName
+                                + "/"+ File.GetLastWriteTime(DocManagerHelper.StoragePath(fileName, null)).GetHashCode())},
+                            {"title", fileName},
+                            {"url", DocManagerHelper.GetDownloadUrl(fileName)},
+                            {"permissions", jss.Deserialize<Dictionary<string, object>>(permissions)},
+                            {"directUrl", directUrl ?  DocManagerHelper.GetDownloadUrl(fileName, false) : null},
+                            {
+                                "referenceData", new Dictionary<string, object>
+                                {
+                                    {"fileKey", !user.id.Equals("uid-0") ?
+                                            jss.Serialize(new Dictionary<string, object>{
+                                                {"fileName", fileName},
+                                                {"userAddress", HttpUtility.UrlEncode(DocManagerHelper.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
+                                        }) : null },
+                                    {"instanceId", DocManagerHelper.GetServerUrl(false)}
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "editorConfig", new Dictionary<string, object>
+                        {
+                            {"callbackUrl", DocManagerHelper.GetCallback(fileName)},
+                            {"mode", "edit"}
+                        }
+                    }
+                };
+
+                if (JwtManager.Enabled)
+                {
+                    var token = JwtManager.Encode(config);
+                    config.Add("token", token);
+                }
+
+                context.Response.Write(jss.Serialize(config));
             }
             catch (Exception e)
             {

@@ -188,6 +188,17 @@
                     });
                 };
 
+                var onRequestRefreshFile = function(event) {
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("GET", "config?fileName=" + encodeURIComponent(config.document.title) +
+                        "&permissions=" + encodeURIComponent(JSON.stringify(config.document.permissions)));
+                    xhr.send();
+                    xhr.onload = function () {
+                        innerAlert(xhr.responseText);
+                        docEditor.refreshFile(JSON.parse(xhr.responseText));
+                    };
+                };
+
                 var onRequestReferenceData = function(event) {  // user refresh external data source
                     innerAlert("onRequestReferenceData");
 
@@ -363,6 +374,7 @@
                 };
           
                 if (config.editorConfig.user.id != 4) {
+                    config.events['onRequestRefreshFile'] = onRequestRefreshFile;
                     config.events['onRequestClose'] = onRequestClose;
                     // add mentions for not anonymous users
                     config.events['onRequestUsers'] = onRequestUsers;
