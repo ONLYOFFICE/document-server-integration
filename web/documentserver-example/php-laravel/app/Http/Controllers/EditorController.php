@@ -17,31 +17,21 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\Path\Path;
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\FileURL;
 use App\Helpers\URL\TemplateURL;
 use App\Helpers\URL\URL;
 use App\OnlyOffice\Managers\JWTManager;
 use App\OnlyOffice\Managers\SettingsManager;
+use App\OnlyOffice\Services\CallbackService;
 use App\UseCases\Common\Http\DownloadFileCommand;
 use App\UseCases\Common\Http\DownloadFileRequest;
-use App\UseCases\Docs\Command\ForceSaveCommad;
-use App\UseCases\Docs\Command\ForceSaveRequest;
-use App\UseCases\Docs\Conversion\ConvertCommand;
-use App\UseCases\Docs\Conversion\ConvertRequest;
 use App\UseCases\Document\Create\CreateDocumentCommand;
 use App\UseCases\Document\Create\CreateDocumentFromTemplateCommand;
 use App\UseCases\Document\Create\CreateDocumentFromTemplateRequest;
 use App\UseCases\Document\Create\CreateDocumentRequest;
 use App\UseCases\Document\Find\FindDocumentQuery;
 use App\UseCases\Document\Find\FindDocumentQueryHandler;
-use App\UseCases\Document\Save\ForceSaveDocumentCommand;
-use App\UseCases\Document\Save\ForceSaveDocumentRequest;
-use App\UseCases\Document\Save\SaveDocumentCommand;
-use App\UseCases\Document\Save\SaveDocumentFormCommand;
-use App\UseCases\Document\Save\SaveDocumentFormRequest;
-use App\UseCases\Document\Save\SaveDocumentRequest;
 use App\UseCases\Editor\Create\CreateConfigCommand;
 use App\UseCases\Editor\Create\CreateConfigRequest;
 use App\UseCases\File\Find\FileExistsQuery;
@@ -53,7 +43,10 @@ use App\UseCases\User\Find\FindUserQueryHandler;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Str;
+use Onlyoffice\DocsIntegrationSdk\Models\Callback;
+use Onlyoffice\DocsIntegrationSdk\Models\CallbackDocStatus;
+use Onlyoffice\DocsIntegrationSdk\Models\CallbackForceSaveType;
+use Onlyoffice\DocsIntegrationSdk\Models\History;
 
 class EditorController extends Controller
 {
@@ -303,152 +296,31 @@ class EditorController extends Controller
         }
 
         $data = $request->input('payload');
-        $status = $data['status'];
+        $data['filename'] = $filename;
+        $data['address'] = $address;
+        $actions = array_key_exists('actions', $data) ? $data['actions'] : [];
+        $changesUrl = array_key_exists('changesurl', $data) ? $data['changesurl'] : '';
+        $fileType = array_key_exists('filetype', $data) ? $data['filetype'] : '';
+        $forceSaveType = array_key_exists('forcesavetype', $data) && $data['forcesavetype'] !== 3 ? new CallbackForceSaveType($data['forcesavetype']) : null;
+        $history = array_key_exists('history', $data) ? new History($data['history']['serverVersion'], $data['history']['changes']) : null;
+        $users = array_key_exists('users', $data) ? $data['users'] : [];
+        $url = array_key_exists('url', $data) ? $data['url'] : '';
 
-        switch ($status) {
-            case 1:
-                if ($data['actions'] && $data['actions'][0]['type'] == 0) {
-                    $user = $data['actions'][0]['userid'];
-                    if (array_search($user, $data['users']) === false) {
-                        app(ForceSaveCommad::class)
-                            ->__invoke(new ForceSaveRequest(key: $data['key']));
-                    }
-                }
-                break;
-            case 2:
-            case 3:
-                $url = $data['url'];
-                $key = $data['key'];
-                $user = $data['users'][0];
-                $changes = null;
+        $callback = new Callback(
+            $actions,
+            $changesUrl,
+            $fileType,
+            $forceSaveType,
+            $history,
+            $data['key'],
+            new CallbackDocStatus($data['status']),
+            $url,
+            $users
+        );
 
-                $url = Str::replace(URL::origin($url), $this->settings->getSetting('url.server.private'), $url);
+        $callbackService = new CallbackService($this->settings, app(JWTManager::class), $data);
+        $result = $callbackService->processCallback($callback, $filename);
 
-                $fileExtension = PathInfo::extension($filename);
-                $downloadExtension = PathInfo::extension($url);
-
-                if ($fileExtension !== $downloadExtension) {
-                    $result = app(ConvertCommand::class)
-                        ->__invoke(new ConvertRequest(
-                            filename: $filename,
-                            fileType: $downloadExtension,
-                            outputType: $fileExtension,
-                            url: $url,
-                            password: null,
-                            user: $user,
-                            userAddress: $address,
-                        ));
-
-                    if (array_key_exists('step', $result) || array_key_exists('error', $result)) {
-                        $filename = PathInfo::filename($filename).".$downloadExtension";
-                    } else {
-                        $url = $result['fileUrl'];
-                    }
-                }
-
-                $content = app(DownloadFileCommand::class)
-                    ->__invoke(new DownloadFileRequest(url: $url))['content'];
-
-                if (array_key_exists('changesurl', $data)) {
-                    $changesUrl = $data['changesurl'];
-                    $changesUrl = Str::replace(URL::origin($changesUrl), $this->settings->getSetting('url.server.private'), $changesUrl);
-
-                    $changes = app(DownloadFileCommand::class)
-                        ->__invoke(new DownloadFileRequest(url: $changesUrl))['content'];
-                }
-
-                $history = array_key_exists('history', $data) ? $data['history']['changes'] : null;
-                $serverVersion = array_key_exists('history', $data) ? $data['history']['serverVersion'] : null;
-                $user = $data['users'][0];
-
-                app(SaveDocumentCommand::class)->__invoke(
-                    new SaveDocumentRequest(
-                        Path::join($address, $filename),
-                        $fileExtension,
-                        $key,
-                        $content,
-                        $user,
-                        $serverVersion,
-                        $history,
-                        $changes,
-                    )
-                );
-
-                break;
-            case 6:
-            case 7:
-                $isSubmitForm = $data['forcesavetype'] === 3;
-
-                if ($isSubmitForm && ! array_key_exists('formsdataurl', $data)) {
-                    abort(500, 'Document editing service did not return formsDataUrl');
-                }
-
-                $url = $data['url'];
-                $key = $data['key'];
-                $user = $data['users'][0];
-
-                $url = Str::replace(URL::origin($url), $this->settings->getSetting('url.server.private'), $url);
-
-                $fileExtension = PathInfo::extension($filename);
-                $downloadExtension = PathInfo::extension($url);
-
-                if ($fileExtension !== $downloadExtension) {
-                    $result = app(ConvertCommand::class)
-                        ->__invoke(new ConvertRequest(
-                            filename: $filename,
-                            fileType: $downloadExtension,
-                            outputType: $fileExtension,
-                            url: $url,
-                            password: null,
-                            user: $user,
-                            userAddress: $address,
-                        ));
-
-                    if (array_key_exists('step', $result) || array_key_exists('error', $result)) {
-                        $filename = PathInfo::filename($filename).".$downloadExtension";
-                    } else {
-                        $url = $result['fileUrl'];
-                    }
-                }
-
-                $content = app(DownloadFileCommand::class)
-                    ->__invoke(new DownloadFileRequest(url: $url))['content'];
-
-                if ($isSubmitForm) {
-                    $formsDataUrl = $data['formsdataurl'];
-                    $formsDataUrl = Str::replace(
-                        URL::origin($formsDataUrl),
-                        $this->settings->getSetting('url.server.private'),
-                        $formsDataUrl
-                    );
-
-                    $formData = app(DownloadFileCommand::class)
-                        ->__invoke(new DownloadFileRequest(url: $formsDataUrl))['content'];
-
-                    app(SaveDocumentFormCommand::class)
-                        ->__invoke(new SaveDocumentFormRequest(
-                            filename: $filename,
-                            userDirectory: $address,
-                            user: $user,
-                            formContent: $content,
-                            formDataContent: $formData,
-                        ));
-                } else {
-                    app(ForceSaveDocumentCommand::class)
-                        ->__invoke(
-                            new ForceSaveDocumentRequest(
-                                filename: $filename,
-                                userDirectory: $address,
-                                content: $content
-                            )
-                        );
-                }
-
-                break;
-        }
-
-        return response()->json([
-            'error' => 0,
-        ]);
+        return response()->json($result);
     }
 }
