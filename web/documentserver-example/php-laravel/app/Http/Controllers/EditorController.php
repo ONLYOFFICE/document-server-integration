@@ -18,9 +18,8 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\Path\PathInfo;
-use App\Helpers\URL\FileURL;
-use App\Helpers\URL\TemplateURL;
 use App\Helpers\URL\URL;
+use App\OnlyOffice\Managers\DocumentManager;
 use App\OnlyOffice\Managers\JWTManager;
 use App\OnlyOffice\Managers\SettingsManager;
 use App\OnlyOffice\Services\CallbackService;
@@ -140,10 +139,13 @@ class EditorController extends Controller
             ]);
         }
 
-        $downloadUrl = FileURL::download($filename, $request->ip());
-        $templatesImageUrl = TemplateURL::image($file['format']->type->value);
-        $createUrl = FileURL::create($file['format']->extension(), $user['id']);
-        $callbackUrl = FileURL::callback($filename, $request->ip());
+        $file['user'] = $userId;
+        $file['address'] = $request->ip();
+        $fileId = $file['key'];
+
+        $documentManager = new DocumentManager($file);
+
+        $downloadUrl = $documentManager->getFileUrl($fileId);
         $imagesUrl = "$storagePublicUrl/images/";
 
         $mode = $request->action ?? 'edit';
@@ -160,10 +162,10 @@ class EditorController extends Controller
                 lang: $lang,
                 userAddress: $request->ip(),
                 serverAddress: $storagePublicUrl,
-                createUrl: $createUrl,
-                templatesImageUrl: $templatesImageUrl,
+                createUrl: $documentManager->getCreateUrl($fileId),
+                templatesImageUrl: $documentManager->getTemplateImageUrl($fileId),
                 actionLink: $actionLink,
-                callbackUrl: $callbackUrl,
+                callbackUrl: $documentManager->getCallbackUrl($fileId),
                 imagesUrl: $imagesUrl,
                 directUrl: $directUrlEnabled ? $downloadUrl : '',
             ));
