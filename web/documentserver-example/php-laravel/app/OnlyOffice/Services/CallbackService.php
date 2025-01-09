@@ -82,7 +82,7 @@ class CallbackService extends OnlyOfficeCallbackService
         $filename = $this->data['filename'];
         $address = $this->data['address'];
 
-        $url = Str::replace(URL::origin($url), $this->settingsManager->getSetting('url.server.private'), $url);
+        $url = $this->settingsManager->replaceDocumentServerUrlToInternal($url);
 
         $fileExtension = PathInfo::extension($filename);
         $downloadExtension = PathInfo::extension($url);
@@ -153,7 +153,7 @@ class CallbackService extends OnlyOfficeCallbackService
         $filename = $this->data['filename'];
         $address = $this->data['address'];
 
-        $url = Str::replace(URL::origin($url), $this->settingsManager->getSetting('url.server.private'), $url);
+        $url = $this->settingsManager->replaceDocumentServerUrlToInternal($url);
 
         $fileExtension = PathInfo::extension($filename);
         $downloadExtension = PathInfo::extension($url);
