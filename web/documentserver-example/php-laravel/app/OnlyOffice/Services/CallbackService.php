@@ -189,7 +189,7 @@ class CallbackService extends OnlyOfficeCallbackService
         }
 
         $historyObject = $callback->getHistory();
-        $history = $historyObject ? $this->data['history']['changes'] : null;
+        $history = $historyObject ? $historyObject->getChanges() : null;
         $serverVersion = $historyObject ? $historyObject->getServerVersion() : null;
 
         app(SaveDocumentCommand::class)->__invoke(
