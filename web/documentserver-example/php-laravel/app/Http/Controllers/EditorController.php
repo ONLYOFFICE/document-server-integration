@@ -303,7 +303,7 @@ class EditorController extends Controller
         $actions = array_key_exists('actions', $data) ? $data['actions'] : [];
         $changesUrl = array_key_exists('changesurl', $data) ? $data['changesurl'] : '';
         $fileType = array_key_exists('filetype', $data) ? $data['filetype'] : '';
-        $forceSaveType = array_key_exists('forcesavetype', $data) && $data['forcesavetype'] !== 3 ? new CallbackForceSaveType($data['forcesavetype']) : null;
+        $forceSaveType = array_key_exists('forcesavetype', $data) ? new CallbackForceSaveType($data['forcesavetype']) : null;
         $history = array_key_exists('history', $data) && $data['history']
             ? new History($data['history']['serverVersion'], $data['history']['changes'])
             : null;
