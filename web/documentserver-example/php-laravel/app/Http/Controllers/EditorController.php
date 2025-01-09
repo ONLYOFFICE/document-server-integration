@@ -302,6 +302,7 @@ class EditorController extends Controller
         $data['address'] = $address;
         $actions = array_key_exists('actions', $data) ? $data['actions'] : [];
         $changesUrl = array_key_exists('changesurl', $data) ? $data['changesurl'] : '';
+        $formsDataUrl = array_key_exists('formsdataurl', $data) ? $data['formsdataurl'] : '';
         $fileType = array_key_exists('filetype', $data) ? $data['filetype'] : '';
         $forceSaveType = array_key_exists('forcesavetype', $data) ? new CallbackForceSaveType($data['forcesavetype']) : null;
         $history = array_key_exists('history', $data) && $data['history']
@@ -319,7 +320,9 @@ class EditorController extends Controller
             $data['key'],
             new CallbackDocStatus($data['status']),
             $url,
-            $users
+            $users,
+            '',
+            $formsDataUrl
         );
 
         $callbackService = new CallbackService($this->settings, app(JWTManager::class), $data);
