@@ -36,6 +36,7 @@ use App\UseCases\Document\Save\SaveDocumentRequest;
 use Illuminate\Support\Facades\Log;
 use \Onlyoffice\DocsIntegrationSdk\Service\Callback\CallbackService as OnlyOfficeCallbackService;
 use Illuminate\Support\Str;
+use Onlyoffice\DocsIntegrationSdk\Models\CallbackForceSaveType;
 
 class CallbackService extends OnlyOfficeCallbackService
 {
@@ -69,9 +70,9 @@ class CallbackService extends OnlyOfficeCallbackService
 
     public function processTrackerStatusForcesave($callback, string $fileid)
     {
-        $isSubmitForm = $this->data['forcesavetype'] === 3;
+        $isSubmitForm = $callback->getForceSaveType()->getValue() === CallbackForceSaveType::SUBMIT_FORM;
 
-        if ($isSubmitForm && ! array_key_exists('formsdataurl', $this->data)) {
+        if ($isSubmitForm && !$callback->getFormsDataUrl()) {
             Log::error('Document editing service did not return formsDataUrl');
             return ['error' => 1];
         }
@@ -110,12 +111,7 @@ class CallbackService extends OnlyOfficeCallbackService
             ->__invoke(new DownloadFileRequest(url: $url))['content'];
 
         if ($isSubmitForm) {
-            $formsDataUrl = $this->data['formsdataurl'];
-            $formsDataUrl = Str::replace(
-                URL::origin($formsDataUrl),
-                $this->settingsManager->getSetting('url.server.private'),
-                $formsDataUrl
-            );
+            $formsDataUrl = $this->settingsManager->replaceDocumentServerUrlToInternal($callback->getFormsDataUrl());
 
             $formData = app(DownloadFileCommand::class)
                 ->__invoke(new DownloadFileRequest(url: $formsDataUrl))['content'];
