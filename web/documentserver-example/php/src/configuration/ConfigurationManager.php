@@ -170,6 +170,7 @@ class ConfigurationManager
     {
         return [
             'en' => 'English',
+            'sq-AL' => 'Albanian (Albania)',
             'ar' => 'Arabic',
             'hy' => 'Armenian',
             'az' => 'Azerbaijani',
