@@ -3,6 +3,7 @@
 - nodejs: refresh config
 - nodejs: support pages, numbers, key formats
 - nodejs: support hwp, hwpx formats
+- sq-AL skin language
 
 ## 1.11.0
 - he-IL skin language
