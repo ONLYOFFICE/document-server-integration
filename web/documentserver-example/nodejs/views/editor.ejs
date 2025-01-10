@@ -266,7 +266,6 @@
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
-                innerAlert(xhr.responseText);
                 callback(JSON.parse(xhr.responseText));
             }
         };
@@ -279,7 +278,6 @@
           xhr.send();
           xhr.onload = function () {
             if (xhr.status === 200) {
-              innerAlert(JSON.parse(xhr.responseText));
               let fileList = JSON.parse(xhr.responseText);
               let firstXlsxName;
               let file;
@@ -360,7 +358,6 @@
                 "&permissions=" + encodeURIComponent(JSON.stringify(config.document.permissions)));
             xhr.send();
             xhr.onload = function () {
-                innerAlert(xhr.responseText);
                 docEditor.refreshFile(JSON.parse(xhr.responseText));
             };
         };
