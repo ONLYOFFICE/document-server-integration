@@ -22,7 +22,6 @@ use App\Helpers\URL\URL;
 use App\OnlyOffice\Managers\SettingsManager;
 use App\OnlyOffice\Miscellaneous\CommandRequest;
 use App\Repositories\FormatRepository;
-use App\Services\Docs\Command\ForgottenFileRequest;
 use Illuminate\Support\Str;
 
 class FindAllForgottenFilesQueryHandler
@@ -35,25 +34,26 @@ class FindAllForgottenFilesQueryHandler
     public function __invoke(FindAllForgottenFilesQuery $query): array
     {
         $filesList = [];
+        $commandRequest = app(CommandRequest::class);
 
-        $result = app(CommandRequest::class)->getForgottenList();
+        $result = $commandRequest->getForgottenList();
         $keys = $result->keys;
 
         foreach ($keys as $key) {
-            $filesList[] = app()->make(ForgottenFileRequest::class)->get($key);
+            $filesList[] = $commandRequest->getForgotten($key);
         }
 
         $files = [];
 
         foreach ($filesList as $fileItem) {
-            $url = $fileItem['url'];
+            $url = $fileItem->url;
             $url = Str::replace(URL::origin($url), $this->settings->getSetting('url.server.public'), $url);
 
             $files[] = [
-                'key' => $fileItem['key'],
+                'key' => $fileItem->key,
                 'filename' => $url,
                 'url' => $url,
-                'format' => $this->formatRepository->find(PathInfo::extension($fileItem['url'])),
+                'format' => $this->formatRepository->find(PathInfo::extension($fileItem->url)),
             ];
         }
 

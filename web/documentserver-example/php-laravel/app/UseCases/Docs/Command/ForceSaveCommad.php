@@ -17,8 +17,8 @@
 
 namespace App\UseCases\Docs\Command;
 
-use App\Exceptions\CommandServiceError;
-use App\Services\Docs\Command\ForceSaveRequest as ForceSave;
+use App\OnlyOffice\Miscellaneous\CommandRequest;
+use Exception;
 use Illuminate\Support\Facades\Log;
 
 class ForceSaveCommad
@@ -26,9 +26,9 @@ class ForceSaveCommad
     public function __invoke(ForceSaveRequest $request): void
     {
         try {
-            app(ForceSave::class)
-                ->save($request->key);
-        } catch (CommandServiceError $e) {
+            app(CommandRequest::class)
+                ->forceSave($request->key);
+        } catch (Exception $e) {
             Log::debug($e->getMessage());
         }
     }

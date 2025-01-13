@@ -22,29 +22,44 @@ use App\OnlyOffice\Services\RequestService;
 
 class CommandRequest
 {
-    public static function forceSave()
+    public static function forceSave(string $key)
     {
         $requestService = app(RequestService::class);
 
-        $result = $requestService->commandRequest("forcesave");
+        $data = [
+            'c' => 'forcesave',
+            'key' => $key,
+        ];
+
+        $result = $requestService->commandRequest("forcesave", $data);
 
         return $result;
     }
 
-    public static function deleteForgotten()
+    public static function deleteForgotten(string $key)
     {
         $requestService = app(RequestService::class);
 
-        $result = $requestService->commandRequest("deleteForgotten");
+        $data = [
+            'c' => 'deleteForgotten',
+            'key' => $key,
+        ];
+
+        $result = $requestService->commandRequest("deleteForgotten", $data);
 
         return $result;
     }
 
-    public static function getForgotten()
+    public static function getForgotten(string $key)
     {
         $requestService = app(RequestService::class);
 
-        $result = $requestService->commandRequest("getForgotten");
+        $data = [
+            'c' => 'getForgotten',
+            'key' => $key,
+        ];
+
+        $result = $requestService->commandRequest("getForgotten", $data);
 
         return $result;
     }
