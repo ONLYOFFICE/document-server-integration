@@ -78,7 +78,7 @@ fileUtility.fileType = {
   cell: 'cell',
   slide: 'slide',
   pdf: 'pdf',
-  visio: 'visio',
+  diagram: 'diagram',
 };
 
 fileUtility.getFormatActions = function getExtensionActions(ext) {

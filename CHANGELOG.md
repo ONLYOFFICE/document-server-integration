@@ -1,6 +1,6 @@
 # Change Log
 
-- nodejs: support vsdx in visio editor
+- nodejs: support vsdx in diagram editor
 
 ## 1.12.0
 - nodejs: refresh config
