@@ -21,8 +21,8 @@ use App\Exceptions\ConversionError;
 use App\Exceptions\ConversionNotComplete;
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\FileURL;
+use App\OnlyOffice\Miscellaneous\ConvertRequest as ConvertRequestAdapter;
 use App\Repositories\FormatRepository;
-use App\Services\Docs\Conversion\ConversionRequest;
 use Exception;
 use Illuminate\Support\Str;
 
@@ -54,8 +54,7 @@ class ConvertCommand
         ];
 
         try {
-            $result = app(ConversionRequest::class)
-                ->send($content, $key);
+            $result = app(ConvertRequestAdapter::class)->convert($content);
             $result['filename'] = PathInfo::filename($request->filename).'.'.$result['fileType'];
         } catch (ConversionNotComplete $e) {
             return [
