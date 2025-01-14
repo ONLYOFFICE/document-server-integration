@@ -1,6 +1,6 @@
 # Change Log
 
-- nodejs: support vsdx in visio editor
+- nodejs: support vsdx in diagram editor
 - nodejs: support pages, numbers, key formats
 - golang: new integration example
 - golang: upload files to the server
