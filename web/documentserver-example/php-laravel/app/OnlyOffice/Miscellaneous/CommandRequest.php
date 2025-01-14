@@ -31,7 +31,7 @@ class CommandRequest
             'key' => $key,
         ];
 
-        $result = $requestService->commandRequest("forcesave", $data);
+        $result = $requestService->commandRequest('forcesave', $data);
 
         return $result;
     }
@@ -45,7 +45,7 @@ class CommandRequest
             'key' => $key,
         ];
 
-        $result = $requestService->commandRequest("deleteForgotten", $data);
+        $result = $requestService->commandRequest('deleteForgotten', $data);
 
         return $result;
     }
@@ -59,7 +59,7 @@ class CommandRequest
             'key' => $key,
         ];
 
-        $result = $requestService->commandRequest("getForgotten", $data);
+        $result = $requestService->commandRequest('getForgotten', $data);
 
         return $result;
     }
@@ -68,7 +68,7 @@ class CommandRequest
     {
         $requestService = app(RequestService::class);
 
-        $result = $requestService->commandRequest("getForgottenList");
+        $result = $requestService->commandRequest('getForgottenList');
 
         return $result;
     }
@@ -83,7 +83,7 @@ class CommandRequest
             'meta' => $meta,
         ];
 
-        $result = $requestService->commandRequest("meta", $data);
+        $result = $requestService->commandRequest('meta', $data);
 
         return $result;
     }

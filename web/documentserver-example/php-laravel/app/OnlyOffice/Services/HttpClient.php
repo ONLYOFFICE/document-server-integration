@@ -26,6 +26,7 @@ use Onlyoffice\DocsIntegrationSdk\Service\Request\HttpClientInterface;
 class HttpClient implements HttpClientInterface
 {
     private $status;
+
     private $body;
 
     public function __construct()
@@ -37,9 +38,9 @@ class HttpClient implements HttpClientInterface
     /**
      * Request to Document Server with turn off verification.
      *
-     * @param string $url    - request address
-     * @param string $method - request method
-     * @param array  $opts   - request options
+     * @param  string  $url  - request address
+     * @param  string  $method  - request method
+     * @param  array  $opts  - request options
      */
     public function request($url, $method = 'GET', $opts = [])
     {

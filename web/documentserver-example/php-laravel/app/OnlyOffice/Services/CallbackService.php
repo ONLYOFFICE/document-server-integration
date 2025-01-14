@@ -34,9 +34,9 @@ use App\UseCases\Document\Save\SaveDocumentFormCommand;
 use App\UseCases\Document\Save\SaveDocumentFormRequest;
 use App\UseCases\Document\Save\SaveDocumentRequest;
 use Illuminate\Support\Facades\Log;
-use \Onlyoffice\DocsIntegrationSdk\Service\Callback\CallbackService as OnlyOfficeCallbackService;
 use Illuminate\Support\Str;
 use Onlyoffice\DocsIntegrationSdk\Models\CallbackForceSaveType;
+use Onlyoffice\DocsIntegrationSdk\Service\Callback\CallbackService as OnlyOfficeCallbackService;
 
 class CallbackService extends OnlyOfficeCallbackService
 {
@@ -72,8 +72,9 @@ class CallbackService extends OnlyOfficeCallbackService
     {
         $isSubmitForm = $callback->getForceSaveType()->getValue() === CallbackForceSaveType::SUBMIT_FORM;
 
-        if ($isSubmitForm && !$callback->getFormsDataUrl()) {
+        if ($isSubmitForm && ! $callback->getFormsDataUrl()) {
             Log::error('Document editing service did not return formsDataUrl');
+
             return ['error' => 1];
         }
 
@@ -167,7 +168,7 @@ class CallbackService extends OnlyOfficeCallbackService
                 ));
 
             if (array_key_exists('step', $result) || array_key_exists('error', $result)) {
-                $filename = PathInfo::filename($filename) . ".$downloadExtension";
+                $filename = PathInfo::filename($filename).".$downloadExtension";
             } else {
                 $url = $result['fileUrl'];
             }
@@ -202,7 +203,7 @@ class CallbackService extends OnlyOfficeCallbackService
         );
 
         return [
-            'error' => 0
+            'error' => 0,
         ];
     }
 

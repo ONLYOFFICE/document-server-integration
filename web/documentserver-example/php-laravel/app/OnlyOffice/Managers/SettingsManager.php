@@ -86,10 +86,7 @@ class SettingsManager extends OnlyOfficeSettingsManager
         return $this->get($settingName);
     }
 
-    public function setSetting($settingName, $value, $createSetting = false)
-    {
-
-    }
+    public function setSetting($settingName, $value, $createSetting = false) {}
 
     private function get(string $key, mixed $default = null): mixed
     {

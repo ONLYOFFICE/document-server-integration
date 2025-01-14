@@ -20,7 +20,6 @@ namespace App\OnlyOffice\Managers;
 
 use App\Helpers\URL\FileURL;
 use App\Helpers\URL\TemplateURL;
-use App\OnlyOffice\Managers\SettingsManager;
 use Onlyoffice\DocsIntegrationSdk\Manager\Document\DocumentManager as OnlyOfficeDocumentManager;
 use Onlyoffice\DocsIntegrationSdk\Manager\Formats\FormatsManager;
 
