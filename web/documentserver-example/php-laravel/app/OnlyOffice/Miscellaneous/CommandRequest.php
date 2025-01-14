@@ -72,4 +72,19 @@ class CommandRequest
 
         return $result;
     }
+
+    public static function updateMeta(string $key, array $meta)
+    {
+        $requestService = app(RequestService::class);
+
+        $data = [
+            'c' => 'meta',
+            'key' => $key,
+            'meta' => $meta,
+        ];
+
+        $result = $requestService->commandRequest("meta", $data);
+
+        return $result;
+    }
 }
