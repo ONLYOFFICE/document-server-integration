@@ -10,6 +10,7 @@ The package contains examples written in .Net (C# MVC), .Net (C#), Java, Java Sp
 You should change `http://documentserver` to your server address in these files:
 * [.Net (C# MVC)](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/csharp-mvc) - `web/documentserver-example/csharp-mvc/web.appsettings.config`
 * [.Net (C#)](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/csharp) - `web/documentserver-example/csharp/settings.config`
+* [Go](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/go) - `web\documentserver-example\go\config\configuration.json`
 * [Java](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/java) - `web/documentserver-example/java/src/main/resources/settings.properties`
 * [Java Spring](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/java-spring) - `web/documentserver-example/java-spring/src/main/resources/application.properties`
 * [Node.js](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/nodejs) - `web/documentserver-example/nodejs/config/default.json`

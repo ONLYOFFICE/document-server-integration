@@ -447,8 +447,15 @@ namespace OnlineEditorsExample
                 conversionExtension = fileExt.ToString();
             }
 
+            object keepOriginal;
+            bool removeOriginal = true;
+            if (body.TryGetValue("keepOriginal", out keepOriginal) && !String.IsNullOrEmpty(keepOriginal.ToString()))
+            {
+                removeOriginal = keepOriginal.ToString().ToLower() != "true";
+            }
+
             // check if the file with such an extension can be converted
-            if (ConvertExts.Contains("." + extension))
+            if (ConvertExts.Contains("." + extension) || conversionExtension != "ooxml")
             {
                 // generate document key
                 var key = ServiceConverter.GenerateRevisionId(FileUri(_fileName, true));
@@ -469,9 +476,13 @@ namespace OnlineEditorsExample
                 }
 
                 var newFileUri = newFileData["fileUrl"];
-                var newFileType = "." + newFileData["fileType"];
+                var newFileType = newFileData["fileType"];
+                if (!FormatManager.All().Any(f => f.Name == newFileType && f.Type != ""))
+                {
+                    return "{\"step\": \"" + result + "\", \"filename\": \"" + newFileUri + "\", \"error\": \"FileTypeIsNotSupported\"}";
+                }
                 // get a file name of an internal file extension with an index if the file with such a name already exists
-                var fileName = GetCorrectName(Path.GetFileNameWithoutExtension(_fileName) + newFileType);
+                var fileName = GetCorrectName(Path.GetFileNameWithoutExtension(_fileName) + "." + newFileType);
 
                 var req = (HttpWebRequest)WebRequest.Create(newFileUri);
 
@@ -493,17 +504,21 @@ namespace OnlineEditorsExample
                     }
                 }
 
-                // remove the original file and its history if it exists
-                var storagePath = StoragePath(_fileName, null);
-                var histDir = HistoryDir(storagePath);
-                File.Delete(storagePath);
-                if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
-
+                if (removeOriginal)
+                {
+                    // remove the original file and its history if it exists
+                    var storagePath = StoragePath(_fileName, null);
+                    var histDir = HistoryDir(storagePath);
+                    File.Delete(storagePath);
+                    if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
+                }
                 // create meta information about the converted file with user id and name specified
                 _fileName = fileName;
                 var id = context.Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);  // get the user
                 DocEditor.CreateMeta(_fileName, user.id, user.name, null);
+
+                return "{\"step\": \"" + result + "\", \"filename\": \"" + _fileName + "\"}";
             }
 
             return "{ \"filename\" : \"" + _fileName + "\"}";

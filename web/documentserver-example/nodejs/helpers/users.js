@@ -102,6 +102,7 @@ const descrUser0 = [
   'Can\'t protect file',
   'View file without collaboration',
   'Can’t submit forms',
+  'Can’t refresh outdated file',
 ];
 
 const users = [

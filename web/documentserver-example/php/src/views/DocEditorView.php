@@ -254,6 +254,7 @@ final class DocEditorView extends View
 
         if ($user->id != "uid-0") {
             $historyLayout .= "// add mentions for not anonymous users
+                config.events['onRequestRefreshFile'] = onRequestRefreshFile;
                 config.events['onRequestUsers'] = onRequestUsers;
                 config.events['onRequestSaveAs'] = onRequestSaveAs;
                 // the user is mentioned in a comment

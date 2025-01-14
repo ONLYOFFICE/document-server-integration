@@ -49,7 +49,8 @@ public class ExampleData {
                 "Can't view chat",
                 "Can't protect file",
                 "View file without collaboration",
-                "Can’t submit forms"
+                "Can’t submit forms",
+                "Can't refresh outdated file"
         );
 
         // the description for user 1

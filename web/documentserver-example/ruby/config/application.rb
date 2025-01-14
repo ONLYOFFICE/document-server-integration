@@ -49,5 +49,6 @@ class Application < Rails::Application
     match '/track', to: 'home#track', via: 'post'
     match '/upload', to: 'home#upload', via: 'post'
     match '/formats', to: 'home#formats', via: 'get'
+    match '/config', to: 'home#refresh_config', via: 'get'
   end
 end

@@ -153,6 +153,16 @@ if (typeof jQuery !== "undefined") {
                             return;
                         } else {
                             if (response.error.includes("Error conversion output format")){
+                                let format = formatManager.findByExtension(fileName.split(".").pop());
+                                if (!format.convert.includes("docx")) {
+                                    jq(".document").addClass("invisible")
+                                }
+                                if (!format.convert.includes("xlsx")) {
+                                    jq(".spreadsheet").addClass("invisible")
+                                }
+                                if (!format.convert.includes("pptx")) {
+                                    jq(".presentation").addClass("invisible")
+                                }
                                 jq("#select-file-type").removeClass("invisible");
                                 jq("#step2").removeClass("current");
                                 jq("#hiddenFileName").attr("placeholder",filePass);
@@ -290,6 +300,134 @@ if (typeof jQuery !== "undefined") {
 
         jq("#embeddedView").attr("src", url);
     });
+
+    jq(document).on("click", "#beginEditConverted:not(.disable)", function () {
+        var fileId = encodeURIComponent(jq('#hiddenFileName').attr("data"));
+        var url = UrlEditor + "?mode=edit&fileName=" + fileId;
+        window.open(url, "_blank");
+        jq('#hiddenFileName').val("");
+        jq.unblockUI();
+        document.location.reload();
+    });
+
+    jq(document).on("click", "#beginViewConverted:not(.disable)", function () {
+        var fileId = encodeURIComponent(jq('#hiddenFileName').attr("data"));
+        var url = UrlEditor + "?mode=view&fileName=" + fileId;
+        window.open(url, "_blank");
+        jq('#hiddenFileName').val("");
+        jq.unblockUI();
+        document.location.reload();
+    });
+
+    jq(document).on("click", "#downloadConverted:not(.disable)", function () {
+        var fileId = jq('#hiddenFileName').attr("data");
+        if (jq("#downloadConverted").attr("data") == "fromConverter") window.location.assign(fileId);
+        else window.open("IndexServlet?type=download&fileName=" + encodeURIComponent(fileId), "_blank");
+    });
+
+    jq(document).on("click", ".convert-file", function () {
+        const currentElement = jq(this);
+        var fileName = currentElement.attr("data");
+        var type = currentElement.attr("data-type");
+
+        jq.blockUI({
+            theme: true,
+            title: "Converting file" + "<div class=\"dialog-close\"></div>",
+            message: jq("#convertingProgress"),
+            overlayCSS: { "background-color": "#aaa" },
+            themedCSS: { width: "539px", top: "20%", left: "50%", marginLeft: "-269px" }
+        });
+
+        jq("#convertFileName").text(decodeURIComponent(fileName));
+        jq("#convertFileName").removeClass("word slide cell");
+        jq("#convertFileName").addClass(type);
+        jq("#convTypes").empty();
+
+        let format = formatManager.findByExtension(fileName.split('.').pop());
+        if (format) {
+            format.convert.forEach(ext => {
+                jq("#convTypes").append(jq(`<td name="convertingTypeButton" id="wordTo${ext}" class="button hoar" data="${ext}">${ext}</td>`));
+            });
+        }
+
+        jq("#hiddenFileName").val(fileName);
+        jq("#convertStep1").addClass("done");
+        jq("#convertStep2").addClass("waiting");
+    });
+
+    jq(document).on("click", "td[name='convertingTypeButton']:not(.disable, .orange)", function () {
+        const currentElement = jq(this);
+        let id = currentElement[0].id;
+        let fileExt = jq(`#${id}`).attr("data");
+        jq(`#${id}`).addClass("orange");
+        jq("td[name='convertingTypeButton']").addClass("disable");
+        jq("#convertStep2").removeClass("waiting").removeClass("done").addClass("current");
+        jq("#convertStep2").text('2. File conversion');
+        jq("#convert-descr").removeClass("disable");
+        jq("#convertPercent").text("0 %");
+        jq("#hiddenFileName").attr("placeholder",fileExt);
+        jq("#downloadConverted").addClass("disable");
+        jq("#beginEditConverted").addClass("disable");
+        jq("#beginViewConverted").addClass("disable");
+        mustReload = true;
+        
+        convertFile();
+    });
+
+    function convertFile (filePass) {
+        let fileName = decodeURIComponent(jq("#hiddenFileName").val());
+        let fileExt = jq("#hiddenFileName").attr("placeholder");
+
+        filePass = filePass ? filePass : null;
+        if (timer != null) {
+            clearTimeout(timer);
+        }
+        timer = setTimeout(function () {
+            jq.ajax({
+                async: true,
+                contentType: "text/xml",
+                type: "post",
+                dataType: "json",
+                data: JSON.stringify({filename: fileName, filePass: filePass, lang: language, fileExt: fileExt, keepOriginal: true}),
+                url: UrlConverter,
+                complete: function (data) {
+                    try {
+                        var response = jq.parseJSON(data.responseText);
+                    } catch (e)	{
+                        response = { error: e };
+                    }
+                    if (!response.filename && !response.step && response.error) {
+                        jq("#convertStep2").removeClass("current").addClass("error");
+                        jq("#convertStep2").text(`2. File conversion to ${fileExt}`);
+                        jq("#convert-error").removeClass("hidden");
+                        jq("#convert-error").text(`${response.error}`);
+                        jq("td[name='convertingTypeButton']").removeClass("disable orange");
+                        return;
+                    }
+                    if (response.step != undefined && response.step != 100) {
+                        jq("#convertPercent").text(`${response.step} %`);
+                        convertFile();
+                    } else {
+                        jq("#convertPercent").text(`${response.step} %`);
+                        jq("#convertStep2").removeClass("current").addClass("done");
+                        jq("#convertStep2").text(`2. File conversion to ${fileExt}`);
+                        jq("#downloadConverted").removeClass("disable");
+                        if (response.error !== "FileTypeIsNotSupported") {
+                            jq("#hiddenFileName").attr("data",response.filename);
+                            jq("#beginEditConverted").removeClass("disable");
+                            jq("#beginViewConverted").removeClass("disable");
+                            jq("#downloadConverted").attr("data","fromStorage");
+                        } else {
+                            let newFilename = fileName.split('.').slice(0,-1).join('.')
+                            jq("#hiddenFileName").attr("data",response.filename.split("&filename=download").join(`&filename=${newFilename}`));
+                            jq("#downloadConverted").attr("data","fromConverter");
+                        }
+                        jq("td[name='convertingTypeButton']").removeClass("disable orange");
+                    }
+                }
+            });
+        }, 1000);
+    }
 
     jq(document).on("click", "#cancelEdit, .dialog-close", function () {
         jq('#hiddenFileName').val("");

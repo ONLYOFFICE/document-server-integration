@@ -195,7 +195,7 @@ function getDocumentType($filename)
         }
     }
 
-    return "word";
+    return null;
 }
 
 /**

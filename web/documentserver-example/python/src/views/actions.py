@@ -79,8 +79,9 @@ def convert(request):
         fileExt = fileUtils.getFileExt(filename)
         # get an auto-conversion extension from the request body or set it to the ooxml extension
         conversionExtension = body.get('fileExt') or 'ooxml'
+        keepOriginal = body.get('keepOriginal') or False
 
-        if docManager.isCanConvert(fileExt):  # check if the file extension is available for converting
+        if docManager.isCanConvert(fileExt) or conversionExtension != 'ooxml':
             key = docManager.generateFileKey(filename, request)  # generate the file key
 
             # get the url of the converted file
@@ -93,14 +94,25 @@ def convert(request):
                 response.setdefault('step', '0')
                 response.setdefault('filename', filename)
             else:
-                correctName = docManager.getCorrectName(
-                    fileUtils.getFileNameWithoutExt(filename) + '.' + convertedData['fileType'], request
-                    )  # otherwise, create a new name with the necessary extension
-                path = docManager.getStoragePath(correctName, request)
-                # save the file from the new url in the storage directory
-                docManager.downloadFileFromUri(convertedData['uri'], path, True)
-                docManager.removeFile(filename, request)  # remove the original file
-                response.setdefault('filename', correctName)  # pass the name of the converted file to the response
+                if not any(f.name == convertedData['fileType'] and len(f.actions) > 0 for f in FormatManager().all()):
+                    response.setdefault('step', '100')
+                    downloadUrl = convertedData['uri'].replace(
+                        config_manager.document_server_private_url().geturl(),
+                        config_manager.document_server_public_url().geturl()
+                    )
+                    response.setdefault('filename', downloadUrl)
+                    response.setdefault('error', 'FileTypeIsNotSupported')
+                else:
+                    correctName = docManager.getCorrectName(
+                        fileUtils.getFileNameWithoutExt(filename) + '.' + convertedData['fileType'], request
+                        )  # otherwise, create a new name with the necessary extension
+                    path = docManager.getStoragePath(correctName, request)
+                    # save the file from the new url in the storage directory
+                    docManager.downloadFileFromUri(convertedData['uri'], path, True)
+                    if not keepOriginal:
+                        docManager.removeFile(filename, request)  # remove the original file
+                    response.setdefault('filename', correctName)  # pass the name of the converted file to the response
+                    response.setdefault('step', '100')
         else:
             # if the file can't be converted, the original file name is passed to the response
             response.setdefault('filename', filename)
@@ -679,3 +691,45 @@ def formats(request: HttpRequest) -> HttpResponse:
     }
 
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+@http.GET()
+def config(request: HttpRequest) -> HttpResponse:
+    try:
+        filename = fileUtils.getFileName(request.GET['fileName'])
+        directUrl = fileUtils.getFileName(request.GET['directUrl']) == "true"
+        permissions = fileUtils.getFileName(request.GET['permissions'])
+
+        if not os.path.exists(docManager.getStoragePath(filename, request)):
+            raise Exception("File not found")
+
+        user = users.getUserFromReq(request)
+
+        config = {
+            'document': {
+                'title': filename,
+                'key': docManager.generateFileKey(filename, request),
+                'url': docManager.getDownloadUrl(filename, request),
+                'permissions': json.loads(permissions),
+                'directUrl': docManager.getDownloadUrl(filename, request, False) if directUrl else None,
+                'referenceData': {
+                    'instanceId': docManager.getServerUrl(False, request),
+                    'fileKey': json.dumps({'fileName': filename,
+                                           'userAddress': request.META['REMOTE_ADDR']}) if user.id != 'uid-0' else None
+                },
+            },
+            'editorConfig': {
+                'mode': 'edit',
+                'callbackUrl': docManager.getCallbackUrl(filename, request)
+            }
+        }
+
+        if jwtManager.isEnabled():
+            config['token'] = jwtManager.encode(config)
+
+        return HttpResponse(json.dumps(config), content_type='application/json')
+    except Exception as error:
+        return ErrorResponse(
+            message=f'{type(error)}: {error}',
+            status=HTTPStatus.INTERNAL_SERVER_ERROR
+        )

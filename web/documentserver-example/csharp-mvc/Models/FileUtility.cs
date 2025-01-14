@@ -31,6 +31,7 @@ namespace OnlineEditorsExampleMVC.Models
     {
         public enum FileType
         {
+            Null,
             Word,
             Cell,
             Slide,
@@ -47,7 +48,7 @@ namespace OnlineEditorsExampleMVC.Models
             if (FormatManager.SpreadsheetExtensions().Contains(ext)) return FileType.Cell;  // cell type for spreadsheet extensions
             if (FormatManager.PresentationExtensions().Contains(ext)) return FileType.Slide;  // slide type for presentation extensions
 
-            return FileType.Word;  // the default type is word
+            return FileType.Null;  // the default type is word
         }
     }
 

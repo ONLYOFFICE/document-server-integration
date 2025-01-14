@@ -375,7 +375,7 @@ public class FileModel {
         }
     }
 
-    public class ReferenceData {
+    public static class ReferenceData {
         private final String instanceId;
         private final Map<String, String> fileKey;
         public ReferenceData(final String fileName, final String curUserHostAddress, final User user) {

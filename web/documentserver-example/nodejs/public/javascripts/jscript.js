@@ -170,6 +170,16 @@ if (typeof jQuery != "undefined") {
                             return;
                         } else {
                             if (response.error.includes("-9")){
+                                let format = formatManager.findByExtension(fileName.split(".").pop());
+                                if (!format.convert.includes("docx")) {
+                                    jq(".document").addClass("invisible")
+                                }
+                                if (!format.convert.includes("xlsx")) {
+                                    jq(".spreadsheet").addClass("invisible")
+                                }
+                                if (!format.convert.includes("pptx")) {
+                                    jq(".presentation").addClass("invisible")
+                                }
                                 jq("#select-file-type").removeClass("invisible");
                                 jq("#step2").removeClass("current");
                                 jq("#hiddenFileName").attr("placeholder",filePass);

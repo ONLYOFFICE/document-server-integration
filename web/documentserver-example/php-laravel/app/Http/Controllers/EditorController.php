@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) Copyright Ascensio System SIA 2024
  *
@@ -237,6 +238,7 @@ class EditorController extends Controller
 
         if ($user['id'] != 'uid-0') {
             $historyLayout .= "// add mentions for not anonymous users
+                config.events['onRequestRefreshFile'] = onRequestRefreshFile;
                 config.events['onRequestClose'] = onRequestClose;
                 config.events['onRequestUsers'] = onRequestUsers;
                 config.events['onRequestSaveAs'] = onRequestSaveAs;

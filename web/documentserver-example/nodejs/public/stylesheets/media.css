@@ -83,7 +83,10 @@
         margin-left: 0;
     }
 
-    .tableRow,
+    .scroll-table-body {
+        width: 90%;
+    }
+
     .storedHeader,
     menu.links {
         width: 90%;
@@ -129,7 +132,11 @@
     .contentCells-icon{
         width: 5%;
     }
-    .tableRow,
+
+    .scroll-table-body {
+        width: 50%;
+    }
+
     menu.links {
         width: 55%;
     }
@@ -147,6 +154,7 @@
 
     .scroll-table-body {
         top: 33px;
+        height: calc(100% - 34px);
     }
 
     footer {
@@ -186,7 +194,10 @@
 }
 
 @media (max-width: 715px) {
-    .tableRow,
+    .scroll-table-body {
+        width: 45%;
+    }
+
     .storedHeader,
     menu.links {
         width: 45%;
@@ -258,6 +269,10 @@
         width: 75%;
     }
 
+    .scroll-table-body {
+        width: 75%;
+    }
+
     .tableHeaderCellEditors {
         width: 15%;
         text-align: left;
@@ -286,7 +301,6 @@
         padding-left: 0;
     }
 
-    .tableRow,
     .storedHeader,
     menu.links {
         width: 75%;
@@ -327,7 +341,10 @@
         width: 580px;
     }
 
-    .tableRow,
+    .scroll-table-body {
+        width: 95%;
+    }
+
     .storedHeader,
     menu.links {
         width: 95%;
@@ -719,7 +736,6 @@
     }
 }
 @media (max-width: 769px) and (min-width: 715px){
-    .tableRow,
     .storedHeader,
     menu.links {
         width: 50%;
@@ -919,7 +935,9 @@
     }
 
     .scroll-table-body {
+        width: 100%;
         top: 36px;
+        height: calc(100% - 34px);
     }
 
     .scroll-table-body tr:first-child {

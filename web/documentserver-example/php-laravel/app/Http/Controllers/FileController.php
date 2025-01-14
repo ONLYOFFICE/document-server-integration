@@ -1,4 +1,5 @@
 <?php
+
 /**
  * (c) Copyright Ascensio System SIA 2024
  *
@@ -19,7 +20,9 @@ namespace App\Http\Controllers;
 
 use App\Helpers\Path\Path;
 use App\Helpers\Path\PathInfo;
+use App\Helpers\URL\FileURL;
 use App\Helpers\URL\URL;
+use App\OnlyOffice\Managers\JWTManager;
 use App\OnlyOffice\Managers\SettingsManager;
 use App\Repositories\FormatRepository;
 use App\UseCases\Common\Http\DownloadFileCommand;
@@ -40,6 +43,8 @@ use App\UseCases\Document\Find\FindDocumentHistoryQuery;
 use App\UseCases\Document\Find\FindDocumentHistoryQueryHandler;
 use App\UseCases\Document\Find\FindDocumentQuery;
 use App\UseCases\Document\Find\FindDocumentQueryHandler;
+use App\UseCases\File\Find\FileExistsQuery;
+use App\UseCases\File\Find\FileExistsQueryHandler;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -150,6 +155,7 @@ class FileController extends Controller
             'fileUri' => 'nullable|string',
             'password' => 'nullable|string',
             'fileExt' => 'nullable|string',
+            'keepOriginal' => 'nullable|bool',
         ]);
 
         try {
@@ -180,6 +186,19 @@ class FileController extends Controller
                     ], 500);
             }
 
+            if (empty($this->formatRepository->find($result['fileType'])->actions)) {
+                return response()
+                    ->json([
+                        'step' => 100,
+                        'filename' => str_replace(
+                            $this->settings->getSetting('url.server.private'),
+                            $this->settings->getSetting('url.server.public'),
+                            $result['fileUrl']
+                        ),
+                        'error' => 'FileTypeIsNotSupported',
+                    ]);
+            }
+
             $convertedFileContent = app(DownloadFileCommand::class)
                 ->__invoke(new DownloadFileRequest($result['fileUrl']));
 
@@ -194,18 +213,21 @@ class FileController extends Controller
                 )
             );
 
-            app(DeleteDocumentCommand::class)->__invoke(
-                new DeleteDocumentRequest(
-                    filename: $request->filename,
-                    userDirectory: $request->ip(),
-                )
-            );
+            if (! $request->input('keepOriginal', false)) {
+                app(DeleteDocumentCommand::class)->__invoke(
+                    new DeleteDocumentRequest(
+                        filename: $request->filename,
+                        userDirectory: $request->ip(),
+                    )
+                );
+            }
         } catch (Exception $e) {
             abort(500, $e->getMessage());
         }
 
         return response()->json([
             'filename' => $file['filename'],
+            'step' => 100,
         ]);
     }
 
@@ -291,5 +313,63 @@ class FileController extends Controller
         }
 
         return response(status: 201);
+    }
+
+    public function config(Request $request, JWTManager $jwt)
+    {
+        try {
+            $request->validate([
+                'fileName' => 'string',
+                'directUrl' => 'nullable|string',
+                'permissions' => 'nullable|string',
+            ]);
+
+            $fileName = $request->fileName;
+            $directUrl = $request->directUrl == 'true';
+
+            $fileExists = app(FileExistsQueryHandler::class)
+                ->__invoke(new FileExistsQuery($fileName, $request->ip()));
+
+            if (! $fileExists) {
+                throw new Exception('File not found: '.$fileName);
+            }
+
+            $file = app(FindDocumentQueryHandler::class)
+                ->__invoke(new FindDocumentQuery($fileName, $request->ip()));
+            $url = FileURL::download($fileName, $request->ip());
+
+            $config = [
+                'document' => [
+                    'title' => $fileName,
+                    'key' => $file['key'],
+                    'url' => $url,
+                    'directUrl' => $directUrl ? $url : null,
+                    'permissions' => json_decode($request->permissions),
+                    'referenceData' => [
+                        'fileKey' => json_encode([
+                            'fileName' => $fileName,
+                            'userAddress' => $request->ip(),
+                        ]),
+                        'instanceId' => $request->serverAddress,
+                    ],
+                ],
+                'editorConfig' => [
+                    'mode' => 'edit',
+                    'callbackUrl' => FileURL::callback($fileName, $request->ip()),
+                ],
+            ];
+
+            if ($this->settings->getSetting('jwt.enabled')) {
+                $config['token'] = $jwt->encode($config, $this->settings->getSetting('jwt.secret'));
+            }
+
+            return response()
+                ->json($config);
+        } catch (Exception $e) {
+            return response()
+                ->json([
+                    'error' => $e->getMessage(),
+                ], 500);
+        }
     }
 }

@@ -3,10 +3,10 @@ name: PyLint
 on:
   workflow_dispatch:
   push:
-    branches: [master, main]
+    branches: [master]
     paths: ['web/documentserver-example/python/**']
   pull_request:
-    branches: [master, main, develop]
+    branches: [master, develop]
     paths: ['web/documentserver-example/python/**']
 
 jobs:

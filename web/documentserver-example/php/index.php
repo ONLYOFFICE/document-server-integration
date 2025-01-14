@@ -171,6 +171,11 @@ function routers()
         echo json_encode($response);
         return;
     }
+    if (str_starts_with($path, '/config')) {
+        $response = config();
+        echo json_encode($response);
+        return;
+    }
 
     http_response_code(HTTPStatus::NotFound->value);
 }
