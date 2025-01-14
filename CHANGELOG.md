@@ -16,6 +16,7 @@
 - php-laravel: create, edit, and submit pdf forms
 - php-laravel: show forgotten files on a seperate page
 - php-laravel: fetch files
+- php-laravel: integrate sdk
 - refresh config
 - on uploading xml convert to supported type only
 - converting function on index page
