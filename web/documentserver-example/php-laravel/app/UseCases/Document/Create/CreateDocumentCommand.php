@@ -24,8 +24,8 @@ use App\Helpers\UniqueFilename;
 use App\Models\File;
 use App\Models\Version;
 use App\Models\VersionInfo;
+use App\OnlyOffice\Managers\FormatManager;
 use App\Repositories\FileRepository;
-use App\Repositories\FormatRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\VersionRepository;
 use Illuminate\Support\Str;
@@ -35,7 +35,7 @@ class CreateDocumentCommand
 {
     public function __construct(
         private FileRepository $fileRepository,
-        private FormatRepository $formatRepository,
+        private FormatManager $formatManager,
         private UserRepository $userRepository,
         private VersionRepository $versionRepository,
     ) {}
@@ -45,10 +45,10 @@ class CreateDocumentCommand
         $filePath = Path::join($request->userDirectory, $request->filename);
         $filePath = UniqueFilename::for($filePath);
 
-        $format = $this->formatRepository->find($request->fileType);
+        $format = $this->formatManager->find($request->fileType);
         $user = $this->userRepository->find($request->user);
 
-        if ($format === null || empty($format->actions)) {
+        if ($format === null || empty($format->getActions())) {
             throw new UnexpectedValueException("The $request->fileType format is not supported");
         }
 

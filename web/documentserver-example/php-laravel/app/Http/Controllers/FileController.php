@@ -22,9 +22,9 @@ use App\Helpers\Path\Path;
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\FileURL;
 use App\Helpers\URL\URL;
+use App\OnlyOffice\Managers\FormatManager;
 use App\OnlyOffice\Managers\JWTManager;
 use App\OnlyOffice\Managers\SettingsManager;
-use App\Repositories\FormatRepository;
 use App\UseCases\Common\Http\DownloadFileCommand;
 use App\UseCases\Common\Http\DownloadFileRequest;
 use App\UseCases\Docs\Command\UpdateMetaCommand;
@@ -54,7 +54,7 @@ class FileController extends Controller
 {
     public function __construct(
         private SettingsManager $settings,
-        private FormatRepository $formatRepository,
+        private FormatManager $formatManager,
     ) {}
 
     public function index(Request $request)
@@ -186,7 +186,7 @@ class FileController extends Controller
                     ], 500);
             }
 
-            if (empty($this->formatRepository->find($result['fileType'])->actions)) {
+            if (empty($this->formatManager->find($result['fileType'])->getActions())) {
                 return response()
                     ->json([
                         'step' => 100,

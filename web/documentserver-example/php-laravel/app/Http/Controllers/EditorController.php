@@ -130,7 +130,7 @@ class EditorController extends Controller
         $file = app(FindDocumentQueryHandler::class)
             ->__invoke(new FindDocumentQuery($filename, $request->ip()));
 
-        if (! $file['format']->type) {
+        if (! $file['format']->getType()) {
             $message = 'The format '.$file['format']->extension().' has undefined format.';
             Log::error($message);
 
@@ -259,7 +259,7 @@ class EditorController extends Controller
 
         $editorConfig = [
             'fileName' => $file['filename'],
-            'docType' => $file['format']->type,
+            'docType' => $file['format']->getType(),
             'apiUrl' => $this->settings->getSetting('url.api'),
             'dataInsertImage' => mb_strimwidth(
                 json_encode($dataInsertImage),

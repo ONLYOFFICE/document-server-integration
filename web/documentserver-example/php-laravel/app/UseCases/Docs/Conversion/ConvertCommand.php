@@ -22,20 +22,20 @@ use App\Exceptions\ConversionError;
 use App\Exceptions\ConversionNotComplete;
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\FileURL;
+use App\OnlyOffice\Managers\FormatManager;
 use App\OnlyOffice\Miscellaneous\ConvertRequest as ConvertRequestAdapter;
-use App\Repositories\FormatRepository;
 use Exception;
 use Illuminate\Support\Str;
 
 class ConvertCommand
 {
-    public function __construct(private FormatRepository $formatRepository) {}
+    public function __construct(private FormatManager $formatManager) {}
 
     public function __invoke(ConvertRequest $request): mixed
     {
-        $format = $this->formatRepository->find($request->fileType);
+        $format = $this->formatManager->find($request->fileType);
 
-        if (! $format->convertible() && $request->outputType == 'ooxml') {
+        if (! $format->isAutoConvertable() && $request->outputType == 'ooxml') {
             throw new Exception("The format $request->fileType is not convertible.");
         }
 

@@ -4,9 +4,9 @@ namespace App\UseCases\Document\Find;
 
 use App\Helpers\Path\Path;
 use App\Helpers\Path\PathInfo;
+use App\OnlyOffice\Managers\FormatManager;
 use App\Repositories\FileRepository;
 use App\Repositories\ForceSavedFilesRepository;
-use App\Repositories\FormatRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\VersionRepository;
 use DomainException;
@@ -18,7 +18,7 @@ class FindDocumentQueryHandler
         private VersionRepository $versionRepository,
         private ForceSavedFilesRepository $forceSavedFilesRepository,
         private UserRepository $userRepository,
-        private FormatRepository $formatRepository,
+        private FormatManager $formatManager,
     ) {}
 
     public function __invoke(FindDocumentQuery $request): array
@@ -49,7 +49,7 @@ class FindDocumentQueryHandler
             'content' => $file->content,
             'size' => $file->size,
             'mimeType' => $file->mime,
-            'format' => $this->formatRepository->find(PathInfo::extension($request->filename)),
+            'format' => $this->formatManager->find(PathInfo::extension($request->filename)),
         ];
 
         return $document;

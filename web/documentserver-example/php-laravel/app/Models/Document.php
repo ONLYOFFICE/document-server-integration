@@ -18,6 +18,8 @@
 
 namespace App\Models;
 
+use App\OnlyOffice\Models\Format;
+
 class Document
 {
     public function __construct(

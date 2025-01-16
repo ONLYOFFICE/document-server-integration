@@ -21,19 +21,19 @@ namespace App\UseCases\Editor\Create;
 use App\Models\Document;
 use App\Models\Editor\Editor;
 use App\Models\Editor\EditorConfig;
-use App\Repositories\FormatRepository;
+use App\OnlyOffice\Managers\FormatManager;
 use App\Repositories\UserRepository;
 
 class CreateConfigCommand
 {
     public function __construct(
         private UserRepository $userRepository,
-        private FormatRepository $formatRepository,
+        private FormatManager $formatManager,
     ) {}
 
     public function __invoke(CreateConfigRequest $request): array
     {
-        $format = $this->formatRepository->find($request->fileExtension);
+        $format = $this->formatManager->find($request->fileExtension);
         $user = $this->userRepository->find($request->user);
 
         if ($user->goback !== null) {

@@ -20,16 +20,16 @@ namespace App\UseCases\Forgotten\Find;
 
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\URL;
+use App\OnlyOffice\Managers\FormatManager;
 use App\OnlyOffice\Managers\SettingsManager;
 use App\OnlyOffice\Miscellaneous\CommandRequest;
-use App\Repositories\FormatRepository;
 use Illuminate\Support\Str;
 
 class FindAllForgottenFilesQueryHandler
 {
     public function __construct(
         private SettingsManager $settings,
-        private FormatRepository $formatRepository,
+        private FormatManager $formatManager,
     ) {}
 
     public function __invoke(FindAllForgottenFilesQuery $query): array
@@ -54,7 +54,7 @@ class FindAllForgottenFilesQueryHandler
                 'key' => $fileItem->key,
                 'filename' => $url,
                 'url' => $url,
-                'format' => $this->formatRepository->find(PathInfo::extension($fileItem->url)),
+                'format' => $this->formatManager->find(PathInfo::extension($fileItem->url)),
             ];
         }
 

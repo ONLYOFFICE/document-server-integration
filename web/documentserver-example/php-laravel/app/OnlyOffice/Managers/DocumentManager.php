@@ -21,7 +21,6 @@ namespace App\OnlyOffice\Managers;
 use App\Helpers\URL\FileURL;
 use App\Helpers\URL\TemplateURL;
 use Onlyoffice\DocsIntegrationSdk\Manager\Document\DocumentManager as OnlyOfficeDocumentManager;
-use Onlyoffice\DocsIntegrationSdk\Manager\Formats\FormatsManager;
 
 class DocumentManager extends OnlyOfficeDocumentManager
 {
@@ -29,7 +28,7 @@ class DocumentManager extends OnlyOfficeDocumentManager
 
     public function __construct(array $file, $systemLangCode = 'en')
     {
-        $formats = app(FormatsManager::class);
+        $formats = app(FormatManager::class);
         $settings = app(SettingsManager::class);
         parent::__construct($settings, $formats, $systemLangCode);
         $this->file = $file;
@@ -62,7 +61,7 @@ class DocumentManager extends OnlyOfficeDocumentManager
 
     public function getTemplateImageUrl(string $fileId)
     {
-        return TemplateURL::image($this->file['format']->type->value);
+        return TemplateURL::image($this->file['format']->getType());
     }
 
     public function getGobackUrl(string $fileId)

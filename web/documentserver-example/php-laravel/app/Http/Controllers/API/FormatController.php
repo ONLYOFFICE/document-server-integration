@@ -19,11 +19,11 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use Onlyoffice\DocsIntegrationSdk\Manager\Formats\FormatsManager;
+use App\OnlyOffice\Managers\FormatManager;
 
 class FormatController extends Controller
 {
-    public function index(FormatsManager $formats)
+    public function index(FormatManager $formats)
     {
         return response()->json([
             'formats' => $formats->getFormatsList(),
