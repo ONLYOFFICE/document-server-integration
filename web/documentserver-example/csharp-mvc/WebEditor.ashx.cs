@@ -705,6 +705,7 @@ namespace OnlineEditorsExampleMVC
 
             var fileName = (string)body["fileName"];
             var version = (int)body["version"];
+            var url = body.ContainsKey("url") ? (string)body["url"] : null;
 
             var key = ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress()
                 + "/" + fileName + "/"
@@ -726,9 +727,19 @@ namespace OnlineEditorsExampleMVC
             {
                 File.Copy(changesPath, Path.Combine(currentVersionDir, "changes.json"));
             }
-
-            File.Copy(Path.Combine(verDir, "prev" + ext), DocManagerHelper.StoragePath(fileName, null), true);
-
+            if (url != null)
+            {
+                var req = (HttpWebRequest)WebRequest.Create(url);
+                req.Method = "GET";
+                var stream = req.GetResponse().GetResponseStream();
+                var memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream);
+                File.WriteAllBytes(DocManagerHelper.StoragePath(fileName, null), memoryStream.ToArray());
+            }
+            else
+            {
+                File.Copy(Path.Combine(verDir, "prev" + ext), DocManagerHelper.StoragePath(fileName, null), true);
+            }
             var fileInfo = new FileInfo(DocManagerHelper.StoragePath(fileName, null));
             fileInfo.LastWriteTimeUtc = DateTime.UtcNow;
 

@@ -308,9 +308,11 @@
         var onRequestRestore = function (event) {
             var fileName = "<%= Model.FileName %>";
             var version = event.data.version;
+            var url = event.data.url;
             var data = {
                 fileName: fileName,
-                version: version
+                version: version,
+                url: url
             };
 
             let xhr = new XMLHttpRequest();
