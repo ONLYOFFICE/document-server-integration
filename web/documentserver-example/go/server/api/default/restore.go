@@ -21,9 +21,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
 	"path"
+	"time"
 
+	"github.com/ONLYOFFICE/document-server-integration/server/models"
 	"github.com/ONLYOFFICE/document-server-integration/server/shared"
 	"github.com/ONLYOFFICE/document-server-integration/utils"
 )
@@ -103,6 +107,51 @@ func (srv *DefaultServerEndpointsHandler) Restore(w http.ResponseWriter, r *http
 		result["error"] = err.Error()
 		shared.SendResponse(w, result)
 		return
+	}
+
+	fileContent, err := os.Open(path.Join(historyPath, fileName+".json"))
+	if err != nil {
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
+
+	byteResult, _ := io.ReadAll(fileContent)
+	var history models.History
+	err = json.Unmarshal(byteResult, &history)
+	if err != nil {
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
+	fileContent.Close()
+
+	changes := history.Changes[len(history.Changes)-1]
+	hist := models.History{
+		ServerVersion: srv.config.Version,
+		Changes: []models.Changes{
+			{
+				Created: time.Now().UTC().Format("2006-02-1 15:04:05"),
+				User: models.User{
+					Id:       changes.User.Id,
+					Username: changes.User.Username,
+				},
+			},
+		},
+	}
+
+	meta, _ := json.MarshalIndent(hist, " ", "")
+
+	err = srv.StorageManager.MoveFile(path.Join(historyPath, fileName+".json"), path.Join(newVersionPath, "changes.json"))
+	if err != nil {
+		result["error"] = err.Error()
+		shared.SendResponse(w, result)
+		return
+	}
+
+	err = srv.StorageManager.CreateFile(bytes.NewReader(meta), path.Join(historyPath, fileName+".json"))
+	if err != nil {
+		srv.logger.Errorf("meta creation error: %s", err.Error())
 	}
 
 	result["success"] = true
