@@ -53,6 +53,12 @@ func (srv *DefaultServerEndpointsHandler) Restore(w http.ResponseWriter, r *http
 	}
 
 	version := fmt.Sprintf("%v", body["version"])
+	url := ""
+	v, e := body["url"]
+	if s, o := v.(string); o && e {
+		url = s
+	}
+
 	key, err := srv.GenerateFileHash(fileName)
 	if err != nil {
 		result["error"] = err.Error()
@@ -101,7 +107,20 @@ func (srv *DefaultServerEndpointsHandler) Restore(w http.ResponseWriter, r *http
 		return
 	}
 
-	verFile, _ := srv.Managers.StorageManager.ReadFile(versionPath)
+	var verFile []byte
+	if url != "" {
+		res, err := http.Get(url)
+		if err != nil {
+			result["error"] = err.Error()
+			shared.SendResponse(w, result)
+			return
+		}
+		defer res.Body.Close()
+		verFile, _ = io.ReadAll(res.Body)
+	} else {
+		verFile, _ = srv.Managers.StorageManager.ReadFile(versionPath)
+	}
+
 	err = srv.Managers.StorageManager.CreateFile(bytes.NewBuffer(verFile), filePath)
 	if err != nil {
 		result["error"] = err.Error()

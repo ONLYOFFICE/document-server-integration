@@ -1,5 +1,6 @@
 # Change Log
 
+- golang: restore by url
 - csharp-mvc: restore by url
 - csharp: restore by url
 - nodejs: restore by url
