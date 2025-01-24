@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: restore by url
 - python: restore by url
 - php: restore by url
 - java-spring: restore by url

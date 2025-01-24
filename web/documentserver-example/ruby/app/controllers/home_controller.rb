@@ -531,6 +531,7 @@ class HomeController < ApplicationController
 
     source_basename = body['fileName']
     version = body['version']
+    url = body['url']
     user_id = body['userId']
 
     source_extension = Pathname(source_basename).extname
@@ -580,7 +581,17 @@ class HomeController < ApplicationController
 
     bumped_file = bumped_version_directory.join(previous_basename)
     FileUtils.cp(source_file, bumped_file)
-    FileUtils.cp(recovery_file, source_file)
+    if url.nil?
+      FileUtils.cp(recovery_file, source_file)
+    else
+      uri = URI.parse(url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      DocumentHelper.verify_ssl(url, http)
+      req = Net::HTTP::Get.new(uri.request_uri)
+      res = http.request(req)
+      data = res.body
+      File.binwrite(source_file, data)
+    end
 
     render(
       json: {
