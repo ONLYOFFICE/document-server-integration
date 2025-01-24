@@ -30,4 +30,5 @@ import lombok.Setter;
 public class Restore {
     private String fileName;
     private Integer version;
+    private String url;
 }
