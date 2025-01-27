@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: restore by url
 - nodejs: support vsdx in diagram editor
 - nodejs: support pages, numbers, key formats
 - golang: new integration example
