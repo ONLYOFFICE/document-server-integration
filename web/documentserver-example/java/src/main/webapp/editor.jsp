@@ -271,6 +271,7 @@
           const payload = {
             fileName: query.get('fileName'),
             version: event.data.version,
+            url: event.data.url,
             userId: config.editorConfig.user.id
           }
           const request = new XMLHttpRequest()

@@ -1,5 +1,6 @@
 # Change Log
 
+- restore by url
 - ku skin language
 - nodejs: support vsdx in diagram editor
 - nodejs: support pages, numbers, key formats

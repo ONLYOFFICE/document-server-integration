@@ -629,6 +629,7 @@ function restore()
 
         $sourceBasename = $body->fileName;
         $version = $body->version;
+        $url = $body->url;
         $userID = $body->userId;
 
         $sourceFile = getStoragePath($sourceBasename);
@@ -673,12 +674,20 @@ function restore()
         $bumpedStringFile = $bumpedFile->string();
         copy($sourceFile, $bumpedStringFile);
 
-        $recoveryVersionStringDirectory = getVersionDir($historyDirectory, $version);
-        $recoveryVersionDirectory = new Path($recoveryVersionStringDirectory);
-        $recoveryFile = $recoveryVersionDirectory->joinPath($previousBasename);
-        $recoveryStringFile = $recoveryFile->string();
-        copy($recoveryStringFile, $sourceFile);
-
+        if ($url) {
+            $data = file_get_contents(
+                $url,
+                false,
+                stream_context_create(["http" => ["timeout" => 5]])
+            );
+            file_put_contents($sourceFile, $data, LOCK_EX);
+        } else {
+            $recoveryVersionStringDirectory = getVersionDir($historyDirectory, $version);
+            $recoveryVersionDirectory = new Path($recoveryVersionStringDirectory);
+            $recoveryFile = $recoveryVersionDirectory->joinPath($previousBasename);
+            $recoveryStringFile = $recoveryFile->string();
+            copy($recoveryStringFile, $sourceFile);
+        }
         return [
             'error' => null,
             'success' => true

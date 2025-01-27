@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -116,8 +116,9 @@ public class DefaultHistoryManager implements HistoryManager {
 
                 if (i > 1) {  //check if the version number is greater than 1
                     // if so, get the path to the changes.json file
-                    InputStream changesSteam = new FileInputStream(
-                            versionDir(histDir, i - 1, true) + File.separator + "changes.json");
+                    InputStreamReader changesSteam = new InputStreamReader(new FileInputStream(
+                            versionDir(histDir, i - 1, true) + File.separator + "changes.json"),
+                            "UTF-8");
 
                     History changes = objectMapper.readValue(changesSteam, History.class);
 

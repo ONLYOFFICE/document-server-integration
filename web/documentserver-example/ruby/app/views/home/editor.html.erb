@@ -300,6 +300,7 @@
       const payload = {
         fileName: query.get('fileName'),
         version: event.data.version,
+        url: event.data.url,
         userId: query.get('userId')
       }
       const request = new XMLHttpRequest()
