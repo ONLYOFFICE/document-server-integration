@@ -1,17 +1,10 @@
 # Change Log
 
-- ruby: restore by url
-- python: restore by url
-- php-laravel: restore by url
-- php: restore by url
-- java-spring: restore by url
-- java: restore by url
-- golang: restore by url
-- csharp-mvc: restore by url
-- csharp: restore by url
-- nodejs: restore by url
+- restore by url
+- ku skin language
 - nodejs: support vsdx in diagram editor
 - nodejs: support pages, numbers, key formats
+- nodejs: support hwp, hwpx formats
 - golang: new integration example
 - golang: upload files to the server
 - golang: create blank files and files with sample content
@@ -33,7 +26,7 @@
 - change reference source
 - filename in editor page title
 - close editor
-- sq-AL skin language
+- sq-AL, ku skin languages
 
 ## 1.11.0
 - he-IL skin language
@@ -68,8 +61,7 @@
 - nodejs: pdf, djvu, xps, oxps as pdf documentType
 - nodejs: filling pdf
 - version number to page meta
-- ar skin languages
-- sr-Latn-RS skin languages
+- ar, sr-Latn-RS skin languages
 - getting history via api
 - using a repo with a list of formats
 - convert after uploading only tagged formats
