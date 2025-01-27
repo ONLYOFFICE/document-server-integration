@@ -14,6 +14,7 @@ class VersionController extends Controller
         $request->validate([
             'filename' => 'required|string',
             'version' => 'required|int',
+            'url' => 'nullable|string',
             'fileType' => 'required|string',
             'userId' => 'required|string',
         ]);
@@ -24,6 +25,7 @@ class VersionController extends Controller
                 userDirectory: $request->ip(),
                 fileType: $request->fileType,
                 version: $request->version,
+                url: $request->url,
                 userId: $request->userId,
             ));
 
