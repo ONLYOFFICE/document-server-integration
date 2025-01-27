@@ -3,6 +3,7 @@
 - ku skin language
 - nodejs: support vsdx in diagram editor
 - nodejs: support pages, numbers, key formats
+- nodejs: support hwp, hwpx formats
 - golang: new integration example
 - golang: upload files to the server
 - golang: create blank files and files with sample content
