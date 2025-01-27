@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: restore by url
 - nodejs: restore by url
 - nodejs: support vsdx in diagram editor
 - nodejs: support pages, numbers, key formats
