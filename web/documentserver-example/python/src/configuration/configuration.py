@@ -152,6 +152,7 @@ class ConfigurationManager:
             'it': 'Italian',
             'ja': 'Japanese',
             'ko': 'Korean',
+            'ku': 'Kurdish',
             'lo': 'Lao',
             'lv': 'Latvian',
             'ms': 'Malay (Malaysia)',
