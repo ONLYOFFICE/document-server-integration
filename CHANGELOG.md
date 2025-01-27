@@ -24,7 +24,7 @@
 - change reference source
 - filename in editor page title
 - close editor
-- sq-AL skin language
+- sq-AL, ku skin languages
 
 ## 1.11.0
 - he-IL skin language
@@ -59,8 +59,7 @@
 - nodejs: pdf, djvu, xps, oxps as pdf documentType
 - nodejs: filling pdf
 - version number to page meta
-- ar skin languages
-- sr-Latn-RS skin languages
+- ar, sr-Latn-RS skin languages
 - getting history via api
 - using a repo with a list of formats
 - convert after uploading only tagged formats
