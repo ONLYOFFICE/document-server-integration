@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,6 +86,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -678,16 +679,25 @@ public class FileController {
             Path bumpedFile = Paths.get(bumpedVersionStringDirectory, previousBasename);
             Files.move(sourcePathFile, bumpedFile);
 
-            String recoveryVersionStringDirectory = historyManager.versionDir(
-                    historyDirectory,
-                    body.getVersion(),
-                    true
-            );
-            Path recoveryPathFile = Paths.get(recoveryVersionStringDirectory, previousBasename);
-            String recoveryStringFile = recoveryPathFile.toString();
-            FileInputStream recoveryStream = new FileInputStream(recoveryStringFile);
-            storageMutator.createFile(sourcePathFile, recoveryStream);
-            recoveryStream.close();
+            if (body.getUrl() != null) {
+                java.net.HttpURLConnection connection = (java.net.HttpURLConnection) new URL(body.getUrl())
+                    .openConnection();
+                InputStream stream = connection.getInputStream();
+                storageMutator.createFile(sourcePathFile, stream);
+                stream.close();
+                connection.disconnect();
+            } else {
+                String recoveryVersionStringDirectory = historyManager.versionDir(
+                        historyDirectory,
+                        body.getVersion(),
+                        true
+                );
+                Path recoveryPathFile = Paths.get(recoveryVersionStringDirectory, previousBasename);
+                String recoveryStringFile = recoveryPathFile.toString();
+                FileInputStream recoveryStream = new FileInputStream(recoveryStringFile);
+                storageMutator.createFile(sourcePathFile, recoveryStream);
+                recoveryStream.close();
+            }
 
             JSONObject responseBody = new JSONObject();
             responseBody.put("error", null);

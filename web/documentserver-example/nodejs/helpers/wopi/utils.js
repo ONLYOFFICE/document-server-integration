@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,8 +165,8 @@ const getEditNewText = function getEditNewText(ext) {
       return 'Presentation';
     case 'pdf':
       return 'PDF form';
-    case 'visio':
-      return 'Visio';
+    case 'diagram':
+      return 'Diagram';
     default:
       return ext.toUpperCase();
   }

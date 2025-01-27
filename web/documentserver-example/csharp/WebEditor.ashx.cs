@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -489,6 +489,7 @@ namespace OnlineEditorsExample
 
             var fileName = (string)body["fileName"];
             var version = (int)body["version"];
+            var url = body.ContainsKey("url") ? (string)body["url"] : null;
 
             var lastVersionUri = _Default.FileUri(fileName, true);
             var key = ServiceConverter.GenerateRevisionId(_Default.CurUserHostAddress(null)
@@ -512,7 +513,19 @@ namespace OnlineEditorsExample
                 File.Copy(changesPath, Path.Combine(currentVersionDir, "changes.json"));
             }
 
-            File.Copy(Path.Combine(verDir, "prev" + ext), _Default.StoragePath(fileName, null), true);
+            if (url != null)
+            {
+                var req = (HttpWebRequest)WebRequest.Create(url);
+                req.Method = "GET";
+                var stream = req.GetResponse().GetResponseStream();
+                var memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream);
+                File.WriteAllBytes(_Default.StoragePath(fileName, null), memoryStream.ToArray());
+            }
+            else
+            {
+                File.Copy(Path.Combine(verDir, "prev" + ext), _Default.StoragePath(fileName, null), true);
+            }
 
             var fileInfo = new FileInfo(_Default.StoragePath(fileName, null));
             fileInfo.LastWriteTimeUtc = DateTime.UtcNow;

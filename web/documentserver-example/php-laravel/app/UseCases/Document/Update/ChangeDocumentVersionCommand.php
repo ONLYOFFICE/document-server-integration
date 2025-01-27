@@ -8,6 +8,7 @@ use App\Models\VersionInfo;
 use App\Repositories\FileRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\VersionRepository;
+use App\Services\ServerConfig;
 use Illuminate\Support\Str;
 
 class ChangeDocumentVersionCommand
@@ -16,6 +17,7 @@ class ChangeDocumentVersionCommand
         private FileRepository $fileRepository,
         private VersionRepository $versionRepository,
         private UserRepository $userRepository,
+        private ServerConfig $serverConfig,
     ) {}
 
     public function __invoke(ChangeDocumentVersionRequest $request): void
@@ -28,7 +30,19 @@ class ChangeDocumentVersionCommand
         $currentVersion = $this->versionRepository->current($filePath);
         $versionFile = $this->versionRepository->file($filePath, $request->version);
 
-        copy($versionFile['path'], $absFilePath);
+        if ($request->url) {
+            $data = file_get_contents(
+                str_replace(
+                    $this->serverConfig->get('url.public'),
+                    $this->serverConfig->get('url.private'),
+                    $request->url),
+                false,
+                stream_context_create(['http' => ['timeout' => 5]])
+            );
+            file_put_contents($absFilePath, $data, LOCK_EX);
+        } else {
+            copy($versionFile['path'], $absFilePath);
+        }
 
         $versionInfo = VersionInfo::create(
             Str::uuid(),

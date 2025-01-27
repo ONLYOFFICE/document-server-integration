@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -342,6 +342,7 @@
                 filename: query.get('fileID'),
                 fileType: event.data.fileType,
                 version: event.data.version,
+                url: event.data.url,
                 userId: query.get('user') || config.editorConfig.user.id
             }
             const request = new XMLHttpRequest()

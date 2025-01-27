@@ -1,6 +1,6 @@
 <!--*
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * The MIT License (MIT)
  *
@@ -123,9 +123,11 @@
 
         var onRequestRestore = function (event) { // the user is trying to restore file version
             const version = event.data.version;
+            const url = event.data.url;
             const fileName = config.document.title;
             const restoreData = {
               version: version,
+              url: url,
               fileName: fileName,
             };
             let xhr = new XMLHttpRequest();

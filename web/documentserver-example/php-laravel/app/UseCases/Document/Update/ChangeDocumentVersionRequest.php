@@ -9,6 +9,7 @@ class ChangeDocumentVersionRequest
         public string $userDirectory,
         public string $fileType,
         public string $version,
+        public ?string $url,
         public string $userId,
     ) {}
 }

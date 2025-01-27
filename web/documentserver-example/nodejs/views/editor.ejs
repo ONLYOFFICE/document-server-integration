@@ -8,7 +8,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2024
+    * (c) Copyright Ascensio System SIA 2025
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -109,10 +109,12 @@
 
         var onRequestRestore = function (event) { // the user is trying to restore file version
           const version = event.data.version;
+          const url = event.data.url;
           const fileName = "<%- file.name %>" || null;
           const directUrl = "<%- file.directUrl %>" || null;
           const restoreData = {
             version: version,
+            url: url,
             fileName: fileName,
           };
           let xhr = new XMLHttpRequest();

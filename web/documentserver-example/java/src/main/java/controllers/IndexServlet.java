@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -817,6 +817,7 @@ public class IndexServlet extends HttpServlet {
 
             String sourceBasename = (String) body.get("fileName");
             Integer version = ((Long) body.get("version")).intValue();
+            String url = (String) body.get("url");
             String userID = (String) body.get("userId");
 
             String sourceStringFile = DocumentManager.storagePath(sourceBasename, null);
@@ -872,12 +873,20 @@ public class IndexServlet extends HttpServlet {
             Path bumpedFile = Paths.get(bumpedVersionStringDirectory, previousBasename);
             Files.move(sourcePathFile, bumpedFile);
 
-            String recoveryVersionStringDirectory = DocumentManager.versionDir(historyDirectory, version);
-            Path recoveryPathFile = Paths.get(recoveryVersionStringDirectory, previousBasename);
-            String recoveryStringFile = recoveryPathFile.toString();
-            FileInputStream recoveryStream = new FileInputStream(recoveryStringFile);
-            DocumentManager.createFile(sourcePathFile, recoveryStream);
-            recoveryStream.close();
+            if (url != null) {
+                java.net.HttpURLConnection connection = (java.net.HttpURLConnection) new URL(url).openConnection();
+                InputStream stream = connection.getInputStream();
+                DocumentManager.createFile(sourcePathFile, stream);
+                stream.close();
+                connection.disconnect();
+            } else {
+                String recoveryVersionStringDirectory = DocumentManager.versionDir(historyDirectory, version);
+                Path recoveryPathFile = Paths.get(recoveryVersionStringDirectory, previousBasename);
+                String recoveryStringFile = recoveryPathFile.toString();
+                FileInputStream recoveryStream = new FileInputStream(recoveryStringFile);
+                DocumentManager.createFile(sourcePathFile, recoveryStream);
+                recoveryStream.close();
+            }
 
             JSONObject responseBody = new JSONObject();
             responseBody.put("error", null);

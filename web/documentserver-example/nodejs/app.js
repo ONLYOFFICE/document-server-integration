@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -651,32 +651,47 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
   result(data);
 });
 
-app.put('/restore', (req, res) => { // define a handler for restore file version
-  const { fileName } = req.body;
+app.put('/restore', async (req, res) => { // define a handler for restore file version
+  const { fileName, version, url } = req.body;
   const result = {};
   if (fileName) {
     req.DocManager = new DocManager(req, res);
     const userAddress = req.DocManager.curUserHostAddress();
     const key = req.DocManager.getKey(fileName);
-    const { version } = req.body;
     const filePath = req.DocManager.storagePath(fileName, userAddress);
     const historyPath = req.DocManager.historyPath(fileName, userAddress);
     const newVersion = req.DocManager.countVersion(historyPath) + 1;
-    const versionPath = path.join(`${historyPath}`, `${version}`, `prev${fileUtility.getFileExtension(fileName)}`);
     const newVersionPath = path.join(`${historyPath}`, `${newVersion}`);
-
-    if (fileSystem.existsSync(versionPath)) {
-      req.DocManager.createDirectory(newVersionPath);
-      req.DocManager.copyFile(
-        filePath,
-        path.join(`${newVersionPath}`, `prev${fileUtility.getFileExtension(fileName)}`),
-      );
-      fileSystem.writeFileSync(path.join(`${newVersionPath}`, 'key.txt'), key);
-      req.DocManager.copyFile(versionPath, filePath);
-      result.success = true;
+    if (url) {
+      const { status, data } = await urllib.request(url, { method: 'GET' });
+      if (status === 200) {
+        req.DocManager.createDirectory(newVersionPath);
+        req.DocManager.copyFile(
+          filePath,
+          path.join(`${newVersionPath}`, `prev${fileUtility.getFileExtension(fileName)}`),
+        );
+        fileSystem.writeFileSync(path.join(`${newVersionPath}`, 'key.txt'), key);
+        fileSystem.writeFileSync(filePath, data);
+        result.success = true;
+      } else {
+        result.success = false;
+        result.error = `Document editing service returned status: ${status}`;
+      }
     } else {
-      result.success = false;
-      result.error = 'Version path does not exists';
+      const versionPath = path.join(`${historyPath}`, `${version}`, `prev${fileUtility.getFileExtension(fileName)}`);
+      if (fileSystem.existsSync(versionPath)) {
+        req.DocManager.createDirectory(newVersionPath);
+        req.DocManager.copyFile(
+          filePath,
+          path.join(`${newVersionPath}`, `prev${fileUtility.getFileExtension(fileName)}`),
+        );
+        fileSystem.writeFileSync(path.join(`${newVersionPath}`, 'key.txt'), key);
+        req.DocManager.copyFile(versionPath, filePath);
+        result.success = true;
+      } else {
+        result.success = false;
+        result.error = 'Version path does not exists';
+      }
     }
   } else {
     result.success = false;

@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2024
+ (c) Copyright Ascensio System SIA 2025
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -641,6 +641,7 @@ def restore(request: HttpRequest) -> HttpResponse:
         body = json.loads(request.body)
         source_basename: str = body['fileName']
         version: int = body['version']
+        url = body['url'] if 'url' in body else None
         user_id: str = body.get('userId')
         source_extension = Path(source_basename).suffix
 
@@ -674,7 +675,11 @@ def restore(request: HttpRequest) -> HttpResponse:
         Path(bumped_key_file).write_text(bumped_key, 'utf-8')
         Path(bumped_changes_file).write_text(bumped_changes_content, 'utf-8')
         copy(source_file, bumped_file)
-        copy(recovery_file, source_file)
+        if url is not None:
+            data = requests.get(url)
+            Path(source_file).write_bytes(data.content)
+        else:
+            copy(recovery_file, source_file)
 
         return HttpResponse()
     except Exception as error:
