@@ -28,6 +28,7 @@ import (
 	"github.com/ONLYOFFICE/document-server-integration/server/managers"
 	"github.com/ONLYOFFICE/document-server-integration/server/models"
 	"github.com/ONLYOFFICE/document-server-integration/utils"
+	"github.com/golang-jwt/jwt"
 	"go.uber.org/zap"
 )
 
@@ -152,7 +153,7 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(
 		return nil, err
 	}
 
-	config := models.Config{
+	config := &models.Config{
 		Type:         parameters.Type,
 		DocumentType: dm.ConversionManager.GetFileType(parameters.Filename),
 		Document: models.Document{
@@ -223,6 +224,10 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(
 				},
 			},
 		},
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Minute * dm.config.JwtExpiresIn).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
 	}
 
 	secret := strings.TrimSpace(dm.config.JwtSecret)
@@ -231,7 +236,7 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(
 		config.Token = token
 	}
 
-	return &config, nil
+	return config, nil
 }
 
 func (dm DefaultDocumentManager) IsDocumentConvertable(filename string) bool {

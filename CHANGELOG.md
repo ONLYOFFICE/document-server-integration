@@ -1,5 +1,6 @@
 # Change Log
 
+- golang: jwt token lifetime from config
 - nodejs: support vsdx in diagram editor
 - nodejs: support pages, numbers, key formats
 - golang: new integration example

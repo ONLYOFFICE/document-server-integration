@@ -4,6 +4,7 @@ linters:
     - cyclop
     - depguard
     - dogsled
+    - durationcheck
     - err113
     - errchkjson
     - execinquery

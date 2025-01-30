@@ -25,12 +25,12 @@ type ReferenceData struct {
 }
 
 type Reference struct {
-	ReferenceData      ReferenceData `json:"referenceData"`
-	Link               string        `json:"link"`
-	Path               string        `json:"path"`
-	FileType           string        `json:"fileType"`
-	Key                string        `json:"key"`
-	Url                string        `json:"url"`
-	Token              string        `json:"token,omitempty"`
-	jwt.StandardClaims `json:"-"`
+	ReferenceData ReferenceData `json:"referenceData"`
+	Link          string        `json:"link"`
+	Path          string        `json:"path"`
+	FileType      string        `json:"fileType"`
+	Key           string        `json:"key"`
+	Url           string        `json:"url"`
+	Token         string        `json:"token,omitempty"`
+	jwt.StandardClaims
 }

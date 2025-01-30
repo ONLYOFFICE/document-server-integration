@@ -23,12 +23,14 @@ import (
 	"fmt"
 	"net/http"
 	"path"
+	"time"
 
 	"github.com/ONLYOFFICE/document-server-integration/config"
 	"github.com/ONLYOFFICE/document-server-integration/server/managers"
 	"github.com/ONLYOFFICE/document-server-integration/server/models"
 	"github.com/ONLYOFFICE/document-server-integration/server/shared"
 	"github.com/ONLYOFFICE/document-server-integration/utils"
+	"github.com/golang-jwt/jwt"
 	"go.uber.org/zap"
 )
 
@@ -195,6 +197,10 @@ func (hm DefaultHistoryManager) fetchNextHistoryEntry(
 			Key:     key,
 			Url:     url,
 			Version: version,
+			StandardClaims: jwt.StandardClaims{
+				ExpiresAt: time.Now().Add(time.Minute * hm.config.JwtExpiresIn).Unix(),
+				IssuedAt:  time.Now().Unix(),
+			},
 		}
 	}
 
@@ -261,6 +267,10 @@ func (hm DefaultHistoryManager) GetHistory(
 		Url:        hm.StorageManager.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{}),
 		Version:    version,
 		ChangesUrl: changesUrl,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Minute * hm.config.JwtExpiresIn).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
 	}
 
 	rhist.History = append(rhist.History, models.History{
