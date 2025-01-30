@@ -1,5 +1,6 @@
 # Change Log
 
+- java: jwt token lifetime from config
 - csharp-mvc: jwt token lifetime from config
 - csharp: jwt token lifetime from config
 - golang: jwt token lifetime from config
