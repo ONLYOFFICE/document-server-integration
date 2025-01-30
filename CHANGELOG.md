@@ -1,5 +1,7 @@
 # Change Log
 
+- golang: jwt token lifetime from config
+
 ## 1.13.0
 - nodejs: rename in wopi
 - nodejs: using faviconUrl from WOPI discovery
