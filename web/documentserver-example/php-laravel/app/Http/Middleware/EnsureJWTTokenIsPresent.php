@@ -2,8 +2,8 @@
 
 namespace App\Http\Middleware;
 
-use App\Services\JWT;
-use App\Services\ServerConfig;
+use App\OnlyOffice\Managers\JWTManager;
+use App\OnlyOffice\Managers\SettingsManager;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,13 +17,13 @@ class EnsureJWTTokenIsPresent
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $config = app(ServerConfig::class);
-        $jwt = app(JWT::class);
+        $jwt = app(JWTManager::class);
+        $settings = app(SettingsManager::class);
         $embeded = $request->has('dmode');
 
-        if ($config->get('jwt.enabled') && $embeded == null && $config->get('jwt.use_for_request')) {
-            if ($request->hasHeader($config->get('jwt.header'))) {
-                $token = $jwt->decode($request->bearerToken());
+        if ($settings->getSetting('jwt.enabled') && $embeded == null && $settings->getSetting('jwt.use_for_request')) {
+            if ($request->hasHeader($settings->getSetting('jwt.header'))) {
+                $token = $jwt->decode($request->bearerToken(), $settings->getSetting('jwt.secret'));
 
                 if (empty($token)) {
                     abort(498, 'Invalid JWT signature');

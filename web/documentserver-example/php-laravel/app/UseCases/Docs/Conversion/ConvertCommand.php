@@ -22,26 +22,20 @@ use App\Exceptions\ConversionError;
 use App\Exceptions\ConversionNotComplete;
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\FileURL;
-use App\Repositories\FormatRepository;
-use App\Services\Docs\Conversion\ConversionRequest;
-use App\Services\JWT;
-use App\Services\ServerConfig;
+use App\OnlyOffice\Managers\FormatManager;
+use App\OnlyOffice\Miscellaneous\ConvertRequest as ConvertRequestAdapter;
 use Exception;
 use Illuminate\Support\Str;
 
 class ConvertCommand
 {
-    public function __construct(
-        private ServerConfig $serverConfig,
-        private FormatRepository $formatRepository,
-        private JWT $jwt,
-    ) {}
+    public function __construct(private FormatManager $formatManager) {}
 
     public function __invoke(ConvertRequest $request): mixed
     {
-        $format = $this->formatRepository->find($request->fileType);
+        $format = $this->formatManager->find($request->fileType);
 
-        if (! $format->convertible() && $request->outputType == 'ooxml') {
+        if (! $format->isAutoConvertable() && $request->outputType == 'ooxml') {
             throw new Exception("The format $request->fileType is not convertible.");
         }
 
@@ -61,8 +55,7 @@ class ConvertCommand
         ];
 
         try {
-            $result = app(ConversionRequest::class)
-                ->send($content, $key);
+            $result = app(ConvertRequestAdapter::class)->convert($content);
             $result['filename'] = PathInfo::filename($request->filename).'.'.$result['fileType'];
         } catch (ConversionNotComplete $e) {
             return [

@@ -20,40 +20,41 @@ namespace App\UseCases\Forgotten\Find;
 
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\URL;
-use App\Repositories\FormatRepository;
-use App\Services\Docs\Command\ForgottenFileRequest;
-use App\Services\Docs\Command\ForgottenListRequest;
-use App\Services\ServerConfig;
+use App\OnlyOffice\Managers\FormatManager;
+use App\OnlyOffice\Managers\SettingsManager;
+use App\OnlyOffice\Miscellaneous\CommandRequest;
 use Illuminate\Support\Str;
 
 class FindAllForgottenFilesQueryHandler
 {
     public function __construct(
-        private ServerConfig $serverConfig,
-        private FormatRepository $formatRepository,
+        private SettingsManager $settings,
+        private FormatManager $formatManager,
     ) {}
 
     public function __invoke(FindAllForgottenFilesQuery $query): array
     {
         $filesList = [];
+        $commandRequest = app(CommandRequest::class);
 
-        $keys = app()->make(ForgottenListRequest::class)->get();
+        $result = $commandRequest->getForgottenList();
+        $keys = $result->keys;
 
         foreach ($keys as $key) {
-            $filesList[] = app()->make(ForgottenFileRequest::class)->get($key);
+            $filesList[] = $commandRequest->getForgotten($key);
         }
 
         $files = [];
 
         foreach ($filesList as $fileItem) {
-            $url = $fileItem['url'];
-            $url = Str::replace(URL::origin($url), $this->serverConfig->get('url.public'), $url);
+            $url = $fileItem->url;
+            $url = Str::replace(URL::origin($url), $this->settings->getSetting('url.server.public'), $url);
 
             $files[] = [
-                'key' => $fileItem['key'],
+                'key' => $fileItem->key,
                 'filename' => $url,
                 'url' => $url,
-                'format' => $this->formatRepository->find(PathInfo::extension($fileItem['url'])),
+                'format' => $this->formatManager->find(PathInfo::extension($fileItem->url)),
             ];
         }
 

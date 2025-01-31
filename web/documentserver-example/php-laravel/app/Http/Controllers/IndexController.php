@@ -19,8 +19,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\URL\URL;
-use App\Services\ServerConfig;
-use App\Services\StorageConfig;
+use App\OnlyOffice\Managers\SettingsManager;
 use App\UseCases\Document\Find\FindAllDocumentsQuery;
 use App\UseCases\Document\Find\FindAllDocumentsQueryHandler;
 use App\UseCases\Language\Find\FindAllLanguagesQueryHandler;
@@ -31,12 +30,12 @@ use Illuminate\Support\Str;
 
 class IndexController extends Controller
 {
-    public function index(Request $request, ServerConfig $serverConfig, StorageConfig $storageConfig)
+    public function index(Request $request, SettingsManager $settings)
     {
         $directUrlEnabled = $request->has('directUrl') && $request->directUrl === 'true';
         $directUrlArg = 'directUrl='.($directUrlEnabled ? 'true' : 'false');
 
-        $preloaderUrl = $serverConfig->get('url.preloader');
+        $preloaderUrl = $settings->getSetting('url.preloader');
 
         $files = app(FindAllDocumentsQueryHandler::class)
             ->__invoke(new FindAllDocumentsQuery($request->ip()));
@@ -50,7 +49,7 @@ class IndexController extends Controller
 
         foreach ($files as &$file) {
             $url = route('files.download', ['fileName' => urlencode($file['filename']), 'dmode' => true]);
-            $file['url'] = Str::replace(URL::origin($url), $storageConfig->get('url.public'), $url);
+            $file['url'] = Str::replace(URL::origin($url), $settings->getSetting('url.storage.public'), $url);
         }
 
         return view('index', [

@@ -4,15 +4,18 @@ namespace App\UseCases\Document\Find;
 
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\FileURL;
+use App\OnlyOffice\Managers\JWTManager;
+use App\OnlyOffice\Managers\SettingsManager;
 use App\Repositories\UserRepository;
 use App\Repositories\VersionRepository;
-use App\Services\JWT;
 
 class FindDocumentHistoryQueryHandler
 {
     public function __construct(
         private VersionRepository $versionRepository,
         private UserRepository $userRepository,
+        private SettingsManager $settings,
+        private JWTManager $jwt,
     ) {}
 
     public function __invoke(FindDocumentHistoryQuery $request): array
@@ -59,7 +62,7 @@ class FindDocumentHistoryQueryHandler
             $item['url'] = FileURL::download(
                 PathInfo::basename($request->filename), $request->userAddress
             );
-            $item['token'] = app(JWT::class)->encode($item);
+            $item['token'] = $this->jwt->encode($item, $this->settings->getSetting('jwt.secret'));
 
             $history['history'][] = $item;
         }

@@ -18,12 +18,13 @@
 
 namespace App\UseCases\Forgotten\Delete;
 
-use App\Services\Docs\Command\ForgottenDeleteRequest;
+use App\OnlyOffice\Miscellaneous\CommandRequest;
 
 class DeleteForgottenFileCommand
 {
     public function __invoke(DeleteForgottenFileRequest $request): void
     {
-        app()->make(ForgottenDeleteRequest::class)->delete($request->key);
+        app(CommandRequest::class)
+            ->deleteForgotten($request->key);
     }
 }

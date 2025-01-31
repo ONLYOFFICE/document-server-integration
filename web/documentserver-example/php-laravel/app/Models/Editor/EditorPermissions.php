@@ -18,8 +18,8 @@
 
 namespace App\Models\Editor;
 
-use App\Models\Format;
 use App\Models\User;
+use App\OnlyOffice\Models\Format;
 
 class EditorPermissions
 {
@@ -101,12 +101,12 @@ class EditorPermissions
 
     private function editable(): bool
     {
-        return $this->action === 'edit' && $this->format->editable();
+        return $this->action === 'edit' && $this->format->isEditable();
     }
 
     private function fillable(): bool
     {
-        return (($this->action === 'edit' && ! $this->format->editable())
-            || $this->action === 'fillForms') && $this->format->fillable();
+        return (($this->action === 'edit' && ! $this->format->isEditable())
+            || $this->action === 'fillForms') && $this->format->isFillable();
     }
 }

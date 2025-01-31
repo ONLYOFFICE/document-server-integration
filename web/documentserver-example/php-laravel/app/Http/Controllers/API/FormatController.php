@@ -19,14 +19,14 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Repositories\FormatRepository;
+use App\OnlyOffice\Managers\FormatManager;
 
 class FormatController extends Controller
 {
-    public function index(FormatRepository $formats)
+    public function index(FormatManager $formats)
     {
         return response()->json([
-            'formats' => $formats->all(),
+            'formats' => $formats->getFormatsList(),
         ]);
     }
 }

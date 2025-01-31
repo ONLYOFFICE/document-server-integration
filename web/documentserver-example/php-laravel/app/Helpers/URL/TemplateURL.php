@@ -18,13 +18,13 @@
 
 namespace App\Helpers\URL;
 
-use App\Services\StorageConfig;
+use App\OnlyOffice\Managers\SettingsManager;
 
 class TemplateURL extends URL
 {
     public static function image(string $type)
     {
-        $config = app(StorageConfig::class);
+        $settings = app(SettingsManager::class);
         $name = 'file_docx.svg';
 
         $name = match ($type) {
@@ -34,6 +34,6 @@ class TemplateURL extends URL
             default => 'file_docx.svg',
         };
 
-        return static::build($config->get('url.public'), "/images/$name");
+        return static::build($settings->getSetting('url.storage.public'), "/images/$name");
     }
 }

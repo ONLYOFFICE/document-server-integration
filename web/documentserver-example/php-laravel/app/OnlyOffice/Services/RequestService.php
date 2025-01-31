@@ -16,27 +16,21 @@
  * limitations under the License.
  */
 
-namespace App\Services;
+namespace App\OnlyOffice\Services;
 
-use Exception;
+use App\OnlyOffice\Managers\JWTManager;
+use App\OnlyOffice\Managers\SettingsManager;
+use Onlyoffice\DocsIntegrationSdk\Service\Request\RequestService as OnlyOfficeRequestService;
 
-abstract class Config
+class RequestService extends OnlyOfficeRequestService
 {
-    protected array $config;
-
-    public function get(string $key, mixed $default = null): mixed
+    public function __construct(SettingsManager $settingsManager, HttpClient $httpClient, JWTManager $jwtManager)
     {
-        $keys = explode('.', $key);
-        $result = $this->config;
+        parent::__construct($settingsManager, $httpClient, $jwtManager);
+    }
 
-        try {
-            foreach ($keys as $key) {
-                $result = $result[$key];
-            }
-        } catch (Exception $e) {
-            $result = $default;
-        }
-
-        return $result;
+    public function getFileUrlForConvert()
+    {
+        return '';
     }
 }

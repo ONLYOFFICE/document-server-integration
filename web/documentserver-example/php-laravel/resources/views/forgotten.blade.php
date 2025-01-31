@@ -85,7 +85,7 @@
                                                 @foreach ($files as $file)
                                                 <tr class="tableRow" title="{{ $file['key'] }}">
                                                     <td>
-                                                        <a class="stored-edit action-link {{ $file['format']->type }}" href="{{ $file['filename'] }}" target="_blank">
+                                                        <a class="stored-edit action-link {{ $file['format']->getType() }}" href="{{ $file['filename'] }}" target="_blank">
                                                             <span>{{ $file['key'] }}</span>
                                                         </a>
                                                     </td>

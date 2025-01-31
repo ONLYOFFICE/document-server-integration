@@ -18,15 +18,15 @@
 
 namespace App\Helpers\URL;
 
-use App\Services\StorageConfig;
+use App\OnlyOffice\Managers\SettingsManager;
 
 class FileURL extends URL
 {
     public static function download(string $filename, string $address = ''): string
     {
-        $config = app(StorageConfig::class);
+        $settings = app(SettingsManager::class);
 
-        return static::build($config->get('url.private'), 'files/download', [
+        return static::build($settings->getSetting('url.storage.private'), 'files/download', [
             'fileName' => $filename,
             'userAddress' => $address,
         ]);
@@ -34,9 +34,9 @@ class FileURL extends URL
 
     public static function changes(string $filename, string $address, int $version): string
     {
-        $config = app(StorageConfig::class);
+        $settings = app(SettingsManager::class);
 
-        return static::build($config->get('url.private'), 'files/versions/changes', [
+        return static::build($settings->getSetting('url.storage.private'), 'files/versions/changes', [
             'filename' => $filename,
             'userAddress' => $address,
             'version' => $version,
@@ -45,9 +45,9 @@ class FileURL extends URL
 
     public static function previous(string $filename, string $address, int $version): string
     {
-        $config = app(StorageConfig::class);
+        $settings = app(SettingsManager::class);
 
-        return static::build($config->get('url.private'), 'files/versions/previous', [
+        return static::build($settings->getSetting('url.storage.private'), 'files/versions/previous', [
             'filename' => $filename,
             'userAddress' => $address,
             'version' => $version,
@@ -56,9 +56,9 @@ class FileURL extends URL
 
     public static function history(string $filename, string $address): string
     {
-        $config = app(StorageConfig::class);
+        $settings = app(SettingsManager::class);
 
-        return static::build($config->get('url.private'), 'files/download', [
+        return static::build($settings->getSetting('url.storage.private'), 'files/download', [
             'fileName' => $filename,
             'userAddress' => $address,
         ]);
@@ -66,9 +66,9 @@ class FileURL extends URL
 
     public static function create(string $extension, string $user): string
     {
-        $config = app(StorageConfig::class);
+        $settings = app(SettingsManager::class);
 
-        return static::build($config->get('url.public'), 'editor', [
+        return static::build($settings->getSetting('url.storage.public'), 'editor', [
             'fileExt' => $extension,
             'user' => $user,
         ]);
@@ -76,9 +76,9 @@ class FileURL extends URL
 
     public static function callback(string $filename, string $user): string
     {
-        $config = app(StorageConfig::class);
+        $settings = app(SettingsManager::class);
 
-        return static::build($config->get('url.private'), 'editor/track', [
+        return static::build($settings->getSetting('url.storage.private'), 'editor/track', [
             'fileName' => $filename,
             'userAddress' => $user,
         ]);

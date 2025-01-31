@@ -2,7 +2,7 @@
 
 namespace App\Providers;
 
-use App\Repositories\FormatRepository;
+use App\OnlyOffice\Managers\FormatManager;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -12,10 +12,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        $this->app->singleton(FormatRepository::class, function () {
-            $path = public_path('assets/document-formats/onlyoffice-docs-formats.json');
-
-            return new FormatRepository($path);
+        $this->app->singleton(FormatManager::class, function () {
+            return new FormatManager;
         });
     }
 

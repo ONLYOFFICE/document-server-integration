@@ -168,11 +168,11 @@
                                                 @foreach ($files as $file)
                                                 <tr class="tableRow" title="{{ $file['filename'] }} [{{ $file['version'] }}]">
                                                     <td class="contentCells">
-                                                        <a class="stored-edit {{ $file['format']->type }}" href="editor?fileID={{ urlencode($file['filename']) }}&user={{ "$user&$directUrlArg" }}" target="_blank">
+                                                        <a class="stored-edit {{ $file['format']->getType() }}" href="editor?fileID={{ urlencode($file['filename']) }}&user={{ "$user&$directUrlArg" }}" target="_blank">
                                                             <span>{{ $file['filename'] }}</span>
                                                         </a>
                                                     </td>
-                                                    @if ($file['format']->editable())
+                                                    @if ($file['format']->isEditable())
                                                     <td class="contentCells contentCells-icon">
                                                         <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}'&action=edit&type=desktop" target="_blank">
                                                             <img src="/images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" />
@@ -211,7 +211,7 @@
                                                     <td class="contentCells contentCells-icon"></td>
                                                     <td class="contentCells contentCells-icon"></td>
                                                     @endif
-                                                    @if ($file['format']->fillable())
+                                                    @if ($file['format']->isFillable())
                                                     <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
                                                         <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=fillForms&type=desktop" target="_blank">
                                                             <img src="/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" />
@@ -220,7 +220,7 @@
                                                     @else
                                                     <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
                                                     @endif
-                                                    @elseif ($file['format']->fillable())
+                                                    @elseif ($file['format']->isFillable())
                                                     <td class="contentCells contentCells-icon">
                                                         <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=fillForms&type=desktop" target="_blank">
                                                             <img src="/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" />
@@ -252,9 +252,9 @@
                                                             <img src="/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode" />
                                                         </a>
                                                     </td>
-                                                    @if ($file['format']->type != null)
+                                                    @if ($file['format']->getType() != null)
                                                     <td class="contentCells contentCells-icon">
-                                                        <a class="convert-file" data="{{ $file['filename'] }}" data-type="{{ $file['format']->type }}">
+                                                        <a class="convert-file" data="{{ $file['filename'] }}" data-type="{{ $file['format']->getType() }}">
                                                             <img class="icon-action" src="/images/convert.svg" alt="Convert" title="Convert" />
                                                         </a>
                                                     </td>

@@ -22,10 +22,9 @@ use App\Helpers\Path\Path;
 use App\Helpers\Path\PathInfo;
 use App\Helpers\URL\FileURL;
 use App\Helpers\URL\URL;
-use App\Repositories\FormatRepository;
-use App\Services\JWT;
-use App\Services\ServerConfig;
-use App\Services\StorageConfig;
+use App\OnlyOffice\Managers\FormatManager;
+use App\OnlyOffice\Managers\JWTManager;
+use App\OnlyOffice\Managers\SettingsManager;
 use App\UseCases\Common\Http\DownloadFileCommand;
 use App\UseCases\Common\Http\DownloadFileRequest;
 use App\UseCases\Docs\Command\UpdateMetaCommand;
@@ -54,9 +53,8 @@ use Illuminate\Support\Str;
 class FileController extends Controller
 {
     public function __construct(
-        private ServerConfig $serverConfig,
-        private StorageConfig $storageConfig,
-        private FormatRepository $formatRepository,
+        private SettingsManager $settings,
+        private FormatManager $formatManager,
     ) {}
 
     public function index(Request $request)
@@ -130,7 +128,7 @@ class FileController extends Controller
 
         $user = $request->input('user', '');
 
-        $url = Str::replace(URL::origin($request->url), $this->serverConfig->get('url.private'), $request->url);
+        $url = Str::replace(URL::origin($request->url), $this->settings->getSetting('url.server.private'), $request->url);
 
         $downloadedFile = app(DownloadFileCommand::class)
             ->__invoke(new DownloadFileRequest(url: $url));
@@ -188,13 +186,13 @@ class FileController extends Controller
                     ], 500);
             }
 
-            if (empty($this->formatRepository->find($result['fileType'])->actions)) {
+            if (empty($this->formatManager->find($result['fileType'])->getActions())) {
                 return response()
                     ->json([
                         'step' => 100,
                         'filename' => str_replace(
-                            $this->serverConfig->get('url.private'),
-                            $this->serverConfig->get('url.public'),
+                            $this->settings->getSetting('url.server.private'),
+                            $this->settings->getSetting('url.server.public'),
                             $result['fileUrl']
                         ),
                         'error' => 'FileTypeIsNotSupported',
@@ -317,7 +315,7 @@ class FileController extends Controller
         return response(status: 201);
     }
 
-    public function config(Request $request, JWT $jwt)
+    public function config(Request $request, JWTManager $jwt)
     {
         try {
             $request->validate([
@@ -361,8 +359,8 @@ class FileController extends Controller
                 ],
             ];
 
-            if ($this->serverConfig->get('jwt.enabled')) {
-                $config['token'] = $jwt->encode($config);
+            if ($this->settings->getSetting('jwt.enabled')) {
+                $config['token'] = $jwt->encode($config, $this->settings->getSetting('jwt.secret'));
             }
 
             return response()

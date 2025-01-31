@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "15b06064f4351d124f81a5718daddb7c",
+    "content-hash": "349f218d77cda1f9ef25791dae86f9d4",
     "packages": [
         {
             "name": "brick/math",
@@ -2379,6 +2379,59 @@
                 }
             ],
             "time": "2024-03-06T16:17:14+00:00"
+        },
+        {
+            "name": "onlyoffice/docs-integration-sdk",
+            "version": "v1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ONLYOFFICE/docs-integration-sdk-php.git",
+                "reference": "3715cb022c182551f4bad43f5869c0536260e5ed"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ONLYOFFICE/docs-integration-sdk-php/zipball/3715cb022c182551f4bad43f5869c0536260e5ed",
+                "reference": "3715cb022c182551f4bad43f5869c0536260e5ed",
+                "shasum": ""
+            },
+            "require": {
+                "vlucas/phpdotenv": "^5.6"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Onlyoffice\\DocsIntegrationSdk\\": "src/",
+                    "Onlyoffice\\DocsIntegrationSdk\\Util\\": "src/util/",
+                    "Onlyoffice\\DocsIntegrationSdk\\Models\\": "src/models/",
+                    "Onlyoffice\\DocsIntegrationSdk\\Manager\\Formats\\": "src/manager/formats/",
+                    "Onlyoffice\\DocsIntegrationSdk\\Service\\Request\\": "src/service/request/",
+                    "Onlyoffice\\DocsIntegrationSdk\\Manager\\Document\\": "src/manager/document/",
+                    "Onlyoffice\\DocsIntegrationSdk\\Manager\\Security\\": "src/manager/security/",
+                    "Onlyoffice\\DocsIntegrationSdk\\Manager\\Settings\\": "src/manager/settings/",
+                    "Onlyoffice\\DocsIntegrationSdk\\Service\\DocEditorConfig\\": "src/service/doceditorconfig/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Ascensio System SIA"
+                }
+            ],
+            "description": "ONLYOFFICE Docs integration SDK",
+            "homepage": "https://www.onlyoffice.com",
+            "keywords": [
+                "onlyoffice"
+            ],
+            "support": {
+                "email": "support@onlyoffice.com",
+                "forum": "https://forum.onlyoffice.com/",
+                "issues": "https://github.com/ONLYOFFICE/docs-integration-sdk-php/issues",
+                "source": "https://github.com/ONLYOFFICE/docs-integration-sdk-php"
+            },
+            "time": "2025-01-15T13:52:01+00:00"
         },
         {
             "name": "phpoption/phpoption",

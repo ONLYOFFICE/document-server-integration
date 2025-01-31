@@ -42,7 +42,7 @@ class Editor
                 'url' => $this->document->url,
                 'directUrl' => $this->config->directUrl,
             ],
-            'documentType' => $this->document->format->type,
+            'documentType' => $this->document->format->getType(),
             'editorConfig' => $this->buildEditorConfig(),
             'type' => $this->config->type,
         ];

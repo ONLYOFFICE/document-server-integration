@@ -16,19 +16,28 @@
  * limitations under the License.
  */
 
-namespace App\Services\Docs\Command;
+namespace App\OnlyOffice\Managers;
 
-class ForgottenDeleteRequest extends CommandRequest
+use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
+use Onlyoffice\DocsIntegrationSdk\Manager\Security\JwtManager as OnlyOfficeJWTManager;
+
+class JWTManager extends OnlyOfficeJWTManager
 {
-    public function delete(string $key): string
+    public function __construct(SettingsManager $settings)
     {
-        $content = [
-            'c' => 'deleteForgotten',
-            'key' => $key,
-        ];
+        parent::__construct($settings);
+    }
 
-        $result = $this->send($content, $key);
+    public function encode($payload, $key, $algorithm = 'HS256')
+    {
+        return JWT::encode($payload, $key, $algorithm);
+    }
 
-        return $result['key'];
+    public function decode($token, $key, $algorithm = 'HS256')
+    {
+        $payload = JWT::decode($token, new Key($key, $algorithm));
+
+        return $payload;
     }
 }
