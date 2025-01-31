@@ -22,7 +22,7 @@ use Example\Common\URL;
 
 class ConfigurationManager
 {
-    public string $version = '1.11.0';
+    public string $version = '1.12.0';
 
     public function getVersion(): string
     {
@@ -195,7 +195,6 @@ class ConfigurationManager
             'it' => 'Italian',
             'ja' => 'Japanese',
             'ko' => 'Korean',
-            'ku' => 'Kurdish',
             'lo' => 'Lao',
             'lv' => 'Latvian',
             'ms' => 'Malay (Malaysia)',

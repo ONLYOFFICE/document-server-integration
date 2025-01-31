@@ -22,7 +22,7 @@ from src.common import string
 
 
 class ConfigurationManager:
-    version = '1.11.0'
+    version = '1.12.0'
 
     def getVersion(self) -> str:
         return self.version
@@ -152,7 +152,6 @@ class ConfigurationManager:
             'it': 'Italian',
             'ja': 'Japanese',
             'ko': 'Korean',
-            'ku': 'Kurdish',
             'lo': 'Lao',
             'lv': 'Latvian',
             'ms': 'Malay (Malaysia)',
