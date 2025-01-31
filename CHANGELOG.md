@@ -1,5 +1,6 @@
 # Change Log
 
+## 1.12.0
 - nodejs: refresh config
 - nodejs: support pages, numbers, key formats
 - nodejs: support hwp, hwpx formats
