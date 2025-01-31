@@ -56,6 +56,9 @@ final class JwtManager
     public function jwtEncode($payload)
     {
         $configManager = new ConfigurationManager();
+        $now = time();
+        $payload['iat'] = $now;
+        $payload['exp'] = $now + $configManager->jwtExpiresIn() * 60;
         return JWT::encode($payload, $configManager->jwtSecret(), 'HS256');
     }
 

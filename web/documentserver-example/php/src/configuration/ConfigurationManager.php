@@ -95,6 +95,15 @@ class ConfigurationManager
         return getenv('JWT_HEADER') ?: 'Authorization';
     }
 
+    public function jwtExpiresIn(): int
+    {
+        $expiresIn = getenv('JWT_EXPIRES_IN');
+        if (!$expiresIn) {
+            return 5;
+        }
+        return intval($expiresIn);
+    }
+
     public function jwtUseForRequest(): bool
     {
         $use = getenv('JWT_USE_FOR_REQUEST');
