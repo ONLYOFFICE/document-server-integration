@@ -93,6 +93,11 @@ class ConfigurationManager
     ENV['JWT_SECRET'] || ''
   end
 
+  sig { returns(Integer) }
+  def jwt_expires_in
+    ENV['JWT_EXPIRES_IN'] || 5
+  end
+
   sig { returns(String) }
   def jwt_header
     ENV['JWT_HEADER'] || 'Authorization'

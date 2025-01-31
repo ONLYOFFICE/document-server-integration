@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: jwt token lifetime from config
 - python: jwt token lifetime from config
 - java-spring: jwt token lifetime from config
 - java: jwt token lifetime from config
