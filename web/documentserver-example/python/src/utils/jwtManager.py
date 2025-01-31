@@ -16,6 +16,7 @@
 
 """
 
+import time
 import jwt
 from src.configuration import ConfigurationManager
 
@@ -34,6 +35,9 @@ def useForRequest():
 
 # encode a payload object into a token using a secret key and decodes it into the utf-8 format
 def encode(payload):
+    now = time.time()
+    payload['iat'] = now
+    payload['exp'] = now + config_manager.jwt_expires_in() * 60
     return jwt.encode(payload, config_manager.jwt_secret(), algorithm='HS256')
 
 
