@@ -25,7 +25,7 @@
 - change reference source
 - filename in editor page title
 - close editor
-- sq-AL, ku skin languages
+- sq-AL skin languages
 
 ## 1.11.0
 - he-IL skin language
