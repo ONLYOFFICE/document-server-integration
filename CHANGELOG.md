@@ -1,5 +1,6 @@
 # Change Log
 
+- python: jwt token lifetime from config
 - java-spring: jwt token lifetime from config
 - java: jwt token lifetime from config
 - csharp-mvc: jwt token lifetime from config
