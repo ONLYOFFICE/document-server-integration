@@ -1,9 +1,6 @@
 # Change Log
 
-- restore by url
 - nodejs: support vsdx in diagram editor
-- nodejs: support pages, numbers, key formats
-- nodejs: support hwp, hwpx formats
 - golang: new integration example
 - golang: upload files to the server
 - golang: create blank files and files with sample content
@@ -18,6 +15,7 @@
 - php-laravel: create, edit, and submit pdf forms
 - php-laravel: show forgotten files on a seperate page
 - php-laravel: fetch files
+- restore by url
 - refresh config
 - on uploading xml convert to supported type only
 - converting function on index page
@@ -25,7 +23,12 @@
 - change reference source
 - filename in editor page title
 - close editor
-- sq-AL skin languages
+
+## 1.12.0
+- nodejs: refresh config
+- nodejs: support pages, numbers, key formats
+- nodejs: support hwp, hwpx formats
+- sq-AL skin language
 
 ## 1.11.0
 - he-IL skin language
