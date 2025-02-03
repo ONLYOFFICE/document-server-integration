@@ -48,7 +48,26 @@ export PATH=$PATH:$GOPATH/bin
 export PATH=$PATH:/usr/local/go/bin
 ```
 
-### Step 5. Start the application
+### Step 5. Configure JWT 
+
+Open the *config/configuration.json* file and enable JWT:
+
+```
+{
+    "JWT_IS_ENABLED" : true,
+}
+```
+
+Also, [specify the same secret key](https://helpcenter.onlyoffice.com/installation/docs-configure-jwt.aspx) as used in your Document Server: 
+
+```
+{
+    "JWT_SECRET" : "secret",
+}
+```
+
+
+### Step 6. Start the application
 
 1. Go to the project root.
 2. Run:
@@ -57,6 +76,6 @@ export PATH=$PATH:/usr/local/go/bin
     ```
 3. In your browser go to **server.address** and **server.port**:
 
-### Step 6. Check accessibility
+### Step 7. Check accessibility
 
  In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files.
