@@ -22,5 +22,6 @@ const (
 	ONLYOFFICE_SPREADSHEET     = "cell"
 	ONLYOFFICE_PRESENTATION    = "slide"
 	ONLYOFFICE_PDF             = "pdf"
+	ONLYOFFICE_DIAGRAM         = "diagram"
 	ONLYOFFICE_HISTORY_POSTFIX = "-hist"
 )

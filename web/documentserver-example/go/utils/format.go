@@ -48,6 +48,7 @@ type FormatManager interface {
 	GetSpreadsheetExtensions() []string
 	GetPresentationExtensions() []string
 	GetPdfExtensions() []string
+	GetDiagramExtensions() []string
 }
 
 func NewFormatManager() (FormatManager, error) {
@@ -141,10 +142,19 @@ func (fm DefaultFormatManager) GetPresentationExtensions() (slide []string) {
 	return
 }
 
-func (fm DefaultFormatManager) GetPdfExtensions() (slide []string) {
+func (fm DefaultFormatManager) GetPdfExtensions() (pdf []string) {
 	for _, f := range fm.formats {
 		if f.FormatType == "pdf" {
-			slide = append(slide, f.Name)
+			pdf = append(pdf, f.Name)
+		}
+	}
+	return
+}
+
+func (fm DefaultFormatManager) GetDiagramExtensions() (diagram []string) {
+	for _, f := range fm.formats {
+		if f.FormatType == "diagram" {
+			diagram = append(diagram, f.Name)
 		}
 	}
 	return

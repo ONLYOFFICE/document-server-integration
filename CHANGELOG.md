@@ -1,5 +1,6 @@
 # Change Log
 
+- go: support vsdx in diagram editor
 - csharp-mvc: support vsdx in diagram editor
 - csharp: support vsdx in diagram editor
 - nodejs: support vsdx in diagram editor

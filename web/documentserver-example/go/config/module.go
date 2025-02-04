@@ -91,6 +91,7 @@ func NewSpecification() (specification SpecificationConfig, err error) {
 		fm.GetPresentationExtensions(),
 		fm.GetDocumentExtensions(),
 		fm.GetPdfExtensions(),
+		fm.GetDiagramExtensions(),
 	}
 	specification = SpecificationConfig{
 		exts,
