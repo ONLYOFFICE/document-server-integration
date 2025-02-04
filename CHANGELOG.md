@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: support vsdx in diagram editor
 - python: support vsdx in diagram editor
 - php: support vsdx in diagram editor
 - java: support vsdx in diagram editor
