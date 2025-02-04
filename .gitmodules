@@ -64,6 +64,7 @@
 [submodule "web/documentserver-example/csharp/assets/document-formats"]
 	path = web/documentserver-example/csharp/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
+	branch = feature/diagram
 [submodule "web/documentserver-example/php-laravel/public/assets/document-templates"]
 	path = web/documentserver-example/php-laravel/public/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
