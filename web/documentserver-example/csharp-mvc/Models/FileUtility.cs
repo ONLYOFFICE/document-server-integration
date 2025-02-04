@@ -35,7 +35,8 @@ namespace OnlineEditorsExampleMVC.Models
             Word,
             Cell,
             Slide,
-            Pdf
+            Pdf,
+            Diagram
         }
 
         // get file type
@@ -47,6 +48,7 @@ namespace OnlineEditorsExampleMVC.Models
             if (FormatManager.DocumentExtensions().Contains(ext)) return FileType.Word;  // word type for document extensions
             if (FormatManager.SpreadsheetExtensions().Contains(ext)) return FileType.Cell;  // cell type for spreadsheet extensions
             if (FormatManager.PresentationExtensions().Contains(ext)) return FileType.Slide;  // slide type for presentation extensions
+            if (FormatManager.DiagramExtensions().Contains(ext)) return FileType.Diagram;  // diagram type for diagram extensions
 
             return FileType.Null;  // the default type is word
         }
@@ -199,6 +201,20 @@ namespace OnlineEditorsExampleMVC.Models
         {
             return All()
                 .Where(format => format.Type == FileType.Pdf)
+                .ToList();
+        }
+
+        public static List<string> DiagramExtensions()
+        {
+            return Diagrams()
+                .Select(format => format.Extension())
+                .ToList();
+        }
+
+        public static List<Format> Diagrams()
+        {
+            return All()
+                .Where(format => format.Type == FileType.Diagram)
                 .ToList();
         }
 
