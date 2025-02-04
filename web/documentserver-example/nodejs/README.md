@@ -32,7 +32,33 @@ If you want to experiment with the editor configuration, modify the [parameters]
 
 Install the **node.js** environment which is going to be used to run the Node.js project. Please follow the link at the [official website](https://nodejs.org/en/download/) choosing the correct version for your Windows OS (32-bit or 64-bit).
 
-### Step 4. Run the Node.js code
+### Step 4. Configure JWT 
+
+Open the *config/default.json* file and enable JWT:
+
+```
+{
+    "server": {
+        "token": {
+            "enable": true
+        }
+    }
+}
+```
+
+Also, [specify the same secret key](https://helpcenter.onlyoffice.com/installation/docs-configure-jwt.aspx) as used in your Document Server: 
+
+```
+{
+    "server": {
+        "token": {
+            "secret": "secret"
+        }
+    }
+}
+```
+
+### Step 5. Run the Node.js code
 
 We will run the code in Node.js runtime environment and will interact with it using the **command line interface (cmd)**.
 
@@ -62,7 +88,7 @@ We will run the code in Node.js runtime environment and will interact with it us
     http://localhost:3000
     ```
 
-### Step 5. Check accessibility
+### Step 6. Check accessibility
 
 In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
 
@@ -128,6 +154,30 @@ See the detailed guide to learn how to [install Document Server for Linux](https
    ```
    sudo chmod -R ugo+rw /{path}
    ```
+
+   Enable JWT:
+
+    ```
+    {
+      "server": {
+        "token": {
+          "enable: true
+        }
+      }
+    }
+    ```
+
+    Also, [specify the same secret key](https://helpcenter.onlyoffice.com/installation/docs-configure-jwt.aspx) as used in your Document Server: 
+
+    ```
+    {
+      "server": {
+        "token": {
+          "secret": "secret"
+        }
+      }
+    }
+    ```
 
 6. Run the project with Node.js:
 
