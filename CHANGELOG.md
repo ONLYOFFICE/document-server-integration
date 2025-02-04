@@ -1,5 +1,6 @@
 # Change Log
 
+- php: support vsdx in diagram editor
 - java: support vsdx in diagram editor
 - go: support vsdx in diagram editor
 - csharp-mvc: support vsdx in diagram editor
