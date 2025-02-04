@@ -33,5 +33,8 @@ public enum FileType {
     SLIDE,
     @JsonProperty("pdf")
     @SerializedName("pdf")
-    PDF
+    PDF,
+    @JsonProperty("diagram")
+    @SerializedName("diagram")
+    DIAGRAM
 }

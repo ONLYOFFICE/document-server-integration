@@ -634,6 +634,11 @@ footer table tr td:first-child {
     background-image: url("img/icon_pdf.svg");
 }
 
+.stored-edit.diagram,
+.uploadFileName.diagram {
+    background-image: url("img/icon_vsdx.svg");
+}
+
 .stored-edit span {
     font-size: 12px;
     line-height: 12px;
