@@ -1,5 +1,6 @@
 # Change Log
 
+- php: support pages, numbers, key formats
 - java: support pages, numbers, key formats
 - go: support pages, numbers, key formats
 - csharp-mvc: support pages, numbers, key formats
