@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: support pages, numbers, key formats
 - python: support pages, numbers, key formats
 - php: support pages, numbers, key formats
 - java: support pages, numbers, key formats
