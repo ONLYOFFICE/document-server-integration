@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp-mvc: support pages, numbers, key formats
 - csharp: support pages, numbers, key formats
 - nodejs: support vsdx in diagram editor
 - golang: new integration example
