@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: support pages, numbers, key formats
 - nodejs: support vsdx in diagram editor
 - golang: new integration example
 - golang: upload files to the server
