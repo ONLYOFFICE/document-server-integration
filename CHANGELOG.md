@@ -1,5 +1,6 @@
 # Change Log
 
+- golang: onUserActionRequired
 - csharp-mvc: onUserActionRequired
 - csharp: onUserActionRequired
 - nodejs: onUserActionRequired
