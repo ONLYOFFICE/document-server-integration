@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: rename in wopi
 - nodejs: support vsdx in diagram editor
 - golang: new integration example
 - golang: upload files to the server
