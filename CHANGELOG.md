@@ -1,5 +1,6 @@
 # Change Log
 
+- java-spring: onUserActionRequired
 - java: onUserActionRequired
 - golang: onUserActionRequired
 - csharp-mvc: onUserActionRequired
