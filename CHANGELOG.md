@@ -1,5 +1,6 @@
 # Change Log
 
+- php: onUserActionRequired
 - java-spring: onUserActionRequired
 - java: onUserActionRequired
 - golang: onUserActionRequired
