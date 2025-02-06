@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp-mvc: onUserActionRequired
 - csharp: onUserActionRequired
 - nodejs: onUserActionRequired
 - nodejs: support vsdx in diagram editor
