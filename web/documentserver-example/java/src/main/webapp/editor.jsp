@@ -101,6 +101,10 @@
             innerAlert("Document editor closed successfully");
         };
 
+        var onUserActionRequired = function () {
+            console.log("User action required");
+        };
+
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
             if (event.data.favorite !== undefined) {
@@ -369,6 +373,7 @@
         config.events = {
             "onAppReady": onAppReady,
             "onDocumentStateChange": onDocumentStateChange,
+            "onUserActionRequired": onUserActionRequired,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
