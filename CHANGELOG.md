@@ -1,6 +1,5 @@
 # Change Log
 
-- nodejs: support vsdx in diagram editor
 - golang: new integration example
 - golang: upload files to the server
 - golang: create blank files and files with sample content
