@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: onUserActionRequired
 - python: onUserActionRequired
 - php-laravel: onUserActionRequired
 - php: onUserActionRequired
