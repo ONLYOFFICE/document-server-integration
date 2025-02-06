@@ -62,6 +62,10 @@
             innerAlert("Document editor closed successfully");
         };
 
+        var onUserActionRequired = function () {
+            console.log("User action required");
+        };
+
         var onMetaChange = function (event) {  // the meta information of the document is changed via the meta command
             if (event.data.favorite !== undefined) {
                 var favorite = !!event.data.favorite;
@@ -375,6 +379,7 @@
             "onAppReady": onAppReady,
             "onDocumentReady": onDocumentReady,
             "onDocumentStateChange": onDocumentStateChange,
+            "onUserActionRequired": onUserActionRequired,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
