@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: onUserActionRequired
 - nodejs: onUserActionRequired
 - nodejs: support vsdx in diagram editor
 - golang: new integration example
