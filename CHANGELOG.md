@@ -16,6 +16,7 @@
 - php-laravel: show forgotten files on a seperate page
 - php-laravel: fetch files
 - php-laravel: integrate sdk
+- onUserActionRequired
 - support pages, numbers, key formats
 - support hwp, hwpx formats
 - restore by url
