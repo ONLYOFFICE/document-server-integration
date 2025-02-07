@@ -19,7 +19,6 @@
 [submodule "web/documentserver-example/php/assets/document-formats"]
 	path = web/documentserver-example/php/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
-	branch = master
 [submodule "web/documentserver-example/python/assets/document-templates"]
 	path = web/documentserver-example/python/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
@@ -43,15 +42,12 @@
 [submodule "web/documentserver-example/go/static/assets/document-formats"]
 	path = web/documentserver-example/go/static/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
-	branch = master
 [submodule "web/documentserver-example/python/assets/document-formats"]
 	path = web/documentserver-example/python/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
-	branch = master
 [submodule "web/documentserver-example/ruby/assets/document-formats"]
 	path = web/documentserver-example/ruby/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
-	branch = master
 [submodule "web/documentserver-example/java/src/main/resources/assets/document-formats"]
 	path = web/documentserver-example/java/src/main/resources/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats
