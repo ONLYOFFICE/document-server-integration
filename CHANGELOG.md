@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: using faviconUrl from WOPI discovery
 - golang: new integration example
 - golang: upload files to the server
 - golang: create blank files and files with sample content
