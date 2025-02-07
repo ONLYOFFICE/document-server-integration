@@ -1,16 +1,6 @@
 # Change Log
 
-- ruby: onUserActionRequired
-- python: onUserActionRequired
-- php-laravel: onUserActionRequired
-- php: onUserActionRequired
-- java-spring: onUserActionRequired
-- java: onUserActionRequired
-- golang: onUserActionRequired
-- csharp-mvc: onUserActionRequired
-- csharp: onUserActionRequired
-- nodejs: onUserActionRequired
-- nodejs: support vsdx in diagram editor
+- nodejs: using faviconUrl from WOPI discovery
 - golang: new integration example
 - golang: upload files to the server
 - golang: create blank files and files with sample content
@@ -26,6 +16,9 @@
 - php-laravel: show forgotten files on a seperate page
 - php-laravel: fetch files
 - php-laravel: integrate sdk
+- onUserActionRequired
+- support pages, numbers, key formats
+- support hwp, hwpx formats
 - restore by url
 - refresh config
 - on uploading xml convert to supported type only
