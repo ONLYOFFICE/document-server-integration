@@ -78,6 +78,10 @@
             docEditor.destroyEditor();
         };
 
+        var onUserActionRequired = function () {
+          console.log("User action required");
+        };
+
         var onMetaChange = function (event) {  // the meta information of the document is changed via the meta command
             if (event.data.favorite) {
                 var favorite = !!event.data.favorite;
@@ -378,6 +382,7 @@
         var events = {
             "onAppReady": onAppReady,
             "onDocumentStateChange": onDocumentStateChange,
+            "onUserActionRequired": onUserActionRequired,
             "onMetaChange": onMetaChange,
             "onRequestInsertImage": onRequestInsertImage,
             "onRequestSelectDocument": onRequestSelectDocument,

@@ -146,6 +146,7 @@ exports.registerRoutes = function registerRoutes(app) {
         token: 'test',
         tokenTtl: Date.now() + 1000 * 60 * 60 * 10,
         params: getCustomWopiParams(req.query),
+        favIconUrl: action.favIconUrl,
       });
     } catch (ex) {
       console.log(ex);
