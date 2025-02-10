@@ -59,6 +59,8 @@ const requestHeaders = Object.freeze({
 
   FileConversion: 'X-WOPI-FileConversion',
 
+  FileName: 'X-WOPI-RequestedName',
+
   SuggestedTarget: 'X-WOPI-SuggestedTarget',
   RelativeTarget: 'X-WOPI-RelativeTarget',
   OverwriteRelativeTarget: 'X-WOPI-OverwriteRelativeTarget',
