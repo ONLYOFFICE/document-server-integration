@@ -23,7 +23,7 @@
         *
         -->
         <title>[[${model.getDocument().getTitle()}]] - ONLYOFFICE</title>
-        <link rel="icon" th:href="@{/css/img/{icon}.ico(icon=${model.getDocumentType()})}" type="image/x-icon"/>
+        <link rel="icon" th:href="@{/css/img/{icon}.ico(icon=${model.getDocumentType().toString().toLowerCase()})}" type="image/x-icon"/>
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
 
         <script type="text/javascript" th:src="@{${docserviceApiUrl}}"></script>
