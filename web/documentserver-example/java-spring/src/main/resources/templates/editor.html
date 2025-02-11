@@ -23,7 +23,7 @@
         *
         -->
         <title>[[${model.getDocument().getTitle()}]] - ONLYOFFICE</title>
-        <link rel="icon" th:href="@{/css/img/{icon}.ico(icon=${model.getDocumentType()})}" type="image/x-icon"/>
+        <link rel="icon" th:href="@{/css/img/{icon}.ico(icon=${model.getDocumentType().toString().toLowerCase()})}" type="image/x-icon"/>
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
 
         <script type="text/javascript" th:src="@{${docserviceApiUrl}}"></script>
@@ -92,6 +92,10 @@
                 var onRequestClose = function () {  // close editor
                     docEditor.destroyEditor();
                     innerAlert("Document editor closed successfully");
+                };
+
+                var onUserActionRequired = function () {
+                    console.log("User action required");
                 };
 
                 // the meta information of the document is changed via the meta command
@@ -365,6 +369,7 @@
                 config.events = {
                     "onAppReady": onAppReady,
                     "onDocumentStateChange": onDocumentStateChange,
+                    "onUserActionRequired": onUserActionRequired,
                     "onError": onError,
                     "onOutdatedVersion": onOutdatedVersion,
                     "onMakeActionLink": onMakeActionLink,

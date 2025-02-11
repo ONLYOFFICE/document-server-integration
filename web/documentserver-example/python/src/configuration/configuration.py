@@ -22,7 +22,7 @@ from src.common import string
 
 
 class ConfigurationManager:
-    version = '1.12.0'
+    version = '1.13.0'
 
     def getVersion(self) -> str:
         return self.version
