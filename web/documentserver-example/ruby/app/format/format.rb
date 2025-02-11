@@ -95,6 +95,18 @@ class FormatManager
   end
 
   sig { returns(T::Array[String]) }
+  def diagram_extensions
+    diagram.map(&:extension)
+  end
+
+  sig { returns(T::Array[Format]) }
+  def diagram
+    all.filter do |format|
+      format.type == 'diagram'
+    end
+  end
+
+  sig { returns(T::Array[String]) }
   def pdf_extensions
     pdf.map(&:extension)
   end

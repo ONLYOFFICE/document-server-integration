@@ -66,6 +66,9 @@ func (cm DefaultConversionManager) GetFileType(filename string) string {
 	if utils.IsInList(ext, exts.Presentation) {
 		return shared.ONLYOFFICE_PRESENTATION
 	}
+	if utils.IsInList(ext, exts.Diagram) {
+		return shared.ONLYOFFICE_DIAGRAM
+	}
 
 	return shared.ONLYOFFICE_DOCUMENT
 }

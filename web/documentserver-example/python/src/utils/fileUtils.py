@@ -54,5 +54,7 @@ def getFileType(uri):
         return 'cell'
     if ext in format_manager.presentation_extensions():
         return 'slide'
+    if ext in format_manager.diagram_extensions():
+        return 'diagram'
 
     return 'word'  # default file type is word

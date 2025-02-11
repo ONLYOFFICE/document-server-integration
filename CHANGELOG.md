@@ -1,5 +1,14 @@
 # Change Log
 
+- ruby: support vsdx in diagram editor
+- python: support vsdx in diagram editor
+- php: support vsdx in diagram editor
+- java: support vsdx in diagram editor
+- go: support vsdx in diagram editor
+- csharp-mvc: support vsdx in diagram editor
+- csharp: support vsdx in diagram editor
+- nodejs: support vsdx in diagram editor
+
 ## 1.13.0
 - nodejs: rename in wopi
 - nodejs: using faviconUrl from WOPI discovery

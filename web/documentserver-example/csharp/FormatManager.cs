@@ -164,6 +164,20 @@ namespace OnlineEditorsExample
                 .ToList();
         }
 
+        public static List<string> DiagramExtensions()
+        {
+            return Diagrams()
+                .Select(format => format.Extension())
+                .ToList();
+        }
+
+        public static List<Format> Diagrams()
+        {
+            return All()
+                .Where(format => format.Type == "diagram")
+                .ToList();
+        }
+
         public static List<string> AllExtensions()
         {
             return All()
