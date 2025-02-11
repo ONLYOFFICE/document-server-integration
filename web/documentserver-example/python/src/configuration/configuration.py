@@ -22,7 +22,7 @@ from src.common import string
 
 
 class ConfigurationManager:
-    version = '1.11.0'
+    version = '1.12.0'
 
     def getVersion(self) -> str:
         return self.version
@@ -127,6 +127,7 @@ class ConfigurationManager:
     def languages(self) -> dict[str, str]:
         return {
             'en': 'English',
+            'sq-AL': 'Albanian (Albania)',
             'ar': 'Arabic',
             'hy': 'Armenian',
             'az': 'Azerbaijani',
