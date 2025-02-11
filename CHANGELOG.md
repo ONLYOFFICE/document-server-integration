@@ -1,5 +1,6 @@
 # Change Log
 
+## 1.13.0
 - nodejs: rename in wopi
 - nodejs: using faviconUrl from WOPI discovery
 - golang: new integration example

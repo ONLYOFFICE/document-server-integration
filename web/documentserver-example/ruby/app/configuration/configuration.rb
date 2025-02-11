@@ -31,7 +31,7 @@ class ConfigurationManager
 
   sig { void }
   def initialize
-    @version = '1.12.0'
+    @version = '1.13.0'
   end
 
   sig { returns(T.nilable(URI::Generic)) }
