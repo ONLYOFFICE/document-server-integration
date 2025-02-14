@@ -4,6 +4,7 @@
 - python: support vsdx in diagram editor
 - php: support vsdx in diagram editor
 - java: support vsdx in diagram editor
+- java-spring: support vsdx in diagram editor
 - go: support vsdx in diagram editor
 - csharp-mvc: support vsdx in diagram editor
 - csharp: support vsdx in diagram editor
