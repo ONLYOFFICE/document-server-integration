@@ -57,6 +57,10 @@ const requestHeaders = Object.freeze({
   LockFailureReason: 'X-WOPI-LockFailureReason',
   LockedByOtherInterface: 'X-WOPI-LockedByOtherInterface',
 
+  Proof: 'X-WOPI-Proof',
+  ProofOld: 'X-WOPI-ProofOld',
+  Timestamp: 'X-WOPI-Timestamp',
+
   FileConversion: 'X-WOPI-FileConversion',
 
   FileName: 'X-WOPI-RequestedName',
