@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "349f218d77cda1f9ef25791dae86f9d4",
+    "content-hash": "ccf9e46d33350e7606c494225b794de1",
     "packages": [
         {
             "name": "brick/math",
@@ -2382,16 +2382,16 @@
         },
         {
             "name": "onlyoffice/docs-integration-sdk",
-            "version": "v1.1.0",
+            "version": "v1.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ONLYOFFICE/docs-integration-sdk-php.git",
-                "reference": "3715cb022c182551f4bad43f5869c0536260e5ed"
+                "reference": "31a038dfea8c2a383ab7b1854e720ba40d25ec68"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ONLYOFFICE/docs-integration-sdk-php/zipball/3715cb022c182551f4bad43f5869c0536260e5ed",
-                "reference": "3715cb022c182551f4bad43f5869c0536260e5ed",
+                "url": "https://api.github.com/repos/ONLYOFFICE/docs-integration-sdk-php/zipball/31a038dfea8c2a383ab7b1854e720ba40d25ec68",
+                "reference": "31a038dfea8c2a383ab7b1854e720ba40d25ec68",
                 "shasum": ""
             },
             "require": {
@@ -2431,7 +2431,7 @@
                 "issues": "https://github.com/ONLYOFFICE/docs-integration-sdk-php/issues",
                 "source": "https://github.com/ONLYOFFICE/docs-integration-sdk-php"
             },
-            "time": "2025-01-15T13:52:01+00:00"
+            "time": "2025-02-14T13:01:23+00:00"
         },
         {
             "name": "phpoption/phpoption",
