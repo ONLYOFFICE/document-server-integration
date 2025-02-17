@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ccf9e46d33350e7606c494225b794de1",
+    "content-hash": "d4ee81f9421da2deb58e94784aafa3b3",
     "packages": [
         {
             "name": "brick/math",
@@ -2382,16 +2382,16 @@
         },
         {
             "name": "onlyoffice/docs-integration-sdk",
-            "version": "v1.2.0",
+            "version": "dev-feature/diagram",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ONLYOFFICE/docs-integration-sdk-php.git",
-                "reference": "31a038dfea8c2a383ab7b1854e720ba40d25ec68"
+                "reference": "ad47131e692cce1ff266955e6febbab9ac3bdeec"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ONLYOFFICE/docs-integration-sdk-php/zipball/31a038dfea8c2a383ab7b1854e720ba40d25ec68",
-                "reference": "31a038dfea8c2a383ab7b1854e720ba40d25ec68",
+                "url": "https://api.github.com/repos/ONLYOFFICE/docs-integration-sdk-php/zipball/ad47131e692cce1ff266955e6febbab9ac3bdeec",
+                "reference": "ad47131e692cce1ff266955e6febbab9ac3bdeec",
                 "shasum": ""
             },
             "require": {
@@ -2431,7 +2431,7 @@
                 "issues": "https://github.com/ONLYOFFICE/docs-integration-sdk-php/issues",
                 "source": "https://github.com/ONLYOFFICE/docs-integration-sdk-php"
             },
-            "time": "2025-02-14T13:01:23+00:00"
+            "time": "2025-02-14T13:08:36+00:00"
         },
         {
             "name": "phpoption/phpoption",
@@ -8317,7 +8317,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "onlyoffice/docs-integration-sdk": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
