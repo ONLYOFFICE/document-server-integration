@@ -150,7 +150,7 @@ const getDefaultAction = async function getDefaultAction(DocManager, ext) {
 
 // get the action url
 const getActionUrl = function getActionUrl(host, userAddress, action, filename) {
-  const WOPISrc = `${host}/wopi/files/${filename}@${userAddress}`;
+  const WOPISrc = `${host}/wopi/files/${encodeURIComponent(filename)}@${encodeURIComponent(userAddress)}`;
   return `${action.urlsrc.replace(/<.*&>/g, '')}WOPISrc=${encodeURIComponent(WOPISrc)}`;
 };
 
