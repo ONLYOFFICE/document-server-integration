@@ -501,8 +501,10 @@ namespace OnlineEditorsExample
                 default:
                     return;
             }
+            var lang = request.Cookies.GetOrDefault("ulang", "en");
+            var demoLang = lang.Contains("-") ? lang : "default";
             var demoName = (string.IsNullOrEmpty(sample) ? "new" : "sample") + ext;  // create demo document name with the necessary extension
-            var demoPath = "assets\\document-templates\\" + (string.IsNullOrEmpty(sample) ? "new\\" : "sample\\");  // and put this file into the assets directory
+            var demoPath = "assets\\document-templates\\" + (string.IsNullOrEmpty(sample) ? "new\\" + demoLang + "\\" : "sample\\");  // and put this file into the assets directory
 
             FileName = _Default.GetCorrectName(demoName);  // get file name with an index if such a file name already exists
 

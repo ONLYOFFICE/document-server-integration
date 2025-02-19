@@ -61,7 +61,7 @@
 [submodule "web/documentserver-example/csharp/assets/document-templates"]
 	path = web/documentserver-example/csharp/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
-	branch = main/default
+	branch = master
 [submodule "web/documentserver-example/csharp/assets/document-formats"]
 	path = web/documentserver-example/csharp/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats

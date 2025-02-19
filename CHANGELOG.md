@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: new document in selected language
 - nodejs: new document in selected language
 - support vsdx in diagram editor
 
