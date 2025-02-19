@@ -134,13 +134,14 @@ DocManager.prototype.fileSizeZero = function fileSizeZero(fileName) {
 
 // create demo document
 // eslint-disable-next-line no-unused-vars
-DocManager.prototype.createDemo = function createDemo(isSample, fileExt, userid, username, wopi) {
+DocManager.prototype.createDemo = function createDemo(isSample, fileExt, userid, username, lang, wopi) {
   const demoName = `${isSample ? 'sample' : 'new'}.${fileExt}`;
   const fileName = this.getCorrectName(demoName); // get the correct file name if such a name already exists
 
+  const langPath = lang.includes('-') ? lang : 'default';
   // copy sample document of a necessary extension to the storage path
   this.copyFile(path.join(__dirname, '..', 'public', 'assets', 'document-templates', isSample
-    ? 'sample' : 'new', demoName), this.storagePath(fileName));
+    ? 'sample' : path.join('new', langPath), demoName), this.storagePath(fileName));
 
   this.saveFileData(fileName, userid, username); // save file data to the file
 

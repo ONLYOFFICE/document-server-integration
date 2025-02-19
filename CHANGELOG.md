@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: new document in selected language
 - support vsdx in diagram editor
 
 ## 1.13.0

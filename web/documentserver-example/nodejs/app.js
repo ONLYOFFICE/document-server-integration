@@ -1080,6 +1080,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     req.DocManager = new DocManager(req, res);
 
     let { fileExt } = req.query;
+    const lang = req.DocManager.getLang();
     const user = users.getUser(req.query.userid);
     const userid = user.id;
     const { name } = user;
@@ -1087,7 +1088,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     if (fileExt) {
       fileExt = fileUtility.getFileExtension(fileUtility.getFileName(fileExt), true);
       // create demo document of a given extension
-      const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, false);
+      const fName = req.DocManager.createDemo(!!req.query.sample, fileExt, userid, name, lang, false);
 
       // get the redirect path
       const redirectPath = `${req.DocManager.getServerUrl()}/editor?mode=edit&fileName=`
@@ -1097,7 +1098,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     const fileName = fileUtility.getFileName(req.query.fileName);
-    const lang = req.DocManager.getLang();
     const userDirectUrl = req.query.directUrl === 'true';
 
     let actionData = 'null';
