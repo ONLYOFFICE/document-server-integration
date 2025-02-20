@@ -29,7 +29,7 @@
 [submodule "web/documentserver-example/java/src/main/resources/assets/document-templates"]
 	path = web/documentserver-example/java/src/main/resources/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
-	branch = main/default
+	branch = master
 [submodule "web/documentserver-example/ruby/assets/document-templates"]
 	path = web/documentserver-example/ruby/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates

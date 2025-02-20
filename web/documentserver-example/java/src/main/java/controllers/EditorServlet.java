@@ -60,7 +60,7 @@ public class EditorServlet extends HttpServlet {
         if (fileExt != null) {
             try {
                 // create demo document
-                fileName = DocumentManager.createDemo(fileExt, sampleData, user);
+                fileName = DocumentManager.createDemo(fileExt, sampleData, cm.getCookie("ulang"), user);
 
                 // redirect the request
                 response.sendRedirect("EditorServlet?mode=edit&fileName=" + URLEncoder.encode(fileName, "UTF-8"));

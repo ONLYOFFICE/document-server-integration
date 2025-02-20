@@ -299,16 +299,21 @@ public final class DocumentManager {
     }
 
     // create demo document
-    public static String createDemo(final String fileExt, final Boolean sample, final User user) throws Exception {
+    public static String createDemo(
+        final String fileExt,
+        final Boolean sample,
+        final String lang,
+        final User user
+        ) throws Exception {
         // create sample or new template file with the necessary extension
         String demoName = (sample ? "sample." : "new.") + fileExt;
-
+        String langPath = lang.contains("-") ? lang : "default";
         // get the path to the sample document
         String demoPath = "assets"
             + File.separator
             + "document-templates"
             + File.separator
-            + (sample ? "sample" : "new")
+            + (sample ? "sample" : ("new" + File.separator + langPath))
             + File.separator;
 
         // get a file name with an index if the file with such a name already exists
