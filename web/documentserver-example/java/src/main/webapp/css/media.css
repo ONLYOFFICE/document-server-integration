@@ -625,7 +625,7 @@
     }
 }
 
-@media (max-width: 420px) and (min-width: 320px) {
+@media (max-width: 420px) {
     .tableRow,
     menu.links {
         width: 25%;
@@ -701,7 +701,7 @@
         max-width: 45%;
     }
 }
-@media (max-width: 600px) and (min-width: 320px) {
+@media (max-width: 600px) {
     .main-panel{
         display: flex;
         flex-direction: column;
@@ -728,7 +728,7 @@
     }
 }
 
-@media (max-width: 592px) and (min-width: 320px) {
+@media (max-width: 592px) {
     body.menu-open {
         overflow: hidden;
     }
