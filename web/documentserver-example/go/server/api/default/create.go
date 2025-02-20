@@ -100,7 +100,7 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 	}
 
 	query := r.URL.Query()
-	fileExt, isSample := query.Get("fileExt"), query.Get("sample")
+	fileExt, lang, isSample := query.Get("fileExt"), query.Get("lang"), query.Get("sample")
 
 	if strings.TrimSpace(fileExt) == "" || !utils.IsInList(fileExt, srv.specification.Extensions.Edited) {
 		srv.logger.Errorf("%s extension is not supported", fileExt)
@@ -123,13 +123,17 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 	}
 
 	srv.logger.Debugf("Creating a new %s file", fileExt)
+	if !strings.Contains(lang, "-") {
+		lang = "default"
+	}
 	sampleType := "new"
 	if strings.TrimSpace(isSample) != "" {
 		sampleType = "sample"
+		lang = ""
 	}
 
 	filename := fmt.Sprintf("%s.%s", sampleType, fileExt)
-	file, err := os.Open(path.Join("static/assets/document-templates", sampleType, filename))
+	file, err := os.Open(path.Join("static/assets/document-templates", sampleType, lang, filename))
 	if err != nil {
 		srv.logger.Errorf("could not create a new file: %s", err.Error())
 		http.Redirect(w, r, "/", http.StatusSeeOther)

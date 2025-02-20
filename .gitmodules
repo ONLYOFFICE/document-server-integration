@@ -41,7 +41,7 @@
 [submodule "web/documentserver-example/go/static/assets/document-templates"]
 	path = web/documentserver-example/go/static/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
-	branch = main/default
+	branch = master
 [submodule "web/documentserver-example/go/static/assets/document-formats"]
 	path = web/documentserver-example/go/static/assets/document-formats
 	url = https://github.com/ONLYOFFICE/document-formats

@@ -1,5 +1,6 @@
 # Change Log
 
+- golang: new document in selected language
 - csharp-mvc: new document in selected language
 - csharp: new document in selected language
 - nodejs: new document in selected language

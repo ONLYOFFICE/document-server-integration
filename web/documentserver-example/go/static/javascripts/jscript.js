@@ -442,6 +442,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", ".try-editor", function (e) {
         var url = "create?fileExt=" + e.target.attributes["data-type"].value;
+        url += "&lang=" + jq("#language").val();
         if (jq("#createSample").is(":checked")) {
             url += "&sample=true";
         }
