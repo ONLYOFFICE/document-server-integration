@@ -444,6 +444,7 @@ if (typeof jQuery != "undefined") {
     jq(document).on("click", ".try-editor", function (e) {
         var url = jq(".try-editor-list")[0].attributes["data-link"].value;
         url += "?fileExt=" + e.target.attributes["data-type"].value;
+        url += "&lang=" + jq("#language").val();
         if (jq("#createSample").is(":checked")) {
             url += "&sample=true";
         }

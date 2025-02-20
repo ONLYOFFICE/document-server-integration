@@ -223,10 +223,11 @@ namespace OnlineEditorsExampleMVC.Helpers
         }
 
         // create demo document
-        public static string CreateDemo(string fileExt, bool withContent)
+        public static string CreateDemo(string fileExt, bool withContent, string lang)
         {
+            var langPath = lang.Contains("-") ? lang : "default";
             var demoName = (withContent ? "sample." : "new.") + fileExt;  // create sample or new template file with the necessary extension
-            var demoPath = "assets\\document-templates\\" + (withContent ? "sample\\" : "new\\");  // get the path to the sample document
+            var demoPath = "assets\\document-templates\\" + (withContent ? "sample\\" : "new\\" + langPath + "\\");  // get the path to the sample document
 
             var fileName = GetCorrectName(demoName);  // get a file name with an index if the file with such a name already exists
 

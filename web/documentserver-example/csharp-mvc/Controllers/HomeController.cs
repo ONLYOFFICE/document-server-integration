@@ -89,9 +89,9 @@ namespace OnlineEditorsExampleMVC.Controllers
         }
 
         // creating a sample document
-        public ActionResult Sample(string fileExt, bool? sample)
+        public ActionResult Sample(string fileExt, string lang, bool? sample)
         {
-            var fileName = DocManagerHelper.CreateDemo(fileExt, sample ?? false);  // create a sample document
+            var fileName = DocManagerHelper.CreateDemo(fileExt, sample ?? false, lang);  // create a sample document
             var id = Request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);
             DocManagerHelper.CreateMeta(fileName, user.id, user.name);  // create meta information for the sample document
