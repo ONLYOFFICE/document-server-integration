@@ -1,5 +1,6 @@
 # Change Log
 
+- php-laravel: new document in selected language
 - php: new document in selected language
 - ruby: new document in selected language
 - python: new document in selected language

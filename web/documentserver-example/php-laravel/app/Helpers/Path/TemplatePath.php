@@ -20,11 +20,15 @@ namespace App\Helpers\Path;
 
 class TemplatePath extends Path
 {
-    public static function for(string $extension, bool $withSample): string
+    public static function for(string $extension, bool $withSample, string $lang): string
     {
         $templatePath = env('TEMPLATE_PATH', public_path('assets/document-templates/'));
+        $langPath = str_contains($lang, '-') ? $lang : 'default';
         $name = $withSample ? 'sample' : 'new';
         $filename = "$name.$extension";
+        if ($name == 'new') {
+            $name = "new/$langPath";
+        }
 
         return self::join($templatePath, "$name/$filename");
     }

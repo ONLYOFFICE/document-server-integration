@@ -25,5 +25,6 @@ class CreateDocumentFromTemplateRequest
         public string $userDirectory,
         public string $user,
         public bool $withSample,
+        public string $lang,
     ) {}
 }

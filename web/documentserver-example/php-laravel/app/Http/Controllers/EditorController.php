@@ -117,6 +117,7 @@ class EditorController extends Controller
                     userDirectory: $request->ip(),
                     user: $user['id'],
                     withSample: $withSample,
+                    lang: $lang,
                 ));
 
             return redirect()

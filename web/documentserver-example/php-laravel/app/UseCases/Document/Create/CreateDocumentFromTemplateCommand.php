@@ -35,7 +35,7 @@ class CreateDocumentFromTemplateCommand
 
     public function __invoke(CreateDocumentFromTemplateRequest $request): array
     {
-        $from = TemplatePath::for($request->fileExtension, $request->withSample);
+        $from = TemplatePath::for($request->fileExtension, $request->withSample, $request->lang);
 
         $filePath = Path::join($request->userDirectory, PathInfo::basename($from));
         $filePath = UniqueFilename::for($filePath);
