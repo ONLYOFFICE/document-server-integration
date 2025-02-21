@@ -806,12 +806,14 @@ function getConvertedData(
 function tryGetDefaultByType($createExt, $user)
 {
     $sample = isset($_GET["sample"]) && $_GET["sample"];
+    $lang = empty($_COOKIE["ulang"]) ? "en" : $_COOKIE["ulang"];
+    $langPath = str_contains($lang, "-") ? $lang : "default";
     $demoName = ($sample ? "sample." : "new.") . $createExt;
     $demoPath =
       '..' . DIRECTORY_SEPARATOR .
       "assets" . DIRECTORY_SEPARATOR .
       "document-templates" . DIRECTORY_SEPARATOR .
-      ($sample ? "sample" : "new") . DIRECTORY_SEPARATOR;
+      ($sample ? "sample" : ("new" . DIRECTORY_SEPARATOR . $langPath)) . DIRECTORY_SEPARATOR;
     $demoFilename = GetCorrectName($demoName);
 
     if (!@copy(dirname(__FILE__) . DIRECTORY_SEPARATOR . $demoPath . $demoName, getStoragePath($demoFilename))) {
