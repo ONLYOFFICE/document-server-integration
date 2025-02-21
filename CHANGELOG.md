@@ -1,5 +1,6 @@
 # Change Log
 
+- python: new document in selected language
 - java: new document in selected language
 - golang: new document in selected language
 - csharp-mvc: new document in selected language

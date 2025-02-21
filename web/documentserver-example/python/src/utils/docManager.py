@@ -265,12 +265,18 @@ def createSample(fileType, sample, req):
     if not sample:
         sample = 'false'
 
-    sampleName = 'sample' if sample == 'true' else 'new'  # create sample or new template
+    lang = req.COOKIES.get('ulang') if req.COOKIES.get('ulang') else 'en'
+    sampleName = 'new'
+    samplePath = os.path.join('new', lang if '-' in lang else 'default')
+    if sample == 'true':
+        sampleName = 'sample'
+        samplePath = 'sample'
+
     # get file name with an index if such a file name already exists
     filename = getCorrectName(f'{sampleName}{ext}', req)
     path = getStoragePath(filename, req)
     # create sample file of the necessary extension in the directory
-    with io.open(os.path.join('assets', 'document-templates', 'sample' if sample == 'true' else 'new',
+    with io.open(os.path.join('assets', 'document-templates', samplePath,
                               f'{sampleName}{ext}'), 'rb') as stream:
         createFile(stream, path, req, True)
     return filename
