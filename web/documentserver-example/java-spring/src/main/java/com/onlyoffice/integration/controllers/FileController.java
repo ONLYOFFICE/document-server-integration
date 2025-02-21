@@ -390,6 +390,7 @@ public class FileController {
                              final String fileExt, // create a sample file of the specified extension
                          @RequestParam(value = "sample", required = false) final Optional<Boolean> isSample,
                          @CookieValue(value = "uid", required = false) final String uid,
+                         @CookieValue(value = "ulang") final String lang,
                          final Model model) {
         // specify if the sample data exists or not
         Boolean sampleData = (isSample.isPresent() && !isSample.isEmpty()) && isSample.get();
@@ -402,6 +403,7 @@ public class FileController {
                 }
                 String fileName = documentManager.createDemo(fileExt,
                         sampleData,
+                        lang,
                         uid,
                         user.get().getName());  // create a demo document with the sample data
                 if (fileName == null || fileName.isBlank()) {

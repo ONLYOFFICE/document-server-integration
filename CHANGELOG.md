@@ -1,5 +1,6 @@
 # Change Log
 
+- java-spring: new document in selected language
 - php-laravel: new document in selected language
 - php: new document in selected language
 - ruby: new document in selected language

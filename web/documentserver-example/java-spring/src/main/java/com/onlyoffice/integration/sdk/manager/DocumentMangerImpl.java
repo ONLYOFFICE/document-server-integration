@@ -127,15 +127,22 @@ public class DocumentMangerImpl extends DefaultDocumentManager implements Docume
 
     // create demo document
     @Override
-    public String createDemo(final String fileExt, final Boolean sample, final String uid, final String uname) {
+    public String createDemo(
+        final String fileExt,
+        final Boolean sample,
+        final String lang,
+        final String uid,
+        final String uname
+    ) {
         String demoName = (sample ? "sample." : "new.")
                 + fileExt;  // create sample or new template file with the necessary extension
+        String langPath = lang.contains("-") ? lang : "default";
         String demoPath =
                 "assets"
                         + File.separator
                         + "document-templates"
                         + File.separator
-                        + (sample ? "sample" : "new")
+                        + (sample ? "sample" : ("new" + File.separator + langPath))
                         + File.separator
                         + demoName;
 

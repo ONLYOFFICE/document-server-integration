@@ -37,7 +37,7 @@
 [submodule "web/documentserver-example/java-spring/src/main/resources/assets/document-templates"]
 	path = web/documentserver-example/java-spring/src/main/resources/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
-	branch = main/default
+	branch = master
 [submodule "web/documentserver-example/go/static/assets/document-templates"]
 	path = web/documentserver-example/go/static/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
