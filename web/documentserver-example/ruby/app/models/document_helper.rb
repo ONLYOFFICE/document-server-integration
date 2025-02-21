@@ -192,12 +192,19 @@ class DocumentHelper
   end
 
   # create demo document
-  def self.create_demo(file_ext, sample, user)
+  def self.create_demo(file_ext, sample, lang, user)
     demo_name = (sample == 'true' ? 'sample.' : 'new.') + file_ext
     file_name = get_correct_name(demo_name, nil) # get the correct file name if such a name already exists
 
+    lang_path = lang.include?('-') ? lang : 'default'
     # save sample document of a necessary extension to the storage directory
-    src = Rails.root.join('assets', 'document-templates', sample == 'true' ? 'sample' : 'new', demo_name)
+    src = Rails.root.join(
+      'assets',
+      'document-templates',
+      sample == 'true' ? 'sample' : 'new',
+      sample == 'true' ? '' : lang_path,
+      demo_name
+    )
     dest = storage_path(file_name, nil)
 
     FileUtils.cp(src, dest)
