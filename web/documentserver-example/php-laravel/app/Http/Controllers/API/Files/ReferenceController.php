@@ -94,7 +94,7 @@ class ReferenceController extends Controller
         ];
 
         if ($settings->getSetting('jwt.enabled')) {
-            $data['token'] = $jwt->encode($data, $settings->getSetting('jwt.secret'));
+            $data['token'] = $jwt->jwtEncode($data, $settings->getSetting('jwt.secret'), $settings->getSetting('jwt.expiration'));
         }
 
         return response()->json($data);

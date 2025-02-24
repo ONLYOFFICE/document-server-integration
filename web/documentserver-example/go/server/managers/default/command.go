@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 
 	"github.com/ONLYOFFICE/document-server-integration/config"
 	"github.com/ONLYOFFICE/document-server-integration/server/managers"
@@ -59,6 +60,10 @@ func (cm DefaultCommandManager) CommandRequest(method string, docKey string, met
 	payload := CommandPayload{
 		C:   method,
 		Key: docKey,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Minute * cm.config.JwtExpiresIn).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
 	}
 	if meta != nil {
 		payload.Meta = meta
@@ -68,7 +73,7 @@ func (cm DefaultCommandManager) CommandRequest(method string, docKey string, met
 	var headerToken string
 	secret := strings.TrimSpace(cm.config.JwtSecret)
 	if secret != "" && cm.config.JwtEnabled {
-		headerPayload := fillJwtByUrl(uri, payload)
+		headerPayload := fillJwtByUrl(uri, payload, cm.config)
 		headerToken, err = cm.JwtManager.JwtSign(headerPayload, []byte(secret))
 		if err != nil {
 			return nil, err
@@ -103,7 +108,7 @@ func (cm DefaultCommandManager) CommandRequest(method string, docKey string, met
 	return response, nil
 }
 
-func fillJwtByUrl(uri string, payload CommandPayload) CommandRequestHeaderPayload {
+func fillJwtByUrl(uri string, payload CommandPayload, config config.ApplicationConfig) CommandRequestHeaderPayload {
 	urlObj, _ := url.Parse(uri)
 	query, _ := url.ParseQuery(urlObj.RawQuery)
 	queryMap := make(map[string]string)
@@ -114,5 +119,9 @@ func fillJwtByUrl(uri string, payload CommandPayload) CommandRequestHeaderPayloa
 	return CommandRequestHeaderPayload{
 		Query:   queryMap,
 		Payload: payload,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Minute * config.JwtExpiresIn).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
 	}
 }

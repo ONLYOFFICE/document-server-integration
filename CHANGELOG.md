@@ -19,6 +19,7 @@
 - php-laravel: show forgotten files on a seperate page
 - php-laravel: fetch files
 - php-laravel: integrate sdk
+- jwt token lifetime from config
 - onUserActionRequired
 - support pages, numbers, key formats
 - support hwp, hwpx formats

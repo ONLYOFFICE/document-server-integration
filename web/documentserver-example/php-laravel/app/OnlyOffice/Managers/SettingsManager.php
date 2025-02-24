@@ -36,6 +36,7 @@ class SettingsManager extends OnlyOfficeSettingsManager
         $conversionUrl = $privateServerUrl.'/'.env('DOCUMENT_SERVER_CONVERTER_PATH', 'convert');
         $commandUrl = $privateServerUrl.'/'.env('DOCUMENT_SERVER_COMMAND_PATH', 'command');
         $jwtSecret = env('DOCUMENT_SERVER_JWT_SECRET', 'secret');
+        $jwtExpiration = env('DOCUMENT_SERVER_JWT_EXPIRATION', 5);
         $jwtUseForRequest = env('DOCUMENT_SERVER_JWT_USE_FOR_REQUEST', true);
         $publicStorageUrl = rtrim(env('DOCUMENT_STORAGE_PUBLIC_URL', request()->schemeAndHttpHost()), '/');
         $privateStorageUrl = rtrim(env('DOCUMENT_STORAGE_PRIVATE_URL', $publicStorageUrl), '/');
@@ -54,6 +55,7 @@ class SettingsManager extends OnlyOfficeSettingsManager
             'jwt' => [
                 'enabled' => $jwtSecret && $jwtUseForRequest,
                 'secret' => $jwtSecret,
+                'expiration' => $jwtExpiration,
                 'header' => env('DOCUMENT_SERVER_JWT_HEADER', 'Authorization'),
                 'use_for_request' => $jwtUseForRequest,
                 'algorithm' => env('DOCUMENT_SERVER_JWT_ALGORITHM', 'HS256'),
