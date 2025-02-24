@@ -1,14 +1,5 @@
 # Change Log
 
-- php: jwt token lifetime from config
-- ruby: jwt token lifetime from config
-- python: jwt token lifetime from config
-- java-spring: jwt token lifetime from config
-- java: jwt token lifetime from config
-- csharp-mvc: jwt token lifetime from config
-- csharp: jwt token lifetime from config
-- golang: jwt token lifetime from config
-
 ## 1.13.0
 - nodejs: rename in wopi
 - nodejs: using faviconUrl from WOPI discovery
@@ -28,6 +19,7 @@
 - php-laravel: show forgotten files on a seperate page
 - php-laravel: fetch files
 - php-laravel: integrate sdk
+- jwt token lifetime from config
 - onUserActionRequired
 - support pages, numbers, key formats
 - support hwp, hwpx formats

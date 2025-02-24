@@ -62,7 +62,7 @@ class FindDocumentHistoryQueryHandler
             $item['url'] = FileURL::download(
                 PathInfo::basename($request->filename), $request->userAddress
             );
-            $item['token'] = $this->jwt->encode($item, $this->settings->getSetting('jwt.secret'));
+            $item['token'] = $this->jwt->jwtEncode($item, $this->settings->getSetting('jwt.secret'), $this->settings->getSetting('jwt.expiration'));
 
             $history['history'][] = $item;
         }
