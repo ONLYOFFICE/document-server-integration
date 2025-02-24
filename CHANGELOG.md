@@ -3,6 +3,7 @@
 ## 1.13.0
 - nodejs: rename in wopi
 - nodejs: using faviconUrl from WOPI discovery
+- nodejs: wopi proof key verification
 - golang: new integration example
 - golang: upload files to the server
 - golang: create blank files and files with sample content
