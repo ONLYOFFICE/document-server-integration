@@ -25,6 +25,10 @@ exports.isValidToken = async (req, res, next) => {
   try {
     req.DocManager = new DocManager(req, res);
     const proofKey = await utils.getProofKey(req.DocManager);
+    if (!proofKey) {
+      next();
+      return;
+    }
 
     const isValid = wopiValidator.check(
       {
