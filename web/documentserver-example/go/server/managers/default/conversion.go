@@ -24,11 +24,13 @@ import (
 	"io"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/ONLYOFFICE/document-server-integration/config"
 	"github.com/ONLYOFFICE/document-server-integration/server/managers"
 	"github.com/ONLYOFFICE/document-server-integration/server/shared"
 	"github.com/ONLYOFFICE/document-server-integration/utils"
+	"github.com/golang-jwt/jwt"
 	"go.uber.org/zap"
 )
 
@@ -112,6 +114,10 @@ func (cm DefaultConversionManager) GetConverterUri(
 		Title:      utils.GetFileName(docUri),
 		Key:        docKey,
 		Async:      isAsync,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(time.Minute * cm.config.JwtExpiresIn).Unix(),
+			IssuedAt:  time.Now().Unix(),
+		},
 	}
 
 	var headerToken string
@@ -119,7 +125,13 @@ func (cm DefaultConversionManager) GetConverterUri(
 
 	secret := strings.TrimSpace(cm.config.JwtSecret)
 	if secret != "" && cm.config.JwtEnabled {
-		headerPayload := managers.ConvertRequestHeaderPayload{Payload: payload}
+		headerPayload := managers.ConvertRequestHeaderPayload{
+			Payload: payload,
+			StandardClaims: jwt.StandardClaims{
+				ExpiresAt: time.Now().Add(time.Minute * cm.config.JwtExpiresIn).Unix(),
+				IssuedAt:  time.Now().Unix(),
+			},
+		}
 		headerToken, err = cm.JwtManager.JwtSign(headerPayload, []byte(secret))
 		if err != nil {
 			return "", "", err

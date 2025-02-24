@@ -360,7 +360,7 @@ class FileController extends Controller
             ];
 
             if ($this->settings->getSetting('jwt.enabled')) {
-                $config['token'] = $jwt->encode($config, $this->settings->getSetting('jwt.secret'));
+                $config['token'] = $jwt->jwtEncode($config, $this->settings->getSetting('jwt.secret'), $this->settings->getSetting('jwt.expiration'));
             }
 
             return response()

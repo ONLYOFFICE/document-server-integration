@@ -47,6 +47,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -543,6 +544,7 @@ public final class DocumentManager {
             for (String key : payloadClaims.keySet()) {  // run through all the keys from the payload
                 jwt.addClaim(key, payloadClaims.get(key));  // and write each claim to the jwt
             }
+            jwt.setExpiration(ZonedDateTime.now().plusMinutes(getTokenExpiration()));
             return JWT.getEncoder().encode(jwt, signer);  // sign and encode the JWT to a JSON string representation
         } catch (Exception e) {
             return "";
@@ -577,6 +579,11 @@ public final class DocumentManager {
     // get token secret from the config parameters
     public static String getTokenSecret() {
         return ConfigManager.getProperty("files.docservice.secret");
+    }
+
+    // get token expiration time in minutes from the config parameters
+    public static Integer getTokenExpiration() {
+        return Integer.parseInt(ConfigManager.getProperty("files.docservice.token-expiration"));
     }
 
     // get config request jwt

@@ -220,13 +220,13 @@ class EditorController extends Controller
         // check if the secret key to generate token exists
         if ($this->settings->getSetting('jwt.enabled')) {
             // encode config into the token
-            $config['token'] = $jwt->encode($config, $this->settings->getSetting('jwt.secret'));
+            $config['token'] = $jwt->jwtEncode($config, $this->settings->getSetting('jwt.secret'), $this->settings->getSetting('jwt.expiration'));
             // encode the dataInsertImage object into the token
-            $dataInsertImage['token'] = $jwt->encode($dataInsertImage, $this->settings->getSetting('jwt.secret'));
+            $dataInsertImage['token'] = $jwt->jwtEncode($dataInsertImage, $this->settings->getSetting('jwt.secret'), $this->settings->getSetting('jwt.expiration'));
             // encode the dataDocument object into the token
-            $dataDocument['token'] = $jwt->encode($dataDocument, $this->settings->getSetting('jwt.secret'));
+            $dataDocument['token'] = $jwt->jwtEncode($dataDocument, $this->settings->getSetting('jwt.secret'), $this->settings->getSetting('jwt.expiration'));
             // encode the dataSpreadsheet object into the token
-            $dataSpreadsheet['token'] = $jwt->encode($dataSpreadsheet, $this->settings->getSetting('jwt.secret'));
+            $dataSpreadsheet['token'] = $jwt->jwtEncode($dataSpreadsheet, $this->settings->getSetting('jwt.secret'), $this->settings->getSetting('jwt.expiration'));
         }
 
         $historyLayout = '';

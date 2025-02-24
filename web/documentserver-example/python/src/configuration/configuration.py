@@ -92,6 +92,9 @@ class ConfigurationManager:
     def jwt_header(self) -> str:
         return environ.get('JWT_HEADER') or 'Authorization'
 
+    def jwt_expires_in(self) -> int:
+        return int(environ.get('JWT_EXPIRES_IN', 5))
+
     def jwt_use_for_request(self) -> bool:
         use = environ.get('JWT_USE_FOR_REQUEST')
         return string.boolean(use, True)

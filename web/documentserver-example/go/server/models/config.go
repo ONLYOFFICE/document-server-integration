@@ -20,10 +20,10 @@ package models
 import "github.com/golang-jwt/jwt"
 
 type Config struct {
-	Type               string       `json:"type"`
-	Document           Document     `json:"document"`
-	DocumentType       string       `json:"documentType"`
-	EditorConfig       EditorConfig `json:"editorConfig"`
-	Token              string       `json:"token,omitempty"`
-	jwt.StandardClaims `json:"-"`
+	Type         string       `json:"type"`
+	Document     Document     `json:"document"`
+	DocumentType string       `json:"documentType"`
+	EditorConfig EditorConfig `json:"editorConfig"`
+	Token        string       `json:"token,omitempty"`
+	jwt.StandardClaims
 }

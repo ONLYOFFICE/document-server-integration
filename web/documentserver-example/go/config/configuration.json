@@ -11,6 +11,7 @@
   "DOC_SERVER_COMMAND_URL" : "command",
 
   "JWT_IS_ENABLED" : false,
+  "JWT_EXPIRES_IN" : 5,
   "JWT_SECRET" : "secret",
   "JWT_HEADER" : "Authorization",
 

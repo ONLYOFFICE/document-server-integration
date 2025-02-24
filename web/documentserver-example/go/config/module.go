@@ -20,6 +20,7 @@ package config
 import (
 	"path/filepath"
 	"runtime"
+	"time"
 
 	"github.com/ONLYOFFICE/document-server-integration/utils"
 	"github.com/spf13/viper"
@@ -36,6 +37,7 @@ type ApplicationConfig struct {
 	DocumentServerPreloader  string            `mapstructure:"DOC_SERVER_PRELOADER_URL"`
 	DocumentServerCommandUrl string            `mapstructure:"DOC_SERVER_COMMAND_URL"`
 	JwtEnabled               bool              `mapstructure:"JWT_IS_ENABLED"`
+	JwtExpiresIn             time.Duration     `mapstructure:"JWT_EXPIRES_IN"`
 	JwtHeader                string            `mapstructure:"JWT_HEADER"`
 	JwtSecret                string            `mapstructure:"JWT_SECRET"`
 	StoragePath              string            `mapstructure:"STORAGE_PATH"`
