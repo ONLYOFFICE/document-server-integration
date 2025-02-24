@@ -32,7 +32,7 @@ const getCustomWopiParams = function getCustomWopiParams(query) {
   let actionParams = '';
 
   const { userid } = query; // user id
-  tokenParams += (userid ? `&userid=${userid}` : '');
+  tokenParams += (userid ? `-userid=${userid}` : '');
 
   const { lang } = query; // language
   actionParams += (lang ? `&ui=${lang}` : '');
