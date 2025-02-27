@@ -16,7 +16,6 @@
  *
  */
 
-var directUrl;
 var formatManager;
 
 window.onload = function () {
@@ -42,18 +41,7 @@ window.onload = function () {
 if (typeof jQuery !== "undefined") {
     jq = jQuery.noConflict();
 
-    directUrl = getUrlVars()["directUrl"] == "true";
-
     mustReload = false;
-
-    if (directUrl)
-        jq("#directUrl").prop("checked", directUrl);
-    else
-        directUrl = jq("#directUrl").prop("checked");
-
-    jq("#directUrl").change(function() {
-        window.location = "?directUrl=" + jq(this).prop("checked");
-    });
 
     jq(function () {
         jq("#fileupload").fileupload({
@@ -277,7 +265,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?mode=edit&fileName=" + fileId+ "&directUrl=" + directUrl;
+        var url = UrlEditor + "?mode=edit&fileName=" + fileId;
         window.open(url, "_blank");
         jq("#hiddenFileName").val("");
         jq.unblockUI();
@@ -286,7 +274,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?mode=view&fileName=" + fileId+ "&directUrl=" + directUrl;
+        var url = UrlEditor + "?mode=view&fileName=" + fileId;
         window.open(url, "_blank");
         jq("#hiddenFileName").val("");
         jq.unblockUI();
@@ -295,7 +283,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?type=embedded&mode=embedded&fileName=" + fileId + "&directUrl=" + directUrl;
+        var url = UrlEditor + "?type=embedded&mode=embedded&fileName=" + fileId;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
