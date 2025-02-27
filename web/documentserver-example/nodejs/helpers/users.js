@@ -103,6 +103,7 @@ const descrUser0 = [
   'View file without collaboration',
   'Can’t submit forms',
   'Can’t refresh outdated file',
+  'Tour of tips when opening a document',
 ];
 
 const users = [

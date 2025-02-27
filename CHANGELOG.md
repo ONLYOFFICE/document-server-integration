@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: features tips for anonymous
 - support vsdx in diagram editor
 
 ## 1.13.0
