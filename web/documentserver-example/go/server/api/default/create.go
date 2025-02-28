@@ -96,6 +96,10 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 			srv.logger.Errorf("meta creation error: %s", err.Error())
 		}
 
+		res := map[string]interface{}{
+			"file": correctName,
+		}
+		shared.SendResponse(w, res)
 		return
 	}
 
