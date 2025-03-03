@@ -294,6 +294,12 @@ namespace OnlineEditorsExample
                                                         { "visible", user.close.visible },
                                                         { "text", user.close.text }
                                                     } : new Dictionary<string, object>{}
+                                            },
+                                            {
+                                                "features", new Dictionary<string, object>
+                                                    {
+                                                        { "featuresTips", user.id.Equals("uid-0") }
+                                                    }
                                             }
                                         }
                                 }

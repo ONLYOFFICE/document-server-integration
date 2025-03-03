@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: features tips for anonymous
 - nodejs: features tips for anonymous
 - support vsdx in diagram editor
 
