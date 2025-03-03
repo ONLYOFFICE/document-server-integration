@@ -79,7 +79,8 @@ final class ExampleUsers
             "Can't view chat",
             "View file without collaboration",
             "Can’t submit forms",
-            "Can’t refresh outdated file"
+            "Can’t refresh outdated file",
+            "Tour of tips when opening a document"
         ];
         $this->users = [
             new Users(
