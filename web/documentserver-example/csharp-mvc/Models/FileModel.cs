@@ -227,6 +227,12 @@ namespace OnlineEditorsExampleMVC.Models
                                                         { "text", user.close.text },
                                                         { "visible", user.close. visible }
                                                     } : new Dictionary<string, object>{}
+                                            },
+                                            {
+                                                "features", new Dictionary<string, object>
+                                                    {
+                                                        { "featuresTips", user.id.Equals("uid-0") }
+                                                    }
                                             }
                                         }
                                 }

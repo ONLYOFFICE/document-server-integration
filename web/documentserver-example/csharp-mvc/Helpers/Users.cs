@@ -79,7 +79,8 @@ namespace OnlineEditorsExampleMVC.Helpers
             "Can't protect file",
             "View file without collaboration",
             "Can’t submit forms",
-            "Can’t refresh outdated file"
+            "Can’t refresh outdated file",
+            "Tour of tips when opening a document"
         };
 
         private static List<User> users = new List<User>() {
