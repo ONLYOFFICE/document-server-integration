@@ -1,5 +1,6 @@
 # Change Log
 
+- golang: features tips for anonymous
 - csharp-mvc: features tips for anonymous
 - csharp: features tips for anonymous
 - nodejs: features tips for anonymous

@@ -222,6 +222,9 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(
 				Goback: models.Goback{
 					RequestClose: false,
 				},
+				Features: models.Features{
+					FeaturesTips: user.Id == "uid-0",
+				},
 			},
 		},
 		StandardClaims: jwt.StandardClaims{
