@@ -114,6 +114,9 @@ public class FileModel {
         editorConfig.getUser().setImage(user.getAvatar() ? DocumentManager.getServerUrl(false)
         + "/css/img/" + user.getId() + ".png" : null);
 
+        editorConfig.getCustomization().getFeatures()
+            .setFeaturesTips(user.getId().equals("uid-0"));
+
         if (user.getGoback() != null) {
             // write the absolute URL to the file location
             editorConfig.getCustomization().getGoback()
@@ -571,6 +574,7 @@ public class FileModel {
 
         // customization parameters
         public class Customization {
+            private Features features;
             private Goback goback;
             private Close close;
             private Boolean forcesave;
@@ -592,8 +596,13 @@ public class FileModel {
                 comments = true;
                 feedback = true;
                 forcesave = false;
+                features = new Features();
                 goback = new Goback();
                 close = new Close();
+            }
+
+            public Features getFeatures() {
+                return features;
             }
 
             public Goback getGoback() {
@@ -622,6 +631,18 @@ public class FileModel {
 
             public Boolean getFeedback() {
                 return feedback;
+            }
+
+            public class Features {
+                private Boolean featuresTips;
+
+                public Boolean getFeaturesTips() {
+                    return featuresTips;
+                }
+
+                public void setFeaturesTips(final Boolean featuresTipsParam) {
+                    this.featuresTips = featuresTipsParam;
+                }
             }
 
             public class Goback {
