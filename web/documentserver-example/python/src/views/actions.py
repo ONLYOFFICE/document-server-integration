@@ -345,6 +345,9 @@ def edit(request):
                 # settings for the Open file location menu button and upper right corner button
                 'goback':  user.goback if user.goback is not None else '',
                 'close':  user.close if user.close is not None else '',
+                'features': {
+                    'featuresTips': user.id == 'uid-0'
+                }
             }
         }
     }

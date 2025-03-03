@@ -1,5 +1,6 @@
 # Change Log
 
+- python: features tips for anonymous
 - php-laravel: features tips for anonymous
 - php: features tips for anonymous
 - java: features tips for anonymous
