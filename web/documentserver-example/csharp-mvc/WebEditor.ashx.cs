@@ -990,7 +990,7 @@ namespace OnlineEditorsExampleMVC
                     var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(changesPath));
                     var changesArray = (ArrayList)changes["changes"];
                     var change = changesArray.Count > 0
-                        ? (Dictionary<string, object>)changesArray[0]
+                        ? (Dictionary<string, object>)changesArray[changesArray.Count - 1]
                         : new Dictionary<string, object>();
 
                     // write information about changes to the object
