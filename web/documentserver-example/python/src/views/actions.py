@@ -676,7 +676,10 @@ def restore(request: HttpRequest) -> HttpResponse:
         Path(bumped_changes_file).write_text(bumped_changes_content, 'utf-8')
         copy(source_file, bumped_file)
         if url is not None:
-            data = requests.get(url)
+            data = requests.get(url.replace(
+                config_manager.document_server_public_url().geturl(),
+                config_manager.document_server_private_url().geturl()
+            ))
             Path(source_file).write_bytes(data.content)
         else:
             copy(recovery_file, source_file)
