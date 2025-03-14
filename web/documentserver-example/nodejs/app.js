@@ -1165,7 +1165,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     let submitForm = false;
     if (mode !== 'view') {
-      submitForm = userid === 'uid-1';
+      submitForm = user.canSubmitForm;
     }
 
     if (user.goback != null) {

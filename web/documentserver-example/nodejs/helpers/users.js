@@ -32,6 +32,7 @@ class User {
     avatar,
     goback,
     close,
+    canSubmitForm,
   ) {
     this.id = id;
     this.name = name;
@@ -47,6 +48,7 @@ class User {
     this.avatar = avatar;
     this.goback = goback;
     this.close = close;
+    this.canSubmitForm = canSubmitForm;
   }
 }
 
@@ -69,7 +71,7 @@ const descrUser2 = [
   'This file is marked as favorite',
   'Can create new files from the editor',
   'Can see the information about users from Group2 and users who don’t belong to any group',
-  'Can’t submit forms',
+  'Can submit forms',
   'Has an avatar',
 ];
 
@@ -121,6 +123,7 @@ const users = [
     true,
     { blank: false },
     { visible: false },
+    true,
   ),
   new User(
     'uid-2',
@@ -141,6 +144,7 @@ const users = [
     true,
     { text: 'Go to Documents' },
     {},
+    true,
   ),
   new User(
     'uid-3',
@@ -161,8 +165,9 @@ const users = [
     false,
     null,
     {},
+    false,
   ),
-  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null),
+  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null, false),
 ];
 
 // get a list of all the users
