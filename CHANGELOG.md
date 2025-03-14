@@ -1,5 +1,7 @@
 # Change Log
 
+- nodejs: user role
+
 ## 1.12.0
 - nodejs: refresh config
 - nodejs: support pages, numbers, key formats

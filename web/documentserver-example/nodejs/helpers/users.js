@@ -33,6 +33,7 @@ class User {
     goback,
     close,
     canSubmitForm,
+    roles,
   ) {
     this.id = id;
     this.name = name;
@@ -49,6 +50,7 @@ class User {
     this.goback = goback;
     this.close = close;
     this.canSubmitForm = canSubmitForm;
+    this.roles = roles;
   }
 }
 
@@ -62,6 +64,7 @@ const descrUser1 = [
   'Can see the information about all users',
   'Can submit forms',
   'Has an avatar',
+  'Has no roles',
 ];
 
 const descrUser2 = [
@@ -73,6 +76,7 @@ const descrUser2 = [
   'Can see the information about users from Group2 and users who don’t belong to any group',
   'Can submit forms',
   'Has an avatar',
+  'Has role "Anyone"',
 ];
 
 const descrUser3 = [
@@ -88,6 +92,7 @@ const descrUser3 = [
   'Can’t submit forms',
   'Can’t close history',
   'Can’t restore the file version',
+  'Has role "role"',
 ];
 
 const descrUser0 = [
@@ -105,6 +110,7 @@ const descrUser0 = [
   'View file without collaboration',
   'Can’t submit forms',
   'Can’t refresh outdated file',
+  'Has empty role',
 ];
 
 const users = [
@@ -124,6 +130,7 @@ const users = [
     { blank: false },
     { visible: false },
     true,
+    null,
   ),
   new User(
     'uid-2',
@@ -145,6 +152,7 @@ const users = [
     { text: 'Go to Documents' },
     {},
     true,
+    [ 'Anyone' ],
   ),
   new User(
     'uid-3',
@@ -166,8 +174,9 @@ const users = [
     null,
     {},
     false,
+    [ 'role' ],
   ),
-  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null, false),
+  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null, false, []),
 ];
 
 // get a list of all the users
