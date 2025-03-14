@@ -65,6 +65,7 @@ const descrUser1 = [
   'Can submit forms',
   'Has an avatar',
   'Has no roles',
+  'Can start filling',
 ];
 
 const descrUser2 = [
@@ -77,6 +78,7 @@ const descrUser2 = [
   'Can submit forms',
   'Has an avatar',
   'Has role "Anyone"',
+  'Can start filling',
 ];
 
 const descrUser3 = [
@@ -93,6 +95,7 @@ const descrUser3 = [
   'Can’t close history',
   'Can’t restore the file version',
   'Has role "role"',
+  'Can start filling',
 ];
 
 const descrUser0 = [
@@ -111,6 +114,7 @@ const descrUser0 = [
   'Can’t submit forms',
   'Can’t refresh outdated file',
   'Has empty role',
+  'Can’t start filling',
 ];
 
 const users = [

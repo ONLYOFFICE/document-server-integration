@@ -1,6 +1,7 @@
 # Change Log
 
 - nodejs: user role
+- nodejs: start filling
 
 ## 1.12.0
 - nodejs: refresh config
