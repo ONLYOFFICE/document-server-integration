@@ -562,7 +562,10 @@ namespace OnlineEditorsExample
             var directoryInfo = new DirectoryInfo(directory);  // read the user host directory contents
 
             // get the list of stored files from the host directory
-            List<FileInfo> storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).ToList();
+            var storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).ToList();
+
+            storedFiles.Sort((a, b) => b.LastWriteTimeUtc.CompareTo(a.LastWriteTimeUtc));  // sort files by the modification date
+
             return storedFiles;
         }
 
