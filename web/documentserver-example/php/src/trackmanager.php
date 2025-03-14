@@ -359,8 +359,8 @@ function commandRequest($method, $key, $meta = null)
     if ($responseData === false) {
         throw new Exception('Document Server connection error.');
     }
-    $error = json_decode($responseData, true)['error'];
-    if ($error !== 0) {
+    $error = json_decode(html_entity_decode($responseData), true)['error'];
+    if ($error !== 0 && $error !== 4) {
         throw new Exception('Command Service Error #'. $error);
     }
 

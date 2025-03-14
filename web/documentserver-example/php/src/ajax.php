@@ -676,7 +676,7 @@ function restore()
 
         if ($url) {
             $data = file_get_contents(
-                $url,
+                getCorrectUrl($url),
                 false,
                 stream_context_create(["http" => ["timeout" => 5]])
             );
