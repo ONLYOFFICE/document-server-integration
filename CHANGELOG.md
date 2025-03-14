@@ -1,5 +1,7 @@
 # Change Log
 
+- nodejs: user role
+- nodejs: start filling
 - support vsdx in diagram editor
 
 ## 1.13.0
