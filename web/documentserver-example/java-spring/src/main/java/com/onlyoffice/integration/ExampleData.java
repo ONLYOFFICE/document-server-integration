@@ -60,7 +60,7 @@ public class ExampleData {
                 "He can review all the changes",
                 "He can do everything with the comments",
                 "Can see the information about all users",
-                "The file favorite state is undefined",
+                "This file isn’t favorite",
                 "Can create a file from a template with data from the editor",
                 "Can view chat",
                 "Has an avatar",
@@ -89,7 +89,7 @@ public class ExampleData {
                 "He can view the comments left by the users from Group2 and Group3 and edit the comments left by "
                         + "the users from Group2",
                 "Can see the information about Group2 users",
-                "This file isn’t favorite",
+                "The file favorite state is undefined",
                 "He can’t copy data from the file into the clipboard",
                 "He can’t download the file",
                 "He can’t print the file",
@@ -104,7 +104,7 @@ public class ExampleData {
         userService.createUser("John Smith", "smith@example.com", descriptionUserFirst,
                 "", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                List.of(FilterState.NULL.toString()), null, true, true, true,
+                List.of(FilterState.NULL.toString()), false, true, true, true,
                 new Goback(null, false), new Close(null, false), true);
 
         // create user 2 with the specified parameters
@@ -116,7 +116,7 @@ public class ExampleData {
         // create user 3 with the specified parameters
         userService.createUser("Hamish Mitchell", null, descriptionUserThird,
                 "group-3", List.of("group-2"), List.of("group-2", "group-3"), List.of("group-2"),
-                new ArrayList<>(), List.of("group-2"), false, true, true, false,
+                new ArrayList<>(), List.of("group-2"), null, true, true, false,
                 null, new Close(null, true), false);
 
         // create user 0 with the specified parameters

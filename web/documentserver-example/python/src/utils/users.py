@@ -44,7 +44,7 @@ descr_user_1 = [
     "Can review all the changes",
     "Can perform all actions with comments",
     "Can see the information about all users",
-    "The file favorite state is undefined",
+    "This file isn’t marked as favorite",
     "Can create files from templates using data from the editor",
     "Has an avatar",
     "Can submit forms"
@@ -67,7 +67,7 @@ descr_user_3 = [
     "Can review changes made by Group2 users",
     "Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users",
     "Can see the information about Group2 users",
-    "This file isn’t marked as favorite",
+    "The file favorite state is undefined",
     "Can’t copy data from the file to clipboard",
     "Can’t download the file",
     "Can’t print the file",
@@ -97,7 +97,7 @@ descr_user_0 = [
 USERS = [
     User('uid-1', 'John Smith', 'smith@example.com',
          '', None, {}, None,
-         None, [], descr_user_1, True, True, {'blank': False}, {'visible': False}),
+         False, [], descr_user_1, True, True, {'blank': False}, {'visible': False}),
     User('uid-2', 'Mark Pottato', 'pottato@example.com',
          'group-2', ['group-2', ''], {
              'view': "",
@@ -112,7 +112,7 @@ USERS = [
              'edit': ["group-2"],
              'remove': []
          }, ['group-2'],
-         False, ["copy", "download", "print"], descr_user_3, False, False,
+         None, ["copy", "download", "print"], descr_user_3, False, False,
          None, {}),
     User('uid-0', None, None,
          '', None, {}, [],

@@ -37,7 +37,7 @@ public final class Users {
         add("Can review all the changes");
         add("Can perform all actions with comments");
         add("Can see the information about all users");
-        add("The file favorite state is undefined");
+        add("This file isn’t marked as favorite");
         add("Can create files from templates using data from the editor");
         add("Has an avatar");
         add("Can submit forms");
@@ -60,7 +60,7 @@ public final class Users {
         add("Can review changes made by Group2 users");
         add("Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users");
         add("Can see the information about Group2 users");
-        add("This file isn’t marked as favorite");
+        add("The file favorite state is undefined");
         add("Can’t copy data from the file to clipboard");
         add("Can’t download the file");
         add("Can’t print the file");
@@ -90,7 +90,7 @@ public final class Users {
     private static List<User> users = new ArrayList<User>() {{
         add(new User("uid-1", "John Smith", "smith@example.com",
                 "", null, new CommentGroups(), null,
-                null, new ArrayList<String>(), descriptionUserFirst, true, true, new Goback(null, false),
+                false, new ArrayList<String>(), descriptionUserFirst, true, true, new Goback(null, false),
                 new Close(null, false)));
         add(new User("uid-2", "Mark Pottato", "pottato@example.com",
                 "group-2", Arrays.asList("group-2", ""), new CommentGroups(null,
@@ -100,7 +100,7 @@ public final class Users {
         add(new User("uid-3", "Hamish Mitchell", null,
                 "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"),
                 Arrays.asList("group-2"), null), Arrays.asList("group-2"),
-                false, Arrays.asList("copy", "download", "print"),
+                null, Arrays.asList("copy", "download", "print"),
                 descriptionUserThird, false, false, null, new Close(null, true)));
         add(new User("uid-0", null, null,
                 "", null, null, null,
