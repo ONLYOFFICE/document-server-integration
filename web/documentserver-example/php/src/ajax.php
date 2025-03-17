@@ -252,7 +252,8 @@ function convert()
                 true,
                 $newFileUri,
                 $filePass,
-                $lang
+                $lang,
+                $fileName
             );
         } catch (Exception $e) {
             $result["error"] = "error: " . $e->getMessage();

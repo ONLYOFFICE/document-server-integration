@@ -659,7 +659,8 @@ function sendRequestToConvertService(
     $documentRevisionID,
     $async,
     $filePass,
-    $lang
+    $lang,
+    $fileName = null
 ) {
     $configManager = new ConfigurationManager();
 
@@ -669,7 +670,7 @@ function sendRequestToConvertService(
     }
 
     // if title is undefined, then replace it with a random guid
-    $title = basename($documentURL);
+    $title = $fileName ?? basename($documentURL);
     if (empty($title)) {
         $title = guid();
     }
@@ -758,7 +759,8 @@ function getConvertedData(
     $async,
     &$convertedDocumentURL,
     $filePass,
-    $lang
+    $lang,
+    $fileName = null
 ) {
     $convertedDocumentURL = "";
     $responceFromConvertService = sendRequestToConvertService(
@@ -768,7 +770,8 @@ function getConvertedData(
         $documentRevisionID,
         $async,
         $filePass,
-        $lang
+        $lang,
+        $fileName
     );
     $json = json_decode($responceFromConvertService, true);
 
