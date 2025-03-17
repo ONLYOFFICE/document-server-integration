@@ -469,7 +469,7 @@ namespace OnlineEditorsExample
 
                 // get the url and file type of the converted file
                 Dictionary<string, string> newFileData;
-                var result = ServiceConverter.GetConvertedData(fileUrl.ToString() , extension, conversionExtension, key, true, out newFileData, filePass, lang);
+                var result = ServiceConverter.GetConvertedData(fileUrl.ToString() , extension, conversionExtension, key, true, out newFileData, filePass, lang, _fileName);
                 if (result != 100)
                 {
                     return "{ \"step\" : \"" + result + "\", \"filename\" : \"" + _fileName + "\"}";
