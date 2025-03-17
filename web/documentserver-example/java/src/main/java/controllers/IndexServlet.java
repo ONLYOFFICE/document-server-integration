@@ -960,7 +960,8 @@ public class IndexServlet extends HttpServlet {
                         JSONObject changes = (JSONObject) parser.parse(
                                 DocumentManager.readFileToEnd(new File(DocumentManager
                                 .versionDir(histDir, i - 1) + File.separator + "changes.json")));
-                        JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
+                        JSONObject change = (JSONObject) ((JSONArray) changes.get("changes"))
+                            .get(((JSONArray) changes.get("changes")).size() - 1);
 
                         // write information about changes to the object
                         obj.put("changes", !change.isEmpty() ? changes.get("changes") : null);
