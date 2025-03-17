@@ -86,7 +86,7 @@ def convert(request):
 
             # get the url of the converted file
             convertedData = serviceConverter.getConvertedData(
-                fileUri, fileExt, conversionExtension, key, True, filePass, lang
+                fileUri, fileExt, conversionExtension, key, True, filePass, lang, filename
                 )
 
             # if the converter url is not received, the original file name is passed to the response

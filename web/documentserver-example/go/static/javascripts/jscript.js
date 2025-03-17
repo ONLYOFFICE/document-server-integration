@@ -408,8 +408,7 @@ if (typeof jQuery !== "undefined") {
                             jq("#beginViewConverted").removeClass("disable");
                             jq("#downloadConverted").attr("data","fromStorage");
                         } else {
-                            jq("#hiddenFileName").attr("data",response.filename.split("&filename=download%3FfileName%3D")
-                                .join("&filename="));
+                            jq("#hiddenFileName").attr("data",response.filename);
                             jq("#downloadConverted").attr("data","fromConverter");
                         }
                         jq("td[name='convertingTypeButton']").removeClass("disable orange");

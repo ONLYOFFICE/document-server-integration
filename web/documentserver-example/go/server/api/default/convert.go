@@ -79,7 +79,7 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 			return
 		}
 
-		newUrl, newExt, err := srv.ConversionManager.GetConverterUri(fileUrl, fileExt, toExt, key, true)
+		newUrl, newExt, err := srv.ConversionManager.GetConverterUri(fileUrl, fileExt, toExt, key, true, filename)
 		if err != nil {
 			response.Error = err.Error()
 			srv.logger.Errorf("File conversion error: %s", err.Error())
