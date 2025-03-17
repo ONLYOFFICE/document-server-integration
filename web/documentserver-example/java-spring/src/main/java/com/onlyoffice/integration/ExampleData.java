@@ -41,16 +41,16 @@ public class ExampleData {
                 "Doesn’t belong to any group",
                 "Can review all the changes",
                 "Can perform all actions with comments",
+                "Can’t see anyone’s information",
                 "The file favorite state is undefined",
                 "Can't mention others in comments",
                 "Can't create new files from the editor",
-                "Can’t see anyone’s information",
                 "Can't rename files from the editor",
                 "Can't view chat",
                 "Can't protect file",
                 "View file without collaboration",
-                "Can’t submit forms",
-                "Can't refresh outdated file"
+                "Can't refresh outdated file",
+                "Can’t submit forms"
         );
 
         // the description for user 1
@@ -59,9 +59,9 @@ public class ExampleData {
                 "He doesn’t belong to any of the groups",
                 "He can review all the changes",
                 "He can do everything with the comments",
+                "Can see the information about all users",
                 "The file favorite state is undefined",
                 "Can create a file from a template with data from the editor",
-                "Can see the information about all users",
                 "Can view chat",
                 "Has an avatar",
                 "Can submit forms"
@@ -74,9 +74,9 @@ public class ExampleData {
                         + " to any of the groups",
                 "He can view every comment, edit his comments and the comments left by the users "
                         + "who don't belong to any of the groups and remove only his comments",
+                "Can see the information about users from Group2 and users who don’t belong to any group",
                 "This file is favorite",
                 "Can create a file from an editor",
-                "Can see the information about users from Group2 and users who don’t belong to any group",
                 "Can view chat",
                 "Has an avatar",
                 "Can’t submit forms"
@@ -88,16 +88,16 @@ public class ExampleData {
                 "He can review only the changes made by the users from Group2",
                 "He can view the comments left by the users from Group2 and Group3 and edit the comments left by "
                         + "the users from Group2",
+                "Can see the information about Group2 users",
                 "This file isn’t favorite",
                 "He can’t copy data from the file into the clipboard",
                 "He can’t download the file",
                 "He can’t print the file",
                 "Can create a file from an editor",
-                "Can see the information about Group2 users",
                 "Can view chat",
-                "Can’t submit forms",
                 "Can't close history",
-                "Can't restore the file version"
+                "Can't restore the file version",
+                "Can’t submit forms"
         );
 
         // create user 1 with the specified parameters
