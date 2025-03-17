@@ -968,7 +968,7 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
             if ($i > 1) {  // check if the version number is greater than 1 (the document was modified)
                 $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) .
                     DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
-                $change = $changes["changes"][0];
+                $change = $changes["changes"][count($changes["changes"]) - 1];
 
                 // write information about changes to the object
                 $obj["changes"] = $changes ? $changes["changes"] : null;
