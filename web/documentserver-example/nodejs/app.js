@@ -500,7 +500,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
 
       key = documentService.generateRevisionId(key); // get document key
       // get the url to the converted file
-      documentService.getConvertedUri(fileUri, fileExt, convExt, key, true, callback, filePass, lang);
+      documentService.getConvertedUri(fileUri, fileExt, convExt, key, true, callback, filePass, lang, fileName);
     } else {
       // if the file with such an extension can't be converted, write the origin file to the result object
       writeResult(fileName, null, null);
