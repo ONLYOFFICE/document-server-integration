@@ -30,11 +30,20 @@ class ServiceConverter
   @document_converter_url = ServiceConverter.config_manager.document_server_converter_uri.to_s
 
   # get the url of the converted file
-  def self.get_converted_data(document_uri, from_ext, to_ext, document_revision_id, is_async, file_pass, lang = nil)
+  def self.get_converted_data(
+    document_uri,
+    from_ext,
+    to_ext,
+    document_revision_id,
+    is_async,
+    file_pass,
+    lang = nil,
+    title = nil
+  )
     from_ext = File.extname(document_uri).downcase if from_ext.nil? # get the current document extension
 
     # get the current document name or uuid
-    title = File.basename(URI.parse(document_uri).path)
+    title = File.basename(URI.parse(document_uri).path) if title.nil?
     title = UUID.generate.to_s if title.nil?
 
     # get the document key
