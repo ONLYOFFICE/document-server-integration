@@ -35,6 +35,7 @@ class ConvertRequest
             $data['key'],
             false,
             $data['lang'],
+            $data['filename'],
         );
 
         if (property_exists($result, 'Error')) {
