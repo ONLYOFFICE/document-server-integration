@@ -303,7 +303,7 @@ public class IndexServlet extends HttpServlet {
 
                 // get the url and file type to the converted file
                 Map<String, String> newFileData = ServiceConverter
-                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang);
+                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang, fileName);
                 String newFileUri = newFileData.get("fileUrl");
                 String newFileType = newFileData.get("fileType");
 
