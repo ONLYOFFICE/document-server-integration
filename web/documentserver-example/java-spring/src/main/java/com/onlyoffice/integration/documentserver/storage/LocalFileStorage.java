@@ -46,6 +46,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -317,7 +319,9 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
     // get a collection of all the stored files
     public File[] getStoredFiles() {
         File file = new File(getStorageLocation());
-        return file.listFiles(pathname -> pathname.isFile());
+        File[] files = file.listFiles(pathname -> pathname.isFile());
+        Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
+        return files;
     }
 
     @SneakyThrows

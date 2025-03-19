@@ -153,7 +153,8 @@ class HomeController < ApplicationController
         key,
         true,
         file_pass,
-        lang
+        lang,
+        file_name
       ) # get the url and file type of the converted file and the conversion percentage
 
       # if the conversion isn't completed, write file name and step values to the response

@@ -50,6 +50,7 @@ import java.text.SimpleDateFormat;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -291,12 +292,17 @@ public final class DocumentManager {
         String directory = filesRootPath(userAddress);
 
         File file = new File(directory);
-        return file.listFiles(new FileFilter() {  // take only files from the root directory
+
+        File[] files = file.listFiles(new FileFilter() {  // take only files from the root directory
             @Override
             public boolean accept(final File pathname) {
                 return pathname.isFile();
             }
         });
+
+        Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
+
+        return files;
     }
 
     // create demo document
