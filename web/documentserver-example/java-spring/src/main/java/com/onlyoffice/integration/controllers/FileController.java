@@ -256,6 +256,7 @@ public class FileController {
                         .outputtype(conversionExtension)
                         .region(lang)
                         .async(true)
+                        .title(fileName)
                         .build();
 
                 ConvertResponse convertResponse = convertService.processConvert(convertRequest, fileName);

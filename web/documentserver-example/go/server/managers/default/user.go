@@ -86,7 +86,9 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 			Goback: map[string]interface{}{
 				"text": "Go to Documents",
 			},
-			Close: nil,
+			Close: map[string]interface{}{
+				"visible": true,
+			},
 		},
 		{
 			Id:           "uid-3",
@@ -106,7 +108,9 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 			Templates:         false,
 			Avatar:            false,
 			Goback:            nil,
-			Close:             nil,
+			Close: map[string]interface{}{
+				"visible": true,
+			},
 		},
 	}
 	return &DefaultUserManager{

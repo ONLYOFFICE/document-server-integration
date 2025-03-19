@@ -252,7 +252,8 @@ function convert()
                 true,
                 $newFileUri,
                 $filePass,
-                $lang
+                $lang,
+                $fileName
             );
         } catch (Exception $e) {
             $result["error"] = "error: " . $e->getMessage();
@@ -676,7 +677,7 @@ function restore()
 
         if ($url) {
             $data = file_get_contents(
-                $url,
+                getCorrectUrl($url),
                 false,
                 stream_context_create(["http" => ["timeout" => 5]])
             );

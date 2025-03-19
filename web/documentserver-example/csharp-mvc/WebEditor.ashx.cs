@@ -280,7 +280,7 @@ namespace OnlineEditorsExampleMVC
 
                     // get the url and file type of the converted file
                     Dictionary<string, string> newFileData;
-                    var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, conversionExtension, key, true, out newFileData, filePass, lang);
+                    var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, conversionExtension, key, true, out newFileData, filePass, lang, fileName);
                     if (result != 100)
                     {
                         context.Response.Write("{ \"step\" : \"" + result + "\", \"filename\" : \"" + fileName + "\"}");

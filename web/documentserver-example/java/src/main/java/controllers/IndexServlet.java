@@ -303,7 +303,7 @@ public class IndexServlet extends HttpServlet {
 
                 // get the url and file type to the converted file
                 Map<String, String> newFileData = ServiceConverter
-                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang);
+                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang, fileName);
                 String newFileUri = newFileData.get("fileUrl");
                 String newFileType = newFileData.get("fileType");
 
@@ -960,7 +960,8 @@ public class IndexServlet extends HttpServlet {
                         JSONObject changes = (JSONObject) parser.parse(
                                 DocumentManager.readFileToEnd(new File(DocumentManager
                                 .versionDir(histDir, i - 1) + File.separator + "changes.json")));
-                        JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
+                        JSONObject change = (JSONObject) ((JSONArray) changes.get("changes"))
+                            .get(((JSONArray) changes.get("changes")).size() - 1);
 
                         // write information about changes to the object
                         obj.put("changes", !change.isEmpty() ? changes.get("changes") : null);

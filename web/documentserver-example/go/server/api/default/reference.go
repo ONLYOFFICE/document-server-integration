@@ -45,15 +45,11 @@ func (srv *DefaultServerEndpointsHandler) Reference(w http.ResponseWriter, r *ht
 
 	var fileKey map[string]string
 	err := json.Unmarshal([]byte(body.ReferenceData.FileKey), &fileKey)
-	if err != nil {
-		srv.logger.Error("FileKey decoding error")
-		shared.SendDocumentServerRespose(w, true)
-		return
-	}
-
-	path, _ := srv.GenerateFilePath(fileKey["fileName"])
-	if body.ReferenceData.InstanceId == remoteAddr && srv.PathExists(path) {
-		fileName = fileKey["fileName"]
+	if err == nil {
+		path, _ := srv.GenerateFilePath(fileKey["fileName"])
+		if body.ReferenceData.InstanceId == remoteAddr && srv.PathExists(path) {
+			fileName = fileKey["fileName"]
+		}
 	}
 
 	if fileName == "" && body.Link != "" {

@@ -83,7 +83,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                                           bool isAsync,
                                           out Dictionary<string, string> convertedDocumentData,
                                           string filePass = null,
-                                          string lang = null)
+                                          string lang = null,
+                                          string fileName = null)
         {
             convertedDocumentData = new Dictionary<string, string>();
 
@@ -91,7 +92,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             fromExtension = string.IsNullOrEmpty(fromExtension) ? Path.GetExtension(documentUri).ToLower() : fromExtension;
 
             // check if the file name parameter is defined; if not, get random uuid for this file
-            var title = Path.GetFileName(documentUri);
+            var title = string.IsNullOrEmpty(fileName) ? Path.GetFileName(documentUri) : fileName;
             title = string.IsNullOrEmpty(title) ? Guid.NewGuid().ToString() : title;
 
             // get document key

@@ -99,6 +99,7 @@ func (cm DefaultConversionManager) GetConverterUri(
 	toExt string,
 	docKey string,
 	isAsync bool,
+	title string,
 ) (string, string, error) {
 	if fromExt == "" {
 		fromExt = utils.GetFileExt(docUri, true)
@@ -108,7 +109,7 @@ func (cm DefaultConversionManager) GetConverterUri(
 		DocUrl:     docUri,
 		OutputType: strings.ReplaceAll(toExt, ".", ""),
 		FileType:   fromExt,
-		Title:      utils.GetFileName(docUri),
+		Title:      title,
 		Key:        docKey,
 		Async:      isAsync,
 		StandardClaims: jwt.StandardClaims{
