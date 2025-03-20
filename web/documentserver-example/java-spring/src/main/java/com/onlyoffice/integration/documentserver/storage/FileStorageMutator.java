@@ -20,7 +20,6 @@ package com.onlyoffice.integration.documentserver.storage;
 
 import org.springframework.core.io.Resource;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -29,7 +28,7 @@ import java.nio.file.Path;
 public interface FileStorageMutator {
     void createDirectory(Path path);  // create a new directory if it does not exist
     boolean createFile(Path path, InputStream stream);  // create a new file if it does not exist
-    File createFile(final Path path);
+    File createFile(Path path); // create a new file if it does not exist
     boolean deleteFile(String fileName);  // delete a file
     boolean deleteFileHistory(String fileName);  // delete file history
     boolean deleteUserFolder(); // delete the user's folder recursively
