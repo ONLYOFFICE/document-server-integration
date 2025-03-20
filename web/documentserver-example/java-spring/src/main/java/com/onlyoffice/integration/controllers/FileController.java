@@ -81,10 +81,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -669,12 +667,14 @@ public class FileController {
             Files.move(sourcePathFile, bumpedFile);
 
             if (body.getUrl() != null) {
-                java.net.HttpURLConnection connection = (java.net.HttpURLConnection) new URL(body.getUrl())
-                    .openConnection();
-                InputStream stream = connection.getInputStream();
-                storageMutator.createFile(sourcePathFile, stream);
-                stream.close();
-                connection.disconnect();
+                File file = storageMutator.createFile(sourcePathFile);
+                try {
+                    documentServerClient.getFile(body.getUrl(), Files.newOutputStream(file.toPath()));
+                } catch (Exception e) {
+                    file.delete();
+
+                    throw e;
+                }
             } else {
                 String recoveryVersionStringDirectory = historyManager.versionDir(
                         historyDirectory,
