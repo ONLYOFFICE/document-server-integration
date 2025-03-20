@@ -42,6 +42,7 @@ import com.onlyoffice.model.documenteditor.config.editorconfig.Mode;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Template;
 import com.onlyoffice.model.documenteditor.config.editorconfig.customization.Goback;
 import com.onlyoffice.model.documenteditor.config.editorconfig.customization.Close;
+import com.onlyoffice.model.documenteditor.config.editorconfig.customization.Features;
 import com.onlyoffice.model.documenteditor.config.editorconfig.embedded.Toolbar;
 import com.onlyoffice.service.documenteditor.config.DefaultConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -251,6 +252,14 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
             close.setVisible(appUser.getClose().getVisible());
         }
 
+        Features features = Features.builder()
+            .featuresTips(false)
+            .build();
+
+        if (appUser == null || String.valueOf(appUser.getId()).equals("4")) {
+            features.setFeaturesTips(true);
+        }
+
         Customization customization = Customization.builder()
                 .autosave(true) // if the Autosave menu option is enabled or disabled
                 .comments(true) // if the Comments menu button is displayed or hidden
@@ -265,6 +274,7 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
                 .feedback(true)
                 .goback(goback)
                 .close(close)
+                .features(features)
                 .build();
 
         return customization;
