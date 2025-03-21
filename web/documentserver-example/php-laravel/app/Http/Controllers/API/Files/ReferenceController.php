@@ -90,7 +90,7 @@ class ReferenceController extends Controller
                 'instanceId' => $storagePublicUrl,
             ],
             'path' => $filename,
-            'link' => "$storagePublicUrl/editor?fileID=$filename",
+            'link' => $request->getScheme().'://'.$request->getHost().'/editor?fileID='.$filename,
         ];
 
         if ($settings->getSetting('jwt.enabled')) {
