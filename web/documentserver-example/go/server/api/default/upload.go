@@ -44,7 +44,7 @@ func (srv *DefaultServerEndpointsHandler) Upload(w http.ResponseWriter, r *http.
 	srv.logger.Debug("A new upload call")
 	if !srv.DocumentManager.IsDocumentConvertable(handler.Filename) {
 		srv.logger.Errorf("File %s is not supported", handler.Filename)
-		shared.SendCustomErrorResponse(w, "File type is not supported")
+		shared.SendResponse(w, map[string]string{"error": "File type is not supported"})
 		return
 	}
 
