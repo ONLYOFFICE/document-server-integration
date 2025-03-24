@@ -115,6 +115,7 @@ const descrUser0 = [
   'Can\'t start filling',
   'Has empty role',
   'Can\'t submit forms',
+  'Tour of tips when opening a document',
 ];
 
 const users = [

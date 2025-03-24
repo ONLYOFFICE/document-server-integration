@@ -50,7 +50,8 @@ public class ExampleData {
                 "Can't protect file",
                 "View file without collaboration",
                 "Can't refresh outdated file",
-                "Can’t submit forms"
+                "Can’t submit forms",
+                "Tour of tips when opening a document"
         );
 
         // the description for user 1

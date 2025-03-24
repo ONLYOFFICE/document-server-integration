@@ -201,7 +201,10 @@ class FileModel
           forcesave: false, # adding the request for the forced file saving to the callback handler
           submitForm: submit_form, # the Submit form button state
           goback: @user.goback.nil? ? '' : @user.goback,
-          close: @user.close.nil? ? '' : @user.close
+          close: @user.close.nil? ? '' : @user.close,
+          features: {
+            featuresTips: @user.id.eql?('uid-0')
+          }
         }
       }
     }

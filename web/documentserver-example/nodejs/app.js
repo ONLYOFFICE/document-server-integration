@@ -1241,6 +1241,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         protect: !user.deniedPermissions.includes('protect'),
         goback: user.goback != null ? user.goback : '',
         close: user.close,
+        featuresTips: userid === 'uid-0',
       },
       dataInsertImage: {
         fileType: 'svg',

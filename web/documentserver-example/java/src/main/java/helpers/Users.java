@@ -85,6 +85,7 @@ public final class Users {
         add("View file without collaboration");
         add("Can't refresh outdated file");
         add("Can’t submit forms");
+        add("Tour of tips when opening a document");
     }};
 
     private static List<User> users = new ArrayList<User>() {{

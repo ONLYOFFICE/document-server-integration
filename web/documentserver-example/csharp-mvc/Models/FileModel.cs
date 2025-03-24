@@ -227,6 +227,12 @@ namespace OnlineEditorsExampleMVC.Models
                                                         { "text", user.close.text },
                                                         { "visible", user.close. visible }
                                                     } : new Dictionary<string, object>{}
+                                            },
+                                            {
+                                                "features", new Dictionary<string, object>
+                                                    {
+                                                        { "featuresTips", user.id.Equals("uid-0") }
+                                                    }
                                             }
                                         }
                                 }
@@ -380,7 +386,7 @@ namespace OnlineEditorsExampleMVC.Models
             var jss = new JavaScriptSerializer();
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);
-            usersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForMentions(user.id)) : null;
+            usersForMentions = jss.Serialize(!user.id.Equals("uid-0") ? Users.getUsersForMentions(user.id) : null);
         }
 
         public void GetUsersInfo(HttpRequest request, out string usersInfo)
@@ -397,7 +403,7 @@ namespace OnlineEditorsExampleMVC.Models
             var jss = new JavaScriptSerializer();
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);
-            usersForProtect = !user.id.Equals("uid-0") ? jss.Serialize(Users.getUsersForProtect(user.id)) : null;
+            usersForProtect = jss.Serialize(!user.id.Equals("uid-0") ? Users.getUsersForProtect(user.id) : null);
         }
     }
 }

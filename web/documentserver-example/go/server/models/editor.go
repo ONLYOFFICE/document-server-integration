@@ -21,6 +21,10 @@ type Goback struct {
 	RequestClose bool `json:"requestClose"`
 }
 
+type Features struct {
+	FeaturesTips bool `json:"featuresTips"`
+}
+
 type Customization struct {
 	About      bool                   `json:"about"`
 	Comments   bool                   `json:"comments,omitempty"`
@@ -28,6 +32,7 @@ type Customization struct {
 	Forcesave  bool                   `json:"forcesave,omitempty"`
 	SubmitForm bool                   `json:"submitForm,omitempty"`
 	Goback     Goback                 `json:"goback,omitempty"`
+	Features   Features               `json:"features,omitempty"`
 	Close      map[string]interface{} `json:"close,omitempty"`
 }
 

@@ -134,6 +134,7 @@ var descriptionUser0 []string = []string{
 	"View file without collaboration",
 	"Can't refresh outdated file",
 	"Can't submit forms",
+	"Tour of tips when opening a document",
 }
 var descriptionUser1 []string = []string{
 	"File author by default",

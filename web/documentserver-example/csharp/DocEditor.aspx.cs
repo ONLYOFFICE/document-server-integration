@@ -294,6 +294,12 @@ namespace OnlineEditorsExample
                                                         { "visible", user.close.visible },
                                                         { "text", user.close.text }
                                                     } : new Dictionary<string, object>{}
+                                            },
+                                            {
+                                                "features", new Dictionary<string, object>
+                                                    {
+                                                        { "featuresTips", user.id.Equals("uid-0") }
+                                                    }
                                             }
                                         }
                                 }
@@ -327,14 +333,14 @@ namespace OnlineEditorsExample
 
                 // get users for mentions
                 List<Dictionary<string, object>> usersData = Users.getUsersForMentions(user.id);
-                UsersForMentions = !user.id.Equals("uid-0") ? jss.Serialize(usersData) : null;
+                UsersForMentions = jss.Serialize(!user.id.Equals("uid-0") ? usersData : null);
 
                 List<Dictionary<string, object>> usersInfo = Users.getUsersInfo(user.id);
                 UsersInfo = jss.Serialize(usersData);
 
                 // get users for protect
                 List<Dictionary<string, object>> usersProtectData = Users.getUsersForProtect(user.id);
-                UsersForProtect = !user.id.Equals("uid-0") ? jss.Serialize(usersProtectData) : null;
+                UsersForProtect = jss.Serialize(!user.id.Equals("uid-0") ? usersProtectData : null);
             }
             catch { }
         }

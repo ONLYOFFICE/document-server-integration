@@ -185,6 +185,9 @@ final class DocEditorView extends View
                     // settings for the Open file location menu button and upper right corner button
                     "goback" => $user->goback !== null ? $user->goback : "",
                     "close" => $user->close != null ? $user->close : "",
+                    "features" => [
+                        "featuresTips" => $user->id == "uid-0"
+                    ]
                 ],
             ],
         ];

@@ -1,5 +1,6 @@
 # Change Log
 
+- features tips for anonymous
 - nodejs: user role
 - nodejs: start filling
 - support vsdx in diagram editor
