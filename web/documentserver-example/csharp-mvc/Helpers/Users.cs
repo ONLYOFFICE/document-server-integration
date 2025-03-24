@@ -33,7 +33,9 @@ namespace OnlineEditorsExampleMVC.Helpers
             "This file isn't marked as favorite",
             "Can create files from templates using data from the editor",
             "Has an avatar",
-            "Can submit forms"
+            "Can submit forms",
+            "Has no roles",
+            "Can start filling"
         };
 
         static List<string> descr_user_2 = new List<string>()
@@ -45,7 +47,9 @@ namespace OnlineEditorsExampleMVC.Helpers
             "This file is marked as favorite",
             "Can create new files from the editor",
             "Has an avatar",
-            "Can't submit forms"
+            "Can't submit forms",
+            "Has role 'Anyone'",
+            "Can start filling"
         };
 
         static List<string> descr_user_3 = new List<string>()
@@ -61,7 +65,9 @@ namespace OnlineEditorsExampleMVC.Helpers
             "Can create new files from the editor",
             "Can't submit forms",
             "Can't close history",
-            "Can't restore the file version"
+            "Can't restore the file version",
+            "Has role 'role'",
+            "Can start filling"
         };
 
         static List<string> descr_user_0 = new List<string>()
@@ -80,7 +86,9 @@ namespace OnlineEditorsExampleMVC.Helpers
             "View file without collaboration",
             "Can't refresh outdated file",
             "Can't submit forms",
-            "Tour of tips when opening a document"
+            "Tour of tips when opening a document",
+            "Has empty role",
+            "Can't start filling"
         };
 
         private static List<User> users = new List<User>() {
@@ -98,7 +106,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                     true,
                     true,
                     new Goback(null, false),
-                    new Close(null, false)
+                    new Close(null, false),
+                    null
                 ),
             new User(
                     "uid-2",
@@ -119,7 +128,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                     false,
                     true,
                     new Goback("Go to Documents", null),
-                    new Close(null, true)
+                    new Close(null, true),
+                    new List<string>() { "Anyone" }
                 ),
             new User(
                     "uid-3",
@@ -140,7 +150,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                     false,
                     false,
                     null,
-                    new Close(null, true)
+                    new Close(null, true),
+                    new List<string>() { "role" }
                 ),
             new User(
                     "uid-0",
@@ -156,7 +167,8 @@ namespace OnlineEditorsExampleMVC.Helpers
                     false,
                     false,
                     null,
-                    null
+                    null,
+                    new List<string>()
                 )
         };
 
@@ -249,8 +261,9 @@ namespace OnlineEditorsExampleMVC.Helpers
 
         public Goback goback;
         public Close close;
+        public List<string> roles;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates, bool avatar, Goback goback, Close close)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates, bool avatar, Goback goback, Close close, List<string> roles)
         {
             this.id = id;
             this.name = name;
@@ -266,6 +279,7 @@ namespace OnlineEditorsExampleMVC.Helpers
             this.avatar = avatar;
             this.goback = goback;
             this.close = close;
+            this.roles = roles;
         }
     }
 

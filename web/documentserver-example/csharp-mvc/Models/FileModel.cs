@@ -190,6 +190,7 @@ namespace OnlineEditorsExampleMVC.Models
                                         {
                                             { "id", !user.id.Equals("uid-0") ? user.id : null  },
                                             { "name", user.name },
+                                            { "roles", user.roles },
                                             { "group", user.group },
                                             { "image", user.avatar ? DocManagerHelper.GetServerUrl(false) + "/Content/images/" + user.id + ".png" : null}
                                         }

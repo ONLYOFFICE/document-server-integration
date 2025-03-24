@@ -1,5 +1,7 @@
 # Change Log
 
+- csharp-mvc: user role
+- csharp-mvc: start filling
 - csharp: user role
 - csharp: start filling
 - update demo files
