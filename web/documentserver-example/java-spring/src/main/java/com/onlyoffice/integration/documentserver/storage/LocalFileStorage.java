@@ -30,7 +30,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.FileSystemUtils;
 
 import javax.servlet.http.HttpServletRequest;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
@@ -162,6 +161,18 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
             e.printStackTrace();
         }
         return false;
+    }
+
+    public File createFile(final Path path) {
+        if (Files.exists(path)) {
+            return path.toFile();
+        }
+
+        try {
+            return Files.createFile(path).toFile();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     // delete a file
@@ -347,22 +358,6 @@ public class LocalFileStorage implements FileStorageMutator, FileStoragePathBuil
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-    }
-
-    // create or update a file
-    public boolean createOrUpdateFile(final Path path, final ByteArrayInputStream stream) {
-        if (!Files.exists(path)) { // if the specified file does not exist
-            return createFile(path, stream);  // create it in the specified directory
-        } else {
-            try {
-                Files.write(path, stream
-                        .readAllBytes());  // otherwise, write new information in the bytes format to the file
-                return true;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        return false;
     }
 
     // get the server URL

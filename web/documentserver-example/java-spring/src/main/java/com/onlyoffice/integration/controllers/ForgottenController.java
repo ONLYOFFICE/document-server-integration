@@ -18,6 +18,7 @@
 
 package com.onlyoffice.integration.controllers;
 
+import com.onlyoffice.client.DocumentServerClient;
 import com.onlyoffice.integration.dto.ForgottenFile;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -34,7 +35,6 @@ import com.onlyoffice.model.commandservice.CommandRequest;
 import com.onlyoffice.model.commandservice.CommandResponse;
 import com.onlyoffice.model.commandservice.commandrequest.Command;
 import com.onlyoffice.manager.document.DocumentManager;
-import com.onlyoffice.service.command.CommandService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,10 +50,10 @@ public class ForgottenController {
     private String enableForgotten;
 
     @Autowired
-    private CommandService commandService;
+    private DocumentManager documentManager;
 
     @Autowired
-    private DocumentManager documentManager;
+    private DocumentServerClient documentServerClient;
 
     @GetMapping("${url.forgotten}")
     public String index(final Model model) {
@@ -74,14 +74,14 @@ public class ForgottenController {
             CommandRequest commandRequest = CommandRequest.builder()
                 .c(Command.GET_FORGOTTEN_LIST)
                 .build();
-            CommandResponse commandResponse = commandService.processCommand(commandRequest, null);
+            CommandResponse commandResponse = documentServerClient.command(commandRequest);
             List<String> keys = commandResponse.getKeys();
             for (int i = 0; i < keys.size(); i++) {
                 commandRequest = CommandRequest.builder()
                         .c(Command.GET_FORGOTTEN)
                         .key(keys.get(i))
                         .build();
-                commandResponse = commandService.processCommand(commandRequest, null);
+                commandResponse = documentServerClient.command(commandRequest);
                 ForgottenFile file = new ForgottenFile(
                     commandResponse.getKey(),
                     documentManager.getDocumentType(commandResponse.getUrl()).toString().toLowerCase(),
@@ -111,7 +111,7 @@ public class ForgottenController {
                 .key(filename)
                 .build();
 
-            CommandResponse commandResponse = commandService.processCommand(commandRequest, null);
+            CommandResponse commandResponse = documentServerClient.command(commandRequest);
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         } catch (Exception e) {
             e.printStackTrace();

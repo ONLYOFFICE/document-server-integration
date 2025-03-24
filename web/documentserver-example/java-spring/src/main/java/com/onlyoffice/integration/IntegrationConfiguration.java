@@ -19,18 +19,16 @@
 package com.onlyoffice.integration;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onlyoffice.client.ApacheHttpclientDocumentServerClient;
+import com.onlyoffice.client.DocumentServerClient;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.manager.document.DocumentManager;
-import com.onlyoffice.manager.request.DefaultRequestManager;
-import com.onlyoffice.manager.request.RequestManager;
 import com.onlyoffice.manager.security.DefaultJwtManager;
 import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.UrlManager;
-import com.onlyoffice.service.command.CommandService;
-import com.onlyoffice.service.command.DefaultCommandService;
 import com.onlyoffice.service.convert.ConvertService;
-import com.onlyoffice.service.convert.DefaultConvertService;
+import com.onlyoffice.service.convert.DefaultConvertServiceV2;
 import org.json.simple.parser.JSONParser;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
@@ -83,21 +81,14 @@ public class IntegrationConfiguration {
     }
 
     @Bean
-    public RequestManager requestManager(final UrlManager urlManager,  final JwtManager jwtManager,
-                                         final SettingsManager settingsManager) {
-        return new DefaultRequestManager(urlManager, jwtManager, settingsManager);
+    public DocumentServerClient documentServerClient(final SettingsManager settingsManager,
+                                                     final UrlManager urlManager) {
+        return new ApacheHttpclientDocumentServerClient(settingsManager, urlManager);
     }
 
     @Bean
     public ConvertService convertService(final DocumentManager documentManager, final UrlManager urlManager,
-                                         final RequestManager requestManager,
-                                         final SettingsManager settingsManager) {
-        return new DefaultConvertService(documentManager, urlManager, requestManager, settingsManager);
+                                         final DocumentServerClient documentServerClient) {
+        return new DefaultConvertServiceV2(documentManager, urlManager, documentServerClient);
     }
-
-    @Bean
-    public CommandService commandService(final RequestManager requestManager) {
-        return new DefaultCommandService(requestManager);
-    }
-
 }
