@@ -257,6 +257,7 @@ namespace OnlineEditorsExample
                                         {
                                             { "id", !user.id.Equals("uid-0") ? user.id : null },
                                             { "name",  user.name },
+                                            { "roles", user.roles },
                                             { "group", user.group },
                                             { "image", user.avatar ? _Default.GetServerUrl(false) + "/App_Themes/images/"+ user.id + ".png" : null }
                                         }

@@ -1,5 +1,7 @@
 # Change Log
 
+- csharp: user role
+- csharp: start filling
 - nodejs: user role
 - nodejs: start filling
 - support vsdx in diagram editor

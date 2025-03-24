@@ -32,7 +32,9 @@ namespace OnlineEditorsExample
             "This file isn’t marked as favorite",
             "Can create files from templates using data from the editor",
             "Has an avatar",
-            "Can submit forms"
+            "Can submit forms",
+            "Has no roles",
+            "Can start filling"
         };
 
         static List<string> descr_user_2 = new List<string>()
@@ -44,7 +46,9 @@ namespace OnlineEditorsExample
             "This file is marked as favorite",
             "Can create new files from the editor",
             "Has an avatar",
-            "Can’t submit forms"
+            "Can’t submit forms",
+            "Has role 'Anyone'",
+            "Can start filling"
         };
 
         static List<string> descr_user_3 = new List<string>()
@@ -60,7 +64,9 @@ namespace OnlineEditorsExample
             "Can create new files from the editor",
             "Can't close history",
             "Can't restore the file version",
-            "Can’t submit forms"
+            "Can’t submit forms",
+            "Has role 'role'",
+            "Can start filling"
         };
 
         static List<string> descr_user_0 = new List<string>()
@@ -78,7 +84,9 @@ namespace OnlineEditorsExample
             "Can't protect file",
             "View file without collaboration",
             "Can’t refresh outdated file",
-            "Can’t submit forms"
+            "Can’t submit forms",
+            "Has empty role",
+            "Can't start filling"
         };
 
         private static List<User> users = new List<User>() {
@@ -96,7 +104,8 @@ namespace OnlineEditorsExample
                     true,
                     true,
                     new Goback(null, false),
-                    new Close(null, false)
+                    new Close(null, false),
+                    null
                 ),
             new User(
                     "uid-2",
@@ -117,7 +126,8 @@ namespace OnlineEditorsExample
                     false,
                     true,
                     new Goback("Go to Documents",null),
-                    new Close(null, true)
+                    new Close(null, true),
+                    new List<string>() { "Anyone" }
                 ),
             new User(
                     "uid-3",
@@ -138,7 +148,8 @@ namespace OnlineEditorsExample
                     false,
                     false,
                     null,
-                    new Close(null, true)
+                    new Close(null, true),
+                    new List<string>() { "role" }
                 ),
             new User(
                     "uid-0",
@@ -154,7 +165,8 @@ namespace OnlineEditorsExample
                     false,
                     false,
                     null,
-                    null
+                    null,
+                    new List<string>()
                 )
         };
 
@@ -248,8 +260,9 @@ namespace OnlineEditorsExample
         public bool avatar;
         public Goback goback;
         public Close close;
+        public List<string> roles;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates, bool avatar, Goback goback, Close close)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates, bool avatar, Goback goback, Close close, List<string> roles)
         {
             this.id = id;
             this.name = name;
@@ -265,6 +278,7 @@ namespace OnlineEditorsExample
             this.avatar = avatar;
             this.goback = goback;
             this.close = close;
+            this.roles = roles;
         }
     }
 
