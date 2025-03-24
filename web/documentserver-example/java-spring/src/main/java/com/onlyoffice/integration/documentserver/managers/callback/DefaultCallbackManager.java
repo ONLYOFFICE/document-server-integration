@@ -19,12 +19,12 @@
 package com.onlyoffice.integration.documentserver.managers.callback;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.onlyoffice.client.DocumentServerClient;
 import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.integration.sdk.manager.DocumentManager;
 import com.onlyoffice.integration.sdk.manager.UrlManager;
-import com.onlyoffice.manager.request.RequestManager;
 import com.onlyoffice.model.commandservice.CommandRequest;
 import com.onlyoffice.model.commandservice.commandrequest.Command;
 import com.onlyoffice.model.convertservice.ConvertRequest;
@@ -33,19 +33,15 @@ import com.onlyoffice.model.documenteditor.Callback;
 import com.onlyoffice.model.documenteditor.callback.Action;
 import com.onlyoffice.model.documenteditor.callback.ForcesaveType;
 import com.onlyoffice.model.documenteditor.callback.action.Type;
-import com.onlyoffice.service.command.CommandService;
 import com.onlyoffice.service.convert.ConvertService;
 import lombok.SneakyThrows;
-import org.apache.hc.core5.http.HttpEntity;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
@@ -65,45 +61,12 @@ public class DefaultCallbackManager implements CallbackManager {
     @Autowired
     private ConvertService convertService;
     @Autowired
-    private RequestManager requestManager;
-    @Autowired
-    private CommandService commandService;
+    private DocumentServerClient documentServerClient;
     @Autowired
     private HistoryManager historyManager;
 
     @Autowired
     private UrlManager urlManager;
-
-    // download file from url
-    @SneakyThrows
-    private byte[] getDownloadFile(final String url) {
-        if (url == null || url.isEmpty()) {
-            throw new RuntimeException("Url argument is not specified");  // URL isn't specified
-        }
-
-        return requestManager.executeGetRequest(url, new RequestManager.Callback<byte[]>() {
-            public byte[] doWork(final Object response) throws IOException {
-                InputStream stream = ((HttpEntity) response).getContent(); // get input stream of the converted
-                // file
-
-                if (stream == null) {
-                    throw new RuntimeException("Input stream is null");
-                }
-
-                return stream.readAllBytes();
-            }
-        });
-    }
-
-    // file saving
-    @SneakyThrows
-    private void saveFile(final byte[] byteArray, final Path path) {
-        if (path == null) {
-            throw new RuntimeException("Path argument is not specified");  // file isn't specified
-        }
-        // update a file or create a new one
-        storageMutator.createOrUpdateFile(path, new ByteArrayInputStream(byteArray));
-    }
 
     @Override
     public void processEditing(final Callback callback, final String fileName) {
@@ -118,7 +81,7 @@ public class DefaultCallbackManager implements CallbackManager {
 
                 // create a command request to forcibly save the document being edited without closing it
                 try {
-                    commandService.processCommand(commandRequest, fileName);
+                    documentServerClient.command(commandRequest);
                 } catch (Exception e) {
                     throw new RuntimeException(e);
                 }
@@ -173,8 +136,6 @@ public class DefaultCallbackManager implements CallbackManager {
             }
         }
 
-        byte[] byteArrayFile = getDownloadFile(downloadUri);  // download document file
-
         Path lastVersion = Paths.get(storagePathBuilder
                 .getFileLocation(fileName));  // get the path to the last file version
 
@@ -194,11 +155,23 @@ public class DefaultCallbackManager implements CallbackManager {
 
             lastVersion.toFile().renameTo(new File(versionDir + File.separator + "prev." + curExt));
 
-            saveFile(byteArrayFile, toSave); // save document file
+            File file = storageMutator.createFile(toSave);
+            try {
+                documentServerClient.getFile(downloadUri, Files.newOutputStream(file.toPath()));
+            } catch (Exception e) {
+                file.delete();
 
-            byte[] byteArrayChanges = getDownloadFile(changesUri); // download file changes
-            saveFile(byteArrayChanges, Path
-                    .of(versionDir + File.separator + "diff.zip")); // save file changes to the diff.zip archive
+                throw e;
+            }
+
+            File diff = storageMutator.createFile(Path.of(versionDir + File.separator + "diff.zip"));
+            try {
+                documentServerClient.getFile(changesUri, Files.newOutputStream(diff.toPath()));
+            } catch (Exception e) {
+                diff.delete();
+
+                throw e;
+            }
 
             JSONObject jsonChanges = new JSONObject();  // create a json object for document changes
             jsonChanges.put("changes", callback.getHistory().getChanges());  // put the changes to the json object
@@ -262,7 +235,6 @@ public class DefaultCallbackManager implements CallbackManager {
             }
         }
 
-        byte[] byteArrayFile = getDownloadFile(downloadUri);  // download document file
         String forcesavePath = "";
 
         // todo: Use ENUMS
@@ -297,9 +269,15 @@ public class DefaultCallbackManager implements CallbackManager {
                             .getBaseName(fileName) + ".txt");
                     String formsPath = storagePathBuilder.getFileLocation(formsName);
 
-                    byte[] byteArrayFormsData = getDownloadFile(formsDataUrl);
 
-                    saveFile(byteArrayFormsData, Paths.get(formsPath));
+                    File forms = storageMutator.createFile(Paths.get(formsPath));
+                    try {
+                        documentServerClient.getFile(formsDataUrl, Files.newOutputStream(forms.toPath()));
+                    } catch (Exception e) {
+                        forms.delete();
+
+                        throw e;
+                    }
                 } else {
                     throw new RuntimeException("Document editing service did not return formsDataUrl");
                 }
@@ -318,6 +296,14 @@ public class DefaultCallbackManager implements CallbackManager {
             }
         }
 
-        saveFile(byteArrayFile, Path.of(forcesavePath));
+
+        File forcesave = storageMutator.createFile(Path.of(forcesavePath));
+        try {
+            documentServerClient.getFile(downloadUri, Files.newOutputStream(forcesave.toPath()));
+        } catch (Exception e) {
+            forcesave.delete();
+
+            throw e;
+        }
     }
 }

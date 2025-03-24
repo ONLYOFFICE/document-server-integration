@@ -32,6 +32,8 @@ class User {
     avatar,
     goback,
     close,
+    canSubmitForm,
+    roles,
   ) {
     this.id = id;
     this.name = name;
@@ -47,62 +49,72 @@ class User {
     this.avatar = avatar;
     this.goback = goback;
     this.close = close;
+    this.canSubmitForm = canSubmitForm;
+    this.roles = roles;
   }
 }
 
 const descrUser1 = [
   'File author by default',
-  'Doesn’t belong to any group',
+  'Doesn\'t belong to any group',
   'Can review all the changes',
   'Can perform all actions with comments',
-  'The file favorite state is undefined',
-  'Can create files from templates using data from the editor',
   'Can see the information about all users',
-  'Can submit forms',
+  'This file isn\'t marked as favorite',
+  'Can create files from templates using data from the editor',
   'Has an avatar',
+  'Can start filling',
+  'Has no roles',
+  'Can submit forms',
 ];
 
 const descrUser2 = [
   'Belongs to Group2',
   'Can review only his own changes or changes made by users with no group',
   'Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only',
+  'Can see the information about users from Group2 and users who don\'t belong to any group',
   'This file is marked as favorite',
   'Can create new files from the editor',
-  'Can see the information about users from Group2 and users who don’t belong to any group',
-  'Can’t submit forms',
   'Has an avatar',
+  'Can start filling',
+  'Has role "Anyone"',
+  'Can submit forms',
 ];
 
 const descrUser3 = [
   'Belongs to Group3',
   'Can review changes made by Group2 users',
   'Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users',
-  'This file isn’t marked as favorite',
-  'Can’t copy data from the file to clipboard',
-  'Can’t download the file',
-  'Can’t print the file',
-  'Can create new files from the editor',
   'Can see the information about Group2 users',
-  'Can’t submit forms',
-  'Can’t close history',
-  'Can’t restore the file version',
+  'The file favorite state is undefined',
+  'Can\'t copy data from the file to clipboard',
+  'Can\'t download the file',
+  'Can\'t print the file',
+  'Can create new files from the editor',
+  'Can\'t close history',
+  'Can\'t restore the file version',
+  'Can start filling',
+  'Has role "role"',
+  'Can\'t submit forms',
 ];
 
 const descrUser0 = [
   'The name is requested when the editor is opened',
-  'Doesn’t belong to any group',
+  'Doesn\'t belong to any group',
   'Can review all the changes',
   'Can perform all actions with comments',
+  'Can\'t see anyone’s information',
   'The file favorite state is undefined',
   'Can\'t mention others in comments',
   'Can\'t create new files from the editor',
-  'Can’t see anyone’s information',
   'Can\'t rename files from the editor',
   'Can\'t view chat',
   'Can\'t protect file',
   'View file without collaboration',
-  'Can’t submit forms',
-  'Can’t refresh outdated file',
+  'Can\'t refresh outdated file',
+  'Can\'t start filling',
+  'Has empty role',
+  'Can\'t submit forms',
   'Tour of tips when opening a document',
 ];
 
@@ -115,13 +127,15 @@ const users = [
     null,
     {},
     null,
-    null,
+    false,
     [],
     descrUser1,
     true,
     true,
     { blank: false },
     { visible: false },
+    true,
+    null,
   ),
   new User(
     'uid-2',
@@ -142,6 +156,8 @@ const users = [
     true,
     { text: 'Go to Documents' },
     {},
+    true,
+    [ 'Anyone' ],
   ),
   new User(
     'uid-3',
@@ -155,15 +171,17 @@ const users = [
       remove: [],
     },
     ['group-2'],
-    false,
+    null,
     ['copy', 'download', 'print'],
     descrUser3,
     false,
     false,
     null,
     {},
+    false,
+    [ 'role' ],
   ),
-  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null),
+  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null, false, []),
 ];
 
 // get a list of all the users

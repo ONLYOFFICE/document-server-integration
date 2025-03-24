@@ -280,7 +280,7 @@ namespace OnlineEditorsExampleMVC
 
                     // get the url and file type of the converted file
                     Dictionary<string, string> newFileData;
-                    var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, conversionExtension, key, true, out newFileData, filePass, lang);
+                    var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, conversionExtension, key, true, out newFileData, filePass, lang, fileName);
                     if (result != 100)
                     {
                         context.Response.Write("{ \"step\" : \"" + result + "\", \"filename\" : \"" + fileName + "\"}");
@@ -990,7 +990,7 @@ namespace OnlineEditorsExampleMVC
                     var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(changesPath));
                     var changesArray = (ArrayList)changes["changes"];
                     var change = changesArray.Count > 0
-                        ? (Dictionary<string, object>)changesArray[0]
+                        ? (Dictionary<string, object>)changesArray[changesArray.Count - 1]
                         : new Dictionary<string, object>();
 
                     // write information about changes to the object

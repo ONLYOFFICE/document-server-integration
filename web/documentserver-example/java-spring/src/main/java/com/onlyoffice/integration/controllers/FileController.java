@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
+import com.onlyoffice.client.DocumentServerClient;
 import com.onlyoffice.integration.documentserver.managers.history.HistoryManager;
 import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
@@ -39,7 +40,6 @@ import com.onlyoffice.integration.sdk.manager.DocumentManager;
 import com.onlyoffice.integration.sdk.service.ConfigService;
 import com.onlyoffice.integration.services.UserServices;
 
-import com.onlyoffice.manager.request.RequestManager;
 import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.UrlManager;
@@ -51,10 +51,8 @@ import com.onlyoffice.model.convertservice.ConvertRequest;
 import com.onlyoffice.model.convertservice.ConvertResponse;
 import com.onlyoffice.model.documenteditor.Callback;
 import com.onlyoffice.model.documenteditor.config.document.ReferenceData;
-import com.onlyoffice.service.command.CommandService;
 import com.onlyoffice.service.convert.ConvertService;
 import com.onlyoffice.service.documenteditor.callback.CallbackService;
-import org.apache.hc.core5.http.HttpEntity;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -83,10 +81,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -120,13 +116,11 @@ public class FileController {
     @Autowired
     private ConvertService convertService;
     @Autowired
-    private RequestManager requestManager;
+    private DocumentServerClient documentServerClient;
     @Autowired
     private SettingsManager settingsManager;
     @Autowired
     private CallbackService callbackService;
-    @Autowired
-    private CommandService commandService;
     @Autowired
     private ConfigService configService;
     @Autowired
@@ -256,6 +250,7 @@ public class FileController {
                         .outputtype(conversionExtension)
                         .region(lang)
                         .async(true)
+                        .title(fileName)
                         .build();
 
                 ConvertResponse convertResponse = convertService.processConvert(convertRequest, fileName);
@@ -280,26 +275,20 @@ public class FileController {
                 String nameWithInternalExt = documentManager.getBaseName(fileName) + "." + newFileType;
                 String correctedName = documentManager.getCorrectName(nameWithInternalExt);
 
-                fileName = requestManager.executeGetRequest(newFileUri, new RequestManager.Callback<String>() {
-                    public String doWork(final Object response) throws IOException {
-                        InputStream stream = ((HttpEntity) response).getContent(); // get input stream of the converted
-                        // file
+                File file = storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(correctedName)));
+                try {
+                    documentServerClient.getFile(newFileUri, Files.newOutputStream(file.toPath()));
+                } catch (Exception e) {
+                    file.delete();
 
-                        if (stream == null) {
-                            throw new RuntimeException("Input stream is null");
-                        }
+                    throw e;
+                }
 
+                if (!keepOriginal) {
+                    storageMutator.deleteFile(oldFileName);
+                }
 
-                        // remove source file
-                        if (!keepOriginal) {
-                            storageMutator.deleteFile(oldFileName);
-                        }
-
-                        // create the converted file with input stream
-                        storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(correctedName)), stream);
-                        return correctedName;
-                    }
-                });
+                fileName = correctedName;
             }
 
             // create meta information about the converted file with the user ID and name specified
@@ -479,20 +468,18 @@ public class FileController {
 
             url = urlManager.replaceToInnerDocumentServerUrl(url);
 
-            return requestManager.executeGetRequest(url, new RequestManager.Callback<String>() {
-                @Override
-                public String doWork(final Object response) throws Exception {
-                    InputStream stream = ((HttpEntity) response).getContent();
+            File file = storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(fileName)));
+            try {
+                documentServerClient.getFile(url, Files.newOutputStream(file.toPath()));
+            } catch (Exception e) {
+                file.delete();
 
-                    if (documentManager.getMaxFileSize() < stream.available() || stream.available() <= 0) {
-                        return "{\"error\":\"File size is incorrect\"}";
-                    }
-                    storageMutator.createFile(Path.of(storagePathBuilder.getFileLocation(fileName)), stream);
-                    createUserMetadata(uid, fileName);
+                throw e;
+            }
 
-                    return "{\"file\":  \"" + fileName + "\"}";
-                }
-            });
+            createUserMetadata(uid, fileName);
+
+            return "{\"file\":  \"" + fileName + "\"}";
         } catch (Exception e) {
             e.printStackTrace();
             return "{ \"error\" : 1, \"message\" : \"" + e.getMessage() + "\"}";
@@ -512,7 +499,7 @@ public class FileController {
 
         try {
 
-            CommandResponse commandResponse = commandService.processCommand(commandRequest, body.getFileName());
+            CommandResponse commandResponse = documentServerClient.command(commandRequest);
             return commandResponse.getError().getDescription();
         } catch (Exception e) {
             e.printStackTrace();
@@ -680,12 +667,14 @@ public class FileController {
             Files.move(sourcePathFile, bumpedFile);
 
             if (body.getUrl() != null) {
-                java.net.HttpURLConnection connection = (java.net.HttpURLConnection) new URL(body.getUrl())
-                    .openConnection();
-                InputStream stream = connection.getInputStream();
-                storageMutator.createFile(sourcePathFile, stream);
-                stream.close();
-                connection.disconnect();
+                File file = storageMutator.createFile(sourcePathFile);
+                try {
+                    documentServerClient.getFile(body.getUrl(), Files.newOutputStream(file.toPath()));
+                } catch (Exception e) {
+                    file.delete();
+
+                    throw e;
+                }
             } else {
                 String recoveryVersionStringDirectory = historyManager.versionDir(
                         historyDirectory,

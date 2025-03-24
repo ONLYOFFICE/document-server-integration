@@ -1,15 +1,8 @@
 # Change Log
 
-- java-spring: features tips for anonymous
-- ruby: features tips for anonymous
-- python: features tips for anonymous
-- php-laravel: features tips for anonymous
-- php: features tips for anonymous
-- java: features tips for anonymous
-- golang: features tips for anonymous
-- csharp-mvc: features tips for anonymous
-- csharp: features tips for anonymous
-- nodejs: features tips for anonymous
+- features tips for anonymous
+- nodejs: user role
+- nodejs: start filling
 - support vsdx in diagram editor
 
 ## 1.13.0

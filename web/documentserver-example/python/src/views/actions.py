@@ -86,7 +86,7 @@ def convert(request):
 
             # get the url of the converted file
             convertedData = serviceConverter.getConvertedData(
-                fileUri, fileExt, conversionExtension, key, True, filePass, lang
+                fileUri, fileExt, conversionExtension, key, True, filePass, lang, filename
                 )
 
             # if the converter url is not received, the original file name is passed to the response
@@ -679,7 +679,10 @@ def restore(request: HttpRequest) -> HttpResponse:
         Path(bumped_changes_file).write_text(bumped_changes_content, 'utf-8')
         copy(source_file, bumped_file)
         if url is not None:
-            data = requests.get(url)
+            data = requests.get(url.replace(
+                config_manager.document_server_public_url().geturl(),
+                config_manager.document_server_private_url().geturl()
+            ))
             Path(source_file).write_bytes(data.content)
         else:
             copy(recovery_file, source_file)

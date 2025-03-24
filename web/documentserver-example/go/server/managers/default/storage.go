@@ -94,7 +94,7 @@ func (sm DefaultStorageManager) GetStoredFiles(remoteAddress string) ([]models.D
 	}
 
 	sort.Slice(files, func(i, j int) bool {
-		return files[i].ModTime().Before(files[j].ModTime())
+		return !files[i].ModTime().Before(files[j].ModTime())
 	})
 
 	for _, v := range files {

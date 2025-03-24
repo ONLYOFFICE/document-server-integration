@@ -16,7 +16,6 @@
  *
  */
 
-var directUrl;
 var formatManager;
 
 window.onload = function () {
@@ -42,18 +41,7 @@ window.onload = function () {
 if (typeof jQuery !== "undefined") {
     jq = jQuery.noConflict();
 
-    directUrl = getUrlVars()["directUrl"] == "true";
-
     mustReload = false;
-
-    if (directUrl)
-        jq("#directUrl").prop("checked", directUrl);
-    else
-        directUrl = jq("#directUrl").prop("checked");
-
-    jq("#directUrl").change(function() {
-        window.location = "?directUrl=" + jq(this).prop("checked");
-    });
 
     jq(function () {
         jq("#fileupload").fileupload({
@@ -277,7 +265,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?mode=edit&fileName=" + fileId+ "&directUrl=" + directUrl;
+        var url = UrlEditor + "?mode=edit&fileName=" + fileId;
         window.open(url, "_blank");
         jq("#hiddenFileName").val("");
         jq.unblockUI();
@@ -286,7 +274,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginView:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?mode=view&fileName=" + fileId+ "&directUrl=" + directUrl;
+        var url = UrlEditor + "?mode=view&fileName=" + fileId;
         window.open(url, "_blank");
         jq("#hiddenFileName").val("");
         jq.unblockUI();
@@ -295,7 +283,7 @@ if (typeof jQuery !== "undefined") {
 
     jq(document).on("click", "#beginEmbedded:not(.disable)", function () {
         var fileId = encodeURIComponent(jq("#hiddenFileName").val());
-        var url = UrlEditor + "?type=embedded&mode=embedded&fileName=" + fileId + "&directUrl=" + directUrl;
+        var url = UrlEditor + "?type=embedded&mode=embedded&fileName=" + fileId;
 
         jq("#mainProgress").addClass("embedded");
         jq("#beginEmbedded").addClass("disable");
@@ -414,14 +402,12 @@ if (typeof jQuery !== "undefined") {
                         jq("#convertStep2").removeClass("current").addClass("done");
                         jq("#convertStep2").text(`2. File conversion to ${fileExt}`);
                         jq("#downloadConverted").removeClass("disable");
+                        jq("#hiddenFileName").attr("data",response.filename);
                         if (response.error !== "FileTypeIsNotSupported") {
-                            jq("#hiddenFileName").attr("data",response.filename);
                             jq("#beginEditConverted").removeClass("disable");
                             jq("#beginViewConverted").removeClass("disable");
                             jq("#downloadConverted").attr("data","fromStorage");
                         } else {
-                            let newFilename = fileName.split('.').slice(0,-1).join('.')
-                            jq("#hiddenFileName").attr("data",response.filename.split("&filename=download").join(`&filename=${newFilename}`));
                             jq("#downloadConverted").attr("data","fromConverter");
                         }
                         jq("td[name='convertingTypeButton']").removeClass("disable orange");

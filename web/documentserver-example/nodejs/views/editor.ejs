@@ -395,6 +395,18 @@
             };
         };
 
+        var onRequestStartFilling = function(event) {
+            var data = event.data;
+            var submit = confirm("Start filling?\n" + JSON.stringify(data));
+            if (submit) {
+                docEditor.startFilling(true);
+            }
+        };
+
+        var onStartFilling = function(event) {
+            innerAlert("The form is ready to fill out.");
+        };
+
         var onDocumentReady = function(){
             fixSize();
         };
@@ -429,6 +441,8 @@
             config.events.onRequestReferenceData = onRequestReferenceData;
             config.events.onRequestReferenceSource = onRequestReferenceSource;
             config.events.onRequestRefreshFile = onRequestRefreshFile;
+            config.events.onRequestStartFilling = onRequestStartFilling;
+            config.events.onStartFilling = onStartFilling;
             if (<%- JSON.stringify(editor.userid) %> != "uid-3") {
                 config.events.onRequestHistoryClose = onRequestHistoryClose;
                 config.events.onRequestRestore = onRequestRestore;

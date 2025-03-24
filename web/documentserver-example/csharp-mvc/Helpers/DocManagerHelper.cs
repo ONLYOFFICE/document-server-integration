@@ -217,7 +217,9 @@ namespace OnlineEditorsExampleMVC.Helpers
             var directoryInfo = new DirectoryInfo(directory);
 
             // take files from the root directory
-            List<FileInfo> storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).ToList();
+            List<FileInfo> storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly)
+                .OrderByDescending(f => f.LastWriteTimeUtc)
+                .ToList();
 
             return storedFiles;
         }

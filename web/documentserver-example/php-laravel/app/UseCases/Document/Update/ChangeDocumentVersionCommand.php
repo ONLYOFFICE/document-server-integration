@@ -5,10 +5,10 @@ namespace App\UseCases\Document\Update;
 use App\Helpers\Path\Path;
 use App\Models\Version;
 use App\Models\VersionInfo;
+use App\OnlyOffice\Managers\SettingsManager;
 use App\Repositories\FileRepository;
 use App\Repositories\UserRepository;
 use App\Repositories\VersionRepository;
-use App\Services\ServerConfig;
 use Illuminate\Support\Str;
 
 class ChangeDocumentVersionCommand
@@ -17,7 +17,7 @@ class ChangeDocumentVersionCommand
         private FileRepository $fileRepository,
         private VersionRepository $versionRepository,
         private UserRepository $userRepository,
-        private ServerConfig $serverConfig,
+        private SettingsManager $settings,
     ) {}
 
     public function __invoke(ChangeDocumentVersionRequest $request): void
@@ -33,8 +33,8 @@ class ChangeDocumentVersionCommand
         if ($request->url) {
             $data = file_get_contents(
                 str_replace(
-                    $this->serverConfig->get('url.public'),
-                    $this->serverConfig->get('url.private'),
+                    $this->settings->getSetting('url.server.public'),
+                    $this->settings->getSetting('url.server.private'),
                     $request->url),
                 false,
                 stream_context_create(['http' => ['timeout' => 5]])
