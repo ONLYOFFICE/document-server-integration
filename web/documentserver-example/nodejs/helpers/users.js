@@ -103,7 +103,7 @@ const descrUser0 = [
   'Doesn\'t belong to any group',
   'Can review all the changes',
   'Can perform all actions with comments',
-  'Can\'t see anyone’s information',
+  'Can\'t see anyone\'s information',
   'The file favorite state is undefined',
   'Can\'t mention others in comments',
   'Can\'t create new files from the editor',

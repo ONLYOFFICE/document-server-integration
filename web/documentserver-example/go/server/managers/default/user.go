@@ -151,7 +151,7 @@ var descriptionUser2 []string = []string{
 	"Belongs to Group2",
 	"Can review only his own changes or changes made by users with no group",
 	"Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
-	"Can see the information about users from Group2 and users who don’t belong to any group",
+	"Can see the information about users from Group2 and users who don't belong to any group",
 	"This file is marked as favorite",
 	"Can create new files from the editor",
 	"Has an avatar",

@@ -33,11 +33,11 @@ public final class Users {
 
     private static List<String> descriptionUserFirst = new ArrayList<String>() {{
         add("File author by default");
-        add("Doesn’t belong to any group");
+        add("Doesn't belong to any group");
         add("Can review all the changes");
         add("Can perform all actions with comments");
         add("Can see the information about all users");
-        add("This file isn’t marked as favorite");
+        add("This file isn't marked as favorite");
         add("Can create files from templates using data from the editor");
         add("Has an avatar");
         add("Can submit forms");
@@ -48,11 +48,11 @@ public final class Users {
         add("Can review only his own changes or changes made by users with no group");
         add("Can view comments, edit his own comments and comments left by users with no group."
                 + " Can remove his own comments only");
-        add("Can see the information about users from Group2 and users who don’t belong to any group");
+        add("Can see the information about users from Group2 and users who don't belong to any group");
         add("This file is marked as favorite");
         add("Can create new files from the editor");
         add("Has an avatar");
-        add("Can’t submit forms");
+        add("Can't submit forms");
     }};
 
     private static List<String> descriptionUserThird = new ArrayList<String>() {{
@@ -61,21 +61,21 @@ public final class Users {
         add("Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users");
         add("Can see the information about Group2 users");
         add("The file favorite state is undefined");
-        add("Can’t copy data from the file to clipboard");
-        add("Can’t download the file");
-        add("Can’t print the file");
+        add("Can't copy data from the file to clipboard");
+        add("Can't download the file");
+        add("Can't print the file");
         add("Can create new files from the editor");
         add("Can't close history");
         add("Can't restore the file version");
-        add("Can’t submit forms");
+        add("Can't submit forms");
     }};
 
     private static List<String> descriptionUserZero = new ArrayList<String>() {{
         add("The name is requested when the editor is opened");
-        add("Doesn’t belong to any group");
+        add("Doesn't belong to any group");
         add("Can review all the changes");
         add("Can perform all actions with comments");
-        add("Can’t see anyone’s information");
+        add("Can't see anyone's information");
         add("The file favorite state is undefined");
         add("Can't mention others in comments");
         add("Can't create new files from the editor");
@@ -84,7 +84,7 @@ public final class Users {
         add("Can't protect file");
         add("View file without collaboration");
         add("Can't refresh outdated file");
-        add("Can’t submit forms");
+        add("Can't submit forms");
         add("Tour of tips when opening a document");
     }};
 

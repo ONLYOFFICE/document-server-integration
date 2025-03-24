@@ -38,10 +38,10 @@ public class ExampleData {
         // the description for user 0
         List<String> descriptionUserZero = List.of(
                 "The name is requested when the editor is opened",
-                "Doesn’t belong to any group",
+                "Doesn't belong to any group",
                 "Can review all the changes",
                 "Can perform all actions with comments",
-                "Can’t see anyone’s information",
+                "Can't see anyone's information",
                 "The file favorite state is undefined",
                 "Can't mention others in comments",
                 "Can't create new files from the editor",
@@ -50,18 +50,18 @@ public class ExampleData {
                 "Can't protect file",
                 "View file without collaboration",
                 "Can't refresh outdated file",
-                "Can’t submit forms",
+                "Can't submit forms",
                 "Tour of tips when opening a document"
         );
 
         // the description for user 1
         List<String> descriptionUserFirst = List.of(
                 "File author by default",
-                "He doesn’t belong to any of the groups",
+                "He doesn't belong to any of the groups",
                 "He can review all the changes",
                 "He can do everything with the comments",
                 "Can see the information about all users",
-                "This file isn’t favorite",
+                "This file isn't favorite",
                 "Can create a file from a template with data from the editor",
                 "Can view chat",
                 "Has an avatar",
@@ -71,16 +71,16 @@ public class ExampleData {
         // the description for user 2
         List<String> descriptionUserSecond = List.of(
                 "He belongs to Group2",
-                "He can review only his own changes or the changes made by the users who don’t belong"
+                "He can review only his own changes or the changes made by the users who don't belong"
                         + " to any of the groups",
                 "He can view every comment, edit his comments and the comments left by the users "
                         + "who don't belong to any of the groups and remove only his comments",
-                "Can see the information about users from Group2 and users who don’t belong to any group",
+                "Can see the information about users from Group2 and users who don't belong to any group",
                 "This file is favorite",
                 "Can create a file from an editor",
                 "Can view chat",
                 "Has an avatar",
-                "Can’t submit forms"
+                "Can't submit forms"
         );
 
         // the description for user 3
@@ -91,14 +91,14 @@ public class ExampleData {
                         + "the users from Group2",
                 "Can see the information about Group2 users",
                 "The file favorite state is undefined",
-                "He can’t copy data from the file into the clipboard",
-                "He can’t download the file",
-                "He can’t print the file",
+                "He can't copy data from the file into the clipboard",
+                "He can't download the file",
+                "He can't print the file",
                 "Can create a file from an editor",
                 "Can view chat",
                 "Can't close history",
                 "Can't restore the file version",
-                "Can’t submit forms"
+                "Can't submit forms"
         );
 
         // create user 1 with the specified parameters
