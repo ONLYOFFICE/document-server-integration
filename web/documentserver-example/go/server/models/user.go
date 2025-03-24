@@ -32,11 +32,13 @@ type User struct {
 	Avatar            bool                   `json:"avatar"`
 	Goback            map[string]interface{} `json:"goback"`
 	Close             map[string]interface{} `json:"close"`
+	Roles             []string               `json:"roles"`
 }
 
 type UserInfo struct {
-	Id    string `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-	Image string `json:"image"`
+	Id    string   `json:"id"`
+	Name  string   `json:"name"`
+	Roles []string `json:"roles"`
+	Email string   `json:"email"`
+	Image string   `json:"image"`
 }
