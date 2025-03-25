@@ -182,6 +182,7 @@ class FileModel
         user: { # the user currently viewing or editing the document
           id: @user.id.eql?('uid-0') ? nil : @user.id,
           name: @user.name,
+          roles: @user.roles,
           group: @user.group,
           image: @user.avatar ? "#{DocumentHelper.get_server_url(false)}/assets/#{@user.id}.png" : nil
         },
