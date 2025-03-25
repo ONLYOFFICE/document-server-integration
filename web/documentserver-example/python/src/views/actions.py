@@ -324,6 +324,7 @@ def edit(request):
             'user': {  # the user currently viewing or editing the document
                 'id': user.id if user.id != 'uid-0' else None,
                 'name': user.name,
+                'roles': user.roles,
                 'group': user.group,
                 'image': docManager.getServerUrl(False, request) + f'/static/images/{user.id}.jpg' if user.avatar
                 else None
