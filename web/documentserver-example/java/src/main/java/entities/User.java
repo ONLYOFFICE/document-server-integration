@@ -35,13 +35,14 @@ public class User {
     private final Boolean avatar;
     private final Goback goback;
     private final Close close;
+    private final List<String> roles;
 
     public User(final String idParam, final String nameParam, final String emailParam, final String groupParam,
                 final List<String> reviewGroupsParam, final CommentGroups commentGroupsParam,
                 final List<String> userInfoGroupsParam, final Boolean favoriteParam,
                 final List<String> deniedPermissionsParam, final List<String> descriptionsParam,
                 final Boolean templatesParam, final Boolean avatarParam, final Goback gobackParam,
-                final Close closeParam) {
+                final Close closeParam, final List<String> rolesParam) {
         this.id = idParam;
         this.name = nameParam;
         this.email = emailParam;
@@ -56,6 +57,7 @@ public class User {
         this.avatar = avatarParam;
         this.goback = gobackParam;
         this.close = closeParam;
+        this.roles = rolesParam;
     }
 
     public String getId() {
@@ -112,5 +114,9 @@ public class User {
 
     public Close getClose() {
         return close;
+    }
+
+    public List<String> getRoles() {
+        return roles;
     }
 }

@@ -394,6 +394,18 @@
             innerAlert("onRequestSendNotify: " + data);
         };
 
+        var onRequestStartFilling = function(event) {
+            var data = event.data;
+            var submit = confirm("Start filling?\n" + JSON.stringify(data));
+            if (submit) {
+                docEditor.startFilling(true);
+            }
+        };
+
+        var onStartFilling = function(event) {
+            innerAlert("The form is ready to fill out.");
+        };
+
         config = JSON.parse('<%= FileModel.serialize(Model) %>');
         config.width = "100%";
         config.height = "100%";
@@ -411,6 +423,8 @@
         };
 
         if (config.editorConfig.user.id) {
+            config.events['onRequestStartFilling'] = onRequestStartFilling;
+            config.events['onStartFilling'] = onStartFilling;
             config.events['onRequestRefreshFile'] = onRequestRefreshFile;
             config.events['onRequestClose'] = onRequestClose;
             // add mentions for not anonymous users

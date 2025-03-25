@@ -110,6 +110,7 @@ public class FileModel {
         // write user information to the config (id, name and group)
         editorConfig.getUser().setId(!user.getId().equals("uid-0") ? user.getId() : null);
         editorConfig.getUser().setName(user.getName());
+        editorConfig.getUser().setRoles(user.getRoles());
         editorConfig.getUser().setGroup(user.getGroup());
         editorConfig.getUser().setImage(user.getAvatar() ? DocumentManager.getServerUrl(false)
         + "/css/img/" + user.getId() + ".png" : null);
@@ -540,6 +541,7 @@ public class FileModel {
         public class User {
             private String id;
             private String name;
+            private List<String> roles;
             private String group;
             private String image;
 
@@ -569,6 +571,10 @@ public class FileModel {
 
             public void setImage(final String imageParam) {
                 this.image = imageParam;
+            }
+
+            public void setRoles(final List<String> rolesParam) {
+                this.roles = rolesParam;
             }
         }
 

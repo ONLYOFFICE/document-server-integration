@@ -41,6 +41,8 @@ public final class Users {
         add("Can create files from templates using data from the editor");
         add("Has an avatar");
         add("Can submit forms");
+        add("Has no roles");
+        add("Can start filling");
     }};
 
     private static List<String> descriptionUserSecond = new ArrayList<String>() {{
@@ -53,6 +55,8 @@ public final class Users {
         add("Can create new files from the editor");
         add("Has an avatar");
         add("Can't submit forms");
+        add("Has role 'Anyone'");
+        add("Can start filling");
     }};
 
     private static List<String> descriptionUserThird = new ArrayList<String>() {{
@@ -68,6 +72,8 @@ public final class Users {
         add("Can't close history");
         add("Can't restore the file version");
         add("Can't submit forms");
+        add("Has role 'role'");
+        add("Can start filling");
     }};
 
     private static List<String> descriptionUserZero = new ArrayList<String>() {{
@@ -86,26 +92,29 @@ public final class Users {
         add("Can't refresh outdated file");
         add("Can't submit forms");
         add("Tour of tips when opening a document");
+        add("Has empty role");
+        add("Can't start filling");
     }};
 
     private static List<User> users = new ArrayList<User>() {{
         add(new User("uid-1", "John Smith", "smith@example.com",
                 "", null, new CommentGroups(), null,
                 false, new ArrayList<String>(), descriptionUserFirst, true, true, new Goback(null, false),
-                new Close(null, false)));
+                new Close(null, false), null));
         add(new User("uid-2", "Mark Pottato", "pottato@example.com",
                 "group-2", Arrays.asList("group-2", ""), new CommentGroups(null,
                 Arrays.asList("group-2", ""), Arrays.asList("group-2")), Arrays.asList("group-2", ""),
                 true, new ArrayList<String>(), descriptionUserSecond, false, true,
-                new Goback("Go to Documents", false), new Close(null, true)));
+                new Goback("Go to Documents", false), new Close(null, true), Arrays.asList("Anyone")));
         add(new User("uid-3", "Hamish Mitchell", null,
                 "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"),
                 Arrays.asList("group-2"), null), Arrays.asList("group-2"),
                 null, Arrays.asList("copy", "download", "print"),
-                descriptionUserThird, false, false, null, new Close(null, true)));
+                descriptionUserThird, false, false, null, new Close(null, true), Arrays.asList("role")));
         add(new User("uid-0", null, null,
                 "", null, null, null,
-                null, Arrays.asList("protect"), descriptionUserZero, false, false, null, null));
+                null, Arrays.asList("protect"), descriptionUserZero, false, false, null, null,
+                new ArrayList<String>()));
     }};
 
     private Users() { }
