@@ -169,11 +169,13 @@ class DocumentHelper
         next if e.eql?('..')
         next if File.directory?(File.join(directory, e)) # if the element is a directory, skip it
 
-        arr.push(e) # push the file to the array
+        file_path = File.join(directory, e)
+        arr.push([e, File.mtime(file_path)]) # push the file name and its modification time to the array
       end
     end
 
-    arr
+    arr.sort_by { |_, mtime| -mtime.to_i } # rubocop:disable Lint/NumberConversion
+       .map(&:first)
   end
 
   # create file meta information

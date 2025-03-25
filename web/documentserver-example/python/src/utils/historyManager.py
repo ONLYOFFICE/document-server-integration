@@ -195,7 +195,7 @@ def getHistoryObject(storagePath, filename, docKey, docUrl, isEnableDirectUrl, r
                 if i > 1:  # check if the version number is greater than 1 (the file was modified)
                     # get the path to the changes.json file
                     changes = json.loads(readFile(getChangesHistoryPath(prevVerDir)))
-                    change = changes['changes'][0]
+                    change = changes['changes'][-1]
                     # write information about changes to the object
                     obj['changes'] = changes['changes'] if change else None
                     obj['serverVersion'] = changes['serverVersion']

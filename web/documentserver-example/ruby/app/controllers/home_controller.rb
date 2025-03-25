@@ -532,7 +532,10 @@ class HomeController < ApplicationController
 
     source_basename = body['fileName']
     version = body['version']
-    url = body['url']
+    url = body['url'].sub(
+      HomeController.config_manager.document_server_public_uri.to_s,
+      HomeController.config_manager.document_server_private_uri.to_s
+    )
     user_id = body['userId']
 
     source_extension = Pathname(source_basename).extname
