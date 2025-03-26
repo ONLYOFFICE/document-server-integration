@@ -119,6 +119,7 @@ class Editor
             'user' => [
                 'id' => $this->user->id != 'uid-0' ? $this->user->id : null,
                 'name' => $this->user->name,
+                'roles' => $this->user->roles,
                 'group' => $this->user->group,
                 'image' => $this->user->avatar ? $this->config->imagesUrl.$this->user->id.'.png' : null,
             ],

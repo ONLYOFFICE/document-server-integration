@@ -36,6 +36,8 @@ class UserRepository
             'Can create files from templates using data from the editor',
             'Has an avatar',
             'Can submit forms',
+            'Has no roles',
+            'Can start filling',
         ];
         $descriptions[] = [
             'Belongs to Group2',
@@ -47,6 +49,8 @@ class UserRepository
             'Can create new files from the editor',
             'Has an avatar',
             'Can’t submit forms',
+            'Has role "Anyone"',
+            'Can start filling',
         ];
         $descriptions[] = [
             'Belongs to Group3',
@@ -61,6 +65,8 @@ class UserRepository
             "Can't close history",
             "Can't restore the file version",
             'Can’t submit forms',
+            'Has role "role"',
+            'Can start filling',
         ];
         $descriptions[] = [
             'The name is requested when the editor is opened',
@@ -76,6 +82,8 @@ class UserRepository
             'View file without collaboration',
             'Can’t refresh outdated file',
             'Can’t submit forms',
+            'Has empty role',
+            'Can’t start filling',
         ];
         $this->users = [
             new User(
@@ -92,7 +100,8 @@ class UserRepository
                 true,
                 true,
                 ['blank' => false],
-                ['visible' => false]
+                ['visible' => false],
+                null
             ),
             new User(
                 'uid-2',
@@ -112,7 +121,8 @@ class UserRepository
                 false,
                 true,
                 ['text' => 'Go to Documents'],
-                ['visible' => true]
+                ['visible' => true],
+                ['Anyone']
             ),
             new User(
                 'uid-3',
@@ -132,7 +142,8 @@ class UserRepository
                 false,
                 false,
                 null,
-                ['visible' => true]
+                ['visible' => true],
+                ['role']
             ),
             new User(
                 'uid-0',
@@ -148,7 +159,8 @@ class UserRepository
                 false,
                 false,
                 null,
-                null
+                null,
+                []
             ),
         ];
     }
