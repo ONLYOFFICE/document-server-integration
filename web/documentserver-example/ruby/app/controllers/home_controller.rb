@@ -532,10 +532,7 @@ class HomeController < ApplicationController
 
     source_basename = body['fileName']
     version = body['version']
-    url = body['url'].sub(
-      HomeController.config_manager.document_server_public_uri.to_s,
-      HomeController.config_manager.document_server_private_uri.to_s
-    )
+    url = body['url']
     user_id = body['userId']
 
     source_extension = Pathname(source_basename).extname
@@ -588,6 +585,10 @@ class HomeController < ApplicationController
     if url.nil?
       FileUtils.cp(recovery_file, source_file)
     else
+      url = url.sub(
+        HomeController.config_manager.document_server_public_uri.to_s,
+        HomeController.config_manager.document_server_private_uri.to_s
+      )
       uri = URI.parse(url)
       http = Net::HTTP.new(uri.host, uri.port)
       DocumentHelper.verify_ssl(url, http)
