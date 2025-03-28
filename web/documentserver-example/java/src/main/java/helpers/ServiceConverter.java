@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,13 +140,13 @@ public final class ServiceConverter {
     public static Map<String, String> getConvertedData(final String documentUri, final String fromExtension,
                                                        final String toExtension, final String documentRevisionId,
                                                        final String filePass, final Boolean isAsync,
-                                                       final String lang) throws Exception {
+                                                       final String lang, final String filename) throws Exception {
         // check if the fromExtension parameter is defined; if not, get it from the document url
         String fromExt = fromExtension == null || fromExtension.isEmpty()
                 ? FileUtility.getFileExtension(documentUri) : fromExtension;
 
         // check if the file name parameter is defined; if not, get random uuid for this file
-        String title = FileUtility.getFileName(documentUri);
+        String title = filename == null || filename.isEmpty() ? FileUtility.getFileName(documentUri) : filename;
         title = title == null || title.isEmpty() ? UUID.randomUUID().toString() : title;
 
         String documentRevId = documentRevisionId == null || documentRevisionId.isEmpty()

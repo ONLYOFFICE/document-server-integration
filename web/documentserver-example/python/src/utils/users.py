@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2024
+ (c) Copyright Ascensio System SIA 2025
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ from typing import Optional
 
 class User:
     def __init__(self, uid, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
-                 deniedPermissions, descriptions, templates, avatar, goback):
+                 deniedPermissions, descriptions, templates, avatar, goback, close):
         self.id = uid
         self.name = name
         self.email = email
@@ -35,6 +35,7 @@ class User:
         self.userInfoGroups = userInfoGroups
         self.avatar = avatar
         self.goback = goback
+        self.close = close
 
 
 descr_user_1 = [
@@ -89,13 +90,14 @@ descr_user_0 = [
     "Can't view chat",
     "Can't protect file",
     "View file without collaboration",
-    "Can’t submit forms"
+    "Can’t submit forms",
+    "Can't refresh outdated file"
 ]
 
 USERS = [
     User('uid-1', 'John Smith', 'smith@example.com',
          '', None, {}, None,
-         None, [], descr_user_1, True, True, {'blank': False}),
+         None, [], descr_user_1, True, True, {'blank': False}, {'visible': False}),
     User('uid-2', 'Mark Pottato', 'pottato@example.com',
          'group-2', ['group-2', ''], {
              'view': "",
@@ -103,7 +105,7 @@ USERS = [
              'remove': ["group-2"]
          },
          ['group-2', ''],
-         True, [], descr_user_2, False, True, {'text': "Go to Documents"}),
+         True, [], descr_user_2, False, True, {'text': "Go to Documents"}, {}),
     User('uid-3', 'Hamish Mitchell', None,
          'group-3', ['group-2'], {
              'view': ["group-3", "group-2"],
@@ -111,10 +113,10 @@ USERS = [
              'remove': []
          }, ['group-2'],
          False, ["copy", "download", "print"], descr_user_3, False, False,
-         None),
+         None, {}),
     User('uid-0', None, None,
          '', None, {}, [],
-         None, ["protect"], descr_user_0, False, False, None)
+         None, ["protect"], descr_user_0, False, False, None, None)
 ]
 
 DEFAULT_USER = USERS[0]

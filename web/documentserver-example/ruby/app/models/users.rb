@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 #
-# (c) Copyright Ascensio System SIA 2024
+# (c) Copyright Ascensio System SIA 2025
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ class User
   attr_accessor :templates
   attr_accessor :avatar
   attr_accessor :goback
+  attr_accessor :close
 
   def initialize(
     id,
@@ -45,7 +46,8 @@ class User
     descriptions,
     templates,
     avatar,
-    goback
+    goback,
+    close
   )
     @id = id
     @name = name
@@ -60,6 +62,7 @@ class User
     @user_info_groups = user_info_groups
     @avatar = avatar
     @goback = goback
+    @close = close
   end
 end
 
@@ -117,7 +120,8 @@ class Users
     "Can't view chat",
     "Can't protect file",
     'View file without collaboration',
-    'Can’t submit forms'
+    'Can’t submit forms',
+    'Can’t refresh outdated file'
   ]
 
   @users = [
@@ -134,7 +138,8 @@ class Users
       @descr_user_first,
       true,
       true,
-      { blank: false }
+      { blank: false },
+      { visible: false }
     ),
     User.new(
       'uid-2',
@@ -153,7 +158,8 @@ class Users
       @descr_user_second,
       false,
       true,
-      { text: 'Go to Documents' }
+      { text: 'Go to Documents' },
+      {}
     ),
     User.new(
       'uid-3',
@@ -172,7 +178,8 @@ class Users
       @descr_user_third,
       false,
       false,
-      nil
+      nil,
+      {}
     ),
     User.new(
       'uid-0',
@@ -187,6 +194,7 @@ class Users
       @descr_user_null,
       false,
       false,
+      nil,
       nil
     )
   ]

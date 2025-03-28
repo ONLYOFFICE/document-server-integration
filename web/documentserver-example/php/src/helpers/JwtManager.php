@@ -3,7 +3,7 @@
 namespace Example\Helpers;
 
 /**
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,6 +56,9 @@ final class JwtManager
     public function jwtEncode($payload)
     {
         $configManager = new ConfigurationManager();
+        $now = time();
+        $payload['iat'] = $now;
+        $payload['exp'] = $now + $configManager->jwtExpiresIn() * 60;
         return JWT::encode($payload, $configManager->jwtSecret(), 'HS256');
     }
 

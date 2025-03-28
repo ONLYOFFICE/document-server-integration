@@ -75,3 +75,11 @@ License File:   spring-boot.license
 Spring Data JPA - Persist data in SQL stores with Java Persistence API using Spring Data and Hibernate. (https://github.com/spring-projects/spring-data-jpa/blob/main/LICENSE.txt)
 License:        Apache 2.0
 License File:   spring-data-jpa.license
+
+org.apache.httpcomponents.core5.core5 - Apache HttpComponents HTTP/1.1 core components. (https://www.apache.org/licenses/LICENSE-2.0.txt)
+License:        Apache 2.0
+License File:   org.apache.httpcomponents.core5.core5.license
+
+org.apache.httpcomponents.client5.httpclient5 - Apache HttpComponents Client. (https://www.apache.org/licenses/LICENSE-2.0.txt)
+License:        Apache 2.0
+License File:   org.apache.httpcomponents.client5.httpclient5.license

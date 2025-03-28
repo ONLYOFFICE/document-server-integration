@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -195,7 +195,7 @@ function getDocumentType($filename)
         }
     }
 
-    return "word";
+    return null;
 }
 
 /**
@@ -659,7 +659,8 @@ function sendRequestToConvertService(
     $documentRevisionID,
     $async,
     $filePass,
-    $lang
+    $lang,
+    $fileName = null
 ) {
     $configManager = new ConfigurationManager();
 
@@ -669,7 +670,7 @@ function sendRequestToConvertService(
     }
 
     // if title is undefined, then replace it with a random guid
-    $title = basename($documentURL);
+    $title = $fileName ?? basename($documentURL);
     if (empty($title)) {
         $title = guid();
     }
@@ -758,7 +759,8 @@ function getConvertedData(
     $async,
     &$convertedDocumentURL,
     $filePass,
-    $lang
+    $lang,
+    $fileName = null
 ) {
     $convertedDocumentURL = "";
     $responceFromConvertService = sendRequestToConvertService(
@@ -768,7 +770,8 @@ function getConvertedData(
         $documentRevisionID,
         $async,
         $filePass,
-        $lang
+        $lang,
+        $fileName
     );
     $json = json_decode($responceFromConvertService, true);
 
@@ -965,7 +968,7 @@ function getHistory($filename, $filetype, $docKey, $fileuri, $isEnableDirectUrl)
             if ($i > 1) {  // check if the version number is greater than 1 (the document was modified)
                 $changes = json_decode(file_get_contents(getVersionDir($histDir, $i - 1) .
                     DIRECTORY_SEPARATOR . "changes.json"), true);  // get the path to the changes.json file
-                $change = $changes["changes"][0];
+                $change = $changes["changes"][count($changes["changes"]) - 1];
 
                 // write information about changes to the object
                 $obj["changes"] = $changes ? $changes["changes"] : null;

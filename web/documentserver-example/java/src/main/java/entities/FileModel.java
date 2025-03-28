@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,6 +124,10 @@ public class FileModel {
                 .setBlank(user.getGoback().getBlank());
         }
 
+        if (user.getClose() != null) {
+            editorConfig.getCustomization().setClose(user.getClose());
+        }
+
         changeType(mode, type, user, fileName);
     }
 
@@ -151,13 +155,12 @@ public class FileModel {
     public void changeType(final String modeParam, final String typeParam, final User user, final String fileName) {
         // check if the file with such an extension can be edited
         String fileExt = FileUtility.getFileExtension(document.getTitle());
-        Boolean canFill = DocumentManager.getFillExts().contains(fileExt);
         Boolean canEdit = DocumentManager.getEditedExts().contains(fileExt);
 
         if (modeParam != null) {
             mode = modeParam;
         } else {
-            mode = canFill ? "fillForms" : "edit";
+            mode = "edit";
         }
         if (typeParam != null) {
             type = typeParam;
@@ -168,7 +171,8 @@ public class FileModel {
             editorConfig.getCustomization().setSubmitForm(user.getId().equals("uid-1"));
         }
 
-        if ((!canEdit && mode.equals("edit") || mode.equals("fillForms")) && canFill) {
+        if ((!canEdit && mode.equals("edit") || mode.equals("fillForms"))
+        && DocumentManager.getFillExts().contains(fileExt)) {
             canEdit = true;
             mode = "fillForms";
         }
@@ -371,7 +375,7 @@ public class FileModel {
         }
     }
 
-    public class ReferenceData {
+    public static class ReferenceData {
         private final String instanceId;
         private final Map<String, String> fileKey;
         public ReferenceData(final String fileName, final String curUserHostAddress, final User user) {
@@ -568,6 +572,7 @@ public class FileModel {
         // customization parameters
         public class Customization {
             private Goback goback;
+            private Close close;
             private Boolean forcesave;
             private Boolean submitForm;
             private Boolean about;
@@ -578,16 +583,25 @@ public class FileModel {
                 this.submitForm = submitFormParam;
             }
 
+            public void setClose(final Close closeParam) {
+                this.close = closeParam;
+            }
+
             public Customization() {
                 about = true;
                 comments = true;
                 feedback = true;
                 forcesave = false;
                 goback = new Goback();
+                close = new Close();
             }
 
             public Goback getGoback() {
                 return goback;
+            }
+
+            public Close getClose() {
+                return close;
             }
 
             public Boolean getForcesave() {

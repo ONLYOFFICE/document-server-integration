@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2024
+# (c) Copyright Ascensio System SIA 2025
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ from src.common import string
 
 
 class ConfigurationManager:
-    version = '1.12.0'
+    version = '1.13.0'
 
     def getVersion(self) -> str:
         return self.version
@@ -91,6 +91,9 @@ class ConfigurationManager:
 
     def jwt_header(self) -> str:
         return environ.get('JWT_HEADER') or 'Authorization'
+
+    def jwt_expires_in(self) -> int:
+        return int(environ.get('JWT_EXPIRES_IN', 5))
 
     def jwt_use_for_request(self) -> bool:
         use = environ.get('JWT_USE_FOR_REQUEST')

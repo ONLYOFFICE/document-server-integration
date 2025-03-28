@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@
 package com.onlyoffice.integration.services;
 
 import com.onlyoffice.integration.entities.Goback;
+import com.onlyoffice.integration.entities.Close;
 import com.onlyoffice.integration.entities.Group;
 import com.onlyoffice.integration.entities.Permission;
 import com.onlyoffice.integration.entities.User;
@@ -66,6 +67,7 @@ public class UserServices {
                            final Boolean protect,
                            final Boolean avatar,
                            final Goback goback,
+                           final Close close,
                            final Boolean submitForm) {
         User newUser = new User();
         newUser.setName(name);  // set the user name
@@ -97,6 +99,8 @@ public class UserServices {
         newUser.setPermissions(permission);
 
         newUser.setGoback(goback);
+
+        newUser.setClose(close);
 
         userRepository.save(newUser); // save a new user
 

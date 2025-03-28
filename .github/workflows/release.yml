@@ -63,6 +63,14 @@ jobs:
           rsync -av --exclude='PHP Example' ./ ./'PHP Example'
           rm -rf ./'PHP Example'/assets/document-formats/.git
           rm -rf ./'PHP Example'/assets/document-templates/.git
+      - name: Build PHP Laravel Artifact
+        run: |
+            cd ${{ github.workspace }}
+            cd ./web/documentserver-example/php-laravel
+            mkdir -p ./'PHP Laravel Example'
+            rsync -av --exclude='PHP Laravel Example' ./ ./'PHP Laravel Example'
+            rm -rf ./'PHP Laravel Example'/public/assets/document-formats/.git
+            rm -rf ./'PHP Laravel Example'/public/assets/document-templates/.git
       - name: Build Python Artifact
         run: |
           cd ${{ github.workspace }}
@@ -87,6 +95,14 @@ jobs:
           rsync -av --exclude='Java Spring Example' ./ ./'Java Spring Example'
           rm -rf ./'Java Spring Example'/src/main/resources/assets/document-formats/.git
           rm -rf ./'Java Spring Example'/src/main/resources/assets/document-templates/.git
+      - name: Build Go Artifact
+        run: |
+          cd ${{ github.workspace }}
+          cd ./web/documentserver-example/go
+          mkdir -p .'Go Example'
+          rsync -av --exclude='Go Example' ./ ./'Go Example'
+          rm -rf ./'Go Example'/static/assets/document-formats/.git
+          rm -rf ./'Go Example'/static/assets/document-templates/.git
       - name: Pack Artifacts
         run: |
           cd ${{ github.workspace }}/web/documentserver-example/csharp-mvc
@@ -99,12 +115,16 @@ jobs:
           zip -r Node.js.Example.zip ./'Node.js Example'
           cd ${{ github.workspace }}/web/documentserver-example/php
           zip -r PHP.Example.zip ./'PHP Example'
+          cd ${{ github.workspace }}/web/documentserver-example/php-laravel
+          zip -r PHP.Laravel.Example.zip ./'PHP Laravel Example'
           cd ${{ github.workspace }}/web/documentserver-example/python
           zip -r Python.Example.zip ./'Python Example'
           cd ${{ github.workspace }}/web/documentserver-example/ruby
           zip -r Ruby.Example.zip ./'Ruby Example'
           cd ${{ github.workspace }}/web/documentserver-example/java-spring
           zip -r Java.Spring.Example.zip ./'Java Spring Example'
+          cd ${{ github.workspace }}/web/documentserver-example/go
+          zip -r Go.Example.zip ./'Go Example'
       - name: Create Release
         uses: ncipollo/release-action@v1
         id: create_release
@@ -116,8 +136,10 @@ jobs:
             ${{ github.workspace }}/web/documentserver-example/java/Java.Example.zip,
             ${{ github.workspace }}/web/documentserver-example/nodejs/Node.js.Example.zip,
             ${{ github.workspace }}/web/documentserver-example/php/PHP.Example.zip,
+            ${{ github.workspace }}/web/documentserver-example/php-laravel/PHP.Laravel.Example.zip,
             ${{ github.workspace }}/web/documentserver-example/python/Python.Example.zip,
             ${{ github.workspace }}/web/documentserver-example/ruby/Ruby.Example.zip,
-            ${{ github.workspace }}/web/documentserver-example/java-spring/Java.Spring.Example.zip
+            ${{ github.workspace }}/web/documentserver-example/java-spring/Java.Spring.Example.zip,
+            ${{ github.workspace }}/web/documentserver-example/go/Go.Example.zip
           "
           tag: v${{ steps.info.outputs.version }}

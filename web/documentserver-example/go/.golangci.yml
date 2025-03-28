@@ -1,0 +1,47 @@
+linters:
+  enable-all: true
+  disable:
+    - cyclop
+    - depguard
+    - dogsled
+    - durationcheck
+    - err113
+    - errchkjson
+    - execinquery
+    - exhaustruct
+    - exportloopref
+    - funlen
+    - gochecknoglobals
+    - gocognit
+    - goconst
+    - godox
+    - gofumpt
+    - gomnd
+    - gosec
+    - interfacebloat
+    - ireturn
+    - mirror
+    - mnd
+    - musttag
+    - nestif
+    - nlreturn
+    - noctx
+    - nolintlint
+    - nonamedreturns
+    - perfsprint
+    - prealloc
+    - revive
+    - varnamelen
+    - wrapcheck
+    - wsl
+
+linters-settings:
+  errcheck:
+    exclude-functions:
+      - (net/http.ResponseWriter).Write
+  lll:
+    line-length: 120
+  gofmt:
+    simplify: false
+  stylecheck:
+    checks: ["all", "-ST1016", "-ST1003"]

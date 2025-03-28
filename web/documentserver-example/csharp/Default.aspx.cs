@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -447,8 +447,15 @@ namespace OnlineEditorsExample
                 conversionExtension = fileExt.ToString();
             }
 
+            object keepOriginal;
+            bool removeOriginal = true;
+            if (body.TryGetValue("keepOriginal", out keepOriginal) && !String.IsNullOrEmpty(keepOriginal.ToString()))
+            {
+                removeOriginal = keepOriginal.ToString().ToLower() != "true";
+            }
+
             // check if the file with such an extension can be converted
-            if (ConvertExts.Contains("." + extension))
+            if (ConvertExts.Contains("." + extension) || conversionExtension != "ooxml")
             {
                 // generate document key
                 var key = ServiceConverter.GenerateRevisionId(FileUri(_fileName, true));
@@ -462,16 +469,20 @@ namespace OnlineEditorsExample
 
                 // get the url and file type of the converted file
                 Dictionary<string, string> newFileData;
-                var result = ServiceConverter.GetConvertedData(fileUrl.ToString() , extension, conversionExtension, key, true, out newFileData, filePass, lang);
+                var result = ServiceConverter.GetConvertedData(fileUrl.ToString() , extension, conversionExtension, key, true, out newFileData, filePass, lang, _fileName);
                 if (result != 100)
                 {
                     return "{ \"step\" : \"" + result + "\", \"filename\" : \"" + _fileName + "\"}";
                 }
 
                 var newFileUri = newFileData["fileUrl"];
-                var newFileType = "." + newFileData["fileType"];
+                var newFileType = newFileData["fileType"];
+                if (!FormatManager.All().Any(f => f.Name == newFileType && f.Type != ""))
+                {
+                    return "{\"step\": \"" + result + "\", \"filename\": \"" + newFileUri + "\", \"error\": \"FileTypeIsNotSupported\"}";
+                }
                 // get a file name of an internal file extension with an index if the file with such a name already exists
-                var fileName = GetCorrectName(Path.GetFileNameWithoutExtension(_fileName) + newFileType);
+                var fileName = GetCorrectName(Path.GetFileNameWithoutExtension(_fileName) + "." + newFileType);
 
                 var req = (HttpWebRequest)WebRequest.Create(newFileUri);
 
@@ -493,17 +504,21 @@ namespace OnlineEditorsExample
                     }
                 }
 
-                // remove the original file and its history if it exists
-                var storagePath = StoragePath(_fileName, null);
-                var histDir = HistoryDir(storagePath);
-                File.Delete(storagePath);
-                if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
-
+                if (removeOriginal)
+                {
+                    // remove the original file and its history if it exists
+                    var storagePath = StoragePath(_fileName, null);
+                    var histDir = HistoryDir(storagePath);
+                    File.Delete(storagePath);
+                    if (Directory.Exists(histDir)) Directory.Delete(histDir, true);
+                }
                 // create meta information about the converted file with user id and name specified
                 _fileName = fileName;
                 var id = context.Request.Cookies.GetOrDefault("uid", null);
                 var user = Users.getUser(id);  // get the user
                 DocEditor.CreateMeta(_fileName, user.id, user.name, null);
+
+                return "{\"step\": \"" + result + "\", \"filename\": \"" + _fileName + "\"}";
             }
 
             return "{ \"filename\" : \"" + _fileName + "\"}";
@@ -547,7 +562,10 @@ namespace OnlineEditorsExample
             var directoryInfo = new DirectoryInfo(directory);  // read the user host directory contents
 
             // get the list of stored files from the host directory
-            List<FileInfo> storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).ToList();
+            var storedFiles = directoryInfo.GetFiles("*.*", SearchOption.TopDirectoryOnly).ToList();
+
+            storedFiles.Sort((a, b) => b.LastWriteTimeUtc.CompareTo(a.LastWriteTimeUtc));  // sort files by the modification date
+
             return storedFiles;
         }
 

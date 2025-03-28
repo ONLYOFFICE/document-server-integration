@@ -1,0 +1,165 @@
+/**
+ * (c) Copyright Ascensio System SIA 2025
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
+.center {
+    width: auto;
+}
+
+.left-panel {
+    width: 256px;
+}
+
+.main-panel {
+    width: 832px;
+    margin: 0 32px;
+    padding: 48px 0;
+    left: 0;
+}
+
+.tableRow {
+    display: flex;
+    width: 100%;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #E2E2E2;
+}
+
+.tableRow td:first-child {
+    width: 70%;
+    flex-grow: 0;
+    max-width: none;
+}
+
+.tableHeader td:first-child {
+    text-align: left;
+}
+
+.tableHeader td:last-child, .tableRow td:last-child {
+    width: 10%;
+    text-align: center;
+    padding: 0 !important;
+}
+
+.tableHeader {
+    width: 100%;
+}
+
+.stored-edit {
+    display: block;
+    padding-top: 0;
+    max-width: none;
+}
+
+menu.links {
+    width: 100%;
+}
+
+.scroll-table-body table {
+    table-layout: fixed;
+}
+
+.stored-edit span {
+    font-size: 12px;
+    line-height: 12px;
+    position: static;
+}
+
+.scroll-table-body {
+    overflow-y: auto;
+}
+
+.stored-list {
+    height: calc(100% - 58px);
+}
+
+header {
+    min-width:auto;
+}
+
+header a {
+    display: block;
+    margin: 0 auto;
+    width: 1152px;
+}
+
+@media (max-width: 1279px) and (min-width: 1024px) {
+    .left-panel {
+        width: 208px;
+    }
+
+    .main-panel {
+        width: 688px;
+    }
+
+    header a {
+        width: 928px;
+    }
+
+    header img {
+        margin-left: 16px;
+    }
+}
+
+@media (max-width: 1023px) and (min-width: 593px) {
+    .center {
+        max-width: 768px;
+        width: calc(100% - 80px);
+    }
+
+    .table-main {
+        width: 100%;
+    }
+
+    .left-panel {
+        width: 208px;
+    }
+
+    .main-panel {
+        width: calc(100% - 32px);
+    }
+
+    .tableHeader td:last-child, .tableRow td:last-child {
+        width: 20%;
+    }
+
+    header a {
+        width: 768px;
+    }
+
+    header img {
+        margin-left: 40px;
+    }
+}
+
+@media (max-width: 592px) {
+    .center, .table-main {
+        width: 100%;
+    }
+
+    .left-panel {
+        display: none;
+    }
+
+    .main-panel {
+        width: calc(100% - 32px);
+        margin: 0 16px;
+        padding: 16px 0;
+    }
+
+    .tableHeader td:last-child, .tableRow td:last-child {
+        width: 25%;
+    }
+}

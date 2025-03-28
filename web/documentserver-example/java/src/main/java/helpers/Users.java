@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@
 
 package helpers;
 
+import entities.Close;
 import entities.CommentGroups;
 import entities.Goback;
 import entities.User;
@@ -83,25 +84,27 @@ public final class Users {
         add("Can't protect file");
         add("View file without collaboration");
         add("Can’t submit forms");
+        add("Can't refresh outdated file");
     }};
 
     private static List<User> users = new ArrayList<User>() {{
         add(new User("uid-1", "John Smith", "smith@example.com",
                 "", null, new CommentGroups(), null,
-                null, new ArrayList<String>(), descriptionUserFirst, true, true, new Goback(null, false)));
+                null, new ArrayList<String>(), descriptionUserFirst, true, true, new Goback(null, false),
+                new Close(null, false)));
         add(new User("uid-2", "Mark Pottato", "pottato@example.com",
                 "group-2", Arrays.asList("group-2", ""), new CommentGroups(null,
                 Arrays.asList("group-2", ""), Arrays.asList("group-2")), Arrays.asList("group-2", ""),
                 true, new ArrayList<String>(), descriptionUserSecond, false, true,
-                new Goback("Go to Documents", false)));
+                new Goback("Go to Documents", false), new Close(null, true)));
         add(new User("uid-3", "Hamish Mitchell", null,
                 "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"),
                 Arrays.asList("group-2"), null), Arrays.asList("group-2"),
                 false, Arrays.asList("copy", "download", "print"),
-                descriptionUserThird, false, false, null));
+                descriptionUserThird, false, false, null, new Close(null, true)));
         add(new User("uid-0", null, null,
                 "", null, null, null,
-                null, Arrays.asList("protect"), descriptionUserZero, false, false, null));
+                null, Arrays.asList("protect"), descriptionUserZero, false, false, null, null));
     }};
 
     private Users() { }

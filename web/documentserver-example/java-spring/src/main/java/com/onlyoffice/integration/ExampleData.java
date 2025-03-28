@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ package com.onlyoffice.integration;
 
 import com.onlyoffice.integration.documentserver.serializers.FilterState;
 import com.onlyoffice.integration.entities.Goback;
+import com.onlyoffice.integration.entities.Close;
 import com.onlyoffice.integration.services.UserServices;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,7 +49,8 @@ public class ExampleData {
                 "Can't view chat",
                 "Can't protect file",
                 "View file without collaboration",
-                "Can’t submit forms"
+                "Can’t submit forms",
+                "Can't refresh outdated file"
         );
 
         // the description for user 1
@@ -103,24 +105,24 @@ public class ExampleData {
                 "", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), null, true, true, true,
-                new Goback(null, false), true);
+                new Goback(null, false), new Close(null, false), true);
 
         // create user 2 with the specified parameters
         userService.createUser("Mark Pottato", "pottato@example.com", descriptionUserSecond,
                 "group-2", List.of("", "group-2"), List.of(FilterState.NULL.toString()),
                 List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true, true,
-                true, true, new Goback("Go to Documents", null), false);
+                true, true, new Goback("Go to Documents", null), new Close(null, true), false);
 
         // create user 3 with the specified parameters
         userService.createUser("Hamish Mitchell", null, descriptionUserThird,
                 "group-3", List.of("group-2"), List.of("group-2", "group-3"), List.of("group-2"),
                 new ArrayList<>(), List.of("group-2"), false, true, true, false,
-                null, false);
+                null, new Close(null, true), false);
 
         // create user 0 with the specified parameters
         userService.createUser("Anonymous", null, descriptionUserZero, "",
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                new ArrayList<>(), null, false, false, false, null, false);
+                new ArrayList<>(), null, false, false, false, null, null, false);
     }
 }

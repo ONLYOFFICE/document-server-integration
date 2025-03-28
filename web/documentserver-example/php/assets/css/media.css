@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,12 @@
     }
 
     .tableHeaderCellViewers {
-        width: 29%;
+        width: 18%;
         text-align: right;
+    }
+
+    .tableHeaderCellAction {
+        width: 23%;
     }
 
     .tableHeaderCellDownload {
@@ -220,7 +224,7 @@
     }
 
     .tableHeaderCellFileName {
-        width: 16%;
+        width: 9%;
     }
 
     .tableHeaderCellEditors {
@@ -229,7 +233,12 @@
 
     .tableHeaderCellViewers {
         text-align: right;
-        width: 37%;
+        width: 9%;
+    }
+
+    .tableHeaderCellAction{
+        width: 11%;
+        padding-right: 82px;
     }
 
     .tableHeaderCellDownload {
@@ -244,17 +253,22 @@
     }
 
     .tableHeaderCellEditors {
-        width: 26%;
+        width: 15%;
         text-align: left;
     }
 
     .tableHeaderCellFileName {
-        width: 17%;
+        width: 28%;
     }
 
     .tableHeaderCellViewers {
-        width: 27%;
+        width: 6%;
         text-align: right;
+    }
+
+    .tableHeaderCellAction{
+        width: 18%;
+        padding-right: 54px;
     }
 
     .tableHeaderCellDownload {
@@ -277,11 +291,16 @@
 
     .tableRow td:first-child {
         flex-grow: 0;
-        width: 15%;
+        width: 25%;
+        margin-right: auto;
     }
 
     .contentCells-icon {
         width: 3%;
+    }
+
+    .firstContentCellViewers {
+        margin-left: 0;
     }
 }
 
@@ -290,7 +309,7 @@
         width: 20%;
     }
     .contentCells-shift {
-        padding-right: 28px;
+        padding-right: 27px;
     }
 
     .main-panel {
@@ -323,11 +342,16 @@
 
     .tableHeaderCellEditors {
         text-align: left;
-        width: 31%;
+        width: 1%;
     }
 
     .tableHeaderCellViewers {
-        width: 18%;
+        width: 19%;
+    }
+
+    .tableHeaderCellAction {
+        width: 19%;
+        padding-right: 45px;
     }
 }
 
@@ -431,8 +455,8 @@
 
     .downloadContentCellShift {
         max-width: 7%;
-        margin-right: -11px;
-        margin-left: auto;
+        margin-right: 24px;
+        margin-left: 0;
     }
 
     .contentCells-icon {
@@ -440,13 +464,13 @@
     }
 
     .tableRow td:last-child {
-        width: 12%;
-        padding-right: 40px;
+        width: 7%;
+        padding-right: 0px;
         border: none;
     }
 
     .contentCells-shift {
-        padding-right: 35px;
+        padding-right: 0px;
     }
 
     .downloadContentCellShift:after {
@@ -532,6 +556,15 @@
         height: 56px;
         margin-bottom: 24px !important;
     }
+    .button.hoar{
+        width: 18%;
+        height: 27px;
+        margin-bottom: 7px !important;
+    }
+    .button.converting{
+        width: 126px;
+        margin-top: 0;
+    }
 }
 
 @media (max-width: 560px) and (min-width: 510px) {
@@ -540,7 +573,7 @@
     }
 
     .downloadContentCellShift {
-        padding-right: 45px;
+        padding-right: 16px;
         max-width: 4%;
     }
 }
@@ -560,7 +593,7 @@
 
     .downloadContentCellShift {
         max-width: 6%;
-        padding-right: 37px;
+        padding-right: 6px;
     }
 
     .firstContentCellShift {
@@ -586,12 +619,12 @@
 
     .downloadContentCellShift {
         max-width: 3%;
-        padding-right: 37px;
+        padding-right: 0px;
         padding-left: 0;
     }
 
     .firstContentCellShift {
-        margin-left: 1px;
+        margin-left: 2px;
         flex-basis: 14%;
     }
 
@@ -608,7 +641,7 @@
     }
 }
 
-@media (max-width: 420px) and (min-width: 320px) {
+@media (max-width: 420px) {
     .tableRow,
     menu.links {
         width: 25%;
@@ -621,7 +654,7 @@
 
     .downloadContentCellShift {
         max-width: 4%;
-        margin-right: -18px;
+        margin-right: 18px;
         margin-left: -1px;
     }
 
@@ -630,7 +663,7 @@
     }
 
     .contentCells-icon{
-        width: 10%;
+        width: 12%;
     }
     footer table td {
         margin: 0;
@@ -684,7 +717,7 @@
         max-width: 45%;
     }
 }
-@media (max-width: 600px) and (min-width: 320px) {
+@media (max-width: 600px) {
     .main-panel{
         display: flex;
         flex-direction: column;
@@ -711,7 +744,7 @@
     }
 }
 
-@media (max-width: 592px) and (min-width: 320px) {
+@media (max-width: 592px) {
     body.menu-open {
         overflow: hidden;
     }

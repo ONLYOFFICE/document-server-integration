@@ -9,20 +9,18 @@
   },
   "bin": "bin/www",
   "description": "OnlineEditorsExampleNodeJS",
-  "author": {
-    "name": "ONLYOFFICE",
-    "email": ""
-  },
+  "author": "Ascensio System SIA <integration@onlyoffice.com> (https://www.onlyoffice.com)",
   "bugs": {
     "url": "https://github.com/ONLYOFFICE/document-server-integration/issues"
   },
   "dependencies": {
-    "body-parser": "^1.20.2",
-    "config": "^3.3.11",
+    "@mercadoeletronico/wopi-proof-validator": "^1.0.2",
+    "body-parser": "^1.20.3",
+    "config": "^3.3.12",
     "debug": "^4.3.4",
-    "ejs": "^3.1.9",
-    "express": "^4.18.2",
-    "fast-xml-parser": "^4.3.4",
+    "ejs": "^3.1.10",
+    "express": "^4.21.1",
+    "fast-xml-parser": "^4.4.1",
     "formidable": "^3.2.4",
     "he": "^1.2.0",
     "jsonwebtoken": "^9.0.2",

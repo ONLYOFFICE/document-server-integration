@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -280,11 +280,26 @@ const checkFileInfo = function checkFileInfo(wopi, req, res, userHost) {
     UserFriendlyName: user.name,
     Version: version,
     UserCanWrite: true,
+    UserCanRename: user.id !== 'uid-0',
     SupportsGetLock: true,
     SupportsLocks: true,
     SupportsUpdate: true,
+    SupportsRename: true,
   };
   res.status(200).send(fileInfo);
+};
+
+const renameFile = function renameFile(wopi, req, res, userHost) {
+  const userAddress = req.DocManager.curUserHostAddress(userHost);
+  const storagePath = req.DocManager.storagePath(wopi.id, userAddress);
+  const fileName = utf7.decode(req.headers[reqConsts.requestHeaders.FileName.toLowerCase()]);
+
+  if (!fileSystem.existsSync(storagePath)) {
+    res.sendStatus(404);
+    return;
+  }
+
+  res.status(200).send({ Name: fileName });
 };
 
 // parse wopi request
@@ -364,6 +379,7 @@ actionMapping[reqConsts.requestType.Lock] = lock;
 actionMapping[reqConsts.requestType.GetLock] = getLock;
 actionMapping[reqConsts.requestType.RefreshLock] = refreshLock;
 actionMapping[reqConsts.requestType.Unlock] = unlock;
+actionMapping[reqConsts.requestType.RenameFile] = renameFile;
 
 exports.fileRequestHandler = (req, res) => {
   let userAddress = null;

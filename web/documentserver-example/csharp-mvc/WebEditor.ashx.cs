@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,6 +92,9 @@ namespace OnlineEditorsExampleMVC
                     break;
                 case "formats":
                     Formats(context);
+                    break;
+                case "config":
+                    Config(context);
                     break;
             }
         }
@@ -254,8 +257,15 @@ namespace OnlineEditorsExampleMVC
                     conversionExtension = fileExt.ToString();
                 }
 
+                object keepOriginal;
+                bool removeOriginal = true;
+                if (body.TryGetValue("keepOriginal", out keepOriginal) && !String.IsNullOrEmpty(keepOriginal.ToString()))
+                {
+                    removeOriginal = keepOriginal.ToString().ToLower() != "true";
+                }
+
                 // check if the file with such an extension can be converted
-                if (DocManagerHelper.ConvertExts.Contains("." + extension))
+                if (DocManagerHelper.ConvertExts.Contains("." + extension) || conversionExtension != "ooxml")
                 {
                     // generate document key
                     var key = ServiceConverter.GenerateRevisionId(fileUri);
@@ -270,7 +280,7 @@ namespace OnlineEditorsExampleMVC
 
                     // get the url and file type of the converted file
                     Dictionary<string, string> newFileData;
-                    var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, conversionExtension, key, true, out newFileData, filePass, lang);
+                    var result = ServiceConverter.GetConvertedData(downloadUri.ToString(), extension, conversionExtension, key, true, out newFileData, filePass, lang, fileName);
                     if (result != 100)
                     {
                         context.Response.Write("{ \"step\" : \"" + result + "\", \"filename\" : \"" + fileName + "\"}");
@@ -278,9 +288,14 @@ namespace OnlineEditorsExampleMVC
                     }
 
                     var newFileUri = newFileData["fileUrl"];
-                    var newFileType = "." + newFileData["fileType"];
+                    var newFileType = newFileData["fileType"];
+                    if (!FormatManager.All().Any(f => f.Name == newFileType && f.Type != FileUtility.FileType.Null))
+                    {
+                        context.Response.Write("{\"step\": \"" + result + "\", \"filename\": \"" + newFileUri + "\", \"error\": \"FileTypeIsNotSupported\"}");
+                        return;
+                    }
                     // get a file name of an internal file extension with an index if the file with such a name already exists
-                    var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + newFileType);
+                    var correctName = DocManagerHelper.GetCorrectName(Path.GetFileNameWithoutExtension(fileName) + "." + newFileType);
 
                     var req = (HttpWebRequest)WebRequest.Create(newFileUri);
 
@@ -302,11 +317,14 @@ namespace OnlineEditorsExampleMVC
                         }
                     }
 
-                    Remove(fileName);  // remove the original file and its history if it exists
+                    if (removeOriginal) Remove(fileName);  // remove the original file and its history if it exists
                     fileName = correctName;  // create meta information about the converted file with user id and name specified
                     var id = context.Request.Cookies.GetOrDefault("uid", null);
                     var user = Users.getUser(id);
                     DocManagerHelper.CreateMeta(fileName, user.id, user.name);
+
+                    context.Response.Write("{ \"filename\" : \"" + fileName + "\", \"step\": \"" + result + "\" }");
+                    return;
                 }
 
                 var documentType = FileUtility.GetFileType(fileName).ToString().ToLower();
@@ -687,6 +705,7 @@ namespace OnlineEditorsExampleMVC
 
             var fileName = (string)body["fileName"];
             var version = (int)body["version"];
+            var url = body.ContainsKey("url") ? (string)body["url"] : null;
 
             var key = ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress()
                 + "/" + fileName + "/"
@@ -708,9 +727,19 @@ namespace OnlineEditorsExampleMVC
             {
                 File.Copy(changesPath, Path.Combine(currentVersionDir, "changes.json"));
             }
-
-            File.Copy(Path.Combine(verDir, "prev" + ext), DocManagerHelper.StoragePath(fileName, null), true);
-
+            if (url != null)
+            {
+                var req = (HttpWebRequest)WebRequest.Create(url);
+                req.Method = "GET";
+                var stream = req.GetResponse().GetResponseStream();
+                var memoryStream = new MemoryStream();
+                stream.CopyTo(memoryStream);
+                File.WriteAllBytes(DocManagerHelper.StoragePath(fileName, null), memoryStream.ToArray());
+            }
+            else
+            {
+                File.Copy(Path.Combine(verDir, "prev" + ext), DocManagerHelper.StoragePath(fileName, null), true);
+            }
             var fileInfo = new FileInfo(DocManagerHelper.StoragePath(fileName, null));
             fileInfo.LastWriteTimeUtc = DateTime.UtcNow;
 
@@ -961,7 +990,7 @@ namespace OnlineEditorsExampleMVC
                     var changes = jss.Deserialize<Dictionary<string, object>>(File.ReadAllText(changesPath));
                     var changesArray = (ArrayList)changes["changes"];
                     var change = changesArray.Count > 0
-                        ? (Dictionary<string, object>)changesArray[0]
+                        ? (Dictionary<string, object>)changesArray[changesArray.Count - 1]
                         : new Dictionary<string, object>();
 
                     // write information about changes to the object
@@ -993,6 +1022,74 @@ namespace OnlineEditorsExampleMVC
                 var jss = new JavaScriptSerializer();
 
                 context.Response.Write(jss.Serialize(data));
+            }
+            catch (Exception e)
+            {
+                context.Response.Write("{ \"error\": \"" + e.Message + "\"}");
+            }
+        }
+
+        private static void Config(HttpContext context)
+        {
+            try
+            {
+                var fileName = context.Request.QueryString.Get("fileName");
+                var directUrl = context.Request.QueryString.Get("directUrl").ToLower() == "true";
+                var permissions = context.Request.QueryString.Get("permissions") != null
+                    ? context.Request.QueryString.Get("permissions")
+                    : "{}";
+
+                if (string.IsNullOrEmpty(fileName) || !File.Exists(DocManagerHelper.StoragePath(fileName)))
+                {
+                    context.Response.Write("{ \"error\": \"File is not exist\"}");
+                    return;
+                }
+
+                var id = context.Request.Cookies.GetOrDefault("uid", null);
+                var user = Users.getUser(id);
+
+                var jss = new JavaScriptSerializer();
+
+                var config = new Dictionary<string, object>
+                {
+                    {
+                        "document", new Dictionary<string, object>
+                        {
+                            {"key", ServiceConverter.GenerateRevisionId(DocManagerHelper.CurUserHostAddress() + "/" + fileName
+                                + "/"+ File.GetLastWriteTime(DocManagerHelper.StoragePath(fileName, null)).GetHashCode())},
+                            {"title", fileName},
+                            {"url", DocManagerHelper.GetDownloadUrl(fileName)},
+                            {"permissions", jss.Deserialize<Dictionary<string, object>>(permissions)},
+                            {"directUrl", directUrl ?  DocManagerHelper.GetDownloadUrl(fileName, false) : null},
+                            {
+                                "referenceData", new Dictionary<string, object>
+                                {
+                                    {"fileKey", !user.id.Equals("uid-0") ?
+                                            jss.Serialize(new Dictionary<string, object>{
+                                                {"fileName", fileName},
+                                                {"userAddress", HttpUtility.UrlEncode(DocManagerHelper.CurUserHostAddress(HttpContext.Current.Request.UserHostAddress))}
+                                        }) : null },
+                                    {"instanceId", DocManagerHelper.GetServerUrl(false)}
+                                }
+                            }
+                        }
+                    },
+                    {
+                        "editorConfig", new Dictionary<string, object>
+                        {
+                            {"callbackUrl", DocManagerHelper.GetCallback(fileName)},
+                            {"mode", "edit"}
+                        }
+                    }
+                };
+
+                if (JwtManager.Enabled)
+                {
+                    var token = JwtManager.Encode(config);
+                    config.Add("token", token);
+                }
+
+                context.Response.Write(jss.Serialize(config));
             }
             catch (Exception e)
             {
