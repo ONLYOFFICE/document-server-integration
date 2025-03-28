@@ -8,7 +8,7 @@
     <meta name="server-version" content="<%= serverVersion %>">
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2024
+    * (c) Copyright Ascensio System SIA 2025
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -197,6 +197,10 @@
                                                                 <img src="images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon">
+                                                            <a class="action-link" href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
+                                                                <img src="images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
+                                                        </td>
+                                                        <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment" /></a>
                                                         </td>
@@ -223,17 +227,13 @@
                                                             <td class="contentCells contentCells-icon "></td>
                                                         <% } %>
                                                         <% if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.') + 1).trim().toLowerCase()) !== -1) { %>
-                                                            <td class="contentCells contentCells-icon">
+                                                            <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift">
                                                                 <a class="action-link" href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                     <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
                                                             </td>
                                                         <% } else {%>
-                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift"></td>
                                                         <%}%>
-                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                            <a class="action-link" href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                <img src="images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
-                                                        </td>
                                                     <% } else if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.') + 1).trim().toLowerCase()) !== -1) { %>
                                                         <td class="contentCells contentCells-icon "></td>
                                                         <td class="contentCells contentCells-icon "></td>
@@ -383,7 +383,7 @@
                             <a href="mailto:sales@onlyoffice.com">Submit your request</a>
                         </td>
                         <td class="copy">
-                            &copy; Ascensio Systems SIA 2024. All rights reserved.
+                            &copy; Ascensio Systems SIA 2025. All rights reserved.
                         </td>
                     </tr>
                 </tbody>

@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2024
+ (c) Copyright Ascensio System SIA 2025
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -25,11 +25,11 @@ config_manager = ConfigurationManager()
 
 
 # convert file and give url to a new file
-def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass=None, lang=None):
+def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass=None, lang=None, title=None):
     if not fromExt:  # check if the extension from the request matches the real file extension
         fromExt = fileUtils.getFileExt(docUri)  # if not, overwrite the extension value
 
-    title = fileUtils.getFileName(docUri)
+    title = title or fileUtils.getFileName(docUri)
 
     payload = {  # write all the necessary data to the payload object
         'url': docUri,

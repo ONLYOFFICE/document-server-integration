@@ -12,7 +12,7 @@
         <meta name="mobile-web-app-capable" content="yes" />
         <!--
         *
-        * (c) Copyright Ascensio System SIA 2024
+        * (c) Copyright Ascensio System SIA 2025
         *
         * Licensed under the Apache License, Version 2.0 (the "License");
         * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@
         * limitations under the License.
         *
         -->
-        <title>ONLYOFFICE</title>
+        <title><%= Model.getDocument().getTitle() %> - ONLYOFFICE</title>
         <link rel="icon" href="css/img/<%= Model.getDocumentType() %>.ico" type="image/x-icon" />
         <link rel="stylesheet" type="text/css" href="css/editor.css" />
 
@@ -52,8 +52,8 @@
 
         // the document is modified
         var onDocumentStateChange = function (event) {
-            var title = document.title.replace(/\*$/g, "");
-            document.title = title + (event.data ? "*" : "");
+            var title = document.title.replace(/^\*/g, "");
+            document.title = (event.data ? "*" : "") + title;
         };
 
         // the user is trying to switch the document from the viewing into the editing mode
@@ -94,6 +94,15 @@
             var actionData = event.data;
             var linkParam = JSON.stringify(actionData);
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));  // set the link to the document which contains a bookmark
+        };
+
+        var onRequestClose = function () {  // close editor
+            docEditor.destroyEditor();
+            innerAlert("Document editor closed successfully");
+        };
+
+        var onUserActionRequired = function () {
+            console.log("User action required");
         };
 
         // the meta information of the document is changed via the meta command
@@ -165,6 +174,18 @@
             }
         };
 
+        var onRequestRefreshFile = function(event) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "IndexServlet?type=config&fileName=" + encodeURIComponent(config.document.title) +
+                "&directUrl=" + !!config.document.directUrl +
+                "&permissions=" + encodeURIComponent(JSON.stringify(config.document.permissions)));
+            xhr.send();
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                docEditor.refreshFile(JSON.parse(xhr.responseText));
+            };
+        };
+
         var onRequestOpen = function(event) {  // user open external data source
             innerAlert("onRequestOpen");
             var windowName = event.data.windowName;
@@ -203,11 +224,58 @@
             }
         };
 
+        var onRequestReferenceSource = function (event) {
+          innerAlert("onRequestReferenceSource");
+          let xhr = new XMLHttpRequest();
+          xhr.open("GET", "IndexServlet?type=files");
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.send();
+          xhr.onload = function () {
+            if (xhr.status === 200) {
+              innerAlert(JSON.parse(xhr.responseText));
+              let fileList = JSON.parse(xhr.responseText);
+              let firstXlsxName;
+              let file;
+              for (file of fileList) {
+                if (file["title"]) {
+                  if (getFileExt(file["title"]) === "xlsx")
+                  {
+                    firstXlsxName = file["title"];
+                    break;
+                  }
+                }
+              }
+              if (firstXlsxName) {
+                let data = {
+                  directUrl : !!config.document.directUrl,
+                  path : firstXlsxName
+                };
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", "IndexServlet?type=reference");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(data));
+                xhr.onload = function () {
+                  if (xhr.status === 200) {
+                    docEditor.setReferenceSource(JSON.parse(xhr.responseText));
+                  } else {
+                    innerAlert("/reference - bad status");
+                  }
+                }
+              } else {
+                innerAlert("No *.xlsx files");
+              }
+            } else {
+              innerAlert("/files - bad status");
+            }
+          }
+        };
+
         function onRequestRestore(event) {
           const query = new URLSearchParams(window.location.search)
           const payload = {
             fileName: query.get('fileName'),
             version: event.data.version,
+            url: event.data.url,
             userId: config.editorConfig.user.id
           }
           const request = new XMLHttpRequest()
@@ -305,6 +373,7 @@
         config.events = {
             "onAppReady": onAppReady,
             "onDocumentStateChange": onDocumentStateChange,
+            "onUserActionRequired": onUserActionRequired,
             "onError": onError,
             "onOutdatedVersion": onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
@@ -315,6 +384,8 @@
         };
 
         if (config.editorConfig.user.id) {
+            config.events['onRequestRefreshFile'] = onRequestRefreshFile;
+            config.events['onRequestClose'] = onRequestClose;
             // add mentions for not anonymous users
             config.events['onRequestUsers'] = onRequestUsers;
             config.events['onRequestSaveAs'] = onRequestSaveAs;
@@ -328,6 +399,7 @@
             config.events['onRequestOpen'] = onRequestOpen;
             config.events['onRequestHistory'] = onRequestHistory;
             config.events['onRequestHistoryData'] = onRequestHistoryData;
+            config.events['onRequestReferenceSource'] = onRequestReferenceSource;
             if (config.editorConfig.user.id != "uid-3") {
                 config.events['onRequestHistoryClose'] = onRequestHistoryClose;
                 config.events['onRequestRestore'] = onRequestRestore;
@@ -336,6 +408,13 @@
 
         var сonnectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
+        };
+
+        const getFileExt = function (fileName) {
+          if (fileName.indexOf(".")) {
+            return fileName.split('.').reverse()[0];
+          }
+          return false;
         };
 
         if (window.addEventListener) {

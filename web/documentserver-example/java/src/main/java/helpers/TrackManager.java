@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,7 +158,7 @@ public final class TrackManager {
                 String newFileUri = ServiceConverter
                         .getConvertedData(downloadUri, downloadExt, curExt,
                                 ServiceConverter.generateRevisionId(downloadUri),
-                                null, false, null).get("fileUrl");  // convert file and get url to a new file
+                                null, false, null, null).get("fileUrl");  // convert file and get url to a new file
                 if (newFileUri.isEmpty()) {
 
                     // get the correct file name if it already exists
@@ -250,7 +250,7 @@ public final class TrackManager {
                 String newFileUri = ServiceConverter
                         .getConvertedData(downloadUri, downloadExt, curExt,
                                 ServiceConverter.generateRevisionId(downloadUri), null,
-                                false, null).get("fileUrl");  // convert file and get url to a new file
+                                false, null, null).get("fileUrl");  // convert file and get url to a new file
                 if (newFileUri.isEmpty()) {
                     newFileName = true;
                 } else {

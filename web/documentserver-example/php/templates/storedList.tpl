@@ -20,11 +20,8 @@
             <td class="tableHeaderCell tableHeaderCellViewers">
                 Viewers
             </td>
-            <td class="tableHeaderCell tableHeaderCellDownload">
-                Download
-            </td>
-            <td class="tableHeaderCell tableHeaderCellRemove">
-                Remove
+            <td class="tableHeaderCell tableHeaderCellAction">
+                Action
             </td>
         </tr>
         </thead>

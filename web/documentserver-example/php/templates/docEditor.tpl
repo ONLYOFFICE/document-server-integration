@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <link rel="icon" href="assets/images/{docType}.ico" type="image/x-icon" />
-    <title>ONLYOFFICE</title>
+    <title>{fileName} - ONLYOFFICE</title>
 
     <style>
         html {
@@ -61,8 +61,8 @@
 
         // the document is modified
         var onDocumentStateChange = function (event) {
-            var title = document.title.replace(/\*$/g, "");
-            document.title = title + (event.data ? "*" : "");
+            var title = document.title.replace(/^\*/g, "");
+            document.title = (event.data ? "*" : "") + title;
         };
 
         // the user is trying to switch the document from the viewing into the editing mode
@@ -116,6 +116,18 @@
             });
         };
 
+        var onRequestRefreshFile = function(event) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "config?fileName=" + encodeURIComponent(config.document.title) +
+                "&directUrl=" + !!config.document.directUrl +
+                "&permissions=" + encodeURIComponent(JSON.stringify(config.document.permissions)));
+            xhr.send();
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                docEditor.refreshFile(JSON.parse(xhr.responseText));
+            };
+        };
+
         var onRequestReferenceData = function(event) {  // user refresh external data source
             innerAlert("onRequestReferenceData");
 
@@ -139,6 +151,52 @@
             }
         };
 
+        var onRequestReferenceSource = function (event) {
+            innerAlert("onRequestReferenceSource");
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "files");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send();
+            xhr.onload = function () {
+              if (xhr.status === 200) {
+                innerAlert(JSON.parse(xhr.responseText));
+                let fileList = JSON.parse(xhr.responseText);
+                let firstXlsxName;
+                let file;
+                for (file of fileList) {
+                  if (file["title"]) {
+                    if (getFileExt(file["title"]) === "xlsx")
+                    {
+                      firstXlsxName = file["title"];
+                      break;
+                    }
+                  }
+                }
+                if (firstXlsxName) {
+                  let data = {
+                    directUrl : !!config.document.directUrl,
+                    path : firstXlsxName
+                  };
+                  let xhr = new XMLHttpRequest();
+                  xhr.open("POST", "reference");
+                  xhr.setRequestHeader("Content-Type", "application/json");
+                  xhr.send(JSON.stringify(data));
+                  xhr.onload = function () {
+                    if (xhr.status === 200) {
+                      docEditor.setReferenceSource(JSON.parse(xhr.responseText));
+                    } else {
+                      innerAlert("/reference - bad status");
+                    }
+                  }
+                } else {
+                  innerAlert("No *.xlsx files");
+                }
+              } else {
+                innerAlert("/files - bad status");
+              }
+            }
+          };
+
         // the user is trying to get link for opening the document which contains a bookmark,
         // scrolling to the bookmark position
         var onMakeActionLink = function (event) {
@@ -146,6 +204,15 @@
             var linkParam = JSON.stringify(actionData);
             // set the link to the document which contains a bookmark
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));
+        };
+
+        var onRequestClose = function () {  // close editor
+            docEditor.destroyEditor();
+            innerAlert("Document editor closed successfully");
+        };
+
+        var onUserActionRequired = function () {
+            console.log("User action required");
         };
 
         // the meta information of the document is changed via the meta command
@@ -260,6 +327,7 @@
           const payload = {
             fileName: query.get('fileID'),
             version: event.data.version,
+            url: event.data.url,
             userId: query.get('user') || config.editorConfig.user.id
           }
           const request = new XMLHttpRequest()
@@ -324,6 +392,7 @@
             config.events = {
                 'onAppReady': onAppReady,
                 'onDocumentStateChange': onDocumentStateChange,
+                'onUserActionRequired': onUserActionRequired,
                 'onError': onError,
                 'onOutdatedVersion': onOutdatedVersion,
                 'onMakeActionLink': onMakeActionLink,
@@ -339,6 +408,13 @@
 
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
+
+        const getFileExt = function (fileName) {
+            if (fileName.indexOf(".")) {
+              return fileName.split('.').reverse()[0];
+            }
+            return false;
+          };
 
         if (window.addEventListener) {
             window.addEventListener("load", сonnectEditor);

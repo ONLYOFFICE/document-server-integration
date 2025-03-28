@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,15 +77,14 @@ namespace OnlineEditorsExampleMVC.Models
             var jss = new JavaScriptSerializer();
 
             var ext = Path.GetExtension(FileName).ToLower();  // get file extension
-            var canFill = DocManagerHelper.FillFormExts.Contains(ext);
-            var editorsMode = Mode ?? (canFill ? "fillForms" : "edit");  // get editor mode
+            var editorsMode = Mode ?? "edit";  // get editor mode
 
             var canEdit = DocManagerHelper.EditedExts.Contains(ext);  // check if the file with such an extension can be edited
 
             var id = request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
             
-            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && canFill) {
+            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && DocManagerHelper.FillFormExts.Contains(ext)) {
                 editorsMode = "fillForms";
                 canEdit = true;
             }
@@ -220,6 +219,13 @@ namespace OnlineEditorsExampleMVC.Models
                                                         { "url", DocManagerHelper.GetServerUrl(false) },  // the absolute URL to the website address which will be opened when clicking the Open file location menu button
                                                         { "text", user.goback.text },
                                                         { "blank", user.goback.blank }
+                                                    } : new Dictionary<string, object>{}
+                                            },
+                                            {
+                                                "close", user.close != null ? new Dictionary<string, object>
+                                                    {
+                                                        { "text", user.close.text },
+                                                        { "visible", user.close. visible }
                                                     } : new Dictionary<string, object>{}
                                             }
                                         }

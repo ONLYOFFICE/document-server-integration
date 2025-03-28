@@ -25,7 +25,7 @@ jobs:
           rsync -av --exclude='deploy' ./ ./deploy/'DotNet (Csharp MVC) Example'
           rm -rf ./deploy/'DotNet (Csharp MVC) Example'/assets/.git
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: DotNet.Csharp.MVC.Example
           path: ${{ github.workspace }}/web/documentserver-example/csharp-mvc/deploy

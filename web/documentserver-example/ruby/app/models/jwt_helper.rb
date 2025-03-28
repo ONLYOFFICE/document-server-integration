@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 #
-# (c) Copyright Ascensio System SIA 2024
+# (c) Copyright Ascensio System SIA 2025
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ require_relative '../configuration/configuration'
 class JwtHelper
   @jwt_secret = ConfigurationManager.new.jwt_secret
   @token_use_for_request = ConfigurationManager.new.jwt_use_for_request
+  @token_expires_in = ConfigurationManager.new.jwt_expires_in
 
   # check if a secret key to generate token exists or not
   def self.enabled?
@@ -36,6 +37,9 @@ class JwtHelper
 
   # encode a payload object into a token using a secret key
   def self.encode(payload)
+    now = Time.now.to_i
+    payload[:iat] = now
+    payload[:exp] = now + (@token_expires_in * 60)
     JWT.encode(payload, @jwt_secret, 'HS256') # define the hashing algorithm and get token
   end
 

@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2024
+ (c) Copyright Ascensio System SIA 2025
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -79,13 +79,14 @@ def convert(request):
         fileExt = fileUtils.getFileExt(filename)
         # get an auto-conversion extension from the request body or set it to the ooxml extension
         conversionExtension = body.get('fileExt') or 'ooxml'
+        keepOriginal = body.get('keepOriginal') or False
 
-        if docManager.isCanConvert(fileExt):  # check if the file extension is available for converting
+        if docManager.isCanConvert(fileExt) or conversionExtension != 'ooxml':
             key = docManager.generateFileKey(filename, request)  # generate the file key
 
             # get the url of the converted file
             convertedData = serviceConverter.getConvertedData(
-                fileUri, fileExt, conversionExtension, key, True, filePass, lang
+                fileUri, fileExt, conversionExtension, key, True, filePass, lang, filename
                 )
 
             # if the converter url is not received, the original file name is passed to the response
@@ -93,14 +94,25 @@ def convert(request):
                 response.setdefault('step', '0')
                 response.setdefault('filename', filename)
             else:
-                correctName = docManager.getCorrectName(
-                    fileUtils.getFileNameWithoutExt(filename) + '.' + convertedData['fileType'], request
-                    )  # otherwise, create a new name with the necessary extension
-                path = docManager.getStoragePath(correctName, request)
-                # save the file from the new url in the storage directory
-                docManager.downloadFileFromUri(convertedData['uri'], path, True)
-                docManager.removeFile(filename, request)  # remove the original file
-                response.setdefault('filename', correctName)  # pass the name of the converted file to the response
+                if not any(f.name == convertedData['fileType'] and len(f.actions) > 0 for f in FormatManager().all()):
+                    response.setdefault('step', '100')
+                    downloadUrl = convertedData['uri'].replace(
+                        config_manager.document_server_private_url().geturl(),
+                        config_manager.document_server_public_url().geturl()
+                    )
+                    response.setdefault('filename', downloadUrl)
+                    response.setdefault('error', 'FileTypeIsNotSupported')
+                else:
+                    correctName = docManager.getCorrectName(
+                        fileUtils.getFileNameWithoutExt(filename) + '.' + convertedData['fileType'], request
+                        )  # otherwise, create a new name with the necessary extension
+                    path = docManager.getStoragePath(correctName, request)
+                    # save the file from the new url in the storage directory
+                    docManager.downloadFileFromUri(convertedData['uri'], path, True)
+                    if not keepOriginal:
+                        docManager.removeFile(filename, request)  # remove the original file
+                    response.setdefault('filename', correctName)  # pass the name of the converted file to the response
+                    response.setdefault('step', '100')
         else:
             # if the file can't be converted, the original file name is passed to the response
             response.setdefault('filename', filename)
@@ -198,12 +210,11 @@ def edit(request):
     docKey = docManager.generateFileKey(filename, request)
     fileType = fileUtils.getFileType(filename)
     user = users.getUserFromReq(request)  # get user
-    canFill = docManager.isCanFillForms(ext)
     # get the editor mode: view/edit/review/comment/fillForms/embedded (the default mode is edit)
-    edMode = request.GET.get('mode') if request.GET.get('mode') else ('fillForms' if canFill else 'edit')
+    edMode = request.GET.get('mode') if request.GET.get('mode') else 'edit'
     canEdit = docManager.isCanEdit(ext)  # check if the file with this extension can be edited
 
-    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and canFill:
+    if (((not canEdit) and edMode == 'edit') or edMode == 'fillForms') and docManager.isCanFillForms(ext):
         edMode = 'fillForms'
         canEdit = True
     # if the Submit form button is displayed or hidden
@@ -333,6 +344,7 @@ def edit(request):
                 'submitForm': submitForm,  # if the Submit form button is displayed or not
                 # settings for the Open file location menu button and upper right corner button
                 'goback':  user.goback if user.goback is not None else '',
+                'close':  user.close if user.close is not None else '',
             }
         }
     }
@@ -380,6 +392,7 @@ def edit(request):
 
     context = {  # the data that will be passed to the template
         'cfg': json.dumps(edConfig),  # the document config in json format
+        'fileName': filename,
         'fileType': fileType,  # the file type of the document (text, spreadsheet or presentation)
         'apiUrl': config_manager.document_server_api_url().geturl(),  # the absolute URL to the api
         # the image which will be inserted into the document
@@ -628,6 +641,7 @@ def restore(request: HttpRequest) -> HttpResponse:
         body = json.loads(request.body)
         source_basename: str = body['fileName']
         version: int = body['version']
+        url = body['url'] if 'url' in body else None
         user_id: str = body.get('userId')
         source_extension = Path(source_basename).suffix
 
@@ -661,7 +675,14 @@ def restore(request: HttpRequest) -> HttpResponse:
         Path(bumped_key_file).write_text(bumped_key, 'utf-8')
         Path(bumped_changes_file).write_text(bumped_changes_content, 'utf-8')
         copy(source_file, bumped_file)
-        copy(recovery_file, source_file)
+        if url is not None:
+            data = requests.get(url.replace(
+                config_manager.document_server_public_url().geturl(),
+                config_manager.document_server_private_url().geturl()
+            ))
+            Path(source_file).write_bytes(data.content)
+        else:
+            copy(recovery_file, source_file)
 
         return HttpResponse()
     except Exception as error:
@@ -678,3 +699,45 @@ def formats(request: HttpRequest) -> HttpResponse:
     }
 
     return HttpResponse(json.dumps(data), content_type='application/json')
+
+
+@http.GET()
+def config(request: HttpRequest) -> HttpResponse:
+    try:
+        filename = fileUtils.getFileName(request.GET['fileName'])
+        directUrl = fileUtils.getFileName(request.GET['directUrl']) == "true"
+        permissions = fileUtils.getFileName(request.GET['permissions'])
+
+        if not os.path.exists(docManager.getStoragePath(filename, request)):
+            raise Exception("File not found")
+
+        user = users.getUserFromReq(request)
+
+        config = {
+            'document': {
+                'title': filename,
+                'key': docManager.generateFileKey(filename, request),
+                'url': docManager.getDownloadUrl(filename, request),
+                'permissions': json.loads(permissions),
+                'directUrl': docManager.getDownloadUrl(filename, request, False) if directUrl else None,
+                'referenceData': {
+                    'instanceId': docManager.getServerUrl(False, request),
+                    'fileKey': json.dumps({'fileName': filename,
+                                           'userAddress': request.META['REMOTE_ADDR']}) if user.id != 'uid-0' else None
+                },
+            },
+            'editorConfig': {
+                'mode': 'edit',
+                'callbackUrl': docManager.getCallbackUrl(filename, request)
+            }
+        }
+
+        if jwtManager.isEnabled():
+            config['token'] = jwtManager.encode(config)
+
+        return HttpResponse(json.dumps(config), content_type='application/json')
+    except Exception as error:
+        return ErrorResponse(
+            message=f'{type(error)}: {error}',
+            status=HTTPStatus.INTERNAL_SERVER_ERROR
+        )

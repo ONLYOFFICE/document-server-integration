@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ package controllers;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import entities.FileModel;
 import entities.FileType;
 import entities.User;
 import helpers.ConfigManager;
@@ -142,6 +144,9 @@ public class IndexServlet extends HttpServlet {
                 break;
             case "formats":
                 formats(request, response, writer);
+                break;
+            case "config":
+                config(request, response, writer);
                 break;
             default:
                 break;
@@ -289,27 +294,36 @@ public class IndexServlet extends HttpServlet {
             FileType fileType = FileUtility.getFileType(fileName);
             // get an auto-conversion extension from the request body or set it to the ooxml extension
             String conversionExtension = body.get("fileExt") != null ? (String) body.get("fileExt") : "ooxml";
+            Boolean keepOriginal = body.get("keepOriginal") != null ? (Boolean) body.get("keepOriginal") : false;
 
             // check if the file with such an extension can be converted
-            if (DocumentManager.getConvertExts().contains(fileExt)) {
+            if (DocumentManager.getConvertExts().contains(fileExt) || body.get("fileExt") != null) {
                 // generate document key
                 String key = ServiceConverter.generateRevisionId(fileUri);
 
                 // get the url and file type to the converted file
                 Map<String, String> newFileData = ServiceConverter
-                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang);
+                        .getConvertedData(fileUri, fileExt, conversionExtension, key, filePass, true, lang, fileName);
                 String newFileUri = newFileData.get("fileUrl");
-                String newFileType = "." + newFileData.get("fileType");
+                String newFileType = newFileData.get("fileType");
 
                 if (newFileUri.isEmpty()) {
                     writer.write("{ \"step\" : \"0\", \"filename\" : \"" + fileName + "\"}");
                     return;
                 }
 
+                if (!new FormatManager().getFormats().stream().anyMatch(
+                    f -> newFileType.equals(f.getName()) && f.getType() != null
+                    )) {
+                        writer.write("{ \"step\" : \"100\", \"filename\" : \"" + newFileUri
+                                     + "\", \"error\":\"FileTypeIsNotSupported\"}");
+                        return;
+                }
+
                 /* get a file name of an internal file extension with an index if the file
                  with such a name already exists */
                 String correctName = DocumentManager.getCorrectName(FileUtility
-                                .getFileNameWithoutExtension(fileName) + newFileType, null);
+                                .getFileNameWithoutExtension(fileName) + "." + newFileType, null);
 
                 URL url = new URL(newFileUri);
                 java.net.HttpURLConnection connection = (java.net.HttpURLConnection) url.openConnection();
@@ -333,9 +347,11 @@ public class IndexServlet extends HttpServlet {
 
                 connection.disconnect();
 
-                // remove source file
-                File sourceFile = new File(DocumentManager.storagePath(fileName, null));
-                sourceFile.delete();
+                if (!keepOriginal) {
+                    // remove source file
+                    File sourceFile = new File(DocumentManager.storagePath(fileName, null));
+                    sourceFile.delete();
+                }
 
                 fileName = correctName;
 
@@ -343,6 +359,9 @@ public class IndexServlet extends HttpServlet {
                 User user = Users.getUser(cm.getCookie("uid"));
 
                 DocumentManager.createMeta(fileName, user.getId(), user.getName(), null);
+
+                writer.write("{ \"step\" : \"100\", \"filename\" : \"" + fileName + "\"}");
+                return;
             }
 
             writer.write("{ \"filename\" : \"" + fileName + "\"}");
@@ -798,6 +817,7 @@ public class IndexServlet extends HttpServlet {
 
             String sourceBasename = (String) body.get("fileName");
             Integer version = ((Long) body.get("version")).intValue();
+            String url = (String) body.get("url");
             String userID = (String) body.get("userId");
 
             String sourceStringFile = DocumentManager.storagePath(sourceBasename, null);
@@ -853,12 +873,20 @@ public class IndexServlet extends HttpServlet {
             Path bumpedFile = Paths.get(bumpedVersionStringDirectory, previousBasename);
             Files.move(sourcePathFile, bumpedFile);
 
-            String recoveryVersionStringDirectory = DocumentManager.versionDir(historyDirectory, version);
-            Path recoveryPathFile = Paths.get(recoveryVersionStringDirectory, previousBasename);
-            String recoveryStringFile = recoveryPathFile.toString();
-            FileInputStream recoveryStream = new FileInputStream(recoveryStringFile);
-            DocumentManager.createFile(sourcePathFile, recoveryStream);
-            recoveryStream.close();
+            if (url != null) {
+                java.net.HttpURLConnection connection = (java.net.HttpURLConnection) new URL(url).openConnection();
+                InputStream stream = connection.getInputStream();
+                DocumentManager.createFile(sourcePathFile, stream);
+                stream.close();
+                connection.disconnect();
+            } else {
+                String recoveryVersionStringDirectory = DocumentManager.versionDir(historyDirectory, version);
+                Path recoveryPathFile = Paths.get(recoveryVersionStringDirectory, previousBasename);
+                String recoveryStringFile = recoveryPathFile.toString();
+                FileInputStream recoveryStream = new FileInputStream(recoveryStringFile);
+                DocumentManager.createFile(sourcePathFile, recoveryStream);
+                recoveryStream.close();
+            }
 
             JSONObject responseBody = new JSONObject();
             responseBody.put("error", null);
@@ -932,7 +960,8 @@ public class IndexServlet extends HttpServlet {
                         JSONObject changes = (JSONObject) parser.parse(
                                 DocumentManager.readFileToEnd(new File(DocumentManager
                                 .versionDir(histDir, i - 1) + File.separator + "changes.json")));
-                        JSONObject change = (JSONObject) ((JSONArray) changes.get("changes")).get(0);
+                        JSONObject change = (JSONObject) ((JSONArray) changes.get("changes"))
+                            .get(((JSONArray) changes.get("changes")).size() - 1);
 
                         // write information about changes to the object
                         obj.put("changes", !change.isEmpty() ? changes.get("changes") : null);
@@ -1058,6 +1087,57 @@ public class IndexServlet extends HttpServlet {
         response.setContentType("application/json");
         Gson gson = new Gson();
         writer.write(gson.toJson(data));
+    }
+
+    private static void config(final HttpServletRequest request,
+                                final HttpServletResponse response,
+                                final PrintWriter writer) {
+        try {
+            String fileName = FileUtility.getFileName(request.getParameter("fileName"));
+            String permissions = FileUtility.getFileName(request.getParameter("permissions"));
+            Boolean directUrl = request.getParameter("directUrl").toLowerCase() == "true";
+
+            if (!new File(DocumentManager.storagePath(fileName, null)).exists()) {
+                throw(new Exception("File not found"));
+            }
+
+            CookieManager cm = new CookieManager(request);
+            User user = Users.getUser(cm.getCookie("uid"));
+            Gson gson = new Gson();
+
+            Map<String, Object> document = new HashMap<>();
+            document.put("title", fileName);
+            document.put("key", ServiceConverter
+                .generateRevisionId(DocumentManager
+                    .curUserHostAddress(null) + "/" + fileName + "/"
+                    + Long.toString(new File(DocumentManager.storagePath(fileName, null))
+                    .lastModified())));
+            document.put("url", DocumentManager.getDownloadUrl(fileName, true));
+            document.put("referenceData", new FileModel.ReferenceData(
+                fileName, DocumentManager.curUserHostAddress(null), user));
+            document.put("permissions", gson.fromJson(permissions, new TypeToken<Map<String, Object>>() { }.getType()));
+            if (directUrl) {
+                document.put("directUrl", DocumentManager.getDownloadUrl(fileName, false));
+            }
+
+            Map<String, Object> editorConfig = new HashMap<>();
+            editorConfig.put("mode", "edit");
+            editorConfig.put("callbackUrl", DocumentManager.getCallback(fileName));
+
+            Map<String, Object> config = new HashMap<>();
+            config.put("document", document);
+            config.put("editorConfig", editorConfig);
+            if (DocumentManager.tokenEnabled()) {
+                config.put("token", DocumentManager.createToken(config));
+            }
+
+            writer.write(gson.toJson(config));
+        } catch (Exception ex) {
+            JSONObject responseBody = new JSONObject();
+            responseBody.put("error", ex.getMessage());
+            String responseContent = responseBody.toJSONString();
+            writer.write(responseContent);
+        }
     }
 
     // process get request

@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -103,7 +103,7 @@ function processSave($rawData, $fileName, $userAddress)
 {
     $data = resolveProcessSaveData($rawData);
 
-    $downloadUri = $data->url;
+    $downloadUri = getCorrectUrl($data->url);
     if ($downloadUri === null) {
         $result["error"] = 1;
         return $result;
@@ -123,7 +123,7 @@ function processSave($rawData, $fileName, $userAddress)
             // convert file and give url to a new file
             $convertedData = getConvertedData($downloadUri, $downloadExt, $curExt, $key, false, $convertedUri);
             if (!empty($convertedUri)) {
-                $downloadUri = $convertedUri;
+                $downloadUri = getCorrectUrl($convertedUri);
             } else {
                 sendlog("   Convert after save convertedUri is empty", "webedior-ajax.log");
                 $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($curExt));
@@ -158,7 +158,7 @@ function processSave($rawData, $fileName, $userAddress)
         file_put_contents($storagePath, $newData, LOCK_EX);  // save file to the storage directory
 
         if ($changesData = file_get_contents(
-            $data->changesurl,
+            getCorrectUrl($data->changesurl),
             false,
             stream_context_create(["http" => ["timeout" => 5]])
         )
@@ -206,7 +206,7 @@ function processSave($rawData, $fileName, $userAddress)
  */
 function processForceSave($data, $fileName, $userAddress)
 {
-    $downloadUri = $data->url;
+    $downloadUri = getCorrectUrl($data->url);
     if ($downloadUri === null) {
         $result["error"] = 1;
         return $result;
@@ -226,7 +226,7 @@ function processForceSave($data, $fileName, $userAddress)
             // convert file and give url to a new file
             $convertedData = getConvertedData($downloadUri, $downloadExt, $curExt, $key, false, $convertedUri);
             if (!empty($convertedUri)) {
-                $downloadUri = $convertedUri;
+                $downloadUri = getCorrectUrl($convertedUri);
             } else {
                 sendlog("   Convert after save convertedUri is empty", "webedior-ajax.log");
                 $baseNameWithoutExt = mb_substr($fileName, 0, mb_strlen($fileName) - mb_strlen($curExt));
@@ -274,7 +274,7 @@ function processForceSave($data, $fileName, $userAddress)
             $uid = $data->actions[0]->userid;  // get the user id
             createMeta($fileName, $uid, "Filling Form", $userAddress);  // create meta data for the forcesaved file
 
-            $formsDataUrl = $data->formsdataurl;
+            $formsDataUrl = getCorrectUrl($data->formsdataurl);
             if ($formsDataUrl) {
                 $formsName = getCorrectName($baseNameWithoutExt . ".txt", $userAddress);
                 $formsPath = getStoragePath($formsName, $userAddress);
@@ -359,8 +359,8 @@ function commandRequest($method, $key, $meta = null)
     if ($responseData === false) {
         throw new Exception('Document Server connection error.');
     }
-    $error = json_decode($responseData, true)['error'];
-    if ($error !== 0) {
+    $error = json_decode(html_entity_decode($responseData), true)['error'];
+    if ($error !== 0 && $error !== 4) {
         throw new Exception('Command Service Error #'. $error);
     }
 
@@ -388,4 +388,13 @@ function resolveProcessSaveData($data)
     }
 
     return $copied;
+}
+
+function getCorrectUrl($url)
+{
+    return str_replace(
+        getenv('DOCUMENT_SERVER_PUBLIC_URL'),
+        getenv('DOCUMENT_SERVER_PRIVATE_URL'),
+        $url
+    );
 }

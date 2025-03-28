@@ -14,7 +14,7 @@
     <meta name="mobile-web-app-capable" content="yes" />
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2024
+    * (c) Copyright Ascensio System SIA 2025
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -62,8 +62,8 @@
 
         // the document is modified
         var onDocumentStateChange = function (event) {
-            var title = document.title.replace(/\*$/g, "");
-            document.title = title + (event.data ? "*" : "");
+            var title = document.title.replace(/^\*/g, "");
+            document.title = (event.data ? "*" : "") + title;
         };
 
         // the user is trying to switch the document from the viewing into the editing mode
@@ -104,6 +104,15 @@
             var actionData = event.data;
             var linkParam = JSON.stringify(actionData);
             docEditor.setActionLink(replaceActionLink(location.href, linkParam));  // set the link to the document which contains a bookmark
+        };
+
+        var onRequestClose = function () {  // close editor
+            docEditor.destroyEditor();
+            innerAlert("Document editor closed successfully");
+        };
+
+        var onUserActionRequired = function () {
+            console.log("User action required");
         };
 
         // the meta information of the document is changed via the meta command
@@ -182,6 +191,18 @@
             }
         };
 
+        var onRequestRefreshFile = function(event) {
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "webeditor.ashx?type=config&fileName=" + encodeURIComponent(config.document.title) +
+                "&directUrl=" + !!config.document.directUrl +
+                "&permissions=" + encodeURIComponent(JSON.stringify(config.document.permissions)));
+            xhr.send();
+            xhr.onload = function () {
+                innerAlert(xhr.responseText);
+                docEditor.refreshFile(JSON.parse(xhr.responseText));
+            };
+        };
+
         var onRequestOpen = function (event) {  // user open external data source
             innerAlert("onRequestOpen");
             var windowName = event.data.windowName;
@@ -218,6 +239,52 @@
             }
         };
 
+        var onRequestReferenceSource = function (event) {
+          innerAlert("onRequestReferenceSource");
+          let xhr = new XMLHttpRequest();
+          xhr.open("GET", "webeditor.ashx?type=files");
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.send();
+          xhr.onload = function () {
+            if (xhr.status === 200) {
+              innerAlert(JSON.parse(xhr.responseText));
+              let fileList = JSON.parse(xhr.responseText);
+              let firstXlsxName;
+              let file;
+              for (file of fileList) {
+                if (file["title"]) {
+                  if (getFileExt(file["title"]) === "xlsx")
+                  {
+                    firstXlsxName = file["title"];
+                    break;
+                  }
+                }
+              }
+              if (firstXlsxName) {
+                let data = {
+                  directUrl : !!config.document.directUrl,
+                  path : firstXlsxName
+                };
+                let xhr = new XMLHttpRequest();
+                xhr.open("POST", "webeditor.ashx?type=reference");
+                xhr.setRequestHeader("Content-Type", "application/json");
+                xhr.send(JSON.stringify(data));
+                xhr.onload = function () {
+                  if (xhr.status === 200) {
+                    docEditor.setReferenceSource(JSON.parse(xhr.responseText));
+                  } else {
+                    innerAlert("/reference - bad status");
+                  }
+                }
+              } else {
+                innerAlert("No *.xlsx files");
+              }
+            } else {
+              innerAlert("/files - bad status");
+            }
+          }
+        };
+
         var onRequestHistory = function () {
             let xhr = new XMLHttpRequest();
             xhr.open("GET", "webeditor.ashx?type=gethistory&filename=<%= Model.FileName %>");
@@ -245,9 +312,11 @@
         var onRequestRestore = function (event) {
             var fileName = "<%= Model.FileName %>";
             var version = event.data.version;
+            var url = event.data.url;
             var data = {
                 fileName: fileName,
-                version: version
+                version: version,
+                url: url
             };
 
             let xhr = new XMLHttpRequest();
@@ -309,6 +378,7 @@
         config.events = {
             'onAppReady': onAppReady,
             'onDocumentStateChange': onDocumentStateChange,
+            'onUserActionRequired': onUserActionRequired,
             'onError': onError,
             'onOutdatedVersion': onOutdatedVersion,
             "onMakeActionLink": onMakeActionLink,
@@ -319,6 +389,8 @@
         };
 
         if (config.editorConfig.user.id) {
+            config.events['onRequestRefreshFile'] = onRequestRefreshFile;
+            config.events['onRequestClose'] = onRequestClose;
             // the user is trying to show the document version history
             config.events['onRequestHistory'] = onRequestHistory;
             // the user is trying to click the specific document version in the document version history
@@ -346,10 +418,18 @@
             // prevent switch the document from the viewing into the editing mode for anonymous users
             config.events['onRequestEditRights'] = onRequestEditRights;
             config.events['onRequestOpen'] = onRequestOpen;
+            config.events['onRequestReferenceSource'] = onRequestReferenceSource;
         }
 
         var сonnectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
+        };
+
+        const getFileExt = function (fileName) {
+          if (fileName.indexOf(".")) {
+            return fileName.split('.').reverse()[0];
+          }
+          return false;
         };
 
         if (window.addEventListener) {

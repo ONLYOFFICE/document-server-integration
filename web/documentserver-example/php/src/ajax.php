@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -229,11 +229,12 @@ function convert()
     $extension = mb_strtolower(pathinfo($fileName, PATHINFO_EXTENSION));
     $internalExtension = "ooxml";
     $conversionExtension = $post['fileExt'] ?? $internalExtension;
+    $keepOriginal = $post['keepOriginal'] ?? false;
 
     // check if the file with such an extension can be converted
-    if (in_array($extension, $formatManager->convertibleExtensions()) &&
-        $internalExtension != "") {
-        $fileUri = $post["fileUri"];
+    if ((in_array($extension, $formatManager->convertibleExtensions()) &&
+        $internalExtension != "") || $conversionExtension != "ooxml") {
+        $fileUri = $post["fileUri"] ?? null;
         if ($fileUri == null || $fileUri == "") {
             $fileUri = serverPath(true) . '/'
                 . "download"
@@ -251,7 +252,8 @@ function convert()
                 true,
                 $newFileUri,
                 $filePass,
-                $lang
+                $lang,
+                $fileName
             );
         } catch (Exception $e) {
             $result["error"] = "error: " . $e->getMessage();
@@ -262,6 +264,13 @@ function convert()
             $result["step"] = $convertedData["percent"];
             $result["filename"] = $fileName;
             $result["fileUri"] = $fileUri;
+            return $result;
+        }
+
+        if (!in_array($convertedData["fileType"], $formatManager->viewableExtensions())) {
+            $result["step"] = $convertedData["percent"];
+            $result["filename"] = str_replace("//proxy", "//localhost", $newFileUri);
+            $result["error"] = 'FileTypeIsNotSupported';
             return $result;
         }
 
@@ -280,12 +289,15 @@ function convert()
         $user = $userList->getUser($_GET["user"]);
         createMeta($newFileName, $user->id, $user->name);  // and create meta data for this file
 
-        // delete the original file and its history
-        $stPath = getStoragePath($fileName);
-        unlink($stPath);
-        delTree(getHistoryDir($stPath));
+        if (!$keepOriginal) {
+            // delete the original file and its history
+            $stPath = getStoragePath($fileName);
+            unlink($stPath);
+            delTree(getHistoryDir($stPath));
+        }
 
         $fileName = $newFileName;
+        $result['step'] = 100;
     }
 
     $result["filename"] = $fileName;
@@ -618,6 +630,7 @@ function restore()
 
         $sourceBasename = $body->fileName;
         $version = $body->version;
+        $url = $body->url;
         $userID = $body->userId;
 
         $sourceFile = getStoragePath($sourceBasename);
@@ -662,12 +675,20 @@ function restore()
         $bumpedStringFile = $bumpedFile->string();
         copy($sourceFile, $bumpedStringFile);
 
-        $recoveryVersionStringDirectory = getVersionDir($historyDirectory, $version);
-        $recoveryVersionDirectory = new Path($recoveryVersionStringDirectory);
-        $recoveryFile = $recoveryVersionDirectory->joinPath($previousBasename);
-        $recoveryStringFile = $recoveryFile->string();
-        copy($recoveryStringFile, $sourceFile);
-
+        if ($url) {
+            $data = file_get_contents(
+                getCorrectUrl($url),
+                false,
+                stream_context_create(["http" => ["timeout" => 5]])
+            );
+            file_put_contents($sourceFile, $data, LOCK_EX);
+        } else {
+            $recoveryVersionStringDirectory = getVersionDir($historyDirectory, $version);
+            $recoveryVersionDirectory = new Path($recoveryVersionStringDirectory);
+            $recoveryFile = $recoveryVersionDirectory->joinPath($previousBasename);
+            $recoveryStringFile = $recoveryFile->string();
+            copy($recoveryStringFile, $sourceFile);
+        }
         return [
             'error' => null,
             'success' => true
@@ -693,6 +714,51 @@ function formats()
     } catch (Exception $error) {
         return [
             'error' => 'Server error'
+        ];
+    }
+}
+
+function config()
+{
+    try {
+        $fileName = $_GET["fileName"];
+        $directUrl = $_GET["directUrl"] == "true";
+        $permissions = $_GET["permissions"];
+
+        if (!file_exists(getStoragePath($fileName))) {
+            throw new Exception("File not found ".$fileName);
+        }
+
+        $config = [
+            "document" => [
+                "title" => $fileName,
+                "key" => getDocEditorKey($fileName),
+                "url" => getDownloadUrl($fileName),
+                "directUrl" => $directUrl ? getDownloadUrl($fileName, false) : null,
+                "permissions" => json_decode($permissions),
+                "referenceData" => [
+                    "fileKey" => json_encode([
+                        "fileName" => $fileName,
+                        "userAddress" =>  getCurUserHostAddress()
+                    ]),
+                    "instanceId" => serverPath(),
+                ]
+            ],
+            "editorConfig" => [
+                "mode" => "edit",
+                "callbackUrl" => getCallbackUrl($fileName)
+            ]
+        ];
+
+        $jwtManager = new JwtManager();
+        if ($jwtManager->isJwtEnabled()) {
+            $config["token"] = $jwtManager->jwtEncode($config);
+        }
+
+        return $config;
+    } catch (Exception $error) {
+        return [
+            'error' => $error->getMessage()
         ];
     }
 }

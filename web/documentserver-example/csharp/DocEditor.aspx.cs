@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,9 +140,8 @@ namespace OnlineEditorsExample
 
             // get file extension
             var ext = Path.GetExtension(FileName).ToLower();
-            var canFill = _Default.FillFormsExts.Contains(ext);
             // get editor mode or set the default one (edit)
-            var editorsMode = Request.GetOrDefault("editorsMode", canFill ? "fillForms" : "edit");
+            var editorsMode = Request.GetOrDefault("editorsMode", "edit");
 
             var canEdit = _Default.EditedExts.Contains(ext);  // check if this file can be edited
             var editorsType = Request.GetOrDefault("editorsType", "desktop");
@@ -150,7 +149,7 @@ namespace OnlineEditorsExample
             var id = Request.Cookies.GetOrDefault("uid", null);
             var user = Users.getUser(id);  // get the user
             
-            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && canFill) {
+            if ((!canEdit && editorsMode.Equals("edit") || editorsMode.Equals("fillForms")) && _Default.FillFormsExts.Contains(ext)) {
                 editorsMode = "fillForms";
                 canEdit = true;
             }            
@@ -287,6 +286,13 @@ namespace OnlineEditorsExample
                                                         { "url", _Default.GetServerUrl(false) + "default.aspx" }, // the absolute URL to the website address which will be opened when clicking the Open file location menu button
                                                         { "text", user.goback.text },
                                                         { "blank", user.goback.blank }
+                                                    } : new Dictionary<string, object>{}
+                                            },
+                                            {
+                                                "close", user.close != null ? new Dictionary<string, object>
+                                                    {
+                                                        { "visible", user.close.visible },
+                                                        { "text", user.close.text }
                                                     } : new Dictionary<string, object>{}
                                             }
                                         }

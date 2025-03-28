@@ -25,7 +25,7 @@ jobs:
           rm -rf ./deploy/'Python Example'/assets/document-formats/.git
           rm -rf ./deploy/'Python Example'/assets/document-templates/.git
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Python.Example
           path: ${{ github.workspace }}/web/documentserver-example/python/deploy

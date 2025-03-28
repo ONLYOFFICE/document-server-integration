@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,4 +16,45 @@
  *
  */
 
-exports.isValidToken = (req, res, next) => next();
+const wopiValidator = require('@mercadoeletronico/wopi-proof-validator');
+const DocManager = require('../docManager');
+const reqConsts = require('./request');
+const utils = require('./utils');
+
+exports.isValidToken = async (req, res, next) => {
+  try {
+    req.DocManager = new DocManager(req, res);
+    const proofKey = await utils.getProofKey(req.DocManager);
+    if (!proofKey) {
+      next();
+      return;
+    }
+
+    const isValid = wopiValidator.check(
+      {
+        url: `${req.protocol}://${req.get('host')}${req.originalUrl || req.url}`,
+        accessToken: req.query.access_token,
+        timestamp: req.headers[reqConsts.requestHeaders.Timestamp.toLowerCase()],
+      },
+      {
+        proof: req.headers[reqConsts.requestHeaders.Proof.toLowerCase()],
+        proofold: req.headers[reqConsts.requestHeaders.ProofOld.toLowerCase()],
+      },
+      {
+        modulus: proofKey.modulus,
+        exponent: proofKey.exponent,
+        oldmodulus: proofKey.oldmodulus,
+        oldexponent: proofKey.oldexponent,
+      },
+    );
+    if (isValid) {
+      next();
+    } else {
+      console.warn('Proof key verification failed');
+      res.status(500).send('Not verified');
+    }
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(`Verification error: ${error.message}`);
+  }
+};
