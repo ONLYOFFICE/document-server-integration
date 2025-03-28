@@ -1,9 +1,9 @@
 # Change Log
 
 - features tips for anonymous
+- nodejs: support vsdx in diagram editor
 - nodejs: user role
 - nodejs: start filling
-- support vsdx in diagram editor
 
 ## 1.13.0
 - nodejs: rename in wopi
