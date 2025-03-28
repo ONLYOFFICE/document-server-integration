@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -116,16 +116,23 @@ public class DefaultHistoryManager implements HistoryManager {
 
                 if (i > 1) {  //check if the version number is greater than 1
                     // if so, get the path to the changes.json file
-                    InputStream changesSteam = new FileInputStream(
-                            versionDir(histDir, i - 1, true) + File.separator + "changes.json");
+                    InputStreamReader changesSteam = new InputStreamReader(new FileInputStream(
+                            versionDir(histDir, i - 1, true) + File.separator + "changes.json"),
+                            "UTF-8");
 
                     History changes = objectMapper.readValue(changesSteam, History.class);
+
+                    List<Object> historyChanges = changes.getChanges();
+                    Map<String, Object> historyChange = objectMapper.convertValue(
+                        historyChanges.get(historyChanges.size() - 1),
+                        Map.class
+                    );
 
                     // write information about changes to the object
                     version.setChanges(changes.getChanges());
                     version.setServerVersion(changes.getServerVersion());
-                    version.setCreated(changes.getChanges().get(0).getCreated());
-                    version.setUser(changes.getChanges().get(0).getUser());
+                    version.setCreated((String) historyChange.get("created"));
+                    version.setUser(objectMapper.convertValue(historyChange.get("user"), User.class));
                 }
 
                 history.add(version);

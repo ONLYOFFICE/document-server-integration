@@ -1,6 +1,40 @@
 # Change Log
 
 - nodejs: support vsdx in diagram editor
+- nodejs: user role
+- nodejs: start filling
+
+## 1.13.0
+- nodejs: rename in wopi
+- nodejs: using faviconUrl from WOPI discovery
+- nodejs: wopi proof key verification
+- golang: new integration example
+- golang: upload files to the server
+- golang: create blank files and files with sample content
+- golang: edit uploaded files in onlyoffice editor
+- golang: delete files on the server
+- golang: show files history
+- php-laravel: new integration example
+- php-laravel: upload files to the server
+- php-laravel: create blank files and files with sample content
+- php-laravel: edit uploaded files in onlyoffice editor
+- php-laravel: delete files on the server
+- php-laravel: create, edit, and submit pdf forms
+- php-laravel: show forgotten files on a seperate page
+- php-laravel: fetch files
+- php-laravel: integrate sdk
+- jwt token lifetime from config
+- onUserActionRequired
+- support pages, numbers, key formats
+- support hwp, hwpx formats
+- restore by url
+- refresh config
+- on uploading xml convert to supported type only
+- converting function on index page
+- editing by default
+- change reference source
+- filename in editor page title
+- close editor
 
 ## 1.12.0
 - nodejs: refresh config
@@ -41,8 +75,7 @@
 - nodejs: pdf, djvu, xps, oxps as pdf documentType
 - nodejs: filling pdf
 - version number to page meta
-- ar skin languages
-- sr-Latn-RS skin languages
+- ar, sr-Latn-RS skin languages
 - getting history via api
 - using a repo with a list of formats
 - convert after uploading only tagged formats

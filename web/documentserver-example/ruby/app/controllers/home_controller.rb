@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 #
-# (c) Copyright Ascensio System SIA 2024
+# (c) Copyright Ascensio System SIA 2025
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -142,8 +142,9 @@ class HomeController < ApplicationController
     extension = File.extname(file_name).downcase
     # get an auto-conversion extension from the request body or set it to the ooxml extension
     conversion_extension = body['fileExt'] || 'ooxml'
+    keep_original = body['keepOriginal'] || false
 
-    if DocumentHelper.convert_exts.include?(extension) # check if the file with such an extension can be converted
+    if DocumentHelper.convert_exts.include?(extension) || conversion_extension != 'ooxml'
       key = ServiceConverter.generate_revision_id(file_uri) # generate document key
       percent, new_file_uri, new_file_type = ServiceConverter.get_converted_data(
         file_uri,
@@ -152,12 +153,22 @@ class HomeController < ApplicationController
         key,
         true,
         file_pass,
-        lang
+        lang,
+        file_name
       ) # get the url and file type of the converted file and the conversion percentage
 
       # if the conversion isn't completed, write file name and step values to the response
       if percent != 100
         render(plain: "{ \"step\" : \"#{percent}\", \"filename\" : \"#{file_name}\"}")
+        return
+      end
+
+      unless FormatManager.new.all.map(&:serialize).any? { |f| f['name'] == new_file_type && f['actions'].any? }
+        new_file_uri = new_file_uri.sub(
+          HomeController.config_manager.document_server_private_uri.to_s,
+          HomeController.config_manager.document_server_public_uri.to_s
+        )
+        render(plain: "{\"step\":\"#{percent}\",\"filename\":\"#{new_file_uri}\",\"error\":\"FileTypeIsNotSupported\"}")
         return
       end
 
@@ -178,8 +189,10 @@ class HomeController < ApplicationController
       # write a file with a new extension, but with the content from the origin file
       File.binwrite(DocumentHelper.storage_path(correct_name, nil), data)
 
-      old_storage_path = DocumentHelper.storage_path(file_name, nil)
-      FileUtils.rm_f(old_storage_path)
+      unless keep_original
+        old_storage_path = DocumentHelper.storage_path(file_name, nil)
+        FileUtils.rm_f(old_storage_path)
+      end
 
       file_name = correct_name
       user = Users.get_user(params[:userId])
@@ -187,7 +200,7 @@ class HomeController < ApplicationController
       DocumentHelper.create_meta(file_name, user.id, user.name, nil) # create meta data of the new file
     end
 
-    render(plain: "{ \"filename\" : \"#{file_name}\"}")
+    render(plain: "{ \"filename\" : \"#{file_name}\", \"step\" : \"#{percent}\"}")
   rescue StandardError => e
     render(plain: "{ \"error\": \"#{e.message}\"}")
   end
@@ -519,6 +532,7 @@ class HomeController < ApplicationController
 
     source_basename = body['fileName']
     version = body['version']
+    url = body['url']
     user_id = body['userId']
 
     source_extension = Pathname(source_basename).extname
@@ -568,7 +582,21 @@ class HomeController < ApplicationController
 
     bumped_file = bumped_version_directory.join(previous_basename)
     FileUtils.cp(source_file, bumped_file)
-    FileUtils.cp(recovery_file, source_file)
+    if url.nil?
+      FileUtils.cp(recovery_file, source_file)
+    else
+      url = url.sub(
+        HomeController.config_manager.document_server_public_uri.to_s,
+        HomeController.config_manager.document_server_private_uri.to_s
+      )
+      uri = URI.parse(url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      DocumentHelper.verify_ssl(url, http)
+      req = Net::HTTP::Get.new(uri.request_uri)
+      res = http.request(req)
+      data = res.body
+      File.binwrite(source_file, data)
+    end
 
     render(
       json: {
@@ -594,6 +622,55 @@ class HomeController < ApplicationController
           formats: FormatManager.new.all.map(&:serialize)
         }
       )
+    )
+  end
+
+  def refresh_config
+    file_name = params[:fileName]
+    direct_url = params[:directUrl] == 'true'
+    permissions = params[:permissions]
+
+    unless File.exist?(DocumentHelper.storage_path(file_name, nil))
+      render(
+        json: JSON.generate(
+          {
+            error: 'File not found'
+          }
+        )
+      )
+    end
+
+    uri = "#{DocumentHelper.cur_user_host_address(nil)}/#{file_name}"
+    stat = File.mtime(DocumentHelper.storage_path(file_name, nil))
+    key = ServiceConverter.generate_revision_id("#{uri}.#{stat}")
+
+    config = {
+      document: {
+        title: file_name,
+        url: DocumentHelper.get_download_url(file_name),
+        directUrl: direct_url ? DocumentHelper.get_download_url(file_name, false) : nil,
+        key:,
+        permissions: JSON.parse(permissions),
+        referenceData: {
+          instanceId: DocumentHelper.get_server_url(false),
+          fileKey: {
+            fileName: file_name,
+            userAddress: DocumentHelper.cur_user_host_address(nil)
+          }.to_json
+        }
+      },
+      editorConfig: {
+        mode: 'edit',
+        callbackUrl: DocumentHelper.get_callback(file_name)
+      }
+    }
+
+    if JwtHelper.enabled?
+      config['token'] = JwtHelper.encode(config)
+    end
+
+    render(
+      json: JSON.generate(config)
     )
   end
 end

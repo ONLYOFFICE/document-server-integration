@@ -5,7 +5,7 @@ namespace Example\Helpers;
 use function Example\sendlog;
 
 /**
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,7 +78,8 @@ final class ExampleUsers
             "Can't rename files from the editor",
             "Can't view chat",
             "View file without collaboration",
-            "Can’t submit forms"
+            "Can’t submit forms",
+            "Can’t refresh outdated file"
         ];
         $this->users = [
             new Users(
@@ -94,7 +95,8 @@ final class ExampleUsers
                 $this->user1Description,
                 true,
                 true,
-                ["blank" => false,]
+                ["blank" => false,],
+                ["visible" => false]
             ),
             new Users(
                 "uid-2",
@@ -113,7 +115,8 @@ final class ExampleUsers
                 $this->user2Description,
                 false,
                 true,
-                ["text" => "Go to Documents",]
+                ["text" => "Go to Documents",],
+                ["visible" => true]
             ),
             new Users(
                 "uid-3",
@@ -132,7 +135,8 @@ final class ExampleUsers
                 $this->user3Description,
                 false,
                 false,
-                null
+                null,
+                ["visible" => true]
             ),
             new Users(
                 "uid-0",
@@ -147,6 +151,7 @@ final class ExampleUsers
                 $this->user0Description,
                 false,
                 false,
+                null,
                 null
             ),
         ];

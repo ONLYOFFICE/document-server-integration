@@ -1,0 +1,54 @@
+services:
+  example:
+    build:
+      dockerfile: ./docker/php-fpm/Dockerfile
+    container_name: example
+    working_dir: /var/www/
+    volumes:
+      - example:/var/www
+    networks:
+      - example
+
+  documentserver:
+    container_name: documentserver
+    image: onlyoffice/documentserver:8.2
+    expose:
+      - "80"
+    environment:
+      JWT_SECRET: ${DOCUMENT_SERVER_JWT_SECRET}
+    networks:
+      - example
+
+  proxy:
+    container_name: proxy
+    build:
+      context: ./docker/proxy/
+      dockerfile: Dockerfile
+      target: laravel-proxy
+    ports:
+      - 80:80
+      - 8080:8080
+    volumes:
+      - example:/var/www
+    networks:
+      - example
+
+  node:
+    container_name: node
+    image: node:alpine
+    working_dir: /var/www/
+    tty: true
+    ports:
+      - 5173:5173
+    volumes:
+      - example:/var/www
+    command: >
+      sh -c "npm install && npm run build"
+    networks:
+      - example
+
+networks:
+  example:
+    driver: bridge
+volumes:
+  example:

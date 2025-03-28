@@ -26,7 +26,7 @@ jobs:
           rm -rf ./deploy/'Java Spring Example'/src/main/resources/assets/document-formats/.git
           rm -rf ./deploy/'Java Spring Example'/src/main/resources/assets/document-templates/.git
       - name: Upload Artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: Java.Spring.Example
           path: ${{ github.workspace }}/web/documentserver-example/java-spring/deploy

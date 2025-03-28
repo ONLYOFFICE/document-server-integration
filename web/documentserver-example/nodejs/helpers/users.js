@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ class User {
     avatar,
     goback,
     close,
+    canSubmitForm,
+    roles,
   ) {
     this.id = id;
     this.name = name;
@@ -47,6 +49,8 @@ class User {
     this.avatar = avatar;
     this.goback = goback;
     this.close = close;
+    this.canSubmitForm = canSubmitForm;
+    this.roles = roles;
   }
 }
 
@@ -60,6 +64,8 @@ const descrUser1 = [
   'Can see the information about all users',
   'Can submit forms',
   'Has an avatar',
+  'Has no roles',
+  'Can start filling',
 ];
 
 const descrUser2 = [
@@ -69,8 +75,10 @@ const descrUser2 = [
   'This file is marked as favorite',
   'Can create new files from the editor',
   'Can see the information about users from Group2 and users who don’t belong to any group',
-  'Can’t submit forms',
+  'Can submit forms',
   'Has an avatar',
+  'Has role "Anyone"',
+  'Can start filling',
 ];
 
 const descrUser3 = [
@@ -86,6 +94,8 @@ const descrUser3 = [
   'Can’t submit forms',
   'Can’t close history',
   'Can’t restore the file version',
+  'Has role "role"',
+  'Can start filling',
 ];
 
 const descrUser0 = [
@@ -103,6 +113,8 @@ const descrUser0 = [
   'View file without collaboration',
   'Can’t submit forms',
   'Can’t refresh outdated file',
+  'Has empty role',
+  'Can’t start filling',
 ];
 
 const users = [
@@ -121,6 +133,8 @@ const users = [
     true,
     { blank: false },
     { visible: false },
+    true,
+    null,
   ),
   new User(
     'uid-2',
@@ -141,6 +155,8 @@ const users = [
     true,
     { text: 'Go to Documents' },
     {},
+    true,
+    [ 'Anyone' ],
   ),
   new User(
     'uid-3',
@@ -161,8 +177,10 @@ const users = [
     false,
     null,
     {},
+    false,
+    [ 'role' ],
   ),
-  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null),
+  new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null, false, []),
 ];
 
 // get a list of all the users

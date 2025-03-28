@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import com.onlyoffice.model.documenteditor.config.editorconfig.Embedded;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Mode;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Template;
 import com.onlyoffice.model.documenteditor.config.editorconfig.customization.Goback;
+import com.onlyoffice.model.documenteditor.config.editorconfig.customization.Close;
 import com.onlyoffice.model.documenteditor.config.editorconfig.embedded.Toolbar;
 import com.onlyoffice.service.documenteditor.config.DefaultConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,12 +80,12 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
         com.onlyoffice.integration.entities.User appUser = userService.getCurrentUser();
         Action currentAction = action;
         String fileName = getDocumentManager().getDocumentName(fileId);
-        Boolean canFill = getDocumentManager().isFillable(fileName);
         if (currentAction == null) {
-            currentAction = canFill ? Action.fillForms : Action.edit;
+            currentAction = Action.edit;
         }
         Boolean isEditable = getDocumentManager().isEditable(fileName);
-        if ((!isEditable && currentAction.equals(Action.edit) || currentAction.equals(Action.fillForms)) && canFill) {
+        if ((!isEditable && currentAction.equals(Action.edit) || currentAction.equals(Action.fillForms))
+            && getDocumentManager().isFillable(fileName)) {
             isEditable = true;
             currentAction = Action.fillForms;
         }
@@ -242,6 +243,14 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
             goback.setUrl("");
         }
 
+        Close close = Close.builder()
+            .build();
+
+        if (appUser != null && appUser.getClose() != null) {
+            close.setText(appUser.getClose().getText());
+            close.setVisible(appUser.getClose().getVisible());
+        }
+
         Customization customization = Customization.builder()
                 .autosave(true) // if the Autosave menu option is enabled or disabled
                 .comments(true) // if the Comments menu button is displayed or hidden
@@ -255,6 +264,7 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
                 .hideRulers(false) // if the editor rulers are displayed or hidden
                 .feedback(true)
                 .goback(goback)
+                .close(close)
                 .build();
 
         return customization;

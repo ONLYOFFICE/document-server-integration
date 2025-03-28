@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,6 +170,16 @@ if (typeof jQuery != "undefined") {
                             return;
                         } else {
                             if (response.error.includes("-9")){
+                                let format = formatManager.findByExtension(fileName.split(".").pop());
+                                if (!format.convert.includes("docx")) {
+                                    jq(".document").addClass("invisible")
+                                }
+                                if (!format.convert.includes("xlsx")) {
+                                    jq(".spreadsheet").addClass("invisible")
+                                }
+                                if (!format.convert.includes("pptx")) {
+                                    jq(".presentation").addClass("invisible")
+                                }
                                 jq("#select-file-type").removeClass("invisible");
                                 jq("#step2").removeClass("current");
                                 jq("#hiddenFileName").attr("placeholder",filePass);
@@ -444,14 +454,12 @@ if (typeof jQuery != "undefined") {
                         jq("#convertStep2").removeClass("current").addClass("done");
                         jq("#convertStep2").text(`2. File conversion to ${fileExt}`);
                         jq("#downloadConverted").removeClass("disable");
+                        jq("#hiddenFileName").attr("data",response.filename);
                         if (response.error !== "FileTypeIsNotSupported") {
-                            jq("#hiddenFileName").attr("data",response.filename);
                             jq("#beginEditConverted").removeClass("disable");
                             jq("#beginViewConverted").removeClass("disable");
                             jq("#downloadConverted").attr("data","fromStorage");
                         } else {
-                            let newFilename = fileName.split('.').slice(0,-1).join('.')
-                            jq("#hiddenFileName").attr("data",response.filename.split("&filename=download").join(`&filename=${newFilename}`));
                             jq("#downloadConverted").attr("data","fromConverter");
                         }
                         jq("td[name='convertingTypeButton']").removeClass("disable orange");

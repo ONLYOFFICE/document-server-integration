@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ const getCustomWopiParams = function getCustomWopiParams(query) {
   let actionParams = '';
 
   const { userid } = query; // user id
-  tokenParams += (userid ? `&userid=${userid}` : '');
+  tokenParams += (userid ? `-userid=${userid}` : '');
 
   const { lang } = query; // language
   actionParams += (lang ? `&ui=${lang}` : '');
@@ -146,6 +146,7 @@ exports.registerRoutes = function registerRoutes(app) {
         token: 'test',
         tokenTtl: Date.now() + 1000 * 60 * 60 * 10,
         params: getCustomWopiParams(req.query),
+        favIconUrl: action.favIconUrl,
       });
     } catch (ex) {
       console.log(ex);

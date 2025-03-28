@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2024
+# (c) Copyright Ascensio System SIA 2025
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ class ConfigurationManager
 
   sig { void }
   def initialize
-    @version = '1.12.0'
+    @version = '1.13.0'
   end
 
   sig { returns(T.nilable(URI::Generic)) }
@@ -91,6 +91,11 @@ class ConfigurationManager
   sig { returns(String) }
   def jwt_secret
     ENV['JWT_SECRET'] || ''
+  end
+
+  sig { returns(Integer) }
+  def jwt_expires_in
+    ENV['JWT_EXPIRES_IN'] || 5
   end
 
   sig { returns(String) }

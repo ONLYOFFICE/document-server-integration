@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ using JWT;
 using JWT.Algorithms;
 using JWT.Builder;
 using JWT.Serializers;
+using System;
 using System.Collections.Generic;
 using System.Web.Configuration;
 
@@ -28,6 +29,7 @@ namespace OnlineEditorsExample
     public static class JwtManager
     {
         private static readonly string Secret;
+        private static readonly int ExpiresIn;
         public static readonly bool Enabled;
         public static readonly bool SignatureUseForRequest;
 
@@ -35,12 +37,19 @@ namespace OnlineEditorsExample
         {
             Secret = WebConfigurationManager.AppSettings["files.docservice.secret"] ?? "";  // get token secret from the config parameters
             Enabled = !string.IsNullOrEmpty(Secret);  // check if the token is enabled
+            ExpiresIn = int.Parse(WebConfigurationManager.AppSettings["files.docservice.token.expires-in"]);
             SignatureUseForRequest = bool.Parse(WebConfigurationManager.AppSettings["files.docservice.token.useforrequest"]);
         }
 
         // encode a payload object into a token using a secret key
         public static string Encode(IDictionary<string, object> payload)
         {
+            var now = (int)DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1)).TotalSeconds;
+            var expires = now + ExpiresIn * 60;
+
+            payload["iat"] = now;
+            payload["exp"] = expires;
+
             var encoder = new JwtEncoder(new HMACSHA256Algorithm(),
                                          new JsonNetSerializer(),
                                          new JwtBase64UrlEncoder());

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ const requestDiscovery = async function requestDiscovery(DocManager) {
   return new Promise((resolve, reject) => {
     const uri = absSiteUrl + configServer.get('wopi.discovery');
     const actions = [];
+    let proofKey = null;
 
     // parse url to allow request by relative url after
     // https://github.com/node-modules/urllib/pull/321/commits/514de1924bf17a38a6c2db2a22a6bc3494c0a959
@@ -77,33 +78,47 @@ const requestDiscovery = async function requestDiscovery(DocManager) {
                 });
               });
             });
+            proofKey = discovery['wopi-discovery']['proof-key'];
           }
         }
-        resolve(actions);
+        resolve({ actions, proofKey });
       },
     );
   });
 };
 
-// get the wopi discovery information
-const getDiscoveryInfo = async function getDiscoveryInfo(DocManager) {
-  let actions = [];
+const getDiscovery = async function getDiscovery(DocManager) {
+  let discovery = {};
 
   if (cache) return cache;
 
   try {
-    actions = await requestDiscovery(DocManager);
+    discovery = await requestDiscovery(DocManager);
   } catch (e) {
-    return actions;
+    return discovery;
   }
 
-  cache = actions;
+  cache = discovery;
   setTimeout(() => {
     cache = null;
     return cache;
   }, 1000 * 60 * 60); // 1 hour
 
-  return actions;
+  return discovery;
+};
+
+// get the wopi discovery actions information
+const getDiscoveryInfo = async function getDiscoveryInfo(DocManager) {
+  const discovery = await getDiscovery(DocManager);
+
+  return discovery.actions;
+};
+
+// get the wopi discovery proof key
+const getProofKey = async function getProofKey(DocManager) {
+  const discovery = await getDiscovery(DocManager);
+
+  return discovery.proofKey;
 };
 
 // get actions of the specified extension
@@ -176,5 +191,6 @@ exports.getEditNewText = getEditNewText;
 exports.getDiscoveryInfo = getDiscoveryInfo;
 exports.getAction = getAction;
 exports.getActions = getActions;
+exports.getProofKey = getProofKey;
 exports.getActionUrl = getActionUrl;
 exports.getDefaultAction = getDefaultAction;

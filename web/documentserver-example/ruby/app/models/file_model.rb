@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 #
-# (c) Copyright Ascensio System SIA 2024
+# (c) Copyright Ascensio System SIA 2025
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -99,10 +99,10 @@ class FileModel
 
   # get config parameters
   def config
-    can_fill = DocumentHelper.fill_forms_exts.include?(file_ext) # check if the document can be filled
-    editors_mode = @mode || (can_fill ? 'fillForms' : 'edit') # mode: view/edit/review/comment/fillForms/embedded
+    editors_mode = @mode || 'edit' # mode: view/edit/review/comment/fillForms/embedded
     can_edit = DocumentHelper.edited_exts.include?(file_ext) # check if the document can be edited
-    if ((!can_edit && editors_mode.eql?('edit')) || editors_mode.eql?('fillForms')) && can_fill
+    if ((!can_edit && editors_mode.eql?('edit')) || editors_mode.eql?('fillForms')) &&
+       DocumentHelper.fill_forms_exts.include?(file_ext)
       editors_mode = 'fillForms'
       can_edit = true
     end
@@ -200,7 +200,8 @@ class FileModel
           feedback: true, # the Feedback & Support menu button display
           forcesave: false, # adding the request for the forced file saving to the callback handler
           submitForm: submit_form, # the Submit form button state
-          goback: @user.goback.nil? ? '' : @user.goback
+          goback: @user.goback.nil? ? '' : @user.goback,
+          close: @user.close.nil? ? '' : @user.close
         }
       }
     }
@@ -293,7 +294,7 @@ class FileModel
             changes = JSON.parse(file.read) # and parse its content
           end
 
-          change = changes['changes'][0]
+          change = changes['changes'].last
 
           # write information about changes to the object
           obj['changes'] = change ? changes['changes'] : nil

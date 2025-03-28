@@ -19,7 +19,7 @@
         <meta name="server-version" content="<%= ConfigManager.getProperty("version") %>" />
         <!--
         *
-        * (c) Copyright Ascensio System SIA 2024
+        * (c) Copyright Ascensio System SIA 2025
         *
         * Licensed under the Apache License, Version 2.0 (the "License");
         * you may not use this file except in compliance with the License.
@@ -187,8 +187,7 @@
                                                    <td class="tableHeaderCell tableHeaderCellFileName">Filename</td>
                                                    <td class="tableHeaderCell tableHeaderCellEditors contentCells-shift">Editors</td>
                                                    <td class="tableHeaderCell tableHeaderCellViewers">Viewers</td>
-                                                   <td class="tableHeaderCell tableHeaderCellDownload">Download</td>
-                                                   <td class="tableHeaderCell tableHeaderCellRemove">Remove</td>
+                                                   <td class="tableHeaderCell tableHeaderCellAction">Action</td>
                                                </tr>
                                            </thead>
                                        </table>
@@ -305,14 +304,22 @@
                                                                     <img src="css/img/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                                 </a>
                                                             </td>
-                                                            <td class="contentCells contentCells-icon contentCells-shift downloadContentCellShift">
+                                                            <% if (!docType.equals(null)) { %>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a class="convert-file" data="<%= files[i].getName() %>" data-type="<%= docType %>">
+                                                                        <img class="icon-action" src="css/img/convert.svg" alt="Convert" title="Convert" /></a>
+                                                                </td>
+                                                            <% } else { %>
+                                                                <td class="contentCells contentCells-icon downloadContentCellShift"></td>
+                                                            <% } %>
+                                                            <td class="contentCells contentCells-icon downloadContentCellShift">
                                                                 <a href="IndexServlet?type=download&fileName=<%=URLEncoder.encode(files[i].getName(), "UTF-8")%>">
                                                                     <img class="icon-download" src="css/img/download.svg" alt="Download" title="Download" />
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a class="delete-file" data-filename="<%= files[i].getName() %>">
-                                                                    <img class="icon-delete" src="css/img/delete.svg" alt="Delete" title="Delete" />
+                                                                    <img class="icon-action" src="css/img/delete.svg" alt="Delete" title="Delete" />
                                                                 </a>
                                                             </td>
                                                         </tr>
@@ -381,6 +388,32 @@
             </div>
         </div>
 
+        <div id="convertingProgress">
+            <div id="convertingSteps">
+                <span id="convertFileName" class="convertFileName"></span>
+                <span id="convertStep1" class="step">1. Select a format file to convert</span>
+                <span class="step-descr">The converting speed depends on file size and additional elements it contains.</span>
+                <table cellspacing="0" cellpadding="0" width="100%" class="convertTable">
+                    <tbody>
+                        <tr class="typeButtonsRow" id="convTypes"></tr>
+                    </tbody>
+                </table>
+                <br />
+                <span id="convertStep2" class="step">2. File conversion</span>
+                <span class="step-descr disable" id="convert-descr">The file is converted <div class="convertPercent" id="convertPercent">0 %</div></span>
+                <span class="step-error hidden" id="convert-error"></span>
+                <div class="describeUpload">Note the speed of all operations depends on your connection quality and server location.</div>
+                <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
+            </div>
+            <br />
+            <div class="buttonsMobile">
+                <div id="downloadConverted" class="button converting orange disable">DOWNLOAD</div>
+                <div id="beginViewConverted" class="button converting wide gray disable">VIEW</div>
+                <div id="beginEditConverted" class="button converting wide gray disable">EDIT</div>
+                <div id="cancelEdit" class="button converting gray">CANCEL</div>
+            </div>
+        </div>
+
         <span id="loadScripts" data-docs="<%= ConfigManager.getProperty("files.docservice.url.site") + ConfigManager.getProperty("files.docservice.url.preloader") %>"></span>
 
         <footer>
@@ -395,7 +428,7 @@
                                 <a href="mailto:sales@onlyoffice.com">Submit your request</a>
                             </td>
                             <td class="copy">
-                                &copy; Ascensio Systems SIA 2024. All rights reserved.
+                                &copy; Ascensio Systems SIA 2025. All rights reserved.
                             </td>
                         </tr>
                     </tbody>

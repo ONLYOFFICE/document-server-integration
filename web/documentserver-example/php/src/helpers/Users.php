@@ -3,7 +3,7 @@
 namespace Example\Helpers;
 
 /**
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ final class Users
     public ?bool $avatar;
     public ?string $image;
     public ?array $goback;
+    public ?array $close;
 
     /**
      * Constructor
@@ -52,6 +53,7 @@ final class Users
      * @param bool|null $templates
      * @param bool|null $avatar
      * @param array|null $goback
+     * @param array|null $close
      *
      * @return void
      */
@@ -68,7 +70,8 @@ final class Users
         ?array  $descriptions,
         ?bool   $templates,
         ?bool   $avatar,
-        ?array  $goback
+        ?array  $goback,
+        ?array  $close
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -83,5 +86,6 @@ final class Users
         $this->userInfoGroups = $userInfoGroups;
         $this->avatar = $avatar;
         $this->goback = $goback;
+        $this->close = $close;
     }
 }

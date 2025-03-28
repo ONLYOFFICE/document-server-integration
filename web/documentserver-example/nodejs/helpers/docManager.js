@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -533,7 +533,8 @@ DocManager.prototype.getHistory = function getHistory(fileName, content, keyVers
   let createdFromJson = null;
   if (fileContent) { // if content is defined
     if (fileContent.changes && fileContent.changes.length) { // and there are some modifications in the content
-      [contentJson] = fileContent.changes; // write these modifications to the json content
+      // write these modifications to the json content
+      contentJson = fileContent.changes[fileContent.changes.length - 1];
     } else if (fileContent.length) {
       [contentJson] = fileContent; // otherwise, write original content to the json content
       oldVersion = true; // and note that this is an old version

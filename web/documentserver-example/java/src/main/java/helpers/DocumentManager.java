@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,8 +47,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -290,12 +292,17 @@ public final class DocumentManager {
         String directory = filesRootPath(userAddress);
 
         File file = new File(directory);
-        return file.listFiles(new FileFilter() {  // take only files from the root directory
+
+        File[] files = file.listFiles(new FileFilter() {  // take only files from the root directory
             @Override
             public boolean accept(final File pathname) {
                 return pathname.isFile();
             }
         });
+
+        Arrays.sort(files, Comparator.comparingLong(File::lastModified).reversed());
+
+        return files;
     }
 
     // create demo document
@@ -543,6 +550,7 @@ public final class DocumentManager {
             for (String key : payloadClaims.keySet()) {  // run through all the keys from the payload
                 jwt.addClaim(key, payloadClaims.get(key));  // and write each claim to the jwt
             }
+            jwt.setExpiration(ZonedDateTime.now().plusMinutes(getTokenExpiration()));
             return JWT.getEncoder().encode(jwt, signer);  // sign and encode the JWT to a JSON string representation
         } catch (Exception e) {
             return "";
@@ -577,6 +585,11 @@ public final class DocumentManager {
     // get token secret from the config parameters
     public static String getTokenSecret() {
         return ConfigManager.getProperty("files.docservice.secret");
+    }
+
+    // get token expiration time in minutes from the config parameters
+    public static Integer getTokenExpiration() {
+        return Integer.parseInt(ConfigManager.getProperty("files.docservice.token-expiration"));
     }
 
     // get config request jwt

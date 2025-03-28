@@ -1,6 +1,7 @@
 {
   "server": {
     "siteUrl": "/",
-    "maxFileSize": 104857600
+    "maxFileSize": 104857600,
+    "enableForgotten": false
   }
 }

@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2024
+ * (c) Copyright Ascensio System SIA 2025
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,7 +85,8 @@ namespace ASC.Api.DocumentConverter
                                           bool isAsync,
                                           out Dictionary<string, string> convertedDocumentData,
                                           string filePass = null,
-                                          string lang = null)
+                                          string lang = null,
+                                          string filename = null)
         {
             convertedDocumentData = new Dictionary<string, string>();
 
@@ -93,7 +94,7 @@ namespace ASC.Api.DocumentConverter
             fromExtension = string.IsNullOrEmpty(fromExtension) ? Path.GetExtension(documentUri).ToLower() : fromExtension;
 
             // check if the file name parameter is defined; if not, get random uuid for this file
-            var title = Path.GetFileName(documentUri);
+            var title = string.IsNullOrEmpty(filename) ? Path.GetFileName(documentUri) : filename;
             title = string.IsNullOrEmpty(title) ? Guid.NewGuid().ToString() : title;
 
             // get document key
