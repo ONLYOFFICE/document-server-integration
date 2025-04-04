@@ -760,7 +760,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           }
         }
 
-        const changeshistory = body.changeshistory || JSON.stringify(body.history);
+        const changeshistory = JSON.stringify(body.history);
         if (changeshistory) {
           // get the path to the file with document changes
           const pathChangesJson = req.DocManager.changesPath(newFileName, userAddress, version);
