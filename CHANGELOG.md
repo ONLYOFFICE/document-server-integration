@@ -1,5 +1,7 @@
 # Change Log
 
+- nodejs: view odg
+- nodejs: edit xlsb
 - nodejs: support vsdx in diagram editor
 - nodejs: user role
 - nodejs: start filling
