@@ -20,7 +20,7 @@
     "commandUrl": "command",
     "converterUrl": "converter",
     "apiUrl": "web-apps/apps/api/documents/api.js",
-    "preloaderUrl": "web-apps/apps/api/documents/cache-scripts.html",
+    "preloaderUrl": "web-apps/apps/api/documents/preload.html",
     "exampleUrl": null,
     "storageFolder": "./files",
     "storagePath": "/files",

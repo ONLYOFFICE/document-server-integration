@@ -68,7 +68,7 @@ class ConfigurationManager
   def document_server_preloader_uri
     path =
       ENV['DOCUMENT_SERVER_PRELOADER_PATH'] ||
-      '/web-apps/apps/api/documents/cache-scripts.html'
+      '/web-apps/apps/api/documents/preload.html'
     URI.join(document_server_public_uri, path)
   end
 

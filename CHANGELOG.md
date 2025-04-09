@@ -1,5 +1,6 @@
 # Change Log
 
+- change preload.html address
 - nodejs: view odg
 - nodejs: edit xlsb
 - nodejs: support vsdx in diagram editor

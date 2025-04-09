@@ -61,7 +61,7 @@ class ConfigurationManager:
         base_url = server_url.geturl()
         path = (
             environ.get('DOCUMENT_SERVER_PRELOADER_PATH') or
-            '/web-apps/apps/api/documents/cache-scripts.html'
+            '/web-apps/apps/api/documents/preload.html'
         )
         url = urljoin(base_url, path)
         return urlparse(url)
