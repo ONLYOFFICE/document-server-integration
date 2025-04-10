@@ -6,6 +6,7 @@ use App\OnlyOffice\Managers\JWTManager;
 use App\OnlyOffice\Managers\SettingsManager;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class EnsureJWTTokenIsPresent
@@ -23,7 +24,8 @@ class EnsureJWTTokenIsPresent
 
         if ($settings->getSetting('jwt.enabled') && $embeded == null && $settings->getSetting('jwt.use_for_request')) {
             if ($request->hasHeader($settings->getSetting('jwt.header'))) {
-                $token = $jwt->decode($request->bearerToken(), $settings->getSetting('jwt.secret'));
+                $bearerToken = Str::after($request->header($settings->getSetting('jwt.header')), 'Bearer ');
+                $token = $jwt->decode($bearerToken, $settings->getSetting('jwt.secret'));
 
                 if (empty($token)) {
                     abort(498, 'Invalid JWT signature');
