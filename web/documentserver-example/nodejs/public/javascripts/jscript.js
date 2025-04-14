@@ -139,7 +139,7 @@ if (typeof jQuery != "undefined") {
 
         if (!formatManager.isAutoConvertible(posExt)) {
             jq("#step2").addClass("done").removeClass("current");
-            loadScripts();
+            onuploaded();
             return;
         }
 
@@ -199,35 +199,14 @@ if (typeof jQuery != "undefined") {
                         checkConvert(filePass, fileType);
                     } else {
                         jq("#step2").addClass("done").removeClass("current");
-                        loadScripts();
+                        onuploaded();
                     }
                 }
             });
         }, 1000);
     };
 
-    var loadScripts = function () {
-        if (!jq("#mainProgress").is(":visible")) {
-            return;
-        }
-        jq("#step3").addClass("current");
-
-        if (jq("#loadScripts").is(":empty")) {
-            var urlScripts = jq("#loadScripts").attr("data-docs");
-            var frame = '<iframe id="iframeScripts" width=1 height=1 style="position: absolute; visibility: hidden;" ></iframe>';
-            jq("#loadScripts").html(frame);
-            document.getElementById("iframeScripts").onload = onloadScripts;
-            jq("#loadScripts iframe").attr("src", urlScripts);
-        } else {
-            onloadScripts();
-        }
-    };
-
-    var onloadScripts = function () {
-        if (!jq("#mainProgress").is(":visible")) {
-            return;
-        }
-        jq("#step3").addClass("done").removeClass("current");
+    var onuploaded = function () {
         jq("#beginView, #beginEmbedded").removeClass("disable");
 
         var fileName = jq("#hiddenFileName").val();
@@ -276,7 +255,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#skipPass", function () {
         jq("#blockPassword").hide();
-        loadScripts();
+        onuploaded();
     });
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
