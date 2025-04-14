@@ -1,8 +1,6 @@
 {
   "server": {
     "port": 3000,
-    "siteUrl": "http://127.0.0.1:8000/",
-    "apiUrl": "web-apps/apps/api/documents/api.js",
-    "preloaderUrl": "web-apps/apps/api/documents/cache-scripts.html"
+    "siteUrl": "http://127.0.0.1:8000/"
   }
 }

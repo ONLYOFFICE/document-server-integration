@@ -127,7 +127,7 @@ class ConfigurationManagerDocumentServerPreloaderURITests < Test::Unit::TestCase
     uri = config_manager.document_server_preloader_uri
     assert_equal(
       uri.to_s,
-      'http://documentserver/web-apps/apps/api/documents/cache-scripts.html'
+      'http://documentserver/web-apps/apps/api/documents/preload.html'
     )
   end
 
