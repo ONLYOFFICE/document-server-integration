@@ -1,8 +1,11 @@
 # Change Log
 
+- change preload.html address
+- view odg
+- edit xlsb
 - php-laravel: fix custom jwt header
 - features tips for anonymous
-- nodejs: support vsdx in diagram editor
+- support vsdx in diagram editor
 - nodejs: user role
 - nodejs: start filling
 

@@ -65,7 +65,7 @@ class ConfigurationManager
     {
         $serverURL = $this->documentServerPublicURL();
         $path = getenv('DOCUMENT_SERVER_PRELOADER_PATH')
-            ?: 'web-apps/apps/api/documents/cache-scripts.html';
+            ?: 'web-apps/apps/api/documents/preload.html';
         return $serverURL->joinPath($path);
     }
 
