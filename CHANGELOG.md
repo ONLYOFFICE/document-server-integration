@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: fix wopi verification
 - nodejs: user role
 - nodejs: start filling
 
