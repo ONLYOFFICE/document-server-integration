@@ -1,5 +1,6 @@
 # Change Log
 
+- php-laravel: fix custom jwt header
 - features tips for anonymous
 - nodejs: support vsdx in diagram editor
 - nodejs: user role

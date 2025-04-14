@@ -6,6 +6,7 @@ use App\OnlyOffice\Managers\JWTManager;
 use App\OnlyOffice\Managers\SettingsManager;
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
 class CheckAndDecodeJWTPayload
@@ -27,7 +28,8 @@ class CheckAndDecodeJWTPayload
                 $payload = $jwt->decode($request->token, $settings->getSetting('jwt.secret'));
                 $payload = json_decode(json_encode($payload), true);
             } elseif ($request->hasHeader($settings->getSetting('jwt.header'))) {
-                $payload = $jwt->decode($request->bearerToken(), $settings->getSetting('jwt.secret'));
+                $bearerToken = Str::after($request->header($settings->getSetting('jwt.header')), 'Bearer ');
+                $payload = $jwt->decode($bearerToken, $settings->getSetting('jwt.secret'));
             } else {
                 abort(499, 'Expected JWT token');
             }
