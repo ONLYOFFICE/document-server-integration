@@ -177,6 +177,7 @@ app.delete('/forgotten', (req, res) => { // define a handler for removing forgot
     }
   } catch (ex) {
     console.log(ex);
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.write('Server error');
     res.status(500).send();
   }
@@ -282,7 +283,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
   form.parse(req, (err, fields, files) => { // parse this form
     if (err) { // if an error occurs
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
-      res.writeHead(200, { 'Content-Type': 'text/plain' }); // and write the error status and message to the response
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write(`{ "error": "${err.message}"}`);
       res.end();
       return;
@@ -291,7 +292,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     const file = files.uploadedFile[0];
 
     if (file === undefined) { // if file parameter is undefined
-      res.writeHead(200, { 'Content-Type': 'text/plain' }); // write the error status and message to the response
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write('{ "error": "Uploaded file not found"}');
       res.end();
       return;
@@ -302,7 +303,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     // check if the file size exceeds the maximum file size
     if (fileSizeLimit < file.size || file.size <= 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write('{ "error": "File size is incorrect"}');
       res.end();
       return;
@@ -314,7 +315,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
 
     if (exts.indexOf(curExt) === -1 || fileUtility.getFormatActions(curExt).length === 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
-      res.writeHead(200, { 'Content-Type': 'text/plain' }); // and write the error status and message to the response
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write('{ "error": "File type is not supported"}');
       res.end();
       return;
@@ -322,7 +323,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
 
     fileSystem.rename(file.filepath, `${uploadDir}/${file.originalFilename}`, (error) => { // rename a file
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       if (error) { // if an error occurs
         res.write(`{ "error": "${error}"}`); // write an error message to the response
       } else {
@@ -391,6 +392,7 @@ app.post('/create', (req, res) => {
     });
   } catch (e) {
     res.status(500);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write(JSON.stringify({
       error: 1,
       message: e.message,
@@ -520,6 +522,7 @@ app.get('/files', (req, res) => { // define a handler for getting files informat
     res.write(JSON.stringify(filesInDirectoryInfo)); // transform files information into the json string
   } catch (ex) {
     console.log(ex);
+    res.setHeader('Content-Type', 'text/plain');
     res.write('Server error');
   }
   res.end();
@@ -535,6 +538,7 @@ app.get('/files/file/:fileId', (req, res) => { // define a handler for getting f
     res.write(JSON.stringify(fileInfoById));
   } catch (ex) {
     console.log(ex);
+    res.setHeader('Content-Type', 'text/plain');
     res.write('Server error');
   }
   res.end();
@@ -553,9 +557,11 @@ app.delete('/file', (req, res) => { // define a handler for removing file
       req.DocManager.cleanFolderRecursive(req.DocManager.storagePath(''), false);
     }
 
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write('{"success":true}');
   } catch (ex) {
     console.log(ex);
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.write('Server error');
   }
   res.end();
@@ -723,6 +729,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       try {
         if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
           console.log(`callbackProcessSave error: name = ${fileName} userAddress = ${userAddress} is not exist`);
+          response.setHeader('Content-Type', 'application/json');
           response.write('{"error":1, "message":"file is not exist"}');
           response.end();
           return;
@@ -784,11 +791,13 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         }
       } catch (ex) {
         console.log(ex);
+        response.setHeader('Content-Type', 'application/json');
         response.write(`{"error":1,"message":${JSON.stringify(ex)}}`);
         response.end();
         return;
       }
 
+      response.setHeader('Content-Type', 'application/json');
       response.write('{"error":0}');
       response.end();
     };
@@ -796,6 +805,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     // file saving process
     const processSave = async function processSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
+        response.setHeader('Content-Type', 'application/json');
         response.write('{"error":1,"message":"save uri is empty"}');
         response.end();
         return;
@@ -913,6 +923,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         return;
       }
 
+      response.setHeader('Content-Type', 'application/json');
       response.write('{"error":0}');
       response.end();
     };
@@ -920,6 +931,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     // file force saving process
     const processForceSave = async function processForceSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
+        response.setHeader('Content-Type', 'application/json');
         response.write('{"error":1,"message":"forcesave uri is empty"}');
         response.end();
         return;
@@ -973,6 +985,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       return;
     }
 
+    response.setHeader('Content-Type', 'application/json');
     response.write('{"error":0}');
     response.end();
   };
@@ -1012,6 +1025,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       }
     }
     if (!body) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write('{"error":1,"message":"body is empty"}');
       res.end();
       return;
@@ -1070,6 +1084,7 @@ app.get('/config', async (req, res) => {
   } catch (ex) {
     console.log(ex);
     res.status(500);
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.write('error');
   }
   res.end();
