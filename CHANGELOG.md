@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: preload frame moved from uploading popap
 - change preload.html address
 - nodejs: view odg
 - nodejs: edit xlsb
