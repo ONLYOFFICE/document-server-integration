@@ -1,5 +1,6 @@
 # Change Log
 
+- ur skin language
 - nodejs: preload frame moved from uploading popap
 - change preload.html address
 - nodejs: view odg
