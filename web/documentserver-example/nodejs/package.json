@@ -21,7 +21,7 @@
     "ejs": "^3.1.10",
     "express": "^4.21.1",
     "fast-xml-parser": "^4.4.1",
-    "formidable": "^3.2.4",
+    "formidable": "^3.5.4",
     "he": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
     "jwa": "^2.0.0",
