@@ -32,7 +32,7 @@ exports.isValidToken = async (req, res, next) => {
 
     const isValid = wopiValidator.check(
       {
-        url: `${req.protocol}://${req.get('host')}${req.originalUrl || req.url}`,
+        url: `${req.DocManager.getServerPath()}${req.originalUrl || req.url}`,
         accessToken: req.query.access_token,
         timestamp: req.headers[reqConsts.requestHeaders.Timestamp.toLowerCase()],
       },
