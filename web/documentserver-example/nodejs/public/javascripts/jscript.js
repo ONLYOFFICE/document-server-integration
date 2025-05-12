@@ -19,7 +19,7 @@
 var language;
 var userid;
 var directUrl;
-var formatManager;
+var formatManager = new FormatManager();
 
 window.onload = function () {
     fetch('formats')
@@ -38,7 +38,12 @@ window.onload = function () {
                 });
                 formatManager = new FormatManager(formats);
             }
-        })
+        });
+
+    var urlScripts = jq("#loadScripts").attr("data-docs");
+    var frame = '<iframe id="iframeScripts" width=1 height=1 style="position: absolute; visibility: hidden;" ></iframe>';
+    jq("#loadScripts").html(frame);
+    jq("#loadScripts iframe").attr("src", urlScripts);
 }
 
 if (typeof jQuery != "undefined") {
