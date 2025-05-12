@@ -3,7 +3,7 @@
 - ur skin language
 - nodejs: preload frame moved from uploading popap
 - change preload.html address
-- nodejs: view odg
+- nodejs: view odg, md
 - nodejs: edit xlsb
 - nodejs: support vsdx in diagram editor
 - nodejs: fix wopi verification
