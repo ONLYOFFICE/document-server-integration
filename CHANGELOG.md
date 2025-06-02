@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: set users by parts
 - ur skin language
 - nodejs: preload frame moved from uploading popap
 - change preload.html address
