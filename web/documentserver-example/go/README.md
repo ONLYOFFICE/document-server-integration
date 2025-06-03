@@ -13,7 +13,7 @@ See the detailed guide to learn how to install Document Server [for Windows](htt
 
 ### Step 2. Download the Go code for the editors integration
 
-Download the [Go example](https://api.onlyoffice.com/editors/demopreview) from our site.
+Download the [Go example](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/) from our site.
 
 To connect the editors to your website, specify the path to the editors installation, server protocol, address and port  in the *configuration.env* file:
 
@@ -31,7 +31,7 @@ JWT_HEADER=Authorization
 where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed.
 **address** is the address of the server, **port** is the server port.
 
-If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) it the *templates/editor.html* file.
+If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) it the *templates/editor.html* file.
 
 ### Step 3. Install the prerequisites
 To run the Go example code, install the Go compiler:

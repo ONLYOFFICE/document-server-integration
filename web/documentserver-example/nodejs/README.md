@@ -14,7 +14,7 @@ See the detailed guide to learn how to [install Document Server for Windows](htt
 
 ### Step 2. Download the Node.js code for the editors integration
 
-Download the [Node.js example](https://api.onlyoffice.com/editors/demopreview) from our site.
+Download the [Node.js example](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/) from our site.
 
 To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *config/default.json* file:
 
@@ -26,7 +26,7 @@ To connect the editors to your website, specify the path to the editors installa
 
 where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed, the **storageFolder** and **storagePath** are the paths where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
 
-If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/editors/advanced) in the *\views\editor.ejs* file.
+If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) in the *\views\editor.ejs* file.
 
 ### Step 3. Install Node.js environment
 

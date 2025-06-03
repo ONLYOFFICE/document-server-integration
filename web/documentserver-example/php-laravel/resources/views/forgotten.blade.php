@@ -115,7 +115,7 @@
                     <tbody>
                         <tr>
                             <td>
-                                <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">
+                                <a href="https://api.onlyoffice.com/docs/docs-api/get-started/how-it-works/" target="_blank">
                                     API Documentation
                                 </a>
                             </td>

@@ -19,7 +19,7 @@ You should change `http://documentserver` to your server address in these files:
 * [Python](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/python) - `web/documentserver-example/python/src/configuration/configuration.py`
 * [Ruby](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/ruby) - `web/documentserver-example/ruby/app/configuration/configuration.rb`
 
-More information on how to use these examples can be found here: [http://api.onlyoffice.com/editors/demopreview](http://api.onlyoffice.com/editors/demopreview "http://api.onlyoffice.com/editors/demopreview")
+More information on how to use these examples can be found here: [https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/)
 
 ## API methods for test examples
 
