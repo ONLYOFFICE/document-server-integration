@@ -1,13 +1,19 @@
 # Change Log
 
+- php-laravel: fix custom jwt header
+- features tips for anonymous
+- view odg, md
+- edit xlsb
+- support vsdx in diagram editor
+
+## 1.14.0
+- nodejs: set users by parts
 - ur skin language
 - nodejs: preload frame moved from uploading popap
 - change preload.html address
-- view odg, md
-- edit xlsb
-- php-laravel: fix custom jwt header
-- features tips for anonymous
-- support vsdx in diagram editor
+- nodejs: view odg, md
+- nodejs: edit xlsb
+- nodejs: support vsdx in diagram editor
 - nodejs: fix wopi verification
 - nodejs: user role
 - nodejs: start filling
