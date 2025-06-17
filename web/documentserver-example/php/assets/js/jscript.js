@@ -203,6 +203,7 @@ if (typeof jQuery != "undefined") {
                     if (response.step < 100) {
                         checkConvert(response.fileUri, filePass, fileExt);
                     } else {
+                        jq("#uploadFileName").text(response.filename);
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
                     }
