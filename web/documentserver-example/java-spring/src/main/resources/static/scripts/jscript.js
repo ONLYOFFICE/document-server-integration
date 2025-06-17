@@ -168,6 +168,7 @@ if (typeof jQuery !== "undefined") {
                         checkConvert(filePass, fileType);
                     } else {
                         jq("#hiddenFileName").val(response.filename);
+                        jq("#uploadFileName").text(response.filename);
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
                     }
