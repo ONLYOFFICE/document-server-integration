@@ -213,6 +213,7 @@ if (typeof jQuery != "undefined") {
                         console.log(response.fileUri)
                         checkConvert(response.fileUri, filePass, fileExt);
                     } else {
+                        jq("#uploadFileName").text(response.filename);
                         jq("#step2").addClass("done").removeClass("current");
                         loadScripts();
                     }
