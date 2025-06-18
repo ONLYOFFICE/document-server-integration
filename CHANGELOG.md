@@ -1,5 +1,6 @@
 # Change Log
 
+- change tab title on rename
 - change uploaded file name in popap if converted
 - php-laravel: fix custom jwt header
 - features tips for anonymous
