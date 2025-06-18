@@ -1,5 +1,6 @@
 # Change Log
 
+- python: loading scripts on page load
 - php-laravel: loading scripts on page load
 - php: loading scripts on page load
 - java-spring: loading scripts on page load
