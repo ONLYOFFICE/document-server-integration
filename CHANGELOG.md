@@ -1,5 +1,6 @@
 # Change Log
 
+- java-spring: loading scripts on page load
 - java: loading scripts on page load
 - go: loading scripts on page load
 - csharp-mvc: loading scripts on page load
