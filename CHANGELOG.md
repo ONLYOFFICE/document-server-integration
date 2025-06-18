@@ -1,5 +1,6 @@
 # Change Log
 
+- go: loading scripts on page load
 - csharp-mvc: loading scripts on page load
 - csharp: loading scripts on page load
 - change uploaded file name in popap if converted
