@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp-mvc: loading scripts on page load
 - csharp: loading scripts on page load
 - change uploaded file name in popap if converted
 - php-laravel: fix custom jwt header
