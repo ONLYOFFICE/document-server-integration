@@ -1,5 +1,6 @@
 # Change Log
 
+- ruby: loading scripts on page load
 - python: loading scripts on page load
 - php-laravel: loading scripts on page load
 - php: loading scripts on page load
