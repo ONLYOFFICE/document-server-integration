@@ -1,5 +1,6 @@
 # Change Log
 
+- php: loading scripts on page load
 - java-spring: loading scripts on page load
 - java: loading scripts on page load
 - go: loading scripts on page load
