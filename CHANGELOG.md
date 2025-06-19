@@ -1,14 +1,7 @@
 # Change Log
 
-- ruby: loading scripts on page load
-- python: loading scripts on page load
-- php-laravel: loading scripts on page load
-- php: loading scripts on page load
-- java-spring: loading scripts on page load
-- java: loading scripts on page load
-- go: loading scripts on page load
-- csharp-mvc: loading scripts on page load
-- csharp: loading scripts on page load
+- preload frame moved from uploading popap
+- change tab title on rename
 - change uploaded file name in popap if converted
 - php-laravel: fix custom jwt header
 - features tips for anonymous

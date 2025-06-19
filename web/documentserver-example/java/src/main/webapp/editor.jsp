@@ -107,6 +107,10 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
+            if (event.data.title !== undefined) {
+                document.title = event.data.title + " - ONLYOFFICE";
+            }
+
             if (event.data.favorite !== undefined) {
                 var favorite = !!event.data.favorite;
                 var title = document.title.replace(/^\☆/g, "");
