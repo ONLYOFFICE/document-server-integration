@@ -346,10 +346,7 @@
                     <span class="errorPass"></span>
                     <br />
                 </div>
-                <span id="step3" class="step">3. Loading editor scripts.</span>
-                <span class="step-descr">They are loaded only once, they will be cached on your computer.</span>
                 <input type="hidden" name="hiddenFileName" id="hiddenFileName" />
-                <br />
                 <span class="progress-descr">Note the speed of all operations depends
                     on your connection quality and server location.</span>
                 <br />
@@ -395,7 +392,7 @@
             </div>
         </div>form>
 
-        <span id="loadScripts" data-docs="{{ $preloaderUrl }}"></span>
+        <iframe id="iframeScripts" src="{{ $preloaderUrl }}" width=1 height=1 style="position: absolute; visibility: hidden; top: 0;" ></iframe>
 
         <footer>
             <div class="center">

@@ -1,5 +1,6 @@
 # Change Log
 
+- preload frame moved from uploading popap
 - change tab title on rename
 - change uploaded file name in popap if converted
 - php-laravel: fix custom jwt header
