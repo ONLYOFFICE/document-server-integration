@@ -244,7 +244,13 @@
                 "c": c,
                 "users": users,
             };
-            if (resultCount) result.total = resultCount;
+            if (resultCount) {
+                // support v9.0
+                result.total = 1 + (!event.data.count || users.length < event.data.count ? 0 : (event.data.from + event.data.count));
+                // since v9.0.1
+                result.isPaginated = true;
+            }
+
             docEditor.setUsers(result);
         };
 
