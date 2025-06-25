@@ -362,10 +362,33 @@
                 default:
                     users = <%= usersForMentions %>;
             }
-            docEditor.setUsers({
+            if ((c === "protect" || c === "mention") && users && event.data.count) {
+                let from = event.data.from;
+                let count = event.data.count;
+                let search = event.data.search;
+                if (from != 0) users = [];
+                var resultCount = 234;
+                for (var i = Math.max(users.length, from); i < Math.min(from + count, resultCount); i++){
+                    users.push({
+                        email: "test@test.test" + (i + 1),
+                        id: "id" + (i + 1),
+                        name: "test_" + search + (i + 1)
+                    });
+                }
+            }
+
+            var result = {
                 "c": c,
                 "users": users,
-            });
+            };
+            if (resultCount) {
+                // support v9.0
+                result.total = 1 + (!event.data.count || users.length < event.data.count ? 0 : (event.data.from + event.data.count));
+                // since v9.0.1
+                result.isPaginated = true;
+            }
+
+            docEditor.setUsers(result);
         };
 
         var onRequestSendNotify = function (event) {
