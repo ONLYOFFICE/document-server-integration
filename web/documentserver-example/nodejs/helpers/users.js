@@ -156,7 +156,7 @@ const users = [
     { text: 'Go to Documents' },
     {},
     true,
-    [ 'Anyone' ],
+    ['Anyone'],
   ),
   new User(
     'uid-3',
@@ -178,7 +178,7 @@ const users = [
     null,
     {},
     false,
-    [ 'role' ],
+    ['role'],
   ),
   new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null, false, []),
 ];
