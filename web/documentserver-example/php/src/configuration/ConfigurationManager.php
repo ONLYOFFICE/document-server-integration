@@ -22,7 +22,7 @@ use Example\Common\URL;
 
 class ConfigurationManager
 {
-    public string $version = '1.13.0';
+    public string $version = '1.14.0';
 
     public function getVersion(): string
     {
@@ -65,7 +65,7 @@ class ConfigurationManager
     {
         $serverURL = $this->documentServerPublicURL();
         $path = getenv('DOCUMENT_SERVER_PRELOADER_PATH')
-            ?: 'web-apps/apps/api/documents/cache-scripts.html';
+            ?: 'web-apps/apps/api/documents/preload.html';
         return $serverURL->joinPath($path);
     }
 
@@ -222,6 +222,7 @@ class ConfigurationManager
             'sv' => 'Swedish',
             'tr' => 'Turkish',
             'uk' => 'Ukrainian',
+            'ur' => 'Urdu',
             'vi' => 'Vietnamese',
             'aa-AA' => 'Test Language'
         ];

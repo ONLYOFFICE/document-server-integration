@@ -1,5 +1,17 @@
 # Change Log
 
+## 1.14.0
+- nodejs: set users by parts
+- nodejs: preload frame moved from uploading popap
+- nodejs: view odg, md
+- nodejs: edit xlsb
+- nodejs: support vsdx in diagram editor
+- nodejs: fix wopi verification
+- nodejs: user role
+- nodejs: start filling
+- ur skin language
+- change preload.html address
+
 ## 1.13.0
 - nodejs: rename in wopi
 - nodejs: using faviconUrl from WOPI discovery

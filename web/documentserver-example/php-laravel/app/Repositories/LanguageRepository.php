@@ -64,6 +64,7 @@ class LanguageRepository
         'sv' => 'Swedish',
         'tr' => 'Turkish',
         'uk' => 'Ukrainian',
+        'ur' => 'Urdu',
         'vi' => 'Vietnamese',
         'aa-AA' => 'Test Language',
     ];

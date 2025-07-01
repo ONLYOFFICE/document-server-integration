@@ -31,7 +31,7 @@ class ConfigurationManager
 
   sig { void }
   def initialize
-    @version = '1.13.0'
+    @version = '1.14.0'
   end
 
   sig { returns(T.nilable(URI::Generic)) }
@@ -68,7 +68,7 @@ class ConfigurationManager
   def document_server_preloader_uri
     path =
       ENV['DOCUMENT_SERVER_PRELOADER_PATH'] ||
-      '/web-apps/apps/api/documents/cache-scripts.html'
+      '/web-apps/apps/api/documents/preload.html'
     URI.join(document_server_public_uri, path)
   end
 
@@ -198,6 +198,7 @@ class ConfigurationManager
       sv: 'Swedish',
       tr: 'Turkish',
       uk: 'Ukrainian',
+      ur: 'Urdu',
       vi: 'Vietnamese',
       'aa-AA': 'Test Language'
     }

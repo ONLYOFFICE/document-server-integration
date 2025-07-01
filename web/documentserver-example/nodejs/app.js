@@ -1139,6 +1139,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const { reviewGroups } = user;
     const { commentGroups } = user;
     const { userInfoGroups } = user;
+    const userRoles = user.roles;
 
     const usersInfo = [];
     const usersForProtect = [];
@@ -1180,7 +1181,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     let submitForm = false;
     if (mode !== 'view') {
-      submitForm = userid === 'uid-1';
+      submitForm = user.canSubmitForm;
     }
 
     if (user.goback != null) {
@@ -1226,6 +1227,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         userImage: user.avatar ? `${req.DocManager.getServerUrl()}/images/${user.id}.png` : null,
         name,
         userGroup,
+        userRoles,
         reviewGroups: JSON.stringify(reviewGroups),
         commentGroups: JSON.stringify(commentGroups),
         userInfoGroups: JSON.stringify(userInfoGroups),

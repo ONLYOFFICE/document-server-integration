@@ -22,7 +22,7 @@ from src.common import string
 
 
 class ConfigurationManager:
-    version = '1.13.0'
+    version = '1.14.0'
 
     def getVersion(self) -> str:
         return self.version
@@ -61,7 +61,7 @@ class ConfigurationManager:
         base_url = server_url.geturl()
         path = (
             environ.get('DOCUMENT_SERVER_PRELOADER_PATH') or
-            '/web-apps/apps/api/documents/cache-scripts.html'
+            '/web-apps/apps/api/documents/preload.html'
         )
         url = urljoin(base_url, path)
         return urlparse(url)
@@ -173,6 +173,7 @@ class ConfigurationManager:
             'sv': 'Swedish',
             'tr': 'Turkish',
             'uk': 'Ukrainian',
+            'ur': 'Urdu',
             'vi': 'Vietnamese',
             'aa-AA': 'Test Language'
         }

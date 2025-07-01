@@ -114,7 +114,7 @@ class ConfigurationManagerDocumentServerPreloaderURLTests(TestCase):
         url = config_manager.document_server_preloader_url()
         self.assertEqual(
             url.geturl(),
-            'http://localhost/web-apps/apps/api/documents/cache-scripts.html'
+            'http://localhost/web-apps/apps/api/documents/preload.html'
         )
 
     @patch.object(

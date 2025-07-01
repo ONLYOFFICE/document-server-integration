@@ -32,7 +32,7 @@ class SettingsManager extends OnlyOfficeSettingsManager
         $publicServerUrl = rtrim(env('DOCUMENT_SERVER_PUBLIC_URL', 'http://documentserver'), '/');
         $privateServerUrl = rtrim(env('DOCUMENT_SERVER_PRIVATE_URL', $publicServerUrl), '/');
         $apiUrl = $publicServerUrl.'/'.env('DOCUMENT_SERVER_API_PATH', 'web-apps/apps/api/documents/api.js');
-        $preloaderUrl = $publicServerUrl.'/'.env('DOCUMENT_SERVER_PRELOADER_PATH', 'web-apps/apps/api/documents/cache-scripts.html');
+        $preloaderUrl = $publicServerUrl.'/'.env('DOCUMENT_SERVER_PRELOADER_PATH', 'web-apps/apps/api/documents/preload.html');
         $conversionUrl = $privateServerUrl.'/'.env('DOCUMENT_SERVER_CONVERTER_PATH', 'convert');
         $commandUrl = $privateServerUrl.'/'.env('DOCUMENT_SERVER_COMMAND_PATH', 'command');
         $jwtSecret = env('DOCUMENT_SERVER_JWT_SECRET', 'secret');

@@ -1,5 +1,5 @@
 {
-  "VERSION": "1.13.0",
+  "VERSION": "1.14.0",
 
   "SERVER_ADDRESS" : "",
   "SERVER_PORT" : 3000,
@@ -7,7 +7,7 @@
   "DOC_SERVER_HOST" : "http://documentserver/",
   "DOC_SERVER_CONVERTER_URL" : "converter",
   "DOC_SERVER_API_URL" : "web-apps/apps/api/documents/api.js",
-  "DOC_SERVER_PRELOADER_URL" : "web-apps/apps/api/documents/cache-scripts.html",
+  "DOC_SERVER_PRELOADER_URL" : "web-apps/apps/api/documents/preload.html",
   "DOC_SERVER_COMMAND_URL" : "command",
 
   "JWT_IS_ENABLED" : false,
@@ -67,6 +67,7 @@
     "sv": "Swedish",
     "tr": "Turkish",
     "uk": "Ukrainian",
+    "ur": "Urdu",
     "vi": "Vietnamese",
     "aa-AA": "Test Language"
   }
