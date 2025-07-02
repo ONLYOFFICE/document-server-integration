@@ -51,7 +51,7 @@ exports.isValidToken = async (req, res, next) => {
       next();
     } else {
       console.warn('Proof key verification failed');
-      res.status(500).send('Not verified');
+      res.status(403).send('Not verified');
     }
   } catch (error) {
     console.error(error);
