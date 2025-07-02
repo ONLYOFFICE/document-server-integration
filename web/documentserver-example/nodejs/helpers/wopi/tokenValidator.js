@@ -30,23 +30,32 @@ exports.isValidToken = async (req, res, next) => {
       return;
     }
 
-    const isValid = wopiValidator.check(
-      {
-        url: `${req.DocManager.getServerPath()}${req.originalUrl || req.url}`,
-        accessToken: req.query.access_token,
-        timestamp: req.headers[reqConsts.requestHeaders.Timestamp.toLowerCase()],
-      },
-      {
-        proof: req.headers[reqConsts.requestHeaders.Proof.toLowerCase()],
-        proofold: req.headers[reqConsts.requestHeaders.ProofOld.toLowerCase()],
-      },
-      {
-        modulus: proofKey.modulus,
-        exponent: proofKey.exponent,
-        oldmodulus: proofKey.oldmodulus,
-        oldexponent: proofKey.oldexponent,
-      },
-    );
+    const timestamp = req.headers[reqConsts.requestHeaders.Timestamp.toLowerCase()];
+    const proof = req.headers[reqConsts.requestHeaders.Proof.toLowerCase()];
+    const proofold = req.headers[reqConsts.requestHeaders.ProofOld.toLowerCase()];
+
+    let isValid = false;
+    if (!timestamp || !proof || !proofold) {
+      console.warn(`Proof keys: timestamp ${timestamp} , proof ${proof} , proofold ${proofold}`);
+    } else {
+      isValid = wopiValidator.check(
+        {
+          url: `${req.DocManager.getServerPath()}${req.originalUrl || req.url}`,
+          accessToken: req.query.access_token,
+          timestamp: timestamp,
+        },
+        {
+          proof: proof,
+          proofold: proofold,
+        },
+        {
+          modulus: proofKey.modulus,
+          exponent: proofKey.exponent,
+          oldmodulus: proofKey.oldmodulus,
+          oldexponent: proofKey.oldexponent,
+        },
+      );
+    }
     if (isValid) {
       next();
     } else {
