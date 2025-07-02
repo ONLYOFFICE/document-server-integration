@@ -1,6 +1,7 @@
 # Change Log
 
 - set users by parts
+- open the conversion dialog box with a gray check mark on the type selection step
 - preload frame moved from uploading popap
 - change tab title on rename
 - change uploaded file name in popap if converted

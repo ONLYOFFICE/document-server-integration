@@ -349,7 +349,7 @@ if (typeof jQuery != "undefined") {
         }
 
         jq("#hiddenFileName").val(fileName);
-        jq("#convertStep1").addClass("done");
+        jq("#convertStep1").addClass("error");
         jq("#convertStep2").addClass("waiting");
     });
 
@@ -359,6 +359,7 @@ if (typeof jQuery != "undefined") {
         let fileExt = jq(`#${id}`).attr("data");
         jq(`#${id}`).addClass("orange");
         jq("td[name='convertingTypeButton']").addClass("disable");
+        jq("#convertStep1").removeClass("error").addClass("done");
         jq("#convertStep2").removeClass("waiting").removeClass("done").addClass("current");
         jq("#convertStep2").text('2. File conversion');
         jq("#convert-descr").removeClass("disable");
