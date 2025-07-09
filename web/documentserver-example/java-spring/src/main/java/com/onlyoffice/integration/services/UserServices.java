@@ -68,6 +68,7 @@ public class UserServices {
                            final Boolean avatar,
                            final Goback goback,
                            final Close close,
+                           final List<String> roles,
                            final Boolean submitForm) {
         User newUser = new User();
         newUser.setName(name);  // set the user name
@@ -101,6 +102,8 @@ public class UserServices {
         newUser.setGoback(goback);
 
         newUser.setClose(close);
+
+        newUser.setRoles(roles);
 
         userRepository.save(newUser); // save a new user
 

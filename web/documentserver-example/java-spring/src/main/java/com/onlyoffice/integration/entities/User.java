@@ -49,4 +49,7 @@ public class User extends AbstractEntity {
     private String image;
     private Goback goback;
     private Close close;
+    @ElementCollection
+    @CollectionTable(name = "user_roles")
+    private List<String> roles;
 }
