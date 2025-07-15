@@ -32,6 +32,7 @@ class User
   attr_accessor :avatar
   attr_accessor :goback
   attr_accessor :close
+  attr_accessor :roles
 
   def initialize(
     id,
@@ -47,7 +48,8 @@ class User
     templates,
     avatar,
     goback,
-    close
+    close,
+    roles
   )
     @id = id
     @name = name
@@ -63,6 +65,7 @@ class User
     @avatar = avatar
     @goback = goback
     @close = close
+    @roles = roles
   end
 end
 
@@ -77,7 +80,9 @@ class Users
     'This file isn\'t marked as favorite',
     'Can create files from templates using data from the editor',
     'Has an avatar',
-    'Can submit forms'
+    'Can submit forms',
+    'Has no roles',
+    'Can start filling'
   ]
 
   @descr_user_second = [
@@ -89,7 +94,9 @@ class Users
     'This file is marked as favorite',
     'Can create new files from the editor',
     'Has an avatar',
-    'Can\'t submit forms'
+    'Can\'t submit forms',
+    'Has role "Anyone"',
+    'Can start filling'
   ]
 
   @descr_user_third = [
@@ -104,7 +111,9 @@ class Users
     'Can create new files from the editor',
     'Can\'t close history',
     'Can\'t restore the file version',
-    'Can\'t submit forms'
+    'Can\'t submit forms',
+    'Has role "role"',
+    'Can start filling'
   ]
 
   @descr_user_null = [
@@ -122,7 +131,9 @@ class Users
     'View file without collaboration',
     'Can\'t refresh outdated file',
     'Can\'t submit forms',
-    'Tour of tips when opening a document'
+    'Tour of tips when opening a document',
+    'Has empty role',
+    'Can\'t start filling'
   ]
 
   @users = [
@@ -140,7 +151,8 @@ class Users
       true,
       true,
       { blank: false },
-      { visible: false }
+      { visible: false },
+      nil
     ),
     User.new(
       'uid-2',
@@ -160,7 +172,8 @@ class Users
       false,
       true,
       { text: 'Go to Documents' },
-      {}
+      {},
+      ['Anyone']
     ),
     User.new(
       'uid-3',
@@ -180,7 +193,8 @@ class Users
       false,
       false,
       nil,
-      {}
+      {},
+      ['role']
     ),
     User.new(
       'uid-0',
@@ -196,7 +210,8 @@ class Users
       false,
       false,
       nil,
-      nil
+      nil,
+      []
     )
   ]
 

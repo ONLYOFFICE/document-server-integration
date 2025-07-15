@@ -162,6 +162,7 @@ final class DocEditorView extends View
                 "user" => [  // the user currently viewing or editing the document
                     "id" => $user->id != "uid-0" ? $user->id : null,
                     "name" => $user->name,
+                    "roles" => $user->roles,
                     "group" => $user->group,
                     "image" => $user->avatar ? serverPath(false) . "/assets/images/" . $user->id . ".png" : null
                 ],
@@ -257,6 +258,8 @@ final class DocEditorView extends View
 
         if ($user->id != "uid-0") {
             $historyLayout .= "// add mentions for not anonymous users
+                config.events['onRequestStartFilling'] = onRequestStartFilling;
+                config.events['onStartFilling'] = onStartFilling;
                 config.events['onRequestRefreshFile'] = onRequestRefreshFile;
                 config.events['onRequestUsers'] = onRequestUsers;
                 config.events['onRequestSaveAs'] = onRequestSaveAs;

@@ -21,7 +21,7 @@ from typing import Optional
 
 class User:
     def __init__(self, uid, name, email, group, reviewGroups, commentGroups, userInfoGroups, favorite,
-                 deniedPermissions, descriptions, templates, avatar, goback, close):
+                 deniedPermissions, descriptions, templates, avatar, goback, close, roles):
         self.id = uid
         self.name = name
         self.email = email
@@ -36,6 +36,7 @@ class User:
         self.avatar = avatar
         self.goback = goback
         self.close = close
+        self.roles = roles
 
 
 descr_user_1 = [
@@ -47,7 +48,9 @@ descr_user_1 = [
     "This file isn't marked as favorite",
     "Can create files from templates using data from the editor",
     "Has an avatar",
-    "Can submit forms"
+    "Can submit forms",
+    "Has no roles",
+    "Can start filling"
 ]
 
 descr_user_2 = [
@@ -59,7 +62,9 @@ descr_user_2 = [
     "This file is marked as favorite",
     "Can create new files from the editor",
     "Has an avatar",
-    "Can't submit forms"
+    "Can't submit forms",
+    "Has role 'Anyone'",
+    "Can start filling"
 ]
 
 descr_user_3 = [
@@ -74,7 +79,9 @@ descr_user_3 = [
     "Can create new files from the editor",
     "Can't close history",
     "Can't restore the file version",
-    "Can't submit forms"
+    "Can't submit forms",
+    "Has role 'role'",
+    "Can start filling"
 ]
 
 descr_user_0 = [
@@ -92,13 +99,15 @@ descr_user_0 = [
     "View file without collaboration",
     "Can't refresh outdated file",
     "Can't submit forms",
-    "Tour of tips when opening a document"
+    "Tour of tips when opening a document",
+    "Has empty role",
+    "Can't start filling"
 ]
 
 USERS = [
     User('uid-1', 'John Smith', 'smith@example.com',
          '', None, {}, None,
-         False, [], descr_user_1, True, True, {'blank': False}, {'visible': False}),
+         False, [], descr_user_1, True, True, {'blank': False}, {'visible': False}, None),
     User('uid-2', 'Mark Pottato', 'pottato@example.com',
          'group-2', ['group-2', ''], {
              'view': "",
@@ -106,7 +115,7 @@ USERS = [
              'remove': ["group-2"]
          },
          ['group-2', ''],
-         True, [], descr_user_2, False, True, {'text': "Go to Documents"}, {}),
+         True, [], descr_user_2, False, True, {'text': "Go to Documents"}, {}, ['Anyone']),
     User('uid-3', 'Hamish Mitchell', None,
          'group-3', ['group-2'], {
              'view': ["group-3", "group-2"],
@@ -114,10 +123,10 @@ USERS = [
              'remove': []
          }, ['group-2'],
          None, ["copy", "download", "print"], descr_user_3, False, False,
-         None, {}),
+         None, {}, ['role']),
     User('uid-0', None, None,
          '', None, {}, [],
-         None, ["protect"], descr_user_0, False, False, None, None)
+         None, ["protect"], descr_user_0, False, False, None, None, [])
 ]
 
 DEFAULT_USER = USERS[0]

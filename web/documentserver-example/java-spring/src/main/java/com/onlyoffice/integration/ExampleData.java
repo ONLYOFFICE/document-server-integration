@@ -51,7 +51,9 @@ public class ExampleData {
                 "View file without collaboration",
                 "Can't refresh outdated file",
                 "Can't submit forms",
-                "Tour of tips when opening a document"
+                "Tour of tips when opening a document",
+                "Has empty role",
+                "Can't start filling"
         );
 
         // the description for user 1
@@ -65,7 +67,9 @@ public class ExampleData {
                 "Can create a file from a template with data from the editor",
                 "Can view chat",
                 "Has an avatar",
-                "Can submit forms"
+                "Can submit forms",
+                "Has no roles",
+                "Can start filling"
         );
 
         // the description for user 2
@@ -80,7 +84,9 @@ public class ExampleData {
                 "Can create a file from an editor",
                 "Can view chat",
                 "Has an avatar",
-                "Can't submit forms"
+                "Can't submit forms",
+                "Has role 'Anyone'",
+                "Can start filling"
         );
 
         // the description for user 3
@@ -98,7 +104,9 @@ public class ExampleData {
                 "Can view chat",
                 "Can't close history",
                 "Can't restore the file version",
-                "Can't submit forms"
+                "Can't submit forms",
+                "Has role 'role'",
+                "Can start filling"
         );
 
         // create user 1 with the specified parameters
@@ -106,24 +114,24 @@ public class ExampleData {
                 "", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), false, true, true, true,
-                new Goback(null, false), new Close(null, false), true);
+                new Goback(null, false), new Close(null, false), null, true);
 
         // create user 2 with the specified parameters
         userService.createUser("Mark Pottato", "pottato@example.com", descriptionUserSecond,
                 "group-2", List.of("", "group-2"), List.of(FilterState.NULL.toString()),
                 List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true, true,
-                true, true, new Goback("Go to Documents", null), new Close(null, true), false);
+                true, true, new Goback("Go to Documents", null), new Close(null, true), List.of("Anyone"), false);
 
         // create user 3 with the specified parameters
         userService.createUser("Hamish Mitchell", null, descriptionUserThird,
                 "group-3", List.of("group-2"), List.of("group-2", "group-3"), List.of("group-2"),
                 new ArrayList<>(), List.of("group-2"), null, true, true, false,
-                null, new Close(null, true), false);
+                null, new Close(null, true), List.of("role"), false);
 
         // create user 0 with the specified parameters
         userService.createUser("Anonymous", null, descriptionUserZero, "",
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
-                new ArrayList<>(), null, false, false, false, null, null, false);
+                new ArrayList<>(), null, false, false, false, null, null, new ArrayList<>(), false);
     }
 }

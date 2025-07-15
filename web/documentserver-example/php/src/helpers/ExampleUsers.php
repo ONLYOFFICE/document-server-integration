@@ -39,7 +39,9 @@ final class ExampleUsers
             "This file isn't marked as favorite",
             "Can create files from templates using data from the editor",
             "Has an avatar",
-            "Can submit forms"
+            "Can submit forms",
+            "Has no roles",
+            "Can start filling"
         ];
         $this->user2Description = [
             "Belongs to Group2",
@@ -50,7 +52,9 @@ final class ExampleUsers
             "This file is marked as favorite",
             "Can create new files from the editor",
             "Has an avatar",
-            "Can't submit forms"
+            "Can't submit forms",
+            "Has role 'Anyone'",
+            "Can start filling"
         ];
         $this->user3Description = [
             "Belongs to Group3",
@@ -64,7 +68,9 @@ final class ExampleUsers
             "Can create new files from the editor",
             "Can't close history",
             "Can't restore the file version",
-            "Can't submit forms"
+            "Can't submit forms",
+            "Has role 'role'",
+            "Can start filling"
         ];
         $this->user0Description = [
             "The name is requested when the editor is opened",
@@ -80,7 +86,9 @@ final class ExampleUsers
             "View file without collaboration",
             "Can't refresh outdated file",
             "Can't submit forms",
-            "Tour of tips when opening a document"
+            "Tour of tips when opening a document",
+            "Has empty role",
+            "Can't start filling"
         ];
         $this->users = [
             new Users(
@@ -97,7 +105,8 @@ final class ExampleUsers
                 true,
                 true,
                 ["blank" => false,],
-                ["visible" => false]
+                ["visible" => false],
+                null
             ),
             new Users(
                 "uid-2",
@@ -117,7 +126,8 @@ final class ExampleUsers
                 false,
                 true,
                 ["text" => "Go to Documents",],
-                ["visible" => true]
+                ["visible" => true],
+                ["Anyone"]
             ),
             new Users(
                 "uid-3",
@@ -137,7 +147,8 @@ final class ExampleUsers
                 false,
                 false,
                 null,
-                ["visible" => true]
+                ["visible" => true],
+                ["role"]
             ),
             new Users(
                 "uid-0",
@@ -153,7 +164,8 @@ final class ExampleUsers
                 false,
                 false,
                 null,
-                null
+                null,
+                []
             ),
         ];
     }

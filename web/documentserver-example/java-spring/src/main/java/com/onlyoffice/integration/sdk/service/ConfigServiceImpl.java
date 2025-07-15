@@ -215,6 +215,7 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
                 .id(String.valueOf(appUser.getId()))
                 .name(appUser.getName())
                 .group(appUser.getGroup().getName())
+                .roles(appUser.getRoles())
                 .build();
 
         if (appUser.getAvatar()) {

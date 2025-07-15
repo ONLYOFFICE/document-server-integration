@@ -45,6 +45,7 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 			Avatar:            false,
 			Goback:            nil,
 			Close:             nil,
+			Roles:             []string{},
 		},
 		{
 			Id:                "uid-1",
@@ -65,6 +66,7 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 			Close: map[string]interface{}{
 				"visible": false,
 			},
+			Roles: nil,
 		},
 		{
 			Id:           "uid-2",
@@ -89,6 +91,7 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 			Close: map[string]interface{}{
 				"visible": true,
 			},
+			Roles: []string{"Anyone"},
 		},
 		{
 			Id:           "uid-3",
@@ -111,6 +114,7 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 			Close: map[string]interface{}{
 				"visible": true,
 			},
+			Roles: []string{"role"},
 		},
 	}
 	return &DefaultUserManager{
@@ -135,6 +139,8 @@ var descriptionUser0 []string = []string{
 	"Can't refresh outdated file",
 	"Can't submit forms",
 	"Tour of tips when opening a document",
+	"Has empty role",
+	"Can't start filling",
 }
 var descriptionUser1 []string = []string{
 	"File author by default",
@@ -146,6 +152,8 @@ var descriptionUser1 []string = []string{
 	"Can create files from templates using data from the editor",
 	"Can submit forms",
 	"Has an avatar",
+	"Has no roles",
+	"Can start filling",
 }
 var descriptionUser2 []string = []string{
 	"Belongs to Group2",
@@ -156,6 +164,8 @@ var descriptionUser2 []string = []string{
 	"Can create new files from the editor",
 	"Has an avatar",
 	"Can't submit forms",
+	"Has role 'Anyone'",
+	"Can start filling",
 }
 var descriptionUser3 []string = []string{
 	"Belongs to Group3",
@@ -170,6 +180,8 @@ var descriptionUser3 []string = []string{
 	"Can't close history",
 	"Can't restore the file version",
 	"Can't submit forms",
+	"Has role 'role'",
+	"Can start filling",
 }
 
 func (um DefaultUserManager) GetUsers() []models.User {
@@ -198,6 +210,7 @@ func (um DefaultUserManager) GetUserInfoById(uid string, serverAddress string) m
 			return models.UserInfo{
 				Id:    user.Id,
 				Name:  user.Username,
+				Roles: user.Roles,
 				Email: user.Email,
 				Image: image,
 			}

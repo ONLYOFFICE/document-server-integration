@@ -1,5 +1,7 @@
 # Change Log
 
+- user role
+- start filling
 - update demo files
 - set users by parts
 - open the conversion dialog box with a gray check mark on the type selection step

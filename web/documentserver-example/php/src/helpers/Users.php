@@ -36,6 +36,7 @@ final class Users
     public ?string $image;
     public ?array $goback;
     public ?array $close;
+    public ?array $roles;
 
     /**
      * Constructor
@@ -54,6 +55,7 @@ final class Users
      * @param bool|null $avatar
      * @param array|null $goback
      * @param array|null $close
+     * @param array|null $roles
      *
      * @return void
      */
@@ -71,7 +73,8 @@ final class Users
         ?bool   $templates,
         ?bool   $avatar,
         ?array  $goback,
-        ?array  $close
+        ?array  $close,
+        ?array  $roles
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -87,5 +90,6 @@ final class Users
         $this->avatar = $avatar;
         $this->goback = $goback;
         $this->close = $close;
+        $this->roles = $roles;
     }
 }

@@ -238,6 +238,8 @@ class EditorController extends Controller
 
         if ($user['id'] != 'uid-0') {
             $historyLayout .= "// add mentions for not anonymous users
+                config.events['onRequestStartFilling'] = onRequestStartFilling;
+                config.events['onStartFilling'] = onStartFilling;
                 config.events['onRequestRefreshFile'] = onRequestRefreshFile;
                 config.events['onRequestClose'] = onRequestClose;
                 config.events['onRequestUsers'] = onRequestUsers;

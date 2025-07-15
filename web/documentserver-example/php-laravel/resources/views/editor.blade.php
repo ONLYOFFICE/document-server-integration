@@ -430,6 +430,18 @@
             innerAlert("onRequestSendNotify: " + data);
         };
 
+        var onRequestStartFilling = function(event) {
+            var data = event.data;
+            var submit = confirm("Start filling?\n" + JSON.stringify(data));
+            if (submit) {
+                docEditor.startFilling(true);
+            }
+        };
+
+        var onStartFilling = function(event) {
+            innerAlert("The form is ready to fill out.");
+        };
+
         var сonnectEditor = function() {
             config = {!! $config !!}
 

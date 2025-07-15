@@ -362,6 +362,18 @@
             innerAlert("onRequestSendNotify: " + data);
         };
 
+        var onRequestStartFilling = function(event) {
+            var data = event.data;
+            var submit = confirm("Start filling?\n" + JSON.stringify(data));
+            if (submit) {
+                docEditor.startFilling(true);
+            }
+        };
+
+        var onStartFilling = function(event) {
+            innerAlert("The form is ready to fill out.");
+        };
+
         config = <%= DocConfig %>;
 
         config.width = "100%";
@@ -383,6 +395,8 @@
         if (config.editorConfig.user.id) {
             config.events['onRequestRefreshFile'] = onRequestRefreshFile;
             config.events['onRequestClose'] = onRequestClose;
+            config.events['onRequestStartFilling'] = onRequestStartFilling;
+            config.events['onStartFilling'] = onStartFilling;
             config.events['onRequestHistory'] = function (event) {  // the user is trying to show the document version history
 
                 let xhr = new XMLHttpRequest();
