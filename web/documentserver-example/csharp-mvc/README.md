@@ -24,7 +24,7 @@ where the **documentserver** is the name of the server with the ONLYOFFICE Docum
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) in the *DocEditor.aspx* file.
 
 ## Step 3. Install the prerequisites
-Сheck if your system meets the system requirements:
+Check if your system meets the system requirements:
 * **Microsoft .NET Framework**: version 4.5 (download it from the [official Microsoft website](https://www.microsoft.com/en-US/download/details.aspx?id=30653));
 * **Internet Information Services**: version 7 or later.
 

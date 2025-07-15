@@ -505,7 +505,7 @@ jquery-rails  - This gem provides jQuery and the jQuery-ujs driver for your Rail
 License:        MIT
 License File:   jquery-rails.license
 
-mimemagic     - А library to detect the mime type of a file by extension or by content. (https://github.com/mimemagicrb/mimemagic/blob/master/LICENSE)
+mimemagic     - A library to detect the mime type of a file by extension or by content. (https://github.com/mimemagicrb/mimemagic/blob/master/LICENSE)
 License:        MIT
 License File:   mimemagic.license
 

@@ -305,7 +305,7 @@ public class FileModel {
         public Permissions(final String modeParam, final String typeParam, final Boolean canEdit, final User user) {
             comment = !modeParam.equals("view") && !modeParam.equals("fillForms") && !modeParam.equals("embedded")
                     && !modeParam.equals("blockcontent");
-            copy = !user.getDeniedPermissions().contains("сopy");
+            copy = !user.getDeniedPermissions().contains("copy");
             download = !user.getDeniedPermissions().contains("download");
             edit = canEdit && (modeParam.equals("edit") || modeParam.equals("view") || modeParam.equals("filter")
                     || modeParam.equals("blockcontent"));
