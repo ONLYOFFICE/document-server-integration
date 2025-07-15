@@ -278,25 +278,18 @@
                                 </div>
                                 @endif
                                 <div id="portal-info" @if ($files) style="display: none" @endif>
-                                    <span class="portal-name">ONLYOFFICE Document Editors – Welcome!</span>
+                                    <span class="portal-name">Welcome to ONLYOFFICE Docs!</span>
+                                    <span class="portal-descr">Get started with a live demo of ONLYOFFICE Docs, a powerful open-source office suite for your browser.</span>
                                     <span class="portal-descr">
-                                        Get started with a demo-sample of ONLYOFFICE Document Editors,
-                                        the first html5-based editors.
-                                        <br /> You may upload your own documents for testing using the
-                                        "<b>Upload file</b>" button and <b>selecting</b>
-                                        the necessary files on your PC.
+                                        You can test editing features in real-time and explore multi-user collaboration:
+                                        <ul>
+                                            <li>Create a new Document, Spreadsheet, Presentation, or PDF Form or use the sample files</li>
+                                            <li>Upload your own files to test using the Upload file button</li>
+                                            <li>Select your username and language to simulate different users and environments</li>
+                                            <li>Try real-time collaboration by opening the same document using different users in different Web browser sessions</li>
+                                        </ul>
                                     </span>
-                                    <span class="portal-descr">
-                                        Please do NOT use this integration example on your own server without
-                                        proper code modifications, it is intended for testing purposes only.
-                                        In case you enabled this test example, disable it before going for
-                                        production.
-                                    </span>
-                                    <span class="portal-descr">
-                                        You can open the same document using different
-                                        users in different Web browser sessions, so you can check out multi-user
-                                        editing functions.
-                                    </span>
+                                    <span class="portal-descr">⚠️ This example is intended for testing purposes only. Do not use it on a production server without proper code modifications. If you have enabled this test demo, please disable it before deploying the editors in production.</span>
                                     @foreach ($users as $user)
                                     <div class="user-descr">
                                         <b>{{ $user['name'] ?? 'Anonymous' }}</b>
