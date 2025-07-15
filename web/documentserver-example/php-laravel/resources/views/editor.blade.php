@@ -442,7 +442,7 @@
             innerAlert("The form is ready to fill out.");
         };
 
-        var сonnectEditor = function() {
+        var connectEditor = function() {
             config = {!! $config !!}
 
             config.width = "100%";
@@ -476,9 +476,9 @@
         };
 
         if (window.addEventListener) {
-            window.addEventListener("load", сonnectEditor);
+            window.addEventListener("load", connectEditor);
         } else if (window.attachEvent) {
-            window.attachEvent("load", сonnectEditor);
+            window.attachEvent("load", connectEditor);
         }
     </script>
 </head>

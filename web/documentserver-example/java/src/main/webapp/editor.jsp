@@ -447,7 +447,7 @@
             }
         }
 
-        var сonnectEditor = function () {
+        var connectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 
@@ -459,9 +459,9 @@
         };
 
         if (window.addEventListener) {
-            window.addEventListener("load", сonnectEditor);
+            window.addEventListener("load", connectEditor);
         } else if (window.attachEvent) {
-            window.attachEvent("load", сonnectEditor);
+            window.attachEvent("load", connectEditor);
         }
 
     </script>
