@@ -1,23 +1,7 @@
 # Change Log
 
-- java-spring: user role
-- java-spring: start filling
-- php-laravel: user role
-- php-laravel: start filling
-- ruby: user role
-- ruby: start filling
-- python: user role
-- python: start filling
-- php: user role
-- php: start filling
-- java: user role
-- java: start filling
-- golang: user role
-- golang: start filling
-- csharp-mvc: user role
-- csharp-mvc: start filling
-- csharp: user role
-- csharp: start filling
+- user role
+- start filling
 - update demo files
 - set users by parts
 - open the conversion dialog box with a gray check mark on the type selection step
