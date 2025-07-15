@@ -42,11 +42,11 @@ exports.isValidToken = async (req, res, next) => {
         {
           url: `${req.DocManager.getServerPath()}${req.originalUrl || req.url}`,
           accessToken: req.query.access_token,
-          timestamp: timestamp,
+          timestamp,
         },
         {
-          proof: proof,
-          proofold: proofold,
+          proof,
+          proofold,
         },
         {
           modulus: proofKey.modulus,
