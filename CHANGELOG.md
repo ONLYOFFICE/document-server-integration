@@ -1,5 +1,7 @@
 # Change Log
 
+## 1.15.0
+- php-laravel: fix custom jwt header
 - user role
 - start filling
 - update demo files
@@ -8,7 +10,6 @@
 - preload frame moved from uploading popap
 - change tab title on rename
 - change uploaded file name in popap if converted
-- php-laravel: fix custom jwt header
 - features tips for anonymous
 - view odg, md
 - edit xlsb
