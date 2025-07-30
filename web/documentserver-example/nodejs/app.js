@@ -1200,7 +1200,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     if (user.goback != null) {
-      user.goback.url = `${req.DocManager.getServerUrl()}`;
+      user.goback.url = `${req.DocManager.getServerUrl()}/`;
     }
 
     // file config data
