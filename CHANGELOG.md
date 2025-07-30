@@ -7,9 +7,9 @@
 - update demo files
 - set users by parts
 - open the conversion dialog box with a gray check mark on the type selection step
-- preload frame moved from uploading popap
+- preload frame moved from uploading popup
 - change tab title on rename
-- change uploaded file name in popap if converted
+- change uploaded file name in popup if converted
 - features tips for anonymous
 - view odg, md
 - edit xlsb
@@ -17,7 +17,7 @@
 
 ## 1.14.0
 - nodejs: set users by parts
-- nodejs: preload frame moved from uploading popap
+- nodejs: preload frame moved from uploading popup
 - nodejs: view odg, md
 - nodejs: edit xlsb
 - nodejs: support vsdx in diagram editor
