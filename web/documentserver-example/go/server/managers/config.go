@@ -22,7 +22,7 @@ import (
 	"net/http"
 
 	"github.com/ONLYOFFICE/document-server-integration/server/models"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type DocumentManager interface {

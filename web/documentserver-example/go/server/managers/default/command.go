@@ -27,7 +27,7 @@ import (
 
 	"github.com/ONLYOFFICE/document-server-integration/config"
 	"github.com/ONLYOFFICE/document-server-integration/server/managers"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 type DefaultCommandManager struct {
@@ -40,13 +40,13 @@ type CommandPayload struct {
 	Key   string      `json:"key"`
 	Meta  interface{} `json:"meta"`
 	Token string      `json:"token"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 type CommandRequestHeaderPayload struct {
 	Query   map[string]string `json:"query"`
 	Payload CommandPayload    `json:"payload"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 func NewDefaultCommandManager(config config.ApplicationConfig, jmanager managers.JwtManager) managers.CommandManager {
@@ -60,9 +60,9 @@ func (cm DefaultCommandManager) CommandRequest(method string, docKey string, met
 	payload := CommandPayload{
 		C:   method,
 		Key: docKey,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * cm.config.JwtExpiresIn).Unix(),
-			IssuedAt:  time.Now().Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * cm.config.JwtExpiresIn)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 	if meta != nil {
@@ -119,9 +119,9 @@ func fillJwtByUrl(uri string, payload CommandPayload, config config.ApplicationC
 	return CommandRequestHeaderPayload{
 		Query:   queryMap,
 		Payload: payload,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * config.JwtExpiresIn).Unix(),
-			IssuedAt:  time.Now().Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * config.JwtExpiresIn)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 }

@@ -30,7 +30,7 @@ import (
 	"github.com/ONLYOFFICE/document-server-integration/server/managers"
 	"github.com/ONLYOFFICE/document-server-integration/server/shared"
 	"github.com/ONLYOFFICE/document-server-integration/utils"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 )
 
@@ -115,9 +115,9 @@ func (cm DefaultConversionManager) GetConverterUri(
 		Title:      title,
 		Key:        docKey,
 		Async:      isAsync,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * cm.config.JwtExpiresIn).Unix(),
-			IssuedAt:  time.Now().Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * cm.config.JwtExpiresIn)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 
@@ -128,9 +128,9 @@ func (cm DefaultConversionManager) GetConverterUri(
 	if secret != "" && cm.config.JwtEnabled {
 		headerPayload := managers.ConvertRequestHeaderPayload{
 			Payload: payload,
-			StandardClaims: jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(time.Minute * cm.config.JwtExpiresIn).Unix(),
-				IssuedAt:  time.Now().Unix(),
+			RegisteredClaims: jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * cm.config.JwtExpiresIn)),
+				IssuedAt:  jwt.NewNumericDate(time.Now()),
 			},
 		}
 		headerToken, err = cm.JwtManager.JwtSign(headerPayload, []byte(secret))

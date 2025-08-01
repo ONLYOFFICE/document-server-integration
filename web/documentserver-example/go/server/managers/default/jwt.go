@@ -24,7 +24,7 @@ import (
 	"github.com/ONLYOFFICE/document-server-integration/config"
 	"github.com/ONLYOFFICE/document-server-integration/server/managers"
 	"github.com/ONLYOFFICE/document-server-integration/server/models"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/mitchellh/mapstructure"
 	"go.uber.org/zap"
 )

@@ -17,7 +17,7 @@
  */
 package models
 
-import "github.com/golang-jwt/jwt"
+import "github.com/golang-jwt/jwt/v5"
 
 type ReferenceData struct {
 	FileKey    string `json:"fileKey"`
@@ -32,5 +32,5 @@ type Reference struct {
 	Key           string        `json:"key"`
 	Url           string        `json:"url"`
 	Token         string        `json:"token,omitempty"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }

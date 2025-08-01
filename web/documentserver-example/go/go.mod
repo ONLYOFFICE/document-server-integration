@@ -3,7 +3,7 @@ module github.com/ONLYOFFICE/document-server-integration
 go 1.21
 
 require (
-	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/golang-jwt/jwt/v5 v5.3.0
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/schema v1.4.1
 	github.com/mitchellh/mapstructure v1.5.0
