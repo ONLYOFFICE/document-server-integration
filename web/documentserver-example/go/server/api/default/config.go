@@ -27,7 +27,7 @@ import (
 	"github.com/ONLYOFFICE/document-server-integration/server/managers"
 	"github.com/ONLYOFFICE/document-server-integration/server/models"
 	"github.com/ONLYOFFICE/document-server-integration/server/shared"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func (srv *DefaultServerEndpointsHandler) Config(w http.ResponseWriter, r *http.Request) {
@@ -73,9 +73,9 @@ func (srv *DefaultServerEndpointsHandler) Config(w http.ResponseWriter, r *http.
 			),
 			Mode: "edit",
 		},
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * srv.config.JwtExpiresIn).Unix(),
-			IssuedAt:  time.Now().Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * srv.config.JwtExpiresIn)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 

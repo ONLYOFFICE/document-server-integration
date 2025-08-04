@@ -28,7 +28,7 @@ import (
 	"github.com/ONLYOFFICE/document-server-integration/server/managers"
 	"github.com/ONLYOFFICE/document-server-integration/server/models"
 	"github.com/ONLYOFFICE/document-server-integration/utils"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 )
 
@@ -227,9 +227,9 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(
 				},
 			},
 		},
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * dm.config.JwtExpiresIn).Unix(),
-			IssuedAt:  time.Now().Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * dm.config.JwtExpiresIn)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 

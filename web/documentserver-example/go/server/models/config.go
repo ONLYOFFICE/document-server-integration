@@ -17,7 +17,7 @@
  */
 package models
 
-import "github.com/golang-jwt/jwt"
+import "github.com/golang-jwt/jwt/v5"
 
 type Config struct {
 	Type         string       `json:"type"`
@@ -25,5 +25,5 @@ type Config struct {
 	DocumentType string       `json:"documentType"`
 	EditorConfig EditorConfig `json:"editorConfig"`
 	Token        string       `json:"token,omitempty"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }

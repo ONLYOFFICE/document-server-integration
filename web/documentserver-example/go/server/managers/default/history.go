@@ -30,7 +30,7 @@ import (
 	"github.com/ONLYOFFICE/document-server-integration/server/models"
 	"github.com/ONLYOFFICE/document-server-integration/server/shared"
 	"github.com/ONLYOFFICE/document-server-integration/utils"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 )
 
@@ -197,9 +197,9 @@ func (hm DefaultHistoryManager) fetchNextHistoryEntry(
 			Key:     key,
 			Url:     url,
 			Version: version,
-			StandardClaims: jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(time.Minute * hm.config.JwtExpiresIn).Unix(),
-				IssuedAt:  time.Now().Unix(),
+			RegisteredClaims: jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * hm.config.JwtExpiresIn)),
+				IssuedAt:  jwt.NewNumericDate(time.Now()),
 			},
 		}
 	}
@@ -267,9 +267,9 @@ func (hm DefaultHistoryManager) GetHistory(
 		Url:        hm.StorageManager.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{}),
 		Version:    version,
 		ChangesUrl: changesUrl,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * hm.config.JwtExpiresIn).Unix(),
-			IssuedAt:  time.Now().Unix(),
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * hm.config.JwtExpiresIn)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 

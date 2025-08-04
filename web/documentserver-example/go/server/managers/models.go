@@ -21,7 +21,7 @@ import (
 	"errors"
 
 	"github.com/ONLYOFFICE/document-server-integration/server/models"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 var ErrInvalidFilename = errors.New("invalid filename")
@@ -39,7 +39,7 @@ type HistorySet struct {
 	Url        string           `json:"url"`
 	Version    int              `json:"version"`
 	Token      string           `json:"token,omitempty"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 type HistoryPrevious struct {
@@ -99,10 +99,10 @@ type ConvertRequestPayload struct {
 	Key        string `json:"key"`
 	Async      bool   `json:"async"`
 	JwtToken   string `json:"token,omitempty"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
 
 type ConvertRequestHeaderPayload struct {
 	Payload ConvertRequestPayload `json:"payload"`
-	jwt.StandardClaims
+	jwt.RegisteredClaims
 }
