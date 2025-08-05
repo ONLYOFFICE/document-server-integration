@@ -183,14 +183,14 @@
                           directUrlParam = directUrl == nil ? "" : "&directUrl=#{directUrl}";
                           editUrl = "editor?fileName=#{ERB::Util.url_encode(d)}" + directUrlParam + userIdParam;
                           docType = FileUtility.get_file_type(d) 
-                          canEdit = DocumentHelper.edited_exts.include?(File.extname(d).downcase) %>
+                          actions = DocumentHelper.format_actions(File.extname(d).downcase) %>
                           <tr class="tableRow" title="<%= d %> [<%= DocumentHelper.get_file_version(DocumentHelper.history_dir(DocumentHelper.storage_path(d, nil))) %>]">
                             <td class="contentCells">
                                 <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
                                     <span><%= d %></span>
                                 </a>
                             </td>
-                            <% if canEdit %>
+                            <% if actions.include?('edit') %>
                               <td class="contentCells contentCells-icon">
                                   <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=edit" %>" target="_blank">
                                       <img src="assets/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
@@ -208,19 +208,21 @@
                                     </a>
                                 </td>
                               <% end %>
-                              <% if docType.eql?("word") %>
-                                 <td class="contentCells contentCells-icon">
-                                      <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=review" %>" target="_blank">
-                                          <img src="assets/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
-                                      </a>
-                                  </td>
-                              <% elsif docType.eql?("cell") %>
+                            <% end %>
+                            <% if actions.include?('review') %>
                                 <td class="contentCells contentCells-icon">
-                                    <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=filter" %>" target="_blank">
-                                        <img src="assets/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                    <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=review" %>" target="_blank">
+                                        <img src="assets/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
                                     </a>
                                 </td>
-                              <% end %>
+                            <% elsif actions.include?('customfilter') %>
+                              <td class="contentCells contentCells-icon">
+                                  <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=filter" %>" target="_blank">
+                                      <img src="assets/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                  </a>
+                              </td>
+                            <% end %>
+                            <% if actions.include?('edit') %>
                                   <% if docType.eql?("word") %>
                                     <td class="contentCells contentCells-icon">
                                         <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
@@ -230,7 +232,7 @@
                                   <% else %>
                                     <td class="contentCells contentCells-icon"></td>
                                   <% end %>
-                                  <% if !docType.eql?("word") && !docType.eql?("cell")%>
+                                  <% if !actions.include?('review') && !actions.include?('customfilter')%>
                                       <td class="contentCells contentCells-icon "></td>
                                   <% end %>
                                   <% if isFillFormDoc%>

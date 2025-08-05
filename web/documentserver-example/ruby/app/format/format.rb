@@ -170,6 +170,13 @@ class FormatManager
     end
   end
 
+  sig { params(extension: String).returns(T::Array[String]) }
+  def format_actions(extension)
+    all
+      .find { |format| format.extension == extension }
+      .actions
+  end
+
   sig { returns(Pathname) }
   private def file
     directory.join('onlyoffice-docs-formats.json')
