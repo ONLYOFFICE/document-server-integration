@@ -4,6 +4,7 @@
 <%@page import="java.util.Calendar"%>
 <%@page import="java.io.File"%>
 <%@page import="java.net.URLEncoder"%>
+<%@page import="java.util.List"%>
 <%@page import="java.util.Map.Entry"%>
 <%@page import="java.util.Map"%>
 <%@page import="helpers.Users"%>
@@ -202,7 +203,7 @@
                                                     <% for (Integer i = 0; i < files.length; i++) {
                                                         Boolean isFillFormDoc = DocumentManager.getFillExts().contains(FileUtility.getFileExtension(files[i].getName()).toLowerCase());
                                                         String docType = FileUtility.getFileType(files[i].getName()).toString().toLowerCase();
-                                                        Boolean canEdit = DocumentManager.getEditedExts().contains(FileUtility.getFileExtension(files[i].getName()));
+                                                        List<String> actions = DocumentManager.getFormatActions(FileUtility.getFileExtension(files[i].getName()));
                                                         String version=" ["+DocumentManager.getFileVersion(DocumentManager.historyDir(DocumentManager.storagePath(files[i].getName(), null)))+"]";
                                                     %>
                                                         <tr class="tableRow" title="<%= files[i].getName() %><%= version %>">
@@ -211,7 +212,7 @@
                                                                     <span><%= files[i].getName() %></span>
                                                                 </a>
                                                             </td>
-                                                            <% if (canEdit) { %>
+                                                            <% if (actions.contains("edit")) { %>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=edit" target="_blank">
                                                                         <img src="css/img/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
@@ -229,19 +230,21 @@
                                                                         </a>
                                                                     </td>
                                                                 <% } %>
-                                                                <% if (docType.equals("word")) { %>
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=review" target="_blank">
-                                                                        <img src="css/img/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
-                                                                    </a>
-                                                                </td>
-                                                                <% } else if (docType.equals("cell")) { %>
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=filter" target="_blank">
-                                                                        <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter"/>
-                                                                    </a>
-                                                                </td>
-                                                                <% } %>
+                                                            <% } %>
+                                                            <% if (actions.contains("review")) { %>
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=review" target="_blank">
+                                                                    <img src="css/img/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                </a>
+                                                            </td>
+                                                            <% } else if (actions.contains("customfilter")) { %>
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=filter" target="_blank">
+                                                                    <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter"/>
+                                                                </a>
+                                                            </td>
+                                                            <% } %>
+                                                            <% if (actions.contains("edit")) { %>
                                                                 <% if (docType.equals("word")) { %>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8")
@@ -253,7 +256,7 @@
                                                                 <% } else { %>
                                                                 <td class="contentCells contentCells-icon"></td>
                                                                 <% } %>
-                                                                <% if (!docType.equals("cell") && !docType.equals("word")) { %>
+                                                                <% if (!actions.contains("review") && !actions.contains("customfilter")) { %>
                                                                 <td class="contentCells contentCells-icon "></td>
                                                                 <% } %>
                                                                 <% if (isFillFormDoc) { %>
