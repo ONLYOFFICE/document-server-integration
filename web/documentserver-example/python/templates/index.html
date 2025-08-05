@@ -199,7 +199,7 @@
                                                                 <span>{{ file.title }}</span>
                                                             </a>
                                                         </td>
-                                                        {% if file.canEdit %}
+                                                        {% if 'edit' in file.actions %}
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="edit?filename={{ file.title }}&type=desktop&mode=edit&directUrl={{ directUrl }}" target="_blank">
                                                                     <img src="{% static "images/desktop.svg" %}" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
@@ -217,19 +217,21 @@
                                                                     </a>
                                                                 </td>
                                                             {% endif %}
-                                                            {% if file.type == 'word' %}
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=review&directUrl={{ directUrl }}" target="_blank">
-                                                                        <img src="{% static "images/review.svg" %}" alt="Open in editor for review" title="Open in editor for review"/>
-                                                                    </a>
-                                                                </td>
-                                                            {% elif file.type == 'cell' %}
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=filter&directUrl={{ directUrl }}" target="_blank">
-                                                                        <img src="{% static "images/filter.svg" %}" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                                    </a>
-                                                                </td>
-                                                            {% endif %}
+                                                        {% endif %}
+                                                        {% if 'review' in file.actions %}
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=review&directUrl={{ directUrl }}" target="_blank">
+                                                                    <img src="{% static "images/review.svg" %}" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                </a>
+                                                            </td>
+                                                        {% elif 'customfilter' in file.actions %}
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=filter&directUrl={{ directUrl }}" target="_blank">
+                                                                    <img src="{% static "images/filter.svg" %}" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                </a>
+                                                            </td>
+                                                        {% endif %}
+                                                        {% if 'edit' in file.actions %}
                                                             {% if file.type == 'word' %}
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="edit?filename={{ file.title }}&type=desktop&mode=blockcontent&directUrl={{ directUrl }}" target="_blank">
@@ -239,7 +241,7 @@
                                                             {% else %}
                                                                  <td class="contentCells contentCells-icon"></td>
                                                             {% endif %}
-                                                            {% if file.type == 'slide' %}
+                                                            {% if 'review' not in file.actions and 'customfilter' not in file.actions %}
                                                                 <td class="contentCells contentCells-icon "></td>
                                                             {% endif %}
                                                             {% if file.isFillFormDoc %}

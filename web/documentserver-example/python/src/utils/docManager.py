@@ -220,7 +220,7 @@ def getStoredFiles(req):
                 'type': fileUtils.getFileType(f),
                 'title': f,
                 'url': getFileUri(f, True, req),
-                'canEdit': isCanEdit(fileUtils.getFileExt(f))
+                'actions': format_manager.format_actions(fileUtils.getFileExt(f))
                 })  # write information about file type, title and url
 
     return fileInfos
