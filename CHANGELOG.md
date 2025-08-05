@@ -1,5 +1,7 @@
 # Change Log
 
+- nodejs: wopi UserCanOnlyComment
+
 ## 1.15.0
 - php-laravel: fix custom jwt header
 - user role

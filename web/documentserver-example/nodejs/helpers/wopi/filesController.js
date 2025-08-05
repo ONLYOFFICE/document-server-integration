@@ -281,6 +281,7 @@ const checkFileInfo = function checkFileInfo(wopi, req, res, userHost) {
     Version: version,
     UserCanWrite: true,
     UserCanRename: user.id !== 'uid-0',
+    UserCanOnlyComment: user.id === 'uid-3',
     SupportsGetLock: true,
     SupportsLocks: true,
     SupportsUpdate: true,
