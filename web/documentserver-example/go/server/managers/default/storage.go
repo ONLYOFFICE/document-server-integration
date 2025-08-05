@@ -115,12 +115,14 @@ func (sm DefaultStorageManager) GetStoredFiles(remoteAddress string) ([]models.D
 		}
 
 		documents = append(documents, models.Document{
-			FileType: sm.ConversionManager.GetFileType(filename),
-			Title:    filename,
-			Url:      sm.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{}),
-			CanEdit:  !sm.ConversionManager.IsCanConvert(utils.GetFileExt(filename, true)),
-			CanFill:  sm.ConversionManager.IsCanFill(utils.GetFileExt(filename, true)),
-			Version:  fmt.Sprint(version),
+			FileType:  sm.ConversionManager.GetFileType(filename),
+			Title:     filename,
+			Url:       sm.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{}),
+			CanEdit:   !sm.ConversionManager.IsCanConvert(utils.GetFileExt(filename, true)),
+			CanFill:   sm.ConversionManager.IsCanFill(utils.GetFileExt(filename, true)),
+			CanFilter: sm.ConversionManager.IsCanFilter(utils.GetFileExt(filename, true)),
+			CanReview: sm.ConversionManager.IsCanReview(utils.GetFileExt(filename, true)),
+			Version:   fmt.Sprint(version),
 		})
 	}
 

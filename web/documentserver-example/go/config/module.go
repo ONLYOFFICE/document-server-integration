@@ -87,6 +87,8 @@ func NewSpecification() (specification SpecificationConfig, err error) {
 		fm.GetEditedExtensions(),
 		fm.GetConvertedExtensions(),
 		fm.GetFilledExtensions(),
+		fm.GetFilteredExtensions(),
+		fm.GetReviewedExtensions(),
 	}
 	extTypes := ExtensionTypes{
 		fm.GetSpreadsheetExtensions(),

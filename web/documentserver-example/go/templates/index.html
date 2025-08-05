@@ -217,19 +217,21 @@
                                                                     </a>
                                                                 </td>
                                                             {{ end }}
-                                                            {{ if eq .FileType "word" }}
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="editor?fileName={{ .Title }}&type=desktop&mode=review" target="_blank">
-                                                                        <img src="static/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
-                                                                    </a>
-                                                                </td>
-                                                            {{ else if eq .FileType "cell" }}
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="editor?fileName={{ .Title }}&type=desktop&mode=filter" target="_blank">
-                                                                        <img src="static/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                                    </a>
-                                                                </td>
-                                                            {{ end }}
+                                                        {{ end }}
+                                                        {{ if .CanReview }}
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="editor?fileName={{ .Title }}&type=desktop&mode=review" target="_blank">
+                                                                    <img src="static/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                </a>
+                                                            </td>
+                                                        {{ else if .CanFilter }}
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="editor?fileName={{ .Title }}&type=desktop&mode=filter" target="_blank">
+                                                                    <img src="static/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                </a>
+                                                            </td>
+                                                        {{ end }}
+                                                        {{ if .CanEdit }}
                                                             {{ if eq .FileType "word" }}
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="editor?fileName={{ .Title }}&type=desktop&mode=blockcontent" target="_blank">

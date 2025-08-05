@@ -92,6 +92,14 @@ func (cm DefaultConversionManager) IsCanFill(ext string) bool {
 	return utils.IsInList(ext, cm.specification.Extensions.Filled)
 }
 
+func (cm DefaultConversionManager) IsCanFilter(ext string) bool {
+	return utils.IsInList(ext, cm.specification.Extensions.Filtered)
+}
+
+func (cm DefaultConversionManager) IsCanReview(ext string) bool {
+	return utils.IsInList(ext, cm.specification.Extensions.Reviewed)
+}
+
 func (cm DefaultConversionManager) IsCanConvert(ext string) bool {
 	return utils.IsInList(ext, cm.specification.Extensions.Converted)
 }

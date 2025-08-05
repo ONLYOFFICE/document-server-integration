@@ -53,4 +53,6 @@ type Document struct {
 	ReferenceData ReferenceData `json:"referenceData"`
 	CanEdit       bool
 	CanFill       bool
+	CanFilter     bool
+	CanReview     bool
 }

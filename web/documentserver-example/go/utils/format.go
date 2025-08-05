@@ -44,6 +44,8 @@ type FormatManager interface {
 	GetEditedExtensions() []string
 	GetConvertedExtensions() []string
 	GetFilledExtensions() []string
+	GetFilteredExtensions() []string
+	GetReviewedExtensions() []string
 	GetDocumentExtensions() []string
 	GetSpreadsheetExtensions() []string
 	GetPresentationExtensions() []string
@@ -113,6 +115,24 @@ func (fm DefaultFormatManager) GetFilledExtensions() (filled []string) {
 		}
 	}
 	return filled
+}
+
+func (fm DefaultFormatManager) GetFilteredExtensions() (filtered []string) {
+	for _, f := range fm.formats {
+		if slices.Contains(f.Actions, "customfilter") {
+			filtered = append(filtered, f.Name)
+		}
+	}
+	return filtered
+}
+
+func (fm DefaultFormatManager) GetReviewedExtensions() (reviewed []string) {
+	for _, f := range fm.formats {
+		if slices.Contains(f.Actions, "review") {
+			reviewed = append(reviewed, f.Name)
+		}
+	}
+	return reviewed
 }
 
 func (fm DefaultFormatManager) GetDocumentExtensions() (word []string) {
