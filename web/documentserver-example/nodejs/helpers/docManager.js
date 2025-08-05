@@ -336,7 +336,7 @@ DocManager.prototype.getStoredFiles = function getStoredFiles() {
         time,
         name: storedFiles[i],
         documentType: fileUtility.getFileType(storedFiles[i]),
-        canEdit: fileUtility.getEditExtensions().indexOf(fileUtility.getFileExtension(storedFiles[i], true)) !== -1,
+        actions: fileUtility.getFormatActions(fileUtility.getFileExtension(storedFiles[i], true)),
         version: version + 1,
       };
 

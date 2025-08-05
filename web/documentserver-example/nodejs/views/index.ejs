@@ -196,7 +196,7 @@
                                                             <span><%= storedFiles[i].name %></span>
                                                         </a>
                                                     </td>
-                                                    <% if (storedFiles[i].canEdit) { %>
+                                                    <% if (storedFiles[i].actions.includes("edit")) { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=desktop&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
@@ -209,17 +209,19 @@
                                                             <a class="action-link" href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment" /></a>
                                                         </td>
-                                                        <% if (storedFiles[i].documentType == "word") { %>
-                                                            <td class="contentCells contentCells-icon">
-                                                                <a class="action-link" href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                    <img src="images/review.svg" alt="Open in editor for review" title="Open in editor for review" /></a>
-                                                            </td>
-                                                        <% } else if (storedFiles[i].documentType == "cell") { %>
-                                                            <td class="contentCells contentCells-icon">
-                                                                <a class="action-link" href="editor?type=desktop&mode=filter&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                    <img src="images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>
-                                                            </td>
-                                                        <% } %>
+                                                    <% } %>
+                                                    <% if (storedFiles[i].actions.includes("review")) { %>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a class="action-link" href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
+                                                                <img src="images/review.svg" alt="Open in editor for review" title="Open in editor for review" /></a>
+                                                        </td>
+                                                    <% } else if (storedFiles[i].actions.includes("customfilter")) { %>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a class="action-link" href="editor?type=desktop&mode=filter&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
+                                                                <img src="images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>
+                                                        </td>
+                                                    <% } %>
+                                                    <% if (storedFiles[i].actions.includes("edit")) { %>
                                                         <% if (storedFiles[i].documentType == "word") { %>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a class="action-link" href="editor?type=desktop&mode=blockcontent&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
@@ -228,7 +230,7 @@
                                                         <% } else { %>
                                                             <td class="contentCells contentCells-icon"></td>
                                                         <% } %>
-                                                        <% if (storedFiles[i].documentType !== "word" && storedFiles[i].documentType !== "cell") {%>
+                                                        <% if (!storedFiles[i].actions.includes("review") && !storedFiles[i].actions.includes("customfilter")) {%>
                                                             <td class="contentCells contentCells-icon "></td>
                                                         <% } %>
                                                         <% if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.') + 1).trim().toLowerCase()) !== -1) { %>
