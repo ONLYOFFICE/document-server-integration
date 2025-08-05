@@ -60,7 +60,7 @@ class IndexStoredListView extends View
                     urlencode($storeFile->name).
                     '&user='.$user.
                     $directUrlArg .'" target="_blank">'.'<span>'.$storeFile->name.'</span></a></td>';
-                if ($storeFile->canEdit) {
+                if (in_array("edit", $storeFile->actions)) {
                     $layout .= ' <td class="contentCells contentCells-icon">   <a href="editor?fileID='.
                     urlencode($storeFile->name).'&user=' . htmlentities($user).$directUrlArg.
                      '&action=edit&type=desktop" target="_blank">'.
@@ -71,7 +71,7 @@ class IndexStoredListView extends View
                      '&action=edit&type=mobile" target="_blank">'.
                     '<img src="assets/images/mobile.svg" alt="Open in editor for mobile devices"'.
                     ' title="Open in editor for mobile devices" /></a></td>'.$comment;
-                    if ($storeFile->documentType == "word") {
+                    if (in_array("review", $storeFile->actions)) {
                         $layout .= '<td class="contentCells contentCells-icon">   <a href="editor?fileID='.
                             urlencode($storeFile->name).'&user='.htmlentities($user).$directUrlArg.
                             '&action=review&type=desktop" target="_blank">'.
@@ -83,7 +83,7 @@ class IndexStoredListView extends View
                         '   <img src="assets/images/block-content.svg"'.
                             ' alt="Open in editor without content control modification"'.
                         ' title="Open in editor without content control modification"</a></td>';
-                    } elseif ($storeFile->documentType == "cell") {
+                    } elseif (in_array("customfilter", $storeFile->actions)) {
                         $layout .= '<td class="contentCells contentCells-icon">  <a href="editor?fileID='.
                             urlencode($storeFile->name).'&user='.htmlentities($user).$directUrlArg.
                             '&action=filter&type=desktop" target="_blank">'.

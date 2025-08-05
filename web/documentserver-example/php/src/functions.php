@@ -362,7 +362,7 @@ function getStoredFiles()
                 $result[$dat + $index++] = (object) [  // and write the file to the result
                     "name" => $fileName,
                     "documentType" => getDocumentType($fileName),
-                    "canEdit" => in_array($ext, $formatManager->editableExtensions()),
+                    "actions" => $formatManager->formatActions($ext),
                     "isFillFormDoc" => in_array($ext, $formatManager->fillableExtensions()),
                 ];
             }
