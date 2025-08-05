@@ -35,7 +35,7 @@ DocManager.prototype.existsSync = function existsSync(directory) {
   try {
     // synchronously test the user's permissions for the directory specified by path;
     // the directory is visible to the calling process
-    fileSystem.accessSync(directory, fileSystem.F_OK);
+    fileSystem.accessSync(directory, fileSystem.constants.F_OK);
   } catch (e) { // the response is set to false, if an error occurs
     res = false;
   }
