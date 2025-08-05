@@ -211,6 +211,7 @@
                                                             var docType = FileUtility.GetFileType(storedFile.Name).ToString().ToLower();
                                                             var ext = Path.GetExtension(storedFile.Name).ToLower();
                                                             var canEdit = DocManagerHelper.EditedExts.Contains(ext);
+                                                            var actions = FormatManager.GetFormatActions(ext);
                                                             var isFillFormDoc = DocManagerHelper.FillFormExts.Contains(ext);
                                                         %>
 
@@ -238,19 +239,21 @@
                                                                             </a>
                                                                         </td>
                                                                     <% } %>
-                                                                    <% if (docType == "word") { %>
-                                                                        <td class="contentCells contentCells-icon">
-                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review", directUrl = isEnabledDirectUrl }) %>" target="_blank">
-                                                                                <img src="content/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
-                                                                            </a>
+                                                                <% } %>
+                                                                <% if (actions.Contains("review")) { %>
+                                                                    <td class="contentCells contentCells-icon">
+                                                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "review", directUrl = isEnabledDirectUrl }) %>" target="_blank">
+                                                                            <img src="content/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                        </a>
+                                                                    </td>
+                                                                <% } else if (actions.Contains("customfilter")) { %>
+                                                                    <td class="contentCells contentCells-icon">
+                                                                        <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "filter", directUrl = isEnabledDirectUrl }) %>" target="_blank">
+                                                                            <img src="content/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                        </a>
                                                                         </td>
-                                                                    <% } else if (docType == "cell") { %>
-                                                                        <td class="contentCells contentCells-icon">
-                                                                            <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "filter", directUrl = isEnabledDirectUrl }) %>" target="_blank">
-                                                                                <img src="content/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                                            </a>
-                                                                         </td>
-                                                                    <% } %>
+                                                                <% } %>
+                                                                <% if (canEdit) { %>
                                                                     <% if (docType == "word") { %>
                                                                         <td class="contentCells contentCells-icon">
                                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "blockcontent", directUrl = isEnabledDirectUrl }) %>" target="_blank">
@@ -260,7 +263,7 @@
                                                                     <% } else { %>
                                                                         <td class="contentCells contentCells-icon"></td>
                                                                     <% } %>
-                                                                    <% if (docType != "word" && docType != "cell") { %>
+                                                                    <% if (!actions.Contains("review") && !actions.Contains("customfilter")) { %>
                                                                         <td class="contentCells contentCells-icon "></td>
                                                                     <% } %>
                                                                     <% if (isFillFormDoc) { %>
