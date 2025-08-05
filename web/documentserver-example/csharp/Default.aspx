@@ -213,6 +213,7 @@
                                                         var ext = Path.GetExtension(storedFile.Name).ToLower();
                                                         var docType = DocumentType(storedFile.Name);
                                                         var canEdit = EditedExts.Contains(ext);
+                                                        var actions = FormatManager.GetFormatActions(ext);
                                                         var isFillFormDoc = FillFormsExts.Contains(ext);
                                                         %>
 
@@ -240,19 +241,21 @@
                                                                         </a>
                                                                     </td>
                                                                 <% } %>
-                                                                <% if (docType == "word") { %>
-                                                                    <td class="contentCells contentCells-icon">
-                                                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=review" %>" target="_blank">
-                                                                            <img src="app_themes/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
-                                                                        </a>
-                                                                    </td>
-                                                                <% } else if (docType == "cell") { %>
-                                                                    <td class="contentCells contentCells-icon">
-                                                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=filter" %>" target="_blank">
-                                                                            <img src="app_themes/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                                        </a>
-                                                                    </td>
-                                                                <% } %>
+                                                            <% }%>
+                                                            <% if (actions.Contains("review")) { %>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="<%= editUrl + "&editorsType=desktop&editorsMode=review" %>" target="_blank">
+                                                                        <img src="app_themes/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                    </a>
+                                                                </td>
+                                                            <% } else if (actions.Contains("customfilter")) { %>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="<%= editUrl + "&editorsType=desktop&editorsMode=filter" %>" target="_blank">
+                                                                        <img src="app_themes/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                    </a>
+                                                                </td>
+                                                            <% } %>
+                                                            <% if (canEdit) { %>
                                                                 <% if (docType == "word") { %>
                                                                     <td class="contentCells contentCells-icon">
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
@@ -262,7 +265,7 @@
                                                                 <% } else{%>
                                                                     <td class="contentCells contentCells-icon"></td>
                                                                 <%} %>
-                                                                <%if (docType != "word" && docType != "cell"){%>
+                                                                <%if (!actions.Contains("review") && !actions.Contains("customfilter")){%>
                                                                     <td class="contentCells contentCells-icon "></td>
                                                                 <% } %>
                                                                     <% if (isFillFormDoc) { %>
