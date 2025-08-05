@@ -1,4 +1,12 @@
 # Change Log
+- ruby: display mode buttons by actions
+- python: display mode buttons by actions
+- php: display mode buttons by actions
+- java: display mode buttons by actions
+- go: display review and filter modes by actions
+- csharp-mvc: display review and filter modes by actions
+- csharp: display review and filter modes by actions
+- nodejs: display mode buttons by actions
 
 ## 1.15.0
 - php-laravel: fix custom jwt header
