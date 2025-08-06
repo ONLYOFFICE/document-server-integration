@@ -56,10 +56,6 @@ exports.registerRoutes = function registerRoutes(app) {
       if (el.name === 'editnew') editNewExts.push({ ext: el.ext, text: utils.getEditNewText(el.ext) });
     });
 
-    // Checking supported extensions
-    const editedExts = fileUtility.getEditExtensions().filter((i) => docsExtEdit.includes(i));
-    const fillExts = fileUtility.getFillExtensions().filter((i) => docsExtEdit.includes(i));
-
     try {
       // get all the stored files
       const files = req.DocManager.getStoredFiles();
@@ -92,9 +88,6 @@ exports.registerRoutes = function registerRoutes(app) {
         params: req.DocManager.getCustomParams(),
         users,
         preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-        convertExts: fileUtility.getConvertExtensions(),
-        editedExts,
-        fillExts,
         languages: configServer.get('languages'),
         enableForgotten: configServer.get('enableForgotten'),
         editNewExts,
