@@ -197,7 +197,7 @@
                                                         </a>
                                                     </td>
 
-                                                    <!-- 1-3 -->
+                                                    <!-- 1-2 -->
                                                     <% if (storedFiles[i].actions.includes("edit") || storedFiles[i].actions.includes("lossy-edit")) { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=desktop&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
@@ -207,13 +207,18 @@
                                                             <a class="action-link" href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
                                                         </td>
+                                                    <% } else { %>
+                                                        <td class="contentCells contentCells-icon"></td>
+                                                        <td class="contentCells contentCells-icon"></td>
+                                                    <% } %>
+
+                                                    <!-- 3 -->
+                                                    <% if (storedFiles[i].actions.includes("comment")) { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment" /></a>
                                                         </td>
                                                     <% } else { %>
-                                                        <td class="contentCells contentCells-icon"></td>
-                                                        <td class="contentCells contentCells-icon"></td>
                                                         <td class="contentCells contentCells-icon"></td>
                                                     <% } %>
 
