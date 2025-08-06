@@ -196,7 +196,7 @@
                                                             <span><%= storedFiles[i].name %></span>
                                                         </a>
                                                     </td>
-                                                    <% if (storedFiles[i].actions.includes("edit")) { %>
+                                                    <% if (storedFiles[i].actions.includes("edit") || storedFiles[i].actions.includes("lossy-edit")) { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=desktop&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                 <img src="images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
@@ -221,7 +221,7 @@
                                                                 <img src="images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>
                                                         </td>
                                                     <% } %>
-                                                    <% if (storedFiles[i].actions.includes("edit")) { %>
+                                                    <% if (storedFiles[i].actions.includes("edit") || storedFiles[i].actions.includes("lossy-edit")) { %>
                                                         <% if (storedFiles[i].documentType == "word") { %>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a class="action-link" href="editor?type=desktop&mode=blockcontent&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
