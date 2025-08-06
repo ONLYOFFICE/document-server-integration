@@ -201,11 +201,11 @@
                                                     <% if (storedFiles[i].actions.includes("edit") || storedFiles[i].actions.includes("lossy-edit")) { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=desktop&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                <img src="images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
+                                                                <img src="images/edit.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                <img src="images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
+                                                                <img src="images/mobileEdit.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
                                                         </td>
                                                     <% } else { %>
                                                         <td class="contentCells contentCells-icon"></td>
@@ -226,7 +226,7 @@
                                                     <% if (storedFiles[i].actions.includes("fill")) { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
+                                                                <img src="images/formsubmit.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift">
                                                             <a class="action-link" href="editor?type=mobile&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
@@ -262,15 +262,15 @@
 
                                                     <td class="contentCells contentCells-icon firstContentCellViewers">
                                                         <a class="action-link" href="editor?type=desktop&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                            <img src="images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>
+                                                            <img src="images/view.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon">
                                                         <a class="action-link" href="editor?type=mobile&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                            <img src="images/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" /></a>
+                                                            <img src="images/mobileView.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" /></a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon contentCells-shift">
                                                         <a class="action-link" href="editor?type=embedded&mode=embedded&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                            <img src="images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode" /></a>
+                                                            <img src="images/embedview.svg" alt="Open in embedded mode" title="Open in embedded mode" /></a>
                                                     </td>
 
                                                     <% if (storedFiles[i].documentType != null) {%>
