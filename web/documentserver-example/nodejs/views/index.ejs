@@ -230,17 +230,18 @@
                                                         <% } else { %>
                                                             <td class="contentCells contentCells-icon"></td>
                                                         <% } %>
-                                                        <% if (!storedFiles[i].actions.includes("review") && !storedFiles[i].actions.includes("customfilter")) {%>
-                                                            <td class="contentCells contentCells-icon "></td>
-                                                        <% } %>
                                                         <% if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.') + 1).trim().toLowerCase()) !== -1) { %>
-                                                            <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift">
+                                                            <td class="contentCells contentCells-icon">
                                                                 <a class="action-link" href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                     <img src="images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
                                                             </td>
-                                                        <% } else {%>
+                                                            <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift">
+                                                                <a class="action-link" href="editor?type=mobile&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
+                                                                    <img src="images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" /></a>
+                                                            </td>
+                                                        <% } else { %>
                                                             <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift"></td>
-                                                        <%}%>
+                                                        <% } %>
                                                     <% } else if (fillExts.indexOf(storedFiles[i].name.substring(storedFiles[i].name.lastIndexOf('.') + 1).trim().toLowerCase()) !== -1) { %>
                                                         <td class="contentCells contentCells-icon "></td>
                                                         <td class="contentCells contentCells-icon "></td>
