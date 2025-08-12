@@ -251,7 +251,7 @@
 
                                                         <!-- 5 -->
                                                         <% if (storedFiles[i].actions.includes("edit") && storedFiles[i].documentType == "word") { %>
-                                                            <td class="contentCells contentCells-icon">
+                                                            <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a class="action-link" href="editor?type=desktop&mode=blockcontent&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
                                                                     <img src="images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>
                                                             </td>
