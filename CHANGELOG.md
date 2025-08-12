@@ -5,7 +5,7 @@
 - java: display mode buttons by actions
 - go: display review and filter modes by actions
 - csharp-mvc: display review and filter modes by actions
-- csharp: display review and filter modes by actions
+- csharp: display mode buttons by actions
 - nodejs: display mode buttons by actions
 
 ## 1.15.0

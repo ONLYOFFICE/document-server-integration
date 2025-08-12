@@ -212,9 +212,7 @@
                                                         var editUrl = "doceditor.aspx?fileID=" + HttpUtility.UrlEncode(storedFile.Name) + directUrlParam;
                                                         var ext = Path.GetExtension(storedFile.Name).ToLower();
                                                         var docType = DocumentType(storedFile.Name);
-                                                        var canEdit = EditedExts.Contains(ext);
                                                         var actions = FormatManager.GetFormatActions(ext);
-                                                        var isFillFormDoc = FillFormsExts.Contains(ext);
                                                         %>
 
                                                         <tr class="tableRow" title="<%= storedFile.Name %> [<%= GetFileVersion(storedFile.Name, HttpContext.Current.Request.UserHostAddress.Replace(':','_')) %>]">
@@ -223,7 +221,9 @@
                                                                     <span><%= storedFile.Name %></span>
                                                                 </a>
                                                             </td>
-                                                            <% if (canEdit) { %>
+
+                                                            <!-- 1-2 -->
+                                                            <% if (actions.Contains("edit") || actions.Contains("lossy-edit")) { %>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="<%= editUrl + "&editorsType=desktop&editorsMode=edit" %>" target="_blank">
                                                                         <img src="app_themes/images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
@@ -234,67 +234,65 @@
                                                                         <img src="app_themes/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                     </a>
                                                                 </td>
-                                                                <% if (docType != "pdf") { %>
+                                                            <% } else { %>
+                                                                <td class="contentCells contentCells-icon"></td>
+                                                                <td class="contentCells contentCells-icon"></td>
+                                                            <% } %>
+
+                                                            <!-- 3 -->
+                                                            <% if (actions.Contains("comment")) { %>
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="<%= editUrl + "&editorsType=desktop&editorsMode=comment" %>" target="_blank">
+                                                                        <img src="app_themes/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                    </a>
+                                                                </td>
+                                                            <% } else { %>
+                                                                <td class="contentCells contentCells-icon"></td>
+                                                            <% } %>
+
+                                                            <!-- 4-5 -->
+                                                            <% if (actions.Contains("fill")) { %>
+                                                                <td class="contentCells contentCells-icon firstContentCellShift">
+                                                                    <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                                                        <img src="app_themes/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                    </a>
+                                                                </td>
+                                                                <td class="contentCells contentCells-icon contentCells-shift">
+                                                                    <a href="<%= editUrl + "&editorsType=mobile&editorsMode=fillForms" %>" target="_blank">
+                                                                        <img src="app_themes/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
+                                                                    </a>
+                                                                </td>
+                                                            <% } else { %>
+
+                                                                <!-- 4 -->
+                                                                <% if (actions.Contains("review")) { %>
                                                                     <td class="contentCells contentCells-icon">
-                                                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=comment" %>" target="_blank">
-                                                                            <img src="app_themes/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=review" %>" target="_blank">
+                                                                            <img src="app_themes/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
                                                                         </a>
                                                                     </td>
-                                                                <% } %>
-                                                            <% }%>
-                                                            <% if (actions.Contains("review")) { %>
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="<%= editUrl + "&editorsType=desktop&editorsMode=review" %>" target="_blank">
-                                                                        <img src="app_themes/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
-                                                                    </a>
-                                                                </td>
-                                                            <% } else if (actions.Contains("customfilter")) { %>
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="<%= editUrl + "&editorsType=desktop&editorsMode=filter" %>" target="_blank">
-                                                                        <img src="app_themes/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                                    </a>
-                                                                </td>
-                                                            <% } %>
-                                                            <% if (canEdit) { %>
-                                                                <% if (docType == "word") { %>
+                                                                <% } else if (actions.Contains("customfilter")) { %>
                                                                     <td class="contentCells contentCells-icon">
+                                                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=filter" %>" target="_blank">
+                                                                            <img src="app_themes/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                        </a>
+                                                                    </td>
+                                                                <% } else { %>
+                                                                    <td class="contentCells contentCells-icon"></td>
+                                                                <% } %>
+
+                                                                <!-- 5 -->
+                                                                <% if (actions.Contains("edit") && docType == "word") { %>
+                                                                    <td class="contentCells contentCells-icon contentCells-shift">
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
                                                                             <img src="app_themes/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
                                                                         </a>
                                                                     </td>
-                                                                <% } else{%>
-                                                                    <td class="contentCells contentCells-icon"></td>
-                                                                <%} %>
-                                                                <%if (!actions.Contains("review") && !actions.Contains("customfilter")){%>
-                                                                    <td class="contentCells contentCells-icon "></td>
-                                                                <% } %>
-                                                                    <% if (isFillFormDoc) { %>
-                                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                                            <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                                                                <img src="app_themes/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                            </a>
-                                                                        </td>
                                                                 <% } else { %>
-                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+                                                                    <td class="contentCells contentCells-icon contentCells-shift"></td>
                                                                 <% } %>
-                                                                <% } else if (isFillFormDoc) { %>
-                                                                    <td class="contentCells contentCells-icon "></td>
-                                                                    <td class="contentCells contentCells-icon">
-                                                                        <a href="<%= editUrl + "&editorsType=mobile&editorsMode=fillForms" %>" target="_blank">
-                                                                           <img src="app_themes/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
-                                                                        </a>
-                                                                    </td>
-                                                                    <td class="contentCells contentCells-icon "></td>
-                                                                    <td class="contentCells contentCells-icon "></td>
-                                                                    <td class="contentCells contentCells-icon "></td>
-                                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                                        <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                                                            <img src="app_themes/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                        </a>
-                                                                    </td>
-                                                            <% } else { %>
-                                                                <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
                                                             <% } %>
+
                                                             <td class="contentCells contentCells-icon firstContentCellViewers">
                                                                 <a href="<%= editUrl + "&editorsType=desktop&editorsMode=view" %>" target="_blank">
                                                                     <img src="app_themes/images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
@@ -310,6 +308,7 @@
                                                                     <img src="app_themes/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                                 </a>
                                                             </td>
+
                                                             <% if (docType != null ) { %>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a class="convert-file" data="<%= storedFile.Name %>" data-type="<%= docType %>">
