@@ -37,5 +37,8 @@ func (srv *DefaultServerEndpointsHandler) Index(w http.ResponseWriter, r *http.R
 		"ServerVersion":    srv.config.Version,
 	}
 
-	indexTemplate.Execute(w, data) // nolint: errcheck
+	err = indexTemplate.Execute(w, data)
+	if err != nil {
+		srv.logger.Errorf("Could not execute template: %s", err.Error())
+	}
 }

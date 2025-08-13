@@ -3,7 +3,7 @@
 - python: display mode buttons by actions
 - php: display mode buttons by actions
 - java: display mode buttons by actions
-- go: display review and filter modes by actions
+- go: display mode buttons by actions
 - csharp-mvc: display mode buttons by actions
 - csharp: display mode buttons by actions
 - nodejs: display mode buttons by actions

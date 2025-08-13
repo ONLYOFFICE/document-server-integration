@@ -62,6 +62,15 @@ func generateUrl(r *http.Request) string {
 }
 
 var decoder = schema.NewDecoder()
-var indexTemplate = template.Must(template.ParseFiles("templates/index.html"))
+var indexTemplate = template.Must(template.New("index.html").Funcs(template.FuncMap{
+	"contains": func(slice []string, item string) bool {
+		for _, s := range slice {
+			if s == item {
+				return true
+			}
+		}
+		return false
+	},
+}).ParseFiles("templates/index.html"))
 var forgottenTemplate = template.Must(template.ParseFiles("templates/forgotten.html"))
 var editorTemplate = template.Must(template.ParseFiles("templates/editor.html"))

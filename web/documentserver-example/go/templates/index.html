@@ -199,7 +199,9 @@
                                                                 <span>{{ .Title }}</span>
                                                             </a>
                                                         </td>
-                                                        {{ if .CanEdit }}
+
+                                                        <!-- 1-2 -->
+                                                        {{ if or (contains .Actions "edit") (contains .Actions "lossy-edit") }}
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="editor?fileName={{ .Title }}&type=desktop&mode=edit" target="_blank">
                                                                     <img src="static/images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
@@ -210,67 +212,65 @@
                                                                     <img src="static/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                 </a>
                                                             </td>
-                                                            {{ if ne .FileType "pdf" }}
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="editor?fileName={{ .Title }}&type=desktop&mode=comment" target="_blank">
-                                                                        <img src="static/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
-                                                                    </a>
-                                                                </td>
-                                                            {{ end }}
+                                                        {{ else }}
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon"></td>
                                                         {{ end }}
-                                                        {{ if .CanReview }}
+
+                                                        <!-- 3 -->
+                                                        {{ if contains .Actions "comment" }}
                                                             <td class="contentCells contentCells-icon">
-                                                                <a href="editor?fileName={{ .Title }}&type=desktop&mode=review" target="_blank">
-                                                                    <img src="static/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                <a href="editor?fileName={{ .Title }}&type=desktop&mode=comment" target="_blank">
+                                                                    <img src="static/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                 </a>
                                                             </td>
-                                                        {{ else if .CanFilter }}
-                                                            <td class="contentCells contentCells-icon">
-                                                                <a href="editor?fileName={{ .Title }}&type=desktop&mode=filter" target="_blank">
-                                                                    <img src="static/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                                </a>
-                                                            </td>
+                                                        {{ else }}
+                                                            <td class="contentCells contentCells-icon"></td>
                                                         {{ end }}
-                                                        {{ if .CanEdit }}
-                                                            {{ if eq .FileType "word" }}
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="editor?fileName={{ .Title }}&type=desktop&mode=blockcontent" target="_blank">
-                                                                        <img src="static/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
-                                                                    </a>
-                                                                </td>
-                                                            {{ else }}
-                                                                 <td class="contentCells contentCells-icon"></td>
-                                                            {{ end }}
-                                                            {{ if eq .FileType "slide" }}
-                                                                <td class="contentCells contentCells-icon "></td>
-                                                            {{ end }}
-                                                            {{ if .CanFill }}
-                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                                    <a href="editor?fileName={{ .Title }}&type=desktop&mode=fillForms" target="_blank">
-                                                                        <img src="static/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                    </a>
-                                                                </td>
-                                                            {{ else }}
-                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
-                                                            {{ end }}
-                                                        {{ else if .CanFill }}
-                                                            <td class="contentCells contentCells-icon"></td>
-                                                            <td class="contentCells contentCells-icon">
-                                                                <a href="editor?fileName={{ .Title }}&type=mobile&mode=fillForms" target="_blank">
-                                                                    <img src="static/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
-                                                                </a>
-                                                            </td>
-                                                            <td class="contentCells contentCells-icon"></td>
-                                                            <td class="contentCells contentCells-icon"></td>
-                                                            <td class="contentCells contentCells-icon"></td>
+
+                                                        <!-- 4-5 -->
+                                                        {{ if contains .Actions "fill" }}
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="editor?fileName={{ .Title }}&type=desktop&mode=fillForms" target="_blank">
                                                                     <img src="static/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                 </a>
                                                             </td>
+                                                            <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift">
+                                                                <a href="editor?fileName={{ .Title }}&type=mobile&mode=fillForms" target="_blank">
+                                                                    <img src="static/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
+                                                                </a>
+                                                            </td>
                                                         {{ else }}
-                                                            <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
+
+                                                            <!-- 4 -->
+                                                            {{ if contains .Actions "review" }}
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="editor?fileName={{ .Title }}&type=desktop&mode=review" target="_blank">
+                                                                        <img src="static/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                    </a>
+                                                                </td>
+                                                            {{ else if contains .Actions "customfilter" }}
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="editor?fileName={{ .Title }}&type=desktop&mode=filter" target="_blank">
+                                                                        <img src="static/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                    </a>
+                                                                </td>
+                                                            {{ else }}
+                                                                <td class="contentCells contentCells-icon"></td>
+                                                            {{ end }}
+
+                                                            <!-- 5 -->
+                                                            {{ if and (contains .Actions "edit") (eq .FileType "word") }}
+                                                                <td class="contentCells contentCells-icon contentCells-shift">
+                                                                    <a href="editor?fileName={{ .Title }}&type=desktop&mode=blockcontent" target="_blank">
+                                                                        <img src="static/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                                                    </a>
+                                                                </td>
+                                                            {{ else }}
+                                                                <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift"></td>
+                                                            {{ end }}
                                                         {{ end }}
+
                                                         <td class="contentCells contentCells-icon firstContentCellViewers">
                                                             <a href="editor?fileName={{ .Title }}&type=desktop&mode=view" target="_blank">
                                                                 <img src="static/images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
@@ -286,6 +286,7 @@
                                                                 <img src="static/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                             </a>
                                                         </td>
+
                                                         {{ if ne .FileType "" }}
                                                             <td class="contentCells contentCells-icon">
                                                                 <a class="convert-file" data="{{ .Title }}" data-type="{{ .FileType }}">
