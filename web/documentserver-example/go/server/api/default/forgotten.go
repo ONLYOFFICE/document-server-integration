@@ -71,7 +71,7 @@ func (srv *DefaultServerEndpointsHandler) Forgotten(w http.ResponseWriter, r *ht
 			if err = json.NewDecoder(res.Body).Decode(&file); err != nil {
 				srv.logger.Errorf("could not parse forgotten file[%s]: %s", file.Key, err.Error())
 			} else {
-				file.Type = srv.Managers.ConversionManager.GetFileType(file.Url)
+				file.Type = srv.FormatManager.GetFileType(file.Url)
 				files = append(files, file)
 			}
 		}

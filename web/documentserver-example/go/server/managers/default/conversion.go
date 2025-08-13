@@ -35,44 +35,18 @@ import (
 )
 
 type DefaultConversionManager struct {
-	config        config.ApplicationConfig
-	specification config.SpecificationConfig
-	logger        *zap.SugaredLogger
+	config config.ApplicationConfig
+	logger *zap.SugaredLogger
 	managers.JwtManager
 }
 
-func NewDefaultConversionManager(config config.ApplicationConfig, spec config.SpecificationConfig,
+func NewDefaultConversionManager(config config.ApplicationConfig,
 	logger *zap.SugaredLogger, jmanager managers.JwtManager) managers.ConversionManager {
 	return &DefaultConversionManager{
 		config,
-		spec,
 		logger,
 		jmanager,
 	}
-}
-
-func (cm DefaultConversionManager) GetFileType(filename string) string {
-	ext := utils.GetFileExt(filename, true)
-
-	exts := cm.specification.ExtensionTypes
-
-	if utils.IsInList(ext, exts.Pdf) {
-		return shared.ONLYOFFICE_PDF
-	}
-	if utils.IsInList(ext, exts.Document) {
-		return shared.ONLYOFFICE_DOCUMENT
-	}
-	if utils.IsInList(ext, exts.Spreadsheet) {
-		return shared.ONLYOFFICE_SPREADSHEET
-	}
-	if utils.IsInList(ext, exts.Presentation) {
-		return shared.ONLYOFFICE_PRESENTATION
-	}
-	if utils.IsInList(ext, exts.Diagram) {
-		return shared.ONLYOFFICE_DIAGRAM
-	}
-
-	return shared.ONLYOFFICE_DOCUMENT
 }
 
 func (cm DefaultConversionManager) GetInternalExtension(fileType string) string {
@@ -86,22 +60,6 @@ func (cm DefaultConversionManager) GetInternalExtension(fileType string) string 
 	default:
 		return ".docx"
 	}
-}
-
-func (cm DefaultConversionManager) IsCanFill(ext string) bool {
-	return utils.IsInList(ext, cm.specification.Extensions.Filled)
-}
-
-func (cm DefaultConversionManager) IsCanFilter(ext string) bool {
-	return utils.IsInList(ext, cm.specification.Extensions.Filtered)
-}
-
-func (cm DefaultConversionManager) IsCanReview(ext string) bool {
-	return utils.IsInList(ext, cm.specification.Extensions.Reviewed)
-}
-
-func (cm DefaultConversionManager) IsCanConvert(ext string) bool {
-	return utils.IsInList(ext, cm.specification.Extensions.Converted)
 }
 
 func (cm DefaultConversionManager) GetConverterUri(

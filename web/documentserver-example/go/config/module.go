@@ -22,7 +22,6 @@ import (
 	"runtime"
 	"time"
 
-	"github.com/ONLYOFFICE/document-server-integration/utils"
 	"github.com/spf13/viper"
 	"go.uber.org/fx"
 )
@@ -45,11 +44,6 @@ type ApplicationConfig struct {
 	LoggerDebug              bool              `mapstructure:"LOGGER_DEBUG"`
 	ForgottenEnabled         bool              `mapstructure:"FORGOTTEN_ENABLED"`
 	Languages                map[string]string `mapstructure:"LANGUAGES"`
-}
-
-type SpecificationConfig struct {
-	Extensions     Extensions     `mapstructure:"extensions"`
-	ExtensionTypes ExtensionTypes `mapstructure:"extension_types"`
 }
 
 func NewConfiguration() (app_config ApplicationConfig, err error) {
@@ -76,35 +70,6 @@ func NewConfiguration() (app_config ApplicationConfig, err error) {
 	return
 }
 
-func NewSpecification() (specification SpecificationConfig, err error) {
-	fm, err := utils.NewFormatManager()
-	if err != nil {
-		return SpecificationConfig{}, err
-	}
-
-	exts := Extensions{
-		fm.GetViewedExtensions(),
-		fm.GetEditedExtensions(),
-		fm.GetConvertedExtensions(),
-		fm.GetFilledExtensions(),
-		fm.GetFilteredExtensions(),
-		fm.GetReviewedExtensions(),
-	}
-	extTypes := ExtensionTypes{
-		fm.GetSpreadsheetExtensions(),
-		fm.GetPresentationExtensions(),
-		fm.GetDocumentExtensions(),
-		fm.GetPdfExtensions(),
-		fm.GetDiagramExtensions(),
-	}
-	specification = SpecificationConfig{
-		exts,
-		extTypes,
-	}
-	return
-}
-
 var ConfigurationModule = fx.Options(
 	fx.Provide(NewConfiguration),
-	fx.Provide(NewSpecification),
 )

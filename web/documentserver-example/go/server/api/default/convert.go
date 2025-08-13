@@ -92,8 +92,7 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 			response.Step = 100
 
 			supportedExt := true
-			fm, err := utils.NewFormatManager()
-			for _, f := range fm.GetFormats() {
+			for _, f := range srv.FormatManager.GetAllFormats() {
 				if f.Name == newExt && len(f.Actions) == 0 {
 					supportedExt = false
 					break

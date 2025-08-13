@@ -31,20 +31,18 @@ import (
 )
 
 type DefaultServerEndpointsHandler struct {
-	logger        *zap.SugaredLogger
-	config        config.ApplicationConfig
-	specification config.SpecificationConfig
+	logger *zap.SugaredLogger
+	config config.ApplicationConfig
 	*handlers.CallbackRegistry
 	*managers.Managers
 }
 
 func NewDefaultServerEndpointsHandler(logger *zap.SugaredLogger, config config.ApplicationConfig,
-	spec config.SpecificationConfig, reg *handlers.CallbackRegistry,
+	reg *handlers.CallbackRegistry,
 	managers *managers.Managers) api.ServerEndpointsHandler {
 	return &DefaultServerEndpointsHandler{
 		logger,
 		config,
-		spec,
 		reg,
 		managers,
 	}

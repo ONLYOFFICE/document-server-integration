@@ -29,7 +29,6 @@ func (srv *DefaultServerEndpointsHandler) Index(w http.ResponseWriter, r *http.R
 	}
 
 	data := map[string]interface{}{
-		"Extensions":       srv.specification.Extensions,
 		"Users":            srv.Managers.UserManager.GetUsers(),
 		"Files":            files,
 		"Preloader":        srv.config.DocumentServerHost + srv.config.DocumentServerPreloader,

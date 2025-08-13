@@ -73,17 +73,21 @@ type JwtManager interface {
 }
 
 type ConversionManager interface {
-	GetFileType(filename string) string
 	GetInternalExtension(fileType string) string
-	IsCanConvert(ext string) bool
-	IsCanFill(ext string) bool
-	IsCanFilter(ext string) bool
-	IsCanReview(ext string) bool
 	GetConverterUri(docUri, fromExt, toExt, docKey string, isAsync bool, title string) (string, string, error)
 }
 
 type CommandManager interface {
 	CommandRequest(method string, docKey string, meta interface{}) (*http.Response, error)
+}
+
+type FormatManager interface {
+	GetAllFormats() []models.Format
+	GetFormat(ext string) models.Format
+	GetActions(ext string) []string
+	GetTypeByExtension(ext string) string
+	GetFileType(filename string) string
+	HasAction(ext string, action string) bool
 }
 
 type Managers struct {
@@ -94,12 +98,13 @@ type Managers struct {
 	JwtManager
 	ConversionManager
 	CommandManager
+	FormatManager
 }
 
 func New(umanager UserManager, smanager StorageManager,
 	hmanager HistoryManager, dmanager DocumentManager,
 	jmanager JwtManager, cmanager ConversionManager,
-	commanager CommandManager) *Managers {
+	commanager CommandManager, fmanager FormatManager) *Managers {
 	return &Managers{
 		HistoryManager:    hmanager,
 		StorageManager:    smanager,
@@ -108,5 +113,6 @@ func New(umanager UserManager, smanager StorageManager,
 		JwtManager:        jmanager,
 		ConversionManager: cmanager,
 		CommandManager:    commanager,
+		FormatManager:     fmanager,
 	}
 }
