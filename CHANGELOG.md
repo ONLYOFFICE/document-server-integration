@@ -1,4 +1,5 @@
 # Change Log
+- java-spring: 5 editor icons on index page
 - ruby: display mode buttons by actions
 - python: display mode buttons by actions
 - php: display mode buttons by actions
