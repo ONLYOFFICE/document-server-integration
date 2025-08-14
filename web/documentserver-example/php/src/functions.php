@@ -363,7 +363,6 @@ function getStoredFiles()
                     "name" => $fileName,
                     "documentType" => getDocumentType($fileName),
                     "actions" => $formatManager->formatActions($ext),
-                    "isFillFormDoc" => in_array($ext, $formatManager->fillableExtensions()),
                 ];
             }
         }
