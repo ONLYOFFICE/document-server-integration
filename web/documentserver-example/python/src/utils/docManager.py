@@ -215,7 +215,6 @@ def getStoredFiles(req):
     for f in files:
         if os.path.isfile(os.path.join(directory, f)):
             fileInfos.append({
-                'isFillFormDoc': isCanFillForms(fileUtils.getFileExt(f)),
                 'version': historyManager.getFileVersion(historyManager.getHistoryDir(getStoragePath(f, req))),
                 'type': fileUtils.getFileType(f),
                 'title': f,

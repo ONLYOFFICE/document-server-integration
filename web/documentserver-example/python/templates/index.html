@@ -199,7 +199,9 @@
                                                                 <span>{{ file.title }}</span>
                                                             </a>
                                                         </td>
-                                                        {% if 'edit' in file.actions %}
+
+                                                        <!-- 1-2 -->
+                                                        {% if 'edit' in file.actions or 'lossy-edit' in file.actions %}
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="edit?filename={{ file.title }}&type=desktop&mode=edit&directUrl={{ directUrl }}" target="_blank">
                                                                     <img src="{% static "images/desktop.svg" %}" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
@@ -210,67 +212,65 @@
                                                                     <img src="{% static "images/mobile.svg" %}" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                 </a>
                                                             </td>
-                                                            {% if file.type != 'pdf' %}
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=comment&directUrl={{ directUrl }}" target="_blank">
-                                                                        <img src="{% static "images/comment.svg" %}" alt="Open in editor for comment" title="Open in editor for comment"/>
-                                                                    </a>
-                                                                </td>
-                                                            {% endif %}
+                                                        {% else %}
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                            <td class="contentCells contentCells-icon"></td>
                                                         {% endif %}
-                                                        {% if 'review' in file.actions %}
+
+                                                        <!-- 3 -->
+                                                        {% if 'comment' in file.actions %}
                                                             <td class="contentCells contentCells-icon">
-                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=review&directUrl={{ directUrl }}" target="_blank">
-                                                                    <img src="{% static "images/review.svg" %}" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=comment&directUrl={{ directUrl }}" target="_blank">
+                                                                    <img src="{% static "images/comment.svg" %}" alt="Open in editor for comment" title="Open in editor for comment"/>
                                                                 </a>
                                                             </td>
-                                                        {% elif 'customfilter' in file.actions %}
-                                                            <td class="contentCells contentCells-icon">
-                                                                <a href="edit?filename={{ file.title }}&type=desktop&mode=filter&directUrl={{ directUrl }}" target="_blank">
-                                                                    <img src="{% static "images/filter.svg" %}" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                                </a>
-                                                            </td>
+                                                        {% else %}
+                                                            <td class="contentCells contentCells-icon"></td>
                                                         {% endif %}
-                                                        {% if 'edit' in file.actions %}
-                                                            {% if file.type == 'word' %}
-                                                                <td class="contentCells contentCells-icon">
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=blockcontent&directUrl={{ directUrl }}" target="_blank">
-                                                                        <img src="{% static "images/block-content.svg" %}" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
-                                                                    </a>
-                                                                </td>
-                                                            {% else %}
-                                                                 <td class="contentCells contentCells-icon"></td>
-                                                            {% endif %}
-                                                            {% if 'review' not in file.actions and 'customfilter' not in file.actions %}
-                                                                <td class="contentCells contentCells-icon "></td>
-                                                            {% endif %}
-                                                            {% if file.isFillFormDoc %}
-                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms&directUrl={{ directUrl }}" target="_blank">
-                                                                        <img src="{% static "images/fill-forms.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                                    </a>
-                                                                </td>
-                                                            {% else %}
-                                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
-                                                            {% endif %}
-                                                        {% elif file.isFillFormDoc %}
-                                                            <td class="contentCells contentCells-icon"></td>
-                                                            <td class="contentCells contentCells-icon">
-                                                                <a href="edit?filename={{ file.title }}&type=mobile&mode=fillForms&directUrl={{ directUrl }}" target="_blank">
-                                                                    <img src="{% static "images/mobile-fill-forms.svg" %}" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
-                                                                </a>
-                                                            </td>
-                                                            <td class="contentCells contentCells-icon"></td>
-                                                            <td class="contentCells contentCells-icon"></td>
-                                                            <td class="contentCells contentCells-icon"></td>
+
+                                                        <!-- 4-5 -->
+                                                        {% if 'fill' in file.actions %}
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms&directUrl={{ directUrl }}" target="_blank">
                                                                     <img src="{% static "images/fill-forms.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                 </a>
                                                             </td>
+                                                            <td class="contentCells contentCells-icon contentCells-shift">
+                                                                <a href="edit?filename={{ file.title }}&type=mobile&mode=fillForms&directUrl={{ directUrl }}" target="_blank">
+                                                                    <img src="{% static "images/mobile-fill-forms.svg" %}" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
+                                                                </a>
+                                                            </td>
                                                         {% else %}
-                                                            <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
+
+                                                            <!-- 4 -->
+                                                            {% if 'review' in file.actions %}
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=review&directUrl={{ directUrl }}" target="_blank">
+                                                                        <img src="{% static "images/review.svg" %}" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                    </a>
+                                                                </td>
+                                                            {% elif 'customfilter' in file.actions %}
+                                                                <td class="contentCells contentCells-icon">
+                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=filter&directUrl={{ directUrl }}" target="_blank">
+                                                                        <img src="{% static "images/filter.svg" %}" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                    </a>
+                                                                </td>
+                                                            {% else %}
+                                                                <td class="contentCells contentCells-icon"></td>
+                                                            {% endif %}
+
+                                                            <!-- 5 -->
+                                                            {% if 'edit' in file.actions and file.type == 'word' %}
+                                                                <td class="contentCells contentCells-icon contentCells-shift">
+                                                                    <a href="edit?filename={{ file.title }}&type=desktop&mode=blockcontent&directUrl={{ directUrl }}" target="_blank">
+                                                                        <img src="{% static "images/block-content.svg" %}" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                                                    </a>
+                                                                </td>
+                                                            {% else %}
+                                                                <td class="contentCells contentCells-icon contentCells-shift"></td>
+                                                            {% endif %}
                                                         {% endif %}
+
                                                         <td class="contentCells contentCells-icon firstContentCellViewers">
                                                             <a href="edit?filename={{ file.title }}&type=desktop&mode=view&directUrl={{ directUrl }}" target="_blank">
                                                                 <img src="{% static "images/desktop.svg" %}" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
@@ -286,6 +286,7 @@
                                                                 <img src="{% static "images/embeded.svg" %}" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                             </a>
                                                         </td>
+
                                                         {% if file.type != null %}
                                                             <td class="contentCells contentCells-icon">
                                                                 <a class="convert-file" data="{{ file.title }}" data-type="{{ file.type }}">
