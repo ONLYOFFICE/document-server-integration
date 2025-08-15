@@ -67,6 +67,11 @@ class DocumentHelper
     DocumentHelper.format_manager.convertible_extensions
   end
 
+  # get format actions
+  def self.format_actions(extension)
+    DocumentHelper.format_manager.format_actions(extension)
+  end
+
   # get current user host address
   def self.cur_user_host_address(user_address)
     (user_address.nil? ? @remote_ip : user_address).gsub(/[^0-9\-.a-zA-Z_=]/, '_')

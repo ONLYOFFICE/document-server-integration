@@ -34,15 +34,15 @@
     }
 
     .tableHeaderCellFileName {
-        width: 25%;
+        width: 29%;
     }
 
     .tableHeaderCellEditors {
-        width: 13%;
+        width: 12%;
     }
 
     .tableHeaderCellViewers {
-        width: 18%;
+        width: 15%;
         text-align: right;
     }
 
@@ -237,15 +237,15 @@
 
     .tableRow td:first-child {
         flex-grow: 0;
-        width: 15%;
+        width: 26%;
     }
 
     .tableHeaderCellFileName {
-        width: 9%;
+        width: 15%;
     }
 
     .tableHeaderCellEditors {
-        width: 13%;
+        width: 3%;
     }
 
     .tableHeaderCellViewers {
@@ -274,12 +274,12 @@
     }
 
     .tableHeaderCellEditors {
-        width: 15%;
+        width: 13%;
         text-align: left;
     }
 
     .tableHeaderCellFileName {
-        width: 28%;
+        width: 29%;
     }
 
     .tableHeaderCellViewers {
@@ -366,7 +366,7 @@
     }
 
     .tableHeaderCellFileName {
-        width: 20%;
+        width: 22%;
     }
 
     .tableHeaderCellEditors {
@@ -375,7 +375,7 @@
     }
 
     .tableHeaderCellViewers {
-        width: 19%;
+        width: 15%;
     }
 
     .tableHeaderCellAction {
@@ -390,7 +390,7 @@
 
 @media (max-width: 890px) {
     .tableRow td:first-child {
-        max-width: 17%;
+        max-width: 22%;
     }
     #portal-info {
         max-width: 60vw;
@@ -496,7 +496,7 @@
     }
 
     .contentCells-icon {
-        width: 13%;
+        width: 11%;
     }
 
     .tableRow td:last-child {
@@ -625,7 +625,7 @@
         width: 83%;
     }
     .contentCells-icon {
-        width: 13%;
+        width: 10%;
     }
 
     .downloadContentCellShift {
@@ -652,7 +652,7 @@
         width: 85%;
     }
     .contentCells-icon {
-        width: 11%;
+        width: 10%;
     }
 
     .downloadContentCellShift {
@@ -702,7 +702,7 @@
     }
 
     .contentCells-icon{
-        width: 12%;
+        width: 10%;
     }
     footer table td {
         margin: 0;

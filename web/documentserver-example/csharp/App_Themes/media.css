@@ -34,15 +34,15 @@
     }
 
     .tableHeaderCellFileName {
-        width: 25%;
+        width: 29%;
     }
 
     .tableHeaderCellEditors {
-        width: 13%;
+        width: 12%;
     }
 
     .tableHeaderCellViewers {
-        width: 18%;
+        width: 15%;
         text-align: right;
     }
 
@@ -84,6 +84,7 @@
     }
 
     .tableRow,
+    .storedHeader,
     menu.links {
         width: 90%;
     }
@@ -182,8 +183,13 @@
 
 @media (max-width: 715px) {
     .tableRow,
+    .storedHeader,
     menu.links {
         width: 45%;
+    }
+
+    .storedHeaderClearAll {
+        padding-right: 24px;
     }
 }
 @media (max-width: 670px) and (min-width: 620px){
@@ -220,15 +226,15 @@
 
     .tableRow td:first-child {
         flex-grow: 0;
-        width: 15%;
+        width: 26%;
     }
 
     .tableHeaderCellFileName {
-        width: 9%;
+        width: 15%;
     }
 
     .tableHeaderCellEditors {
-        width: 13%;
+        width: 3%;
     }
 
     .tableHeaderCellViewers {
@@ -253,12 +259,12 @@
     }
 
     .tableHeaderCellEditors {
-        width: 15%;
+        width: 13%;
         text-align: left;
     }
 
     .tableHeaderCellFileName {
-        width: 28%;
+        width: 29%;
     }
 
     .tableHeaderCellViewers {
@@ -281,6 +287,7 @@
     }
 
     .tableRow,
+    .storedHeader,
     menu.links {
         width: 75%;
     }
@@ -302,6 +309,10 @@
     .firstContentCellViewers {
         margin-left: 0;
     }
+
+    .storedHeaderClearAll {
+        padding-right: 39px;
+    }
 }
 
 @media (max-width: 890px) and (min-width: 769px ) {
@@ -317,6 +328,7 @@
     }
 
     .tableRow,
+    .storedHeader,
     menu.links {
         width: 95%;
     }
@@ -337,7 +349,7 @@
     }
 
     .tableHeaderCellFileName {
-        width: 20%;
+        width: 22%;
     }
 
     .tableHeaderCellEditors {
@@ -346,18 +358,22 @@
     }
 
     .tableHeaderCellViewers {
-        width: 19%;
+        width: 15%;
     }
 
     .tableHeaderCellAction {
         width: 19%;
         padding-right: 45px;
     }
+
+    .storedHeaderClearAll {
+        padding-right: 30px;
+    }
 }
 
 @media (max-width: 890px) {
     .tableRow td:first-child {
-        max-width: 17%;
+        max-width: 22%;
     }
     #portal-info {
         max-width: 60vw;
@@ -448,17 +464,16 @@
     .firstContentCellShift {
         border: none;
         flex-basis: 10%;
-        flex-grow: 1;
     }
 
     .downloadContentCellShift {
-        max-width: 7%;
-        margin-right: 24px;
+        max-width: 11%;
+        margin-right: 0px;
         margin-left: 0;
     }
 
     .contentCells-icon {
-        width: 13%;
+        width: 11%;
     }
 
     .tableRow td:last-child {
@@ -567,12 +582,12 @@
 
 @media (max-width: 560px) and (min-width: 510px) {
     .contentCells-icon {
-        width: 13%;
+        width: 11%;
     }
 
     .downloadContentCellShift {
-        padding-right: 16px;
-        max-width: 4%;
+        padding-right: 0px;
+        max-width: 11%;
     }
 }
 
@@ -586,12 +601,12 @@
         width: 83%;
     }
     .contentCells-icon {
-        width: 13%;
+        width: 10%;
     }
 
     .downloadContentCellShift {
-        max-width: 6%;
-        padding-right: 6px;
+        max-width: 10%;
+        padding-right: 0px;
     }
 
     .firstContentCellShift {
@@ -612,18 +627,17 @@
         width: 85%;
     }
     .contentCells-icon {
-        width: 11%;
+        width: 10%;
     }
 
     .downloadContentCellShift {
-        max-width: 3%;
-        padding-right: 0px;
-        padding-left: 0;
+        max-width: 10%;
+        padding: 4px;
     }
 
     .firstContentCellShift {
         margin-left: 2px;
-        flex-basis: 14%;
+        flex-basis: 10%;
     }
 
     .tableRow td:last-child {
@@ -661,7 +675,7 @@
     }
 
     .contentCells-icon{
-        width: 12%;
+        width: 10%;
     }
     footer table td {
         margin: 0;
@@ -692,8 +706,13 @@
 }
 @media (max-width: 769px) and (min-width: 715px){
     .tableRow,
+    .storedHeader,
     menu.links {
         width: 50%;
+    }
+
+    .storedHeaderClearAll {
+        padding-right: 26px;
     }
 }
 @media (max-width: 510px) {

@@ -15,19 +15,12 @@
  * limitations under the License.
  *
  */
-package config
+package models
 
-type Extensions struct {
-	Viewed    []string `json:"viewed"`
-	Edited    []string `json:"edited"`
-	Converted []string `json:"converted"`
-	Filled    []string `json:"filled"`
-}
-
-type ExtensionTypes struct {
-	Spreadsheet  []string `json:"spreadsheet"`
-	Presentation []string `json:"presentation"`
-	Document     []string `json:"document"`
-	Pdf          []string `json:"pdf"`
-	Diagram      []string `json:"diagram"`
+type Format struct {
+	Name       string   `json:"name"`
+	FormatType string   `json:"type"`
+	Actions    []string `json:"actions"`
+	Convert    []string `json:"convert"`
+	Mime       []string `json:"mime"`
 }

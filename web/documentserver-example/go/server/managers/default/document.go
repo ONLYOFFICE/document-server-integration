@@ -33,13 +33,13 @@ import (
 )
 
 type DefaultDocumentManager struct {
-	config        config.ApplicationConfig
-	specification config.SpecificationConfig
-	logger        *zap.SugaredLogger
+	config config.ApplicationConfig
+	logger *zap.SugaredLogger
 	managers.StorageManager
 	managers.UserManager
 	managers.ConversionManager
 	managers.JwtManager
+	managers.FormatManager
 }
 
 const (
@@ -53,17 +53,18 @@ const (
 	onlyoffice_permission_comment      = "comment"
 )
 
-func NewDefaultDocumentManager(config config.ApplicationConfig, specification config.SpecificationConfig,
-	logger *zap.SugaredLogger, smanager managers.StorageManager, umanager managers.UserManager,
-	cmanager managers.ConversionManager, jmanager managers.JwtManager) managers.DocumentManager {
+func NewDefaultDocumentManager(config config.ApplicationConfig, logger *zap.SugaredLogger,
+	smanager managers.StorageManager, umanager managers.UserManager,
+	cmanager managers.ConversionManager, jmanager managers.JwtManager,
+	fmanager managers.FormatManager) managers.DocumentManager {
 	return &DefaultDocumentManager{
 		config,
-		specification,
 		logger,
 		smanager,
 		umanager,
 		cmanager,
 		jmanager,
+		fmanager,
 	}
 }
 
@@ -76,7 +77,8 @@ func (dm DefaultDocumentManager) sanitizeEditorParameters(parameters *managers.E
 		parameters.PermissionsMode = "edit"
 	}
 
-	parameters.CanEdit = utils.IsInList(utils.GetFileExt(parameters.Filename, true), dm.specification.Extensions.Edited)
+	actions := dm.FormatManager.GetActions(utils.GetFileExt(parameters.Filename, true))
+	parameters.CanEdit = slices.Contains(actions, "edit")
 
 	if parameters.CanEdit && parameters.PermissionsMode != "view" {
 		parameters.Mode = "edit"
@@ -155,7 +157,7 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(
 
 	config := &models.Config{
 		Type:         parameters.Type,
-		DocumentType: dm.ConversionManager.GetFileType(parameters.Filename),
+		DocumentType: dm.FormatManager.GetFileType(parameters.Filename),
 		Document: models.Document{
 			Title:    parameters.Filename,
 			Url:      furi,
@@ -245,8 +247,8 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(
 func (dm DefaultDocumentManager) IsDocumentConvertable(filename string) bool {
 	ext := utils.GetFileExt(filename, true)
 
-	return utils.IsInList(ext, dm.specification.Extensions.Viewed) ||
-		utils.IsInList(ext, dm.specification.Extensions.Edited) || utils.IsInList(ext, dm.specification.Extensions.Converted)
+	actions := dm.FormatManager.GetActions(ext)
+	return slices.Contains(actions, "view") || slices.Contains(actions, "edit") || slices.Contains(actions, "convert")
 }
 
 func (dm DefaultDocumentManager) generateCallbackUrl(filename string, remoteAddress string) string {

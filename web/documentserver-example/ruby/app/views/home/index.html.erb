@@ -178,19 +178,20 @@
                     <tbody>
                       <% 
                         docs.each { |d|
-                          isFillFormDoc = DocumentHelper.fill_forms_exts.include?(File.extname(d).downcase)
                           userIdParam = userId == nil ? "" : "&userId=#{userId}";
                           directUrlParam = directUrl == nil ? "" : "&directUrl=#{directUrl}";
                           editUrl = "editor?fileName=#{ERB::Util.url_encode(d)}" + directUrlParam + userIdParam;
                           docType = FileUtility.get_file_type(d) 
-                          canEdit = DocumentHelper.edited_exts.include?(File.extname(d).downcase) %>
+                          actions = DocumentHelper.format_actions(File.extname(d).downcase) %>
                           <tr class="tableRow" title="<%= d %> [<%= DocumentHelper.get_file_version(DocumentHelper.history_dir(DocumentHelper.storage_path(d, nil))) %>]">
                             <td class="contentCells">
                                 <a class="stored-edit <%= docType %>" href="<%= editUrl %>" target="_blank">
                                     <span><%= d %></span>
                                 </a>
                             </td>
-                            <% if canEdit %>
+
+                            <!-- 1-2 -->
+                            <% if actions.include?('edit') || actions.include?('lossy-edit') %>
                               <td class="contentCells contentCells-icon">
                                   <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=edit" %>" target="_blank">
                                       <img src="assets/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
@@ -201,65 +202,65 @@
                                       <img src="assets/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                   </a>
                               </td>
-                              <% if docType != "pdf" %>
+                            <% else %>
+                              <td class="contentCells contentCells-icon"></td>
+                              <td class="contentCells contentCells-icon"></td>
+                            <% end %>
+
+                            <!-- 3 -->
+                            <% if actions.include?('comment') %>
+                              <td class="contentCells contentCells-icon">
+                                  <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=comment" %>" target="_blank">
+                                      <img src="assets/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                  </a>
+                              </td>
+                            <% else %>
+                              <td class="contentCells contentCells-icon"></td>
+                            <% end %>
+
+                            <!-- 4-5 -->
+                            <% if actions.include?('fill') %>
+                              <td class="contentCells contentCells-icon">
+                                <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
+                                  <img src="assets/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                </a>
+                              </td>
+                              <td class="contentCells contentCells-icon contentCells-shift">
+                                <a href="<%= "#{editUrl}&editorsType=mobile&editorsMode=fillForms" %>" target="_blank">
+                                  <img src="assets/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" />
+                                </a>
+                              </td>
+                            <% else %>
+
+                              <!-- 4 -->
+                              <% if actions.include?('review') %>
                                 <td class="contentCells contentCells-icon">
-                                    <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=comment" %>" target="_blank">
-                                        <img src="assets/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                    <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=review" %>" target="_blank">
+                                        <img src="assets/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
                                     </a>
                                 </td>
-                              <% end %>
-                              <% if docType.eql?("word") %>
-                                 <td class="contentCells contentCells-icon">
-                                      <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=review" %>" target="_blank">
-                                          <img src="assets/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
-                                      </a>
-                                  </td>
-                              <% elsif docType.eql?("cell") %>
+                              <% elsif actions.include?('customfilter') %>
                                 <td class="contentCells contentCells-icon">
                                     <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=filter" %>" target="_blank">
                                         <img src="assets/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
                                     </a>
                                 </td>
+                              <% else %>
+                                <td class="contentCells contentCells-icon"></td>
                               <% end %>
-                                  <% if docType.eql?("word") %>
-                                    <td class="contentCells contentCells-icon">
-                                        <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
-                                            <img src="assets/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
-                                        </a>
-                                    </td>
-                                  <% else %>
-                                    <td class="contentCells contentCells-icon"></td>
-                                  <% end %>
-                                  <% if !docType.eql?("word") && !docType.eql?("cell")%>
-                                      <td class="contentCells contentCells-icon "></td>
-                                  <% end %>
-                                  <% if isFillFormDoc%>
-                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                      <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                        <img src="assets/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                      </a>
-                                    </td>
-                                  <% else %>
-                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
-                                  <% end %>
-                                  <% elsif isFillFormDoc %>
-                                    <td class="contentCells contentCells-icon"></td>
-                                    <td class="contentCells contentCells-icon">
-                                      <a href="<%= "#{editUrl}&editorsType=mobile&editorsMode=fillForms" %>" target="_blank">
-                                        <img src="assets/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" />
-                                      </a>
-                                    </td>
-                                    <td class="contentCells contentCells-icon"></td>
-                                    <td class="contentCells contentCells-icon"></td>
-                                    <td class="contentCells contentCells-icon"></td>
-                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                      <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                        <img src="assets/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                      </a>
-                                    </td>
-                            <% else %>
-                              <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
+
+                              <!-- 5 -->
+                              <% if actions.include?('edit') && docType.eql?("word") %>
+                                <td class="contentCells contentCells-icon contentCells-shift">
+                                    <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
+                                        <img src="assets/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                    </a>
+                                </td>
+                              <% else %>
+                                <td class="contentCells contentCells-icon contentCells-shift"></td>
+                              <% end %>
                             <% end %>
+
                             <td class="contentCells contentCells-icon firstContentCellViewers">
                                 <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=view" %>" target="_blank">
                                     <img src="assets/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
@@ -275,6 +276,7 @@
                                     <img src="assets/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                 </a>
                             </td>
+
                             <% if !docType.eql?(nil) %>
                               <td class="contentCells contentCells-icon">
                                   <a class="convert-file" data="<%= d %>" data-type="<%= docType %>">

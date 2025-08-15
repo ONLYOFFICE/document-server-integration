@@ -138,6 +138,10 @@ class FormatManager():
         mapped = map(lambda format: format.extension(), formats)
         return list(mapped)
 
+    def format_actions(self, extension: str) -> list[str]:
+        formats = list(filter(lambda format: format.extension() == extension, self.all()))
+        return formats[0].actions if formats else []
+
     @memoize
     def all(self) -> list[Format]:
         path = self.__file()

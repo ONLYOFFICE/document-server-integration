@@ -56,7 +56,7 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 		}
 
 		fileExt := utils.GetFileExt(fileName, true)
-		if strings.TrimSpace(fileExt) == "" || !utils.IsInList(fileExt, srv.specification.Extensions.Viewed) {
+		if strings.TrimSpace(fileExt) == "" || !srv.FormatManager.HasAction(fileExt, "view") {
 			srv.logger.Errorf("%s extension is not supported", fileExt)
 			shared.SendCustomErrorResponse(w, "extension is not supported")
 			return
@@ -106,7 +106,7 @@ func (srv *DefaultServerEndpointsHandler) Create(w http.ResponseWriter, r *http.
 	query := r.URL.Query()
 	fileExt, isSample := query.Get("fileExt"), query.Get("sample")
 
-	if strings.TrimSpace(fileExt) == "" || !utils.IsInList(fileExt, srv.specification.Extensions.Edited) {
+	if strings.TrimSpace(fileExt) == "" || !srv.FormatManager.HasAction(fileExt, "edit") {
 		srv.logger.Errorf("%s extension is not supported", fileExt)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
