@@ -204,12 +204,12 @@
                                                         {% if 'edit' in file.actions or 'lossy-edit' in file.actions %}
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="edit?filename={{ file.title }}&type=desktop&mode=edit&directUrl={{ directUrl }}" target="_blank">
-                                                                    <img src="{% static "images/desktop.svg" %}" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                                                    <img src="{% static "images/edit.svg" %}" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="edit?filename={{ file.title }}&type=mobile&mode=edit&directUrl={{ directUrl }}" target="_blank">
-                                                                    <img src="{% static "images/mobile.svg" %}" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                                                    <img src="{% static "images/mobileEdit.svg" %}" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                 </a>
                                                             </td>
                                                         {% else %}
@@ -232,7 +232,7 @@
                                                         {% if 'fill' in file.actions %}
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="edit?filename={{ file.title }}&type=desktop&mode=fillForms&directUrl={{ directUrl }}" target="_blank">
-                                                                    <img src="{% static "images/fill-forms.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                    <img src="{% static "images/formsubmit.svg" %}" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
@@ -273,17 +273,17 @@
 
                                                         <td class="contentCells contentCells-icon firstContentCellViewers">
                                                             <a href="edit?filename={{ file.title }}&type=desktop&mode=view&directUrl={{ directUrl }}" target="_blank">
-                                                                <img src="{% static "images/desktop.svg" %}" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                                                <img src="{% static "images/view.svg" %}" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon">
                                                             <a href="edit?filename={{ file.title }}&type=mobile&mode=view&directUrl={{ directUrl }}" target="_blank">
-                                                                <img src="{% static "images/mobile.svg" %}" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                                                <img src="{% static "images/mobileView.svg" %}" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon contentCells-shift">
                                                             <a href="edit?filename={{ file.title }}&type=embedded&mode=embedded&directUrl={{ directUrl }}" target="_blank">
-                                                                <img src="{% static "images/embeded.svg" %}" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                                                <img src="{% static "images/embedview.svg" %}" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                             </a>
                                                         </td>
 
