@@ -226,12 +226,12 @@
                                                             <% if (actions.Contains("edit") || actions.Contains("lossy-edit")) { %>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="<%= editUrl + "&editorsType=desktop&editorsMode=edit" %>" target="_blank">
-                                                                        <img src="app_themes/images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                                                        <img src="app_themes/images/edit.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="<%= editUrl + "&editorsType=mobile&editorsMode=edit" %>" target="_blank">
-                                                                        <img src="app_themes/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                                                        <img src="app_themes/images/mobileEdit.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                     </a>
                                                                 </td>
                                                             <% } else { %>
@@ -254,7 +254,7 @@
                                                             <% if (actions.Contains("fill")) { %>
                                                                 <td class="contentCells contentCells-icon firstContentCellShift">
                                                                     <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                                                        <img src="app_themes/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                        <img src="app_themes/images/formsubmit.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon contentCells-shift">
@@ -295,17 +295,17 @@
 
                                                             <td class="contentCells contentCells-icon firstContentCellViewers">
                                                                 <a href="<%= editUrl + "&editorsType=desktop&editorsMode=view" %>" target="_blank">
-                                                                    <img src="app_themes/images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                                                    <img src="app_themes/images/view.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="<%= editUrl + "&editorsType=mobile&editorsMode=view" %>" target="_blank">
-                                                                    <img src="app_themes/images/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                                                    <img src="app_themes/images/mobileView.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a href="<%= editUrl + "&editorsType=embedded&editorsMode=embedded" %>" target="_blank">
-                                                                    <img src="app_themes/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                                                    <img src="app_themes/images/embedview.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                                 </a>
                                                             </td>
 
