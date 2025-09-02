@@ -222,12 +222,12 @@
                                                     <% if (actions.Contains("edit") || actions.Contains("lossy-edit")) { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "edit", directUrl = isEnabledDirectUrl }) %>" target="_blank">
-                                                                <img src="content/images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                                                <img src="content/images/edit.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon">
                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "edit", directUrl = isEnabledDirectUrl }) %>" target="_blank">
-                                                                <img src="content/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                                                <img src="content/images/mobileEdit.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                             </a>
                                                         </td>
                                                     <% } else { %>
@@ -250,7 +250,7 @@
                                                     <% if (actions.Contains("fill")) { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "fillForms", directUrl = isEnabledDirectUrl }) %>" target="_blank">
-                                                                <img src="content/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                <img src="content/images/formsubmit.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift">
@@ -291,17 +291,17 @@
 
                                                     <td class="contentCells contentCells-icon firstContentCellViewers">
                                                         <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "desktop", editorsMode = "view", directUrl = isEnabledDirectUrl }) %>" target="_blank">
-                                                            <img src="content/images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                                            <img src="content/images/view.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                         </a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon">
                                                         <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "mobile", editorsMode = "view", directUrl = isEnabledDirectUrl }) %>" target="_blank">
-                                                            <img src="content/images/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                                            <img src="content/images/mobileView.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                                         </a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon contentCells-shift">
                                                         <a href="<%= Url.Action("Editor", "Home", new { fileName = storedFile.Name, editorsType = "embedded", editorsMode = "embedded", directUrl = isEnabledDirectUrl }) %>" target="_blank">
-                                                            <img src="content/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                                            <img src="content/images/embedview.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                         </a>
                                                     </td>
 
