@@ -69,7 +69,7 @@ class IndexStoredListView extends View
                             <a href="editor?fileID={$fileName}{$userArg}{$directUrlArg}&action=edit&type=desktop"
                                target="_blank"
                             >
-                                <img src="assets/images/desktop.svg"
+                                <img src="assets/images/edit.svg"
                                      alt="Open in editor for full size screens"
                                      title="Open in editor for full size screens"
                                 />
@@ -79,7 +79,7 @@ class IndexStoredListView extends View
                             <a href="editor?fileID={$fileName}{$userArg}{$directUrlArg}&action=edit&type=mobile"
                                target="_blank"
                             >
-                                <img src="assets/images/mobile.svg"
+                                <img src="assets/images/mobileEdit.svg"
                                      alt="Open in editor for mobile devices"
                                      title="Open in editor for mobile devices"
                                 />
@@ -118,7 +118,7 @@ class IndexStoredListView extends View
                             <a href="editor?fileID={$fileName}{$userArg}{$directUrlArg}&action=fillForms&type=desktop"
                                target="_blank"
                             >
-                                <img src="assets/images/fill-forms.svg"
+                                <img src="assets/images/formsubmit.svg"
                                      alt="Open in editor for filling in forms"
                                      title="Open in editor for filling in forms"
                                 />
@@ -192,7 +192,7 @@ class IndexStoredListView extends View
                         <a href="editor?fileID={$fileName}{$userArg}{$directUrlArg}&action=view&type=desktop"
                            target="_blank"
                         >
-                            <img src="assets/images/desktop.svg"
+                            <img src="assets/images/view.svg"
                                  alt="Open in viewer for full size screens"
                                  title="Open in viewer for full size screens"
                             />
@@ -202,7 +202,7 @@ class IndexStoredListView extends View
                         <a href="editor?fileID={$fileName}{$userArg}{$directUrlArg}&action=view&type=mobile"
                            target="_blank"
                         >
-                            <img src="assets/images/mobile.svg"
+                            <img src="assets/images/mobileView.svg"
                                  alt="Open in viewer for mobile devices"
                                  title="Open in viewer for mobile devices"
                             />
@@ -212,7 +212,7 @@ class IndexStoredListView extends View
                         <a href="editor?fileID={$fileName}{$userArg}{$directUrlArg}&action=embedded&type=embedded"
                            target="_blank"
                         >
-                            <img src="assets/images/embeded.svg"
+                            <img src="assets/images/embedview.svg"
                                  alt="Open in embedded mode"
                                  title="Open in embedded mode"
                             />

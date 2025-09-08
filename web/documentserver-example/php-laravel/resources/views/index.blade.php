@@ -177,12 +177,12 @@
                                                     @if ($file['format']->isEditable())
                                                         <td class="contentCells contentCells-icon">
                                                             <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}'&action=edit&type=desktop" target="_blank">
-                                                                <img src="/images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" />
+                                                                <img src="/images/edit.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" />
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon">
                                                             <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}'&action=edit&type=mobile" target="_blank">
-                                                                <img src="/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" />
+                                                                <img src="/images/mobileEdit.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" />
                                                             </a>
                                                         </td>
                                                     @else
@@ -204,7 +204,7 @@
                                                     @if ($file['format']->isFillable())
                                                         <td class="contentCells contentCells-icon">
                                                             <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=fillForms&type=desktop" target="_blank">
-                                                                <img src="/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" />
+                                                                <img src="/images/formsubmit.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" />
                                                             </a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon contentCells-shift">
@@ -245,17 +245,17 @@
 
                                                     <td class="contentCells contentCells-icon firstContentCellViewers">
                                                         <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=view&type=desktop" target="_blank">
-                                                            <img src="/images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" />
+                                                            <img src="/images/view.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" />
                                                         </a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon">
                                                         <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=view&type=mobile" target="_blank">
-                                                            <img src="/images/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" />
+                                                            <img src="/images/mobileView.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" />
                                                         </a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon contentCells-shift">
                                                         <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=embedded&type=embedded" target="_blank">
-                                                            <img src="/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode" />
+                                                            <img src="/images/embedview.svg" alt="Open in embedded mode" title="Open in embedded mode" />
                                                         </a>
                                                     </td>
 

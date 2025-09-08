@@ -216,12 +216,12 @@
                                                             <% if (actions.contains("edit") || actions.contains("lossy-edit")) { %>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=edit" target="_blank">
-                                                                        <img src="css/img/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                                                        <img src="css/img/edit.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8").concat(request.getParameter("directUrl") != null ? "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=mobile&mode=edit" target="_blank">
-                                                                        <img src="css/img/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                                                        <img src="css/img/mobileEdit.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
                                                                     </a>
                                                                 </td>
                                                             <% } else { %>
@@ -246,7 +246,7 @@
                                                                     <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8")
                                                                     .concat(request.getParameter("directUrl") != null ?
                                                                      "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=fillForms" target="_blank">
-                                                                        <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                        <img src="css/img/formsubmit.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon contentCells-shift">
@@ -293,21 +293,21 @@
                                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8")
                                                                 .concat(request.getParameter("directUrl") != null ?
                                                                  "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=desktop&mode=view" target="_blank">
-                                                                    <img src="css/img/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                                                    <img src="css/img/view.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8")
                                                                 .concat(request.getParameter("directUrl") != null ?
                                                                  "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=mobile&mode=view" target="_blank">
-                                                                    <img src="css/img/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                                                    <img src="css/img/mobileView.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a href="EditorServlet?fileName=<%= URLEncoder.encode(files[i].getName(), "UTF-8")
                                                                 .concat(request.getParameter("directUrl") != null ?
                                                                  "&directUrl=".concat(request.getParameter("directUrl")) : "") %>&type=embedded&mode=embedded" target="_blank">
-                                                                    <img src="css/img/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                                                    <img src="css/img/embedview.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                                 </a>
                                                             </td>
 

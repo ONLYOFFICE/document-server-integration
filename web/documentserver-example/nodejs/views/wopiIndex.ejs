@@ -191,7 +191,7 @@
                                                             <% for (var j = 0; j < storedFiles[i].actions.length; j++) { %>
                                                                 <a class="action-link" href="wopi-action/<%= encodeURIComponent(storedFiles[i].name) %>?action=<%= storedFiles[i].actions[j].name %>" target="_blank">
                                                                     <img
-                                                                        src="images/wopi-<%= storedFiles[i].actions[j].name %>.svg"
+                                                                        src="images/<%= storedFiles[i].actions[j].name %>.svg"
                                                                         alt="<%= storedFiles[i].actions[j].name %>" title="<%= storedFiles[i].actions[j].name %>" />
                                                                 </a>
                                                             <% } %>
