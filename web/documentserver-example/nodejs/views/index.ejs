@@ -39,13 +39,13 @@
         </div>
         <menu class="responsive-nav">
             <li>
-                <a href="#" onclick="toggleSidePanel(event)">
-                    <img src ="images/mobile-menu.svg" alt="ONLYOFFICE" />
+                <a href="./">
+                    <img src ="images/mobile-logo.svg" alt="ONLYOFFICE" />
                 </a>
             </li>
             <li>
-                <a href="./">
-                    <img src ="images/mobile-logo.svg" alt="ONLYOFFICE" />
+                <a href="#" onclick="toggleSidePanel(event)">
+                    <img src ="images/mobile-menu.svg" alt="ONLYOFFICE" />
                 </a>
             </li>
         </menu>
@@ -199,16 +199,16 @@
 
                                                     <!-- 1-2 -->
                                                     <% if (storedFiles[i].actions.includes("edit") || storedFiles[i].actions.includes("lossy-edit")) { %>
-                                                        <td class="contentCells contentCells-icon">
+                                                        <td class="contentCells contentCells-icon" data-section="EDITOR">
                                                             <a class="action-link" href="editor?type=desktop&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                <img src="images/edit.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" /></a>
+                                                                <img src="images/edit.svg" alt="Open for full size screens" title="Open for full size screens" /></a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=mobile&mode=edit&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                <img src="images/mobileEdit.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" /></a>
+                                                                <img src="images/mobileEdit.svg" alt="Open for mobile devices" title="Open for mobile devices" /></a>
                                                         </td>
                                                     <% } else { %>
-                                                        <td class="contentCells contentCells-icon"></td>
+                                                        <td class="contentCells contentCells-icon" data-section="EDITOR"></td>
                                                         <td class="contentCells contentCells-icon"></td>
                                                     <% } %>
 
@@ -216,7 +216,7 @@
                                                     <% if (storedFiles[i].actions.includes("comment")) { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=desktop&mode=comment&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                <img src="images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment" /></a>
+                                                                <img src="images/comment.svg" alt="Open for comment" title="Open in editor for comment" /></a>
                                                         </td>
                                                     <% } else { %>
                                                         <td class="contentCells contentCells-icon"></td>
@@ -226,11 +226,11 @@
                                                     <% if (storedFiles[i].actions.includes("fill")) { %>
                                                         <td class="contentCells contentCells-icon">
                                                             <a class="action-link" href="editor?type=desktop&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                <img src="images/formsubmit.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" /></a>
+                                                                <img src="images/formsubmit.svg" alt="Open for filling in forms" title="Open for filling in forms" /></a>
                                                         </td>
                                                         <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift">
                                                             <a class="action-link" href="editor?type=mobile&mode=fillForms&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                <img src="images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" /></a>
+                                                                <img src="images/mobile-fill-forms.svg" alt="Open for filling in forms for mobile devices" title="Open for filling in forms for mobile devices" /></a>
                                                         </td>
                                                     <% } else { %>
 
@@ -238,12 +238,12 @@
                                                         <% if (storedFiles[i].actions.includes("review")) { %>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a class="action-link" href="editor?type=desktop&mode=review&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                    <img src="images/review.svg" alt="Open in editor for review" title="Open in editor for review" /></a>
+                                                                    <img src="images/review.svg" alt="Open for review" title="Open for review" /></a>
                                                             </td>
                                                         <% } else if (storedFiles[i].actions.includes("customfilter")) { %>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a class="action-link" href="editor?type=desktop&mode=filter&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                    <img src="images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" /></a>
+                                                                    <img src="images/filter.svg" alt="Open without access to change the filter" title="Open without access to change the filter" /></a>
                                                             </td>
                                                         <% } else { %>
                                                             <td class="contentCells contentCells-icon"></td>
@@ -253,20 +253,20 @@
                                                         <% if (storedFiles[i].actions.includes("edit") && storedFiles[i].documentType == "word") { %>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a class="action-link" href="editor?type=desktop&mode=blockcontent&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                                    <img src="images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification" /></a>
+                                                                    <img src="images/block-content.svg" alt="Open without content control modification" title="Open without content control modification" /></a>
                                                             </td>
                                                         <% } else { %>
                                                             <td class="contentCells contentCells-icon contentCells-shift firstContentCellShift"></td>
                                                         <% } %>
                                                     <% } %>
 
-                                                    <td class="contentCells contentCells-icon firstContentCellViewers">
+                                                    <td class="contentCells contentCells-icon firstContentCellViewers" data-section="VIEWERS">
                                                         <a class="action-link" href="editor?type=desktop&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                            <img src="images/view.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" /></a>
+                                                            <img src="images/view.svg" alt="Open for full size screens" title="Open for full size screens" /></a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon">
                                                         <a class="action-link" href="editor?type=mobile&mode=view&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
-                                                            <img src="images/mobileView.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" /></a>
+                                                            <img src="images/mobileView.svg" alt="Open for mobile devices" title="Open for mobile devices" /></a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon contentCells-shift">
                                                         <a class="action-link" href="editor?type=embedded&mode=embedded&fileName=<%= encodeURIComponent(storedFiles[i].name) %>" target="_blank">
@@ -274,12 +274,12 @@
                                                     </td>
 
                                                     <% if (storedFiles[i].documentType != null) {%>
-                                                        <td class="contentCells contentCells-icon">
+                                                        <td class="contentCells contentCells-icon" data-section="ACTION">
                                                             <a class="convert-file" data="<%= encodeURIComponent(storedFiles[i].name) %>" data-type="<%= storedFiles[i].documentType %>">
                                                                 <img class="icon-action" src="images/convert.svg" alt="Convert" title="Convert" /></a>
                                                         </td>
                                                     <% } else { %>
-                                                        <td class="contentCells contentCells-icon downloadContentCellShift"></td>
+                                                        <td class="contentCells contentCells-icon downloadContentCellShift" data-section="ACTION"></td>
                                                     <% } %>
                                                     <td class="contentCells contentCells-icon downloadContentCellShift">
                                                         <a href="download?fileName=<%= encodeURIComponent(storedFiles[i].name) %>">
@@ -288,6 +288,11 @@
                                                     <td class="contentCells contentCells-icon contentCells-shift">
                                                         <a class="delete-file" data="<%= encodeURIComponent(storedFiles[i].name) %>">
                                                             <img class="icon-action" src="images/delete.svg" alt="Delete" title="Delete" /></a>
+                                                    </td>
+                                                    <td class="contentCells contentCells-icon">
+                                                        <a href="#" onclick="toggleContextMenu(event)">
+                                                            <img src="images/open-context.svg" alt="Open context menu" title="Open context menu" />
+                                                        </a>
                                                     </td>
                                                 </tr>
                                             <% } %>
@@ -398,6 +403,11 @@
             </table>
         </div>
     </footer>
+
+    <div id="mobileContextMenu" onclick="toggleContextMenu(event)">
+        <div class="context-body" id="mobileContextMenuBody">
+        </div>
+    </div>
 
     <script type="text/javascript" src="javascripts/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" src="javascripts/jquery-migrate-3.4.1.min.js"></script>

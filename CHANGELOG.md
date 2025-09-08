@@ -1,4 +1,5 @@
 # Change Log
+- nodejs: new mobile index page view
 - update action icons
 - php-laravel: 5 editor icons on index page
 - java-spring: 5 editor icons on index page
