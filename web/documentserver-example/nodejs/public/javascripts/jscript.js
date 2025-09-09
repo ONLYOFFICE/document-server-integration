@@ -686,20 +686,24 @@ function toggleContextMenu(event) {
         }
 
         if (td.children.length == 0) continue;
-
-        let action = document.createElement("div");
-        action.innerText = td.children[0].children[0].getAttribute("title");
-        td.children[0].appendChild(action);
-        td.children[0].onclick = () => {
-            setTimeout(() => window.location.reload(), 0);
+        for (let child of Array.from(td.children)) {
+            let action = document.createElement("div");
+            action.innerText = child.children[0].getAttribute("title");
+            child.appendChild(action);
+            child.onclick = () => {
+                setTimeout(() => window.location.reload(), 0);
+            }
+            
+            const ntd = document.createElement("td");
+            ntd.style.display = "block";
+            ntd.classList.add("contentCells");
+            ntd.classList.add("contentCells-icon");
+            ntd.appendChild(child);
+            
+            const tr = document.createElement("tr");
+            tr.appendChild(ntd);
+            tbody.appendChild(tr);
         }
-        td.style.display = "block";
-        td.classList.remove("downloadContentCellShift");
-        td.classList.remove("firstContentCellViewers");
-        
-        let tr = document.createElement("tr");
-        tr.appendChild(td);
-        tbody.appendChild(tr);
     }
 
     let table = document.createElement("table");
