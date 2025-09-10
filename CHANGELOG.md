@@ -1,4 +1,5 @@
 # Change Log
+- csharp-mvc: new mobile index page view
 - csharp: new mobile index page view
 - nodejs: new mobile index page view
 - update action icons
