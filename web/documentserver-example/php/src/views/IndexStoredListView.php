@@ -65,13 +65,13 @@ class IndexStoredListView extends View
                 // 1-2
                 if (in_array("edit", $storeFile->actions) || in_array("lossy-edit", $storeFile->actions)) {
                     $layout .= <<<EDIT
-                        <td class="contentCells contentCells-icon">
+                        <td class="contentCells contentCells-icon" data-section="EDITOR">
                             <a href="editor?fileID={$fileName}{$userArg}{$directUrlArg}&action=edit&type=desktop"
                                target="_blank"
                             >
                                 <img src="assets/images/edit.svg"
-                                     alt="Open in editor for full size screens"
-                                     title="Open in editor for full size screens"
+                                     alt="Open for full size screens"
+                                     title="Open for full size screens"
                                 />
                             </a>
                         </td>
@@ -80,15 +80,15 @@ class IndexStoredListView extends View
                                target="_blank"
                             >
                                 <img src="assets/images/mobileEdit.svg"
-                                     alt="Open in editor for mobile devices"
-                                     title="Open in editor for mobile devices"
+                                     alt="Open for mobile devices"
+                                     title="Open for mobile devices"
                                 />
                             </a>
                         </td>
                     EDIT;
                 } else {
                     $layout .= <<<EMPTY
-                        <td class="contentCells contentCells-icon"></td>
+                        <td class="contentCells contentCells-icon" data-section="EDITOR"></td>
                         <td class="contentCells contentCells-icon"></td>
                     EMPTY;
                 }
@@ -101,8 +101,8 @@ class IndexStoredListView extends View
                                target="_blank"
                             >
                                 <img src="assets/images/comment.svg"
-                                     alt="Open in editor for comment"
-                                     title="Open in editor for comment"
+                                     alt="Open for comment"
+                                     title="Open for comment"
                                 />
                             </a>
                         </td>
@@ -119,8 +119,8 @@ class IndexStoredListView extends View
                                target="_blank"
                             >
                                 <img src="assets/images/formsubmit.svg"
-                                     alt="Open in editor for filling in forms"
-                                     title="Open in editor for filling in forms"
+                                     alt="Open for filling in forms"
+                                     title="Open for filling in forms"
                                 />
                             </a>
                         </td>
@@ -129,8 +129,8 @@ class IndexStoredListView extends View
                                target="_blank"
                             >
                                 <img src="assets/images/mobile-fill-forms.svg"
-                                     alt="Open in editor for filling in forms for mobile devices"
-                                     title="Open in editor for filling in forms for mobile devices"
+                                     alt="Open for filling in forms for mobile devices"
+                                     title="Open for filling in forms for mobile devices"
                                 />
                             </a>
                         </td>
@@ -144,8 +144,8 @@ class IndexStoredListView extends View
                                    target="_blank"
                                 >
                                     <img src="assets/images/review.svg"
-                                         alt="Open in editor for review"
-                                         title="Open in editor for review"
+                                         alt="Open for review"
+                                         title="Open for review"
                                     />
                                 </a>
                             </td>
@@ -157,8 +157,8 @@ class IndexStoredListView extends View
                                    target="_blank"
                                 >
                                     <img src="assets/images/filter.svg"
-                                         alt="Open in editor without access to change the filter"
-                                         title="Open in editor without access to change the filter"
+                                         alt="Open without access to change the filter"
+                                         title="Open without access to change the filter"
                                     />
                                 </a>
                             </td>
@@ -176,8 +176,8 @@ class IndexStoredListView extends View
                             target="_blank"
                                 >
                                     <img src="assets/images/block-content.svg"
-                                         alt="Open in editor without content control modification"
-                                         title="Open in editor without content control modification"
+                                         alt="Open without content control modification"
+                                         title="Open without content control modification"
                                     />
                                 </a>
                             </td>
@@ -188,13 +188,13 @@ class IndexStoredListView extends View
                 }
 
                 $layout .= <<<VIEW
-                    <td class="contentCells contentCells-icon firstContentCellViewers">
+                    <td class="contentCells contentCells-icon firstContentCellViewers" data-section="VIEWERS">
                         <a href="editor?fileID={$fileName}{$userArg}{$directUrlArg}&action=view&type=desktop"
                            target="_blank"
                         >
                             <img src="assets/images/view.svg"
-                                 alt="Open in viewer for full size screens"
-                                 title="Open in viewer for full size screens"
+                                 alt="Open for full size screens"
+                                 title="Open for full size screens"
                             />
                         </a>
                     </td>
@@ -203,8 +203,8 @@ class IndexStoredListView extends View
                            target="_blank"
                         >
                             <img src="assets/images/mobileView.svg"
-                                 alt="Open in viewer for mobile devices"
-                                 title="Open in viewer for mobile devices"
+                                 alt="Open for mobile devices"
+                                 title="Open for mobile devices"
                             />
                         </a>
                     </td>
@@ -222,7 +222,7 @@ class IndexStoredListView extends View
 
                 if ($storeFile->documentType != null) {
                     $layout .= <<<CONVERT
-                        <td class="contentCells contentCells-icon">
+                        <td class="contentCells contentCells-icon" data-section="ACTIONS">
                             <a class="convert-file" data="{$storeFile->name}" data-type="{$storeFile->documentType}">
                                 <img class="icon-action" src="assets/images/convert.svg"
                                      alt="Convert" title="Convert"
@@ -231,9 +231,13 @@ class IndexStoredListView extends View
                         </td>
                     CONVERT;
                 } else {
-                    $layout .= '<td class="contentCells contentCells-icon downloadContentCellShift"></td>';
+                    $layout .= <<<EMPTY
+                        <td class="contentCells contentCells-icon downloadContentCellShift"
+                            data-section="ACTIONS"
+                        ></td>
+                    EMPTY;
                 }
-                $layout .= <<<DOWNLOAD
+                $layout .= <<<ACTIONS
                     <td class="contentCells contentCells-icon downloadContentCellShift">
                         <a href="download?fileName={$fileName}">
                             <img class="icon-download" src="assets/images/download.svg"
@@ -246,8 +250,15 @@ class IndexStoredListView extends View
                             <img class="icon-action" src="assets/images/delete.svg" alt="Delete" title="Delete" />
                         </a>
                     </td>
+                    <td class="contentCells contentCells-icon">
+                        <a href="#" onclick="toggleContextMenu(event)">
+                            <img src="assets/images/open-context.svg"
+                                 alt="Open context menu" title="Open context menu"
+                            />
+                        </a>
+                    </td>
                 </tr>
-                DOWNLOAD;
+                ACTIONS;
             }
         }
         return $layout;
