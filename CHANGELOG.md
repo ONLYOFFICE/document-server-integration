@@ -1,4 +1,5 @@
 # Change Log
+- ruby: new mobile index page view
 - python: new mobile index page view
 - php: new mobile index page view
 - java-spring: new mobile index page view

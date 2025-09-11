@@ -22,13 +22,13 @@
   </div>
   <menu class="responsive-nav">
     <li>
-      <a href="#" onclick="toggleSidePanel(event)">
-        <img src="assets/mobile-menu.svg" alt="ONLYOFFICE" />
+      <a href="./">
+        <img src ="assets/mobile-logo.svg" alt="ONLYOFFICE" />
       </a>
     </li>
     <li>
-      <a href="./">
-        <img src ="assets/mobile-logo.svg" alt="ONLYOFFICE" />
+      <a href="#" onclick="toggleSidePanel(event)">
+        <img src="assets/mobile-menu.svg" alt="ONLYOFFICE" />
       </a>
     </li>
   </menu>
@@ -192,18 +192,18 @@
 
                             <!-- 1-2 -->
                             <% if actions.include?('edit') || actions.include?('lossy-edit') %>
-                              <td class="contentCells contentCells-icon">
+                              <td class="contentCells contentCells-icon" data-section="EDITOR">
                                   <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=edit" %>" target="_blank">
-                                      <img src="assets/edit.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                      <img src="assets/edit.svg" alt="Open for full size screens" title="Open for full size screens"/>
                                   </a>
                               </td>
                               <td class="contentCells contentCells-icon">
                                   <a href="<%= "#{editUrl}&editorsType=mobile&editorsMode=edit" %>" target="_blank">
-                                      <img src="assets/mobileEdit.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                      <img src="assets/mobileEdit.svg" alt="Open for mobile devices" title="Open for mobile devices"/>
                                   </a>
                               </td>
                             <% else %>
-                              <td class="contentCells contentCells-icon"></td>
+                              <td class="contentCells contentCells-icon" data-section="EDITOR"></td>
                               <td class="contentCells contentCells-icon"></td>
                             <% end %>
 
@@ -211,7 +211,7 @@
                             <% if actions.include?('comment') %>
                               <td class="contentCells contentCells-icon">
                                   <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=comment" %>" target="_blank">
-                                      <img src="assets/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                      <img src="assets/comment.svg" alt="Open for comment" title="Open for comment"/>
                                   </a>
                               </td>
                             <% else %>
@@ -222,12 +222,12 @@
                             <% if actions.include?('fill') %>
                               <td class="contentCells contentCells-icon">
                                 <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                  <img src="assets/formsubmit.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                  <img src="assets/formsubmit.svg" alt="Open for filling in forms" title="Open for filling in forms"/>
                                 </a>
                               </td>
                               <td class="contentCells contentCells-icon contentCells-shift">
                                 <a href="<%= "#{editUrl}&editorsType=mobile&editorsMode=fillForms" %>" target="_blank">
-                                  <img src="assets/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" />
+                                  <img src="assets/mobile-fill-forms.svg" alt="Open for filling in forms for mobile devices" title="Open for filling in forms for mobile devices" />
                                 </a>
                               </td>
                             <% else %>
@@ -236,13 +236,13 @@
                               <% if actions.include?('review') %>
                                 <td class="contentCells contentCells-icon">
                                     <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=review" %>" target="_blank">
-                                        <img src="assets/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
+                                        <img src="assets/review.svg" alt="Open for review" title="Open for review"/>
                                     </a>
                                 </td>
                               <% elsif actions.include?('customfilter') %>
                                 <td class="contentCells contentCells-icon">
                                     <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=filter" %>" target="_blank">
-                                        <img src="assets/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                        <img src="assets/filter.svg" alt="Open without access to change the filter" title="Open without access to change the filter" />
                                     </a>
                                 </td>
                               <% else %>
@@ -253,7 +253,7 @@
                               <% if actions.include?('edit') && docType.eql?("word") %>
                                 <td class="contentCells contentCells-icon contentCells-shift">
                                     <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
-                                        <img src="assets/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                        <img src="assets/block-content.svg" alt="Open without content control modification" title="Open without content control modification"/>
                                     </a>
                                 </td>
                               <% else %>
@@ -261,14 +261,14 @@
                               <% end %>
                             <% end %>
 
-                            <td class="contentCells contentCells-icon firstContentCellViewers">
+                            <td class="contentCells contentCells-icon firstContentCellViewers" data-section="VIEWERS">
                                 <a href="<%= "#{editUrl}&editorsType=desktop&editorsMode=view" %>" target="_blank">
-                                    <img src="assets/view.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                    <img src="assets/view.svg" alt="Open for full size screens" title="Open for full size screens"/>
                                 </a>
                             </td>
                             <td class="contentCells contentCells-icon">
                                 <a href="<%= "#{editUrl}&editorsType=mobile&editorsMode=view" %>" target="_blank">
-                                    <img src="assets/mobileView.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                    <img src="assets/mobileView.svg" alt="Open for mobile devices" title="Open for mobile devices"/>
                                 </a>
                             </td>
                             <td class="contentCells contentCells-shift contentCells-icon">
@@ -278,12 +278,12 @@
                             </td>
 
                             <% if !docType.eql?(nil) %>
-                              <td class="contentCells contentCells-icon">
+                              <td class="contentCells contentCells-icon" data-section="ACTIONS">
                                   <a class="convert-file" data="<%= d %>" data-type="<%= docType %>">
                                       <img class="icon-action" src="assets/convert.svg" alt="Convert" title="Convert" /></a>
                               </td>
                             <% else %>
-                              <td class="contentCells contentCells-icon downloadContentCellShift"></td>
+                              <td class="contentCells contentCells-icon downloadContentCellShift" data-section="ACTIONS"></td>
                             <% end %>
                             <td class="contentCells contentCells-icon downloadContentCellShift">
                               <a href="<%= "download?fileName=#{ERB::Util.url_encode(d)}" %>">
@@ -293,6 +293,11 @@
                             <td class="contentCells contentCells-shift contentCells-icon">
                               <a class="delete-file" data-filename="<%= d %>">
                                 <img class="icon-action" src="assets/delete.svg" alt="Delete" title="Delete" />
+                              </a>
+                            </td>
+                            <td class="contentCells contentCells-icon">
+                              <a href="#" onclick="toggleContextMenu(event)">
+                                <img src="assets/open-context.svg" alt="Open context menu" title="Open context menu" />
                               </a>
                             </td>
                           </tr>
@@ -407,6 +412,11 @@
     </table>
   </div>
 </footer>
+
+<div id="mobileContextMenu" onclick="toggleContextMenu(event)">
+    <div class="context-body" id="mobileContextMenuBody">
+    </div>
+</div>
 
 <%= javascript_include_tag "application" %>
 
