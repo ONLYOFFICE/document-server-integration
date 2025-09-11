@@ -1,4 +1,5 @@
 # Change Log
+- java-spring: new mobile index page view
 - java: new mobile index page view
 - go: new mobile index page view
 - csharp-mvc: new mobile index page view
