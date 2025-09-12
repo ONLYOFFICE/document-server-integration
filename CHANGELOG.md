@@ -1,4 +1,5 @@
 # Change Log
+- php-laravel: mobile index page view
 - ruby: new mobile index page view
 - python: new mobile index page view
 - php: new mobile index page view
