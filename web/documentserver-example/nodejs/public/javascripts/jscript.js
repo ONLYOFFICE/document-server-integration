@@ -637,15 +637,13 @@ function toggleUserDescr(event) {
 }
 
 function toggleContextMenu(event) {
-    event.preventDefault();
-
     let contextMenu = document.querySelector("#mobileContextMenu");
     let target = event.currentTarget.parentNode.parentNode.cloneNode(true);
 
     const closeContextMenu = () => {
         contextMenu.classList.remove("active");
     }
-    if (contextMenu.classList.contains("active")) {
+    if (contextMenu.classList.contains("active") || !target.classList.contains("tableRow")) {
         if (event.target.id == "mobileContextMenuBody") closeContextMenu();
         return;
     }
