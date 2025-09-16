@@ -1,14 +1,6 @@
 # Change Log
-- php-laravel: mobile index page view
-- ruby: new mobile index page view
-- python: new mobile index page view
-- php: new mobile index page view
-- java-spring: new mobile index page view
-- java: new mobile index page view
-- go: new mobile index page view
-- csharp-mvc: new mobile index page view
-- csharp: new mobile index page view
-- nodejs: new mobile index page view
+
+- new mobile index page view
 - update action icons
 - php-laravel: 5 editor icons on index page
 - java-spring: 5 editor icons on index page
@@ -20,7 +12,6 @@
 - csharp-mvc: display mode buttons by actions
 - csharp: display mode buttons by actions
 - nodejs: display mode buttons by actions
-
 - nodejs: wopi UserCanOnlyComment
 
 ## 1.15.0
