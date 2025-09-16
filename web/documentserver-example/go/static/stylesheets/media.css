@@ -453,60 +453,6 @@
         padding: 16px 0 6px;
     }
 
-    .tableRow,
-    menu.links {
-        width: 40%;
-    }
-
-    .tableRow td {
-        border: none;
-    }
-
-    .firstContentCellShift {
-        border: none;
-        flex-basis: 10%;
-    }
-
-    .downloadContentCellShift {
-        max-width: 7%;
-        margin-right: 24px;
-        margin-left: 0;
-    }
-
-    .contentCells-icon {
-        width: 11%;
-    }
-
-    .tableRow td:last-child {
-        width: 7%;
-        padding-right: 0px;
-        border: none;
-    }
-
-    .contentCells-shift {
-        padding-right: 0px;
-    }
-
-    .downloadContentCellShift:after {
-        width: 85%;
-    }
-
-    .firstContentCellViewers {
-        margin-left: 0;
-        border-bottom: 1px solid #e5e5e5 !important;
-    }
-
-    .firstContentCellViewers ~ td {
-        border-bottom: 1px solid #e5e5e5;
-    }
-    .tableRow td:first-child{
-        border: none;
-        width: 85%;
-    }
-    .contentCellsEmpty{
-        display: none;
-        width: 1%;
-    }
     /* Mobile Upload*/
     .blockUI.blockMsg.blockPage.ui-dialog.ui-widget.ui-corner-all.ui-widget-content.ui-draggable {
         width: 344px !important;
@@ -581,100 +527,7 @@
     }
 }
 
-@media (max-width: 560px) and (min-width: 510px) {
-    .contentCells-icon {
-        width: 11%;
-    }
-
-    .downloadContentCellShift {
-        padding-right: 16px;
-        max-width: 4%;
-    }
-}
-
-@media (max-width: 510px)  and (min-width: 470px) {
-    .tableRow,
-    menu.links {
-        width: 35%;
-    }
-
-    .tableRow td:first-child{
-        width: 83%;
-    }
-    .contentCells-icon {
-        width: 10%;
-    }
-
-    .downloadContentCellShift {
-        max-width: 6%;
-        padding-right: 6px;
-    }
-
-    .firstContentCellShift {
-        flex-basis: 9%;
-    }
-
-    .tableRow td:last-child {
-        padding-right: 28px;
-    }
-}
-
-@media (max-width: 470px)  and (min-width: 420px) {
-    .tableRow,
-    menu.links {
-        width: 30%;
-    }
-    .tableRow td:first-child{
-        width: 85%;
-    }
-    .contentCells-icon {
-        width: 10%;
-    }
-
-    .downloadContentCellShift {
-        max-width: 3%;
-        padding-right: 0px;
-        padding-left: 0;
-    }
-
-    .firstContentCellShift {
-        margin-left: 2px;
-        flex-basis: 13%;
-    }
-
-    .tableRow td:last-child {
-        width: 5%;
-        padding-right: 63px;
-    }
-    .firstContentCellViewers{
-        padding-right: 2px;
-        width: 12%;
-    }
-    .contentCellsEmpty{
-        display: none;
-    }
-}
-
 @media (max-width: 420px) {
-    .tableRow,
-    menu.links {
-        width: 25%;
-    }
-
-    .tableRow td:last-child {
-        width: 6%;
-        padding-right: 16px;
-    }
-
-    .downloadContentCellShift {
-        max-width: 4%;
-        margin-right: 18px;
-        margin-left: -1px;
-    }
-
-    .contentCells-icon{
-        width: 10%;
-    }
     footer table td {
         margin: 0;
         padding-right: 5px;
@@ -685,10 +538,6 @@
         padding-right: 5px;
         margin: 0;
     }
-    .firstContentCellViewers{
-        padding-right: 2px;
-        width: 11%;
-    }
 }
 
 @media (max-width: 1160px) {
@@ -697,11 +546,6 @@
     }
 }
 
-@media (min-width: 593px) {
-    .contentCellsEmpty {
-        display: none;
-    }
-}
 @media (max-width: 769px) and (min-width: 715px){
     .tableRow,
     .storedHeader,
@@ -711,11 +555,6 @@
 
     .storedHeaderClearAll{
         padding-right: 26px;
-    }
-}
-@media (max-width: 510px) {
-    .tableRow td:first-child{
-        flex-grow: 0;
     }
 }
 @media (max-width: 1100px) and (min-width: 890px){
@@ -797,8 +636,8 @@
         margin: 0;
         position: fixed;
         left: 0;
-        height: calc(100% - 124px);
-        z-index:99;
+        height: calc(100% - 44px);
+        z-index: 101;
     }
 
     .left-panel.active {
@@ -916,16 +755,37 @@
 
     .tableRow {
         border-bottom: 1px solid #e5e5e5;
-        padding: 16px 0;
+        padding: 12px 0;
         width: 100%;
+        flex-wrap: nowrap;
     }
 
     .tableRow td:first-child {
         width: 100%;
     }
 
+    .tableRow td:last-child {
+        display: block;
+        width: 24px;
+    }
+
+    .contentCells {
+        padding: 0;
+        font-size: 13px;
+    }
+
+    .contentCells-icon {
+        width: auto;
+        display: none;
+    }
+
+    .stored-edit {
+        height: 12px;
+        padding: 6px 0 6px 34px;
+    }
+
     .stored-edit span {
-        font-size: 14px;
+        font-size: 13px;
     }
 
     .header-list {
@@ -933,7 +793,7 @@
     }
 
     .firstContentCellViewers {
-        border-bottom: none !important;
+        margin: 0;
     }
 
     .firstContentCellViewers ~ td {
@@ -967,5 +827,20 @@
 
     .user-block-table {
         height: auto;
+    }
+
+    .upload-panel {
+        padding: 12px 0;
+    }
+    
+    .user-block-table td select {
+        height: 48px;
+        padding-left: 12px;
+        border-radius: 6px;
+        border-color: #aaaaaa;
+    }
+
+    .user-block-table tr:last-child {
+        display: none;
     }
 }

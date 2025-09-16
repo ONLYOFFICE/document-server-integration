@@ -52,13 +52,13 @@
             </div>
             <menu class="responsive-nav">
                 <li>
-                  <a href="#" onclick="toggleSidePanel(event)">
-                    <img src="app_themes/images/mobile-menu.svg" alt="ONLYOFFICE" />
+                  <a href="./">
+                    <img src ="app_themes/images/mobile-logo.svg" alt="ONLYOFFICE" />
                   </a>
                 </li>
                 <li>
-                  <a href="./">
-                    <img src ="app_themes/images/mobile-logo.svg" alt="ONLYOFFICE" />
+                  <a href="#" onclick="toggleSidePanel(event)">
+                    <img src="app_themes/images/mobile-menu.svg" alt="ONLYOFFICE" />
                   </a>
                 </li>
             </menu>
@@ -224,18 +224,18 @@
 
                                                             <!-- 1-2 -->
                                                             <% if (actions.Contains("edit") || actions.Contains("lossy-edit")) { %>
-                                                                <td class="contentCells contentCells-icon">
+                                                                <td class="contentCells contentCells-icon" data-section="EDITOR">
                                                                     <a href="<%= editUrl + "&editorsType=desktop&editorsMode=edit" %>" target="_blank">
-                                                                        <img src="app_themes/images/edit.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                                                        <img src="app_themes/images/edit.svg" alt="Open for full size screens" title="Open for full size screens"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="<%= editUrl + "&editorsType=mobile&editorsMode=edit" %>" target="_blank">
-                                                                        <img src="app_themes/images/mobileEdit.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                                                        <img src="app_themes/images/mobileEdit.svg" alt="Open for mobile devices" title="Open for mobile devices"/>
                                                                     </a>
                                                                 </td>
                                                             <% } else { %>
-                                                                <td class="contentCells contentCells-icon"></td>
+                                                                <td class="contentCells contentCells-icon" data-section="EDITOR"></td>
                                                                 <td class="contentCells contentCells-icon"></td>
                                                             <% } %>
 
@@ -243,7 +243,7 @@
                                                             <% if (actions.Contains("comment")) { %>
                                                                 <td class="contentCells contentCells-icon">
                                                                     <a href="<%= editUrl + "&editorsType=desktop&editorsMode=comment" %>" target="_blank">
-                                                                        <img src="app_themes/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                                        <img src="app_themes/images/comment.svg" alt="Open for comment" title="Open for comment"/>
                                                                     </a>
                                                                 </td>
                                                             <% } else { %>
@@ -254,12 +254,12 @@
                                                             <% if (actions.Contains("fill")) { %>
                                                                 <td class="contentCells contentCells-icon firstContentCellShift">
                                                                     <a href="<%= editUrl + "&editorsType=desktop&editorsMode=fillForms" %>" target="_blank">
-                                                                        <img src="app_themes/images/formsubmit.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
+                                                                        <img src="app_themes/images/formsubmit.svg" alt="Open for filling in forms" title="Open for filling in forms"/>
                                                                     </a>
                                                                 </td>
                                                                 <td class="contentCells contentCells-icon contentCells-shift">
                                                                     <a href="<%= editUrl + "&editorsType=mobile&editorsMode=fillForms" %>" target="_blank">
-                                                                        <img src="app_themes/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices"/>
+                                                                        <img src="app_themes/images/mobile-fill-forms.svg" alt="Open for filling in forms for mobile devices" title="Open for filling in forms for mobile devices"/>
                                                                     </a>
                                                                 </td>
                                                             <% } else { %>
@@ -268,13 +268,13 @@
                                                                 <% if (actions.Contains("review")) { %>
                                                                     <td class="contentCells contentCells-icon">
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=review" %>" target="_blank">
-                                                                            <img src="app_themes/images/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
+                                                                            <img src="app_themes/images/review.svg" alt="Open for review" title="Open for review"/>
                                                                         </a>
                                                                     </td>
                                                                 <% } else if (actions.Contains("customfilter")) { %>
                                                                     <td class="contentCells contentCells-icon">
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=filter" %>" target="_blank">
-                                                                            <img src="app_themes/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
+                                                                            <img src="app_themes/images/filter.svg" alt="Open without access to change the filter" title="Open without access to change the filter" />
                                                                         </a>
                                                                     </td>
                                                                 <% } else { %>
@@ -285,7 +285,7 @@
                                                                 <% if (actions.Contains("edit") && docType == "word") { %>
                                                                     <td class="contentCells contentCells-icon contentCells-shift">
                                                                         <a href="<%= editUrl + "&editorsType=desktop&editorsMode=blockcontent" %>" target="_blank">
-                                                                            <img src="app_themes/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
+                                                                            <img src="app_themes/images/block-content.svg" alt="Open without content control modification" title="Open without content control modification"/>
                                                                         </a>
                                                                     </td>
                                                                 <% } else { %>
@@ -293,14 +293,14 @@
                                                                 <% } %>
                                                             <% } %>
 
-                                                            <td class="contentCells contentCells-icon firstContentCellViewers">
+                                                            <td class="contentCells contentCells-icon firstContentCellViewers" data-section="VIEWERS">
                                                                 <a href="<%= editUrl + "&editorsType=desktop&editorsMode=view" %>" target="_blank">
-                                                                    <img src="app_themes/images/view.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                                                    <img src="app_themes/images/view.svg" alt="Open for full size screens" title="Open for full size screens"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon">
                                                                 <a href="<%= editUrl + "&editorsType=mobile&editorsMode=view" %>" target="_blank">
-                                                                    <img src="app_themes/images/mobileView.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                                                    <img src="app_themes/images/mobileView.svg" alt="Open for mobile devices" title="Open for mobile devices"/>
                                                                 </a>
                                                             </td>
                                                             <td class="contentCells contentCells-icon contentCells-shift">
@@ -310,12 +310,12 @@
                                                             </td>
 
                                                             <% if (docType != null ) { %>
-                                                                <td class="contentCells contentCells-icon">
+                                                                <td class="contentCells contentCells-icon" data-section="ACTION">
                                                                     <a class="convert-file" data="<%= storedFile.Name %>" data-type="<%= docType %>">
                                                                         <img class="icon-action" src="app_themes/images/convert.svg" alt="Convert" title="Convert" /></a>
                                                                 </td>
                                                             <% } else { %>
-                                                                <td class="contentCells contentCells-icon downloadContentCellShift"></td>
+                                                                <td class="contentCells contentCells-icon downloadContentCellShift" data-section="ACTION"></td>
                                                             <% } %>
                                                             <td class="contentCells contentCells-icon downloadContentCellShift">
                                                                 <a href="webeditor.ashx?type=download&fileName=<%= HttpUtility.UrlEncode(storedFile.Name) %>">
@@ -325,6 +325,11 @@
                                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                                 <a class="delete-file" data-filename="<%= storedFile.Name %>">
                                                                     <img class="icon-action" src="app_themes/images/delete.svg" alt="Delete" title="Delete" />
+                                                                </a>
+                                                            </td>
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="#" onclick="toggleContextMenu(event)">
+                                                                    <img src="app_themes/images/open-context.svg" alt="Open context menu" title="Open context menu" />
                                                                 </a>
                                                             </td>
                                                         </tr>
@@ -438,6 +443,11 @@
             </div>
         </footer>
     </form>
+
+    <div id="mobileContextMenu" onclick="toggleContextMenu(event)">
+        <div class="context-body" id="mobileContextMenuBody">
+        </div>
+    </div>
 
     <script language="javascript" type="text/javascript" src="script/jquery-3.6.4.min.js"></script>
     <script language="javascript" type="text/javascript" src="script/jquery-migrate-3.4.1.min.js"></script>

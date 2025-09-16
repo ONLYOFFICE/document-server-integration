@@ -18,13 +18,13 @@
 
  .tableRow td:first-child{
     flex-grow: 1;
-    max-width: 50%;
+    max-width: 46%;
 }
 
 .downloadContentCells{
     margin-left: auto;
 }
-.tableRow td:last-child:after{
+.tableRow td:nth-last-child(2):after{
     top: 33px;
     left: 0;
     content: "";
@@ -39,7 +39,7 @@
 
 @media (max-width: 1280px) and (min-width: 1080px) {
     .tableHeaderCellViewers {
-        width: 24%;
+        width: 25%;
     }
 }
 
@@ -66,10 +66,13 @@
         padding-left: 7px;
     }
     .tableRow td:first-child {
-        max-width: 45%;
+        max-width: 40%;
     }
     .tableHeaderCellViewers {
-        width: 23%;
+        width: 27%;
+    }
+    .tableHeaderCellDownload {
+        width: 25%;
     }
 }
 @media (max-width: 986px) and (min-width: 890px){
@@ -77,15 +80,15 @@
         padding-left: 16px;
     }
     .tableHeaderCellDownload{
-        width: 20%;
+        width: 25%;
         padding-right: 0;
     }
     .tableHeaderCellViewers{
-        width: 22%;
+        width: 18%;
         padding-right: 0;
     }
     .tableRow td:first-child {
-        max-width: 40%;
+        max-width: 27%;
     }
     .contentCells-wopi {
         padding-right: 114px;
@@ -110,7 +113,7 @@
         top: 32px;
         border: none;
     }
-    .tableRow td:last-child:after{
+    .tableRow td:nth-last-child(2):after{
         top: 65px;
         width: 100%;
         height: 1%;
@@ -119,38 +122,29 @@
         max-width: 100%;
     }
 }
-@media (max-width: 593px){
-    .tableRow td:first-child{
-        width: 100%;
-    }
-    .tableRow td:last-child:after{
-        width: 90%;
-        top: 65px;
-        height: 1%;
-    }
-}
 @media (max-width: 769px) and (min-width: 320px){
     .contentCells-icon {
         width: 9%;
     }
 }
-@media (max-width: 508px) {
-    .downloadContentCells {
-         margin-left: unset;
-    }
-    .contentCells-wopi {
+@media (max-width: 592px) {
+    .tableRow td:first-child{
         width: 100%;
     }
+    .downloadContentCells {
+        margin-left: unset;
+    }
+    .contentCells-wopi {
+        display: none;
+    }
     .contentCells-icon {
-    width: 1%;
+        width: auto;
     }
     .contentCells-shift {
         padding-right: 30px;
         padding-left: 3px;
     }
-    .tableRow td:last-child:after{
-        top: 95px;
-        height: 1%;
-        width: 100%;
+    .tableRow td:nth-last-child(2):after{
+        display: none;
     }
 }

@@ -635,3 +635,79 @@ function toggleUserDescr(event) {
         else list.classList.add("active");
     }
 }
+
+function toggleContextMenu(event) {
+    let contextMenu = document.querySelector("#mobileContextMenu");
+    let target = event.currentTarget.parentNode.parentNode.cloneNode(true);
+
+    const closeContextMenu = () => {
+        contextMenu.classList.remove("active");
+    }
+    if (contextMenu.classList.contains("active") || !target.classList.contains("tableRow")) {
+        if (event.target.id == "mobileContextMenuBody") closeContextMenu();
+        return;
+    }
+
+    let contextBody = document.querySelector("#mobileContextMenuBody");
+    contextBody.innerHTML = "";
+
+    let startY = 0;
+    let startScroll = 0;
+    contextBody.addEventListener('touchstart', (e) => {
+        startY = e.touches[0].clientY;
+        startScroll = contextBody.scrollTop;
+    });
+    contextBody.addEventListener('touchmove', (e) => {
+        const currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+
+        if (diff > 10 && (contextBody.scrollTop === 0 || contextBody.scrollTop === startScroll)) {
+            closeContextMenu();
+        }
+    });
+
+    let thead = document.createElement("thead");
+    thead.appendChild(target.children[0]);
+    const observer = new IntersectionObserver( 
+        ([e]) => e.target.classList.toggle("is-pinned", e.intersectionRatio < 1),
+        { threshold: [1] }
+    );
+    observer.observe(thead);
+
+    let tbody = document.createElement("tbody");
+    for (let td of Array.from(target.children).slice(0, -1)){
+        if (td.getAttribute("data-section")){
+            let section = document.createElement("tr");
+            section.innerText = td.getAttribute("data-section");
+            section.classList.add("context-section");
+            tbody.appendChild(section);
+        }
+
+        if (td.children.length == 0) continue;
+        for (let child of Array.from(td.children)) {
+            let action = document.createElement("div");
+            action.innerText = child.children[0].getAttribute("title");
+            child.appendChild(action);
+            child.onclick = () => {
+                setTimeout(() => window.location.reload(), 0);
+            }
+            
+            const ntd = document.createElement("td");
+            ntd.style.display = "block";
+            ntd.classList.add("contentCells");
+            ntd.classList.add("contentCells-icon");
+            ntd.appendChild(child);
+            
+            const tr = document.createElement("tr");
+            tr.appendChild(ntd);
+            tbody.appendChild(tr);
+        }
+    }
+
+    let table = document.createElement("table");
+    table.appendChild(thead);
+    table.appendChild(tbody);
+
+    contextBody.appendChild(table);
+    contextMenu.classList.add("active");
+}
