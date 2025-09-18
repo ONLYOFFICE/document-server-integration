@@ -721,7 +721,7 @@ app.post('/forcesave', async (req, res) => {
         res.end();
         return;
       }
-      const filePath = files.file.path;
+      const filePath = files.file.filepath || files.file[0].filepath;
       const data = fileSystem.readFileSync(filePath);
       await req.DocManager.forcesaveFile(data, fName, fileUtility.getFileExtension(fName), uAddress);
       fileSystem.unlinkSync(filePath);
