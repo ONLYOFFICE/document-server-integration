@@ -10,7 +10,7 @@ gem 'jquery-rails', '~> 4.5'
 gem 'jwt', '~> 2.7'
 gem 'mimemagic', github: 'mimemagicrb/mimemagic', ref: '01f92d86d15d85cfd0f20dabd025dcbd36a8a60f'
 gem 'rack-cors', '~> 2.0'
-gem 'rails', '~> 7.0.8.7'
+gem 'rails', '~> 7.1.5.2'
 gem 'rubocop', '~> 1.52', group: :development
 gem 'rubocop-rails', '~> 2.20', group: :development
 gem 'sass-rails', '~> 6.0'
