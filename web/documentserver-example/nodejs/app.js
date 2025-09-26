@@ -1207,9 +1207,6 @@ app.get('/editor', async (req, res) => { // define a handler for editing documen
 
     // file config data
     const argss = {
-      documentData: fromBuffer
-        ? fileSystem.readFileSync(req.DocManager.storagePath(fileName, userAddress)).toString('base64')
-        : '',
       bufferCallback: req.DocManager.getCallback(fileName, fromBuffer),
       apiUrl: siteUrl + (await documentService.config(req.DocManager)).urls.api.replace('/', ''),
       file: {
