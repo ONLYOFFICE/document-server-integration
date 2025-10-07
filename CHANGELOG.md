@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: update insertImage formats
 - new mobile index page view
 - update action icons
 - php-laravel: 5 editor icons on index page
