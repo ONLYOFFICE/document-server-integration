@@ -1,6 +1,7 @@
 # Change Log
 
 ##
+- nodejs: update insertImage formats
 - nodejs: AI Auto Fill Plugin v1.1.0
 - nodejs: set default secret
 - nodejs: conversion with file in body

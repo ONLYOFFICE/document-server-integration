@@ -1396,9 +1396,13 @@ app.get('/editor', async (req, res) => { // define a handler for editing documen
         featuresTips: userid === 'uid-0',
       },
       dataInsertImage: {
-        fileType: 'svg',
-        url: `${req.DocManager.getServerUrl(true)}/images/logo.svg`,
-        directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.svg`,
+        images: [
+          {
+            fileType: 'svg',
+            url: `${req.DocManager.getServerUrl(true)}/images/logo.svg`,
+            directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.svg`,
+          }
+        ]
       },
       dataDocument: {
         fileType: 'docx',
