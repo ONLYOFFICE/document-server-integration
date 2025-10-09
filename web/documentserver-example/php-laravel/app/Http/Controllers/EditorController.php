@@ -173,8 +173,12 @@ class EditorController extends Controller
 
         // an image for inserting
         $dataInsertImage = [
-            'fileType' => 'svg',
-            'url' => "$storagePrivateUrl/images/logo.svg",
+            'images' => [
+                [
+                    'fileType' => 'svg',
+                    'url' => "$storagePrivateUrl/images/logo.svg",
+                ],
+            ],
         ];
 
         // a document for comparing
@@ -190,7 +194,7 @@ class EditorController extends Controller
         ];
 
         if ($directUrlEnabled) {
-            $dataInsertImage['directUrl'] = URL::build($storagePrivateUrl, '/images/logo.svg');
+            $dataInsertImage['images'][0]['directUrl'] = URL::build($storagePrivateUrl, '/images/logo.svg');
             $dataDocument['directUrl'] = URL::build($storagePrivateUrl, '/document-templates/sample/sample.docx');
             $dataSpreadsheet['directUrl'] = URL::build($storagePrivateUrl, '/document-templates/sample/csv.csv');
         }
