@@ -171,7 +171,7 @@ GEM
     psych (5.1.2)
       stringio
     racc (1.8.1)
-    rack (2.2.14)
+    rack (2.2.19)
     rack-cors (2.0.2)
       rack (>= 2.0.0)
     rack-session (1.0.2)
