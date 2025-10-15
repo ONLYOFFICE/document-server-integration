@@ -2,6 +2,7 @@
 
 ## 1.15.0
 - php-laravel: fix custom jwt header
+- formats for ds v9.1
 - user role
 - start filling
 - update demo files
@@ -14,6 +15,9 @@
 - view odg, md
 - edit xlsb
 - support vsdx in diagram editor
+
+## 1.14.1
+- nodejs: formats for ds v9.1
 
 ## 1.14.0
 - nodejs: set users by parts
