@@ -1263,8 +1263,8 @@ app.get('/editor', (req, res) => { // define a handler for editing document
             fileType: 'svg',
             url: `${req.DocManager.getServerUrl(true)}/images/logo.svg`,
             directUrl: !userDirectUrl ? null : `${req.DocManager.getServerUrl()}/images/logo.svg`,
-          }
-        ]
+          },
+        ],
       },
       dataDocument: {
         fileType: 'docx',
