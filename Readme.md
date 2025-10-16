@@ -38,16 +38,16 @@ The methods described below are available for all of the test examples.
 | **Sample**             | `curl -X POST -F uploadedFile=@filename.docx http://localhost/upload` |
 
 
-### DELETE `/file`
+### DELETE `/remove`
 
 |                    |                                                              |
 | ------------------ | ------------------------------------------------------------ |
 | **Summary**        | Delete one file or all files                                 |
-| **URL**            | /file                                                        |
+| **URL**            | /remove                                                        |
 | **Method**         | DELETE                                                       |
 | ****URL Params**** | **Optional:**<br /> `filename=[string]` - file for deleting. <br /> *WARNING! Without this parameter, all files will be deleted* |
 | **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `{ "success": true }` |
-| **Sample**         | **Delete one file:**<br />`curl -X DELETE http://localhost/file?filename=filename.docx`<br />**Delete all files:**<br />`curl -X DELETE http://localhost/file`<br /> |
+| **Sample**         | **Delete one file:**<br />`curl -X DELETE http://localhost/remove?filename=filename.docx`<br />**Delete all files:**<br />`curl -X DELETE http://localhost/remove`<br /> |
 
 
 ### GET `/files`
