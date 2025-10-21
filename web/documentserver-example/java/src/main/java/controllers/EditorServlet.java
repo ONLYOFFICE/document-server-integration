@@ -78,11 +78,13 @@ public class EditorServlet extends HttpServlet {
 
         // an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
-        dataInsertImage.put("fileType", "svg");
-        dataInsertImage.put("url", DocumentManager.getServerUrl(true) + "/css/img/logo.svg");
+        Map<String, Object>[] images = new HashMap[1];
+        images[0].put("fileType", "svg");
+        images[0].put("url", DocumentManager.getServerUrl(true) + "/css/img/logo.svg");
         if (isEnableDirectUrl) {
-            dataInsertImage.put("directUrl", DocumentManager.getServerUrl(false) + "/css/img/logo.svg");
+            images[0].put("directUrl", DocumentManager.getServerUrl(false) + "/css/img/logo.svg");
         }
+        dataInsertImage.put("images", images);
 
         // a document that will be compared with the current document
         Map<String, Object> dataDocument = new HashMap<>();

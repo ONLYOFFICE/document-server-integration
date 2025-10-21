@@ -372,13 +372,18 @@ namespace OnlineEditorsExample
                 logoConfig.Add("directUrl", DirectImageUrl.ToString());
             }
 
+            var result = new Dictionary<string, object> 
+            {
+                { "images", new List<Dictionary<string, object>>{logoConfig} }
+            };
+
             if (JwtManager.Enabled)  // if the secret key to generate token exists
             {
-                var insImageToken = JwtManager.Encode(logoConfig);  // encode logoConfig into the token
-                logoConfig.Add("token", insImageToken);  // and add it to the logo config
+                var insImageToken = JwtManager.Encode(result);  // encode logoConfig into the token
+                result.Add("token", insImageToken);  // and add it to the logo config
             }
 
-            return logoConfig;
+            return result;
         }
 
         // get a document which will be compared with the current document
