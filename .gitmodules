@@ -62,3 +62,7 @@
 	path = web/documentserver-example/php-laravel/public/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
 	branch = main/default
+[submodule "web/documentserver-example/nodejs/public/assets/plugin-aiautofill"]
+	path = web/documentserver-example/nodejs/public/assets/plugin-aiautofill
+	url = https://github.com/ONLYOFFICE/plugin-aiautofill.git
+	branch = develop

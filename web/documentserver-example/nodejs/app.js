@@ -17,6 +17,7 @@
  */
 
 // connect the necessary packages and modules
+const crypto = require("crypto");
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -220,6 +221,65 @@ app.get('/download', (req, res) => { // define a handler for downloading files
 
   const filestream = fileSystem.createReadStream(filePath);
   filestream.pipe(res); // send file information to the response by streams
+});
+
+app.get('/data', (req, res) => { // define a handler for getting sample ai form data
+  if (!req.query.code) { // integration must validate incoming codes and generate new ones for each data request
+    res.sendStatus(403);
+    return;
+  }
+
+  res.send({
+    data: {
+      "seller": {
+        "name": "John Doe",
+        "email": "john.doe@example.com",
+        "phone": "1234567890",
+        "address": "123 Main St, Chicago, USA",
+        "city": "Chicago",
+        "state": "IL",
+        "zip": "60601",
+        "country": "USA",
+      },
+      "deal": {
+        "name": "Deal 1",
+        "number": "1234567890",
+        "date": "2021-01-01",
+        "status": "pending",
+        "amount": 1000,
+        "currency": "USD",
+        "description": "Deal 1 description",
+      },
+      "buyer": {
+        "name": "Jane Doe",
+        "email": "jane.doe@example.com",
+        "phone": "0987654321",
+        "address": "321 Main St, New York, USA",
+        "city": "New York",
+        "state": "NY",
+        "zip": "10001",
+        "country": "USA",
+      },
+      "organization": {
+        "name": "Acme Inc.",
+        "email": "acme@example.com",
+        "phone": "1234567890",
+        "address": "123 Main St, Chicago, USA",
+        "city": "Chicago",
+        "state": "IL",
+        "zip": "60601",
+        "country": "USA",
+      },
+      "products": [
+        {
+          "name": "Product 1",
+          "quantity": 1,
+          "price": 100,
+        },
+      ],
+    },
+    code: crypto.randomBytes(16).toString("hex"),
+  });
 });
 
 app.get('/history', (req, res) => {
@@ -1203,6 +1263,29 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       user.goback.url = `${req.DocManager.getServerUrl()}/`;
     }
 
+    // generate random code for plugin security dynamically
+    let pluginsConfig;
+    if (mode !== 'view') {
+      const updatedOptions = {};
+      if (plugins.options) {
+        for (const pluginGuid in plugins.options) {
+          updatedOptions[pluginGuid] = {
+            ...plugins.options[pluginGuid],
+            code: crypto.randomBytes(16).toString('hex'),
+          };
+        }
+      }
+      pluginsConfig = {
+        ...plugins,
+        options: updatedOptions,
+      };
+    } else {
+      pluginsConfig = {
+        ...plugins,
+        autostart: [],
+      };
+    }
+
     // file config data
     const argss = {
       apiUrl: siteUrl + configServer.get('apiUrl'),
@@ -1248,7 +1331,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         userInfoGroups: JSON.stringify(userInfoGroups),
         fileChoiceUrl,
         submitForm,
-        plugins: JSON.stringify(plugins),
+        plugins: JSON.stringify(pluginsConfig),
         actionData,
         fileKey: userid !== 'uid-0'
           ? JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }) : null,
