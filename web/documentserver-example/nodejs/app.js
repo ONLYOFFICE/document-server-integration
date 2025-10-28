@@ -1265,7 +1265,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     // generate random code for plugin security dynamically
     let pluginsConfig;
-    if (mode !== 'view') {
+    if (mode == 'edit') {
       const updatedOptions = {};
       if (plugins.options) {
         for (const pluginGuid in plugins.options) {
