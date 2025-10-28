@@ -75,6 +75,56 @@ The example is configured by changing environment variables.
 | `EXAMPLE_URL`                 | The URL through which Document Server will communicate with the server. | `http://proxy`          |
 | `JWT_SECRET`                  | JWT authorization secret. Leave blank to disable authorization.         | `your-256-bit-secret`   |
 
+## File API methods used in this example 
+
+The methods described below are available for PHP test example.
+
+### POST `/upload`
+
+|                        |                                                              |
+| ---------------------- | ------------------------------------------------------------ |
+| **Summary**            | Upload file to test example via request                      |
+| **URL**                | /upload                                                      |
+| **Method**             | POST                                                         |
+| ****URL Params**** | `user=[string]` - user id. |
+| **Request<br>Headers** | `Content-Type: multipart/form-data`                          |
+| **Request<br>Body**    | `uploadedFile=@<filepath>`<br> `filepath` - file for uploading<br />Multipart body with the file binary contents |
+| **Response**           | **Code:** 200 OK <br />**Content on success:**<br /> `{ "filename": <filename>}`<br />**Content on error:**<br /> `{ "error": "File type is not supported" }` <br /> Or <br /> `{ "error": "File size is incorrect" }` |
+| **Sample**             | `curl -X POST -F uploadedFile=@filename.docx http://localhost/upload?user=uid-1` |
+
+
+### GET `/delete`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Delete one file                                 |
+| **URL**            | /delete                                                        |
+| **Method**         | GET                                                       |
+| ****URL Params**** | `fileName=[string]` - file for deleting. |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `{ "success": true }` |
+| **Sample**         | `curl -X GET http://localhost/delete?fileName=filename.docx` |
+
+### DELETE `/delete`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Delete all files                                 |
+| **URL**            | /delete                                                        |
+| **Method**         | DELETE                                                       |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `{ "success": true }` |
+| **Sample**         | `curl -X DELETE http://localhost/delete` |
+
+
+### GET `/files`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Get information about all files                              |
+| **URL**            | /files                                                       |
+| **Method**         | GET                                                          |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `[{ "version": <file_version>, "id": <file_id>, "contentLength": <file_size_in_kilobytes>, "pureContentLength": <file_size_in_bytes>, "title": <file_name>, "updated": <last_change_date>}, ..., {...}]` |
+| **Sample**         | `curl -X GET http://localhost/files`                        |
+
 ## Security Info
 
 Please keep in mind the following security aspects when you are using test examples:

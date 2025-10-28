@@ -295,6 +295,45 @@ In case the example and Document Server are installed on different computers, ma
 
 Make sure that the Document Server has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
 
+## File API methods used in this example 
+
+The methods described below are available for Java (Spring) test example.
+
+### POST `/upload`
+
+|                        |                                                              |
+| ---------------------- | ------------------------------------------------------------ |
+| **Summary**            | Upload file to test example via request                      |
+| **URL**                | /upload                                                      |
+| **Method**             | POST                                                         |
+| **Request<br>Headers** | `Content-Type: multipart/form-data`                          |
+| **Request<br>Body**    | `uploadedFile=@<filepath>`<br> `filepath` - file for uploading<br />Multipart body with the file binary contents |
+| **Response**           | **Code:** 200 OK <br />**Content on success:**<br /> `{ "filename": <filename>}`<br />**Content on error:**<br /> `{ "error": "File type is not supported" }` <br /> Or <br /> `{ "error": "File size is incorrect" }` |
+| **Sample**             | `curl -X POST -F uploadedFile=@filename.docx http://localhost/upload` |
+
+
+### POST `/delete`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Delete one file or all files                                 |
+| **URL**            | /delete                                                        |
+| **Method**         | POST                                                       |
+| ****Body Params**** | **Optional:**<br /> `filename: string` - file for deleting. <br /> *WARNING! Without this parameter, all files will be deleted* |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `{ "success": true }` |
+| **Sample**         | **Delete one file:**<br />`curl -X POST http://localhost/delete -d '{"filename": "filename.docx"}'`<br />**Delete all files:**<br />`curl -X POST http://localhost/delete`<br /> |
+
+
+### GET `/files`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Get information about all files                              |
+| **URL**            | /files                                                       |
+| **Method**         | GET                                                          |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `[{ "version": <file_version>, "id": <file_id>, "contentLength": <file_size_in_kilobytes>, "pureContentLength": <file_size_in_bytes>, "title": <file_name>, "updated": <last_change_date>}, ..., {...}]` |
+| **Sample**         | `curl -X GET http://localhost/files`                        |
+
 ## Important security info
 
 Please keep in mind the following security aspects when you are using test examples:

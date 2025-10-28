@@ -81,6 +81,45 @@ In case the example and Document Server are installed on different computers, ma
 
 Make sure that the Document Server in its turn has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
 
+## File API methods used in this example 
+
+The methods described below are available for .Net (C#) test example.
+
+### POST `/webeditor.ashx?type=upload`
+
+|                        |                                                              |
+| ---------------------- | ------------------------------------------------------------ |
+| **Summary**            | Upload file to test example via request                      |
+| **URL**                | /webeditor.ashx?type=upload                                                      |
+| **Method**             | POST                                                         |
+| **Request<br>Headers** | `Content-Type: multipart/form-data`                          |
+| **Request<br>Body**    | `uploadedFile=@<filepath>`<br> `filepath` - file for uploading<br />Multipart body with the file binary contents |
+| **Response**           | **Code:** 200 OK <br />**Content on success:**<br /> `{ "filename": <filename>}`<br />**Content on error:**<br /> `{ "error": "File type is not supported" }` <br /> Or <br /> `{ "error": "File size is incorrect" }` |
+| **Sample**             | `curl -X POST -F uploadedFile=@filename.docx http://localhost/webeditor.ashx?type=upload` |
+
+
+### GET `/webeditor.ashx?type=remove`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Delete one file or all files                                 |
+| **URL**            | /webeditor.ashx?type=remove                                                        |
+| **Method**         | GET                                                       |
+| ****URL Params**** | **Optional:**<br /> `filename=[string]` - file for deleting. <br /> *WARNING! Without this parameter, all files will be deleted* |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `{ "success": true }` |
+| **Sample**         | **Delete one file:**<br />`curl -X GET http://localhost/webeditor.ashx?type=remove&filename=filename.docx`<br />**Delete all files:**<br />`curl -X GET http://localhost/webeditor.ashx?type=remove`<br /> |
+
+
+### GET `/webeditor.ashx?type=files`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Get information about all files                              |
+| **URL**            | /webeditor.ashx?type=files                                                       |
+| **Method**         | GET                                                          |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `[{ "version": <file_version>, "id": <file_id>, "contentLength": <file_size_in_kilobytes>, "pureContentLength": <file_size_in_bytes>, "title": <file_name>, "updated": <last_change_date>}, ..., {...}]` |
+| **Sample**         | `curl -X GET http://localhost/webeditor.ashx?type=files`                        |
+
 ## Important security info
 
 Please keep in mind the following security aspects when you are using test examples:
