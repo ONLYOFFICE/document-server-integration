@@ -89,6 +89,17 @@
     }
   },
   "plugins": {
-    "pluginsData": []
+    "autostart": [
+      "asc.{0616AE85-5DBE-4B6B-A0A9-455C4F1503AD}"
+    ],
+    "options": {
+      "asc.{0616AE85-5DBE-4B6B-A0A9-455C4F1503AD}": {
+        "callback": "http://documentserver/data"
+      }
+    },
+    "pluginsData": [
+      "http://documentserver/assets/plugin-aiautofill/build/config.json"
+    ],
+    "url": "http://documentserver/assets/plugin-aiautofill/build"
   }
 }
