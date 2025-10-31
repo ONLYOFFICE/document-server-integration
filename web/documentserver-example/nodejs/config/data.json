@@ -1,0 +1,48 @@
+{
+  "seller": {
+    "name": "John Doe",
+    "email": "john.doe@example.com",
+    "phone": "1234567890",
+    "address": "123 Main St, Chicago, USA",
+    "city": "Chicago",
+    "state": "IL",
+    "zip": "60601",
+    "country": "USA"
+  },
+  "deal": {
+    "name": "Deal 1",
+    "number": "1234567890",
+    "date": "2021-01-01",
+    "status": "pending",
+    "amount": 1000,
+    "currency": "USD",
+    "description": "Deal 1 description"
+  },
+  "buyer": {
+    "name": "Jane Doe",
+    "email": "jane.doe@example.com",
+    "phone": "0987654321",
+    "address": "321 Main St, New York, USA",
+    "city": "New York",
+    "state": "NY",
+    "zip": "10001",
+    "country": "USA"
+  },
+  "organization": {
+    "name": "Acme Inc.",
+    "email": "acme@example.com",
+    "phone": "1234567890",
+    "address": "123 Main St, Chicago, USA",
+    "city": "Chicago",
+    "state": "IL",
+    "zip": "60601",
+    "country": "USA"
+  },
+  "products": [
+    {
+      "name": "Product 1",
+      "quantity": 1,
+      "price": 100
+    }
+  ]
+}

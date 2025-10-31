@@ -37,6 +37,7 @@ const wopiApp = require('./helpers/wopi/wopiRouting');
 const users = require('./helpers/users');
 
 const configServer = config.get('server');
+const data = require('./config/data.json');
 const siteUrl = configServer.get('siteUrl');
 const enableForgotten = configServer.get('enableForgotten');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : '';
@@ -47,7 +48,6 @@ const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizat
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
 const verifyPeerOff = configServer.get('verify_peer_off');
-const plugins = config.get('plugins');
 
 if (verifyPeerOff) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -230,54 +230,7 @@ app.get('/data', (req, res) => { // define a handler for getting sample ai form 
   }
 
   res.send({
-    data: {
-      "seller": {
-        "name": "John Doe",
-        "email": "john.doe@example.com",
-        "phone": "1234567890",
-        "address": "123 Main St, Chicago, USA",
-        "city": "Chicago",
-        "state": "IL",
-        "zip": "60601",
-        "country": "USA",
-      },
-      "deal": {
-        "name": "Deal 1",
-        "number": "1234567890",
-        "date": "2021-01-01",
-        "status": "pending",
-        "amount": 1000,
-        "currency": "USD",
-        "description": "Deal 1 description",
-      },
-      "buyer": {
-        "name": "Jane Doe",
-        "email": "jane.doe@example.com",
-        "phone": "0987654321",
-        "address": "321 Main St, New York, USA",
-        "city": "New York",
-        "state": "NY",
-        "zip": "10001",
-        "country": "USA",
-      },
-      "organization": {
-        "name": "Acme Inc.",
-        "email": "acme@example.com",
-        "phone": "1234567890",
-        "address": "123 Main St, Chicago, USA",
-        "city": "Chicago",
-        "state": "IL",
-        "zip": "60601",
-        "country": "USA",
-      },
-      "products": [
-        {
-          "name": "Product 1",
-          "quantity": 1,
-          "price": 100,
-        },
-      ],
-    },
+    data: data,
     code: crypto.randomBytes(16).toString("hex"),
   });
 });
@@ -1263,26 +1216,33 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       user.goback.url = `${req.DocManager.getServerUrl()}/`;
     }
 
-    // generate random code for plugin security dynamically
     let pluginsConfig;
     if (mode === 'edit') {
-      const updatedOptions = {};
-      if (plugins.options) {
-        for (const pluginGuid in plugins.options) {
-          updatedOptions[pluginGuid] = {
-            ...plugins.options[pluginGuid],
-            code: crypto.randomBytes(16).toString('hex'),
-          };
-        }
-      }
+      const baseUrl = configServer.has('exampleUrl') && configServer.get('exampleUrl')
+        ? configServer.get('exampleUrl')
+        : req.DocManager.getServerUrl();
+      
+      const pluginGuid = 'asc.{0616AE85-5DBE-4B6B-A0A9-455C4F1503AD}';
+      const pluginCode = crypto.randomBytes(16).toString('hex');
+      
       pluginsConfig = {
-        ...plugins,
-        options: updatedOptions,
+        autostart: [pluginGuid],
+        options: {
+          [pluginGuid]: {
+            code: pluginCode,
+            callback: `${baseUrl}/data`,
+          },
+        },
+        pluginsData: [
+          `${baseUrl}/assets/plugin-aiautofill/build/config.json`,
+        ],
+        url: `${baseUrl}/assets/plugin-aiautofill/build`,
       };
     } else {
       pluginsConfig = {
-        ...plugins,
         autostart: [],
+        options: {},
+        pluginsData: [],
       };
     }
 
