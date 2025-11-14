@@ -1,0 +1,13 @@
+---
+- - :approve
+  - Antlr
+  - :who:
+    :why: The BSD License
+    :versions: []
+    :when: 2025-11-07 11:55:50.254036200 Z
+- - :approve
+  - JWT
+  - :who:
+    :why: CC0-1.0
+    :versions: []
+    :when: 2025-11-07 11:57:08.328268900 Z
