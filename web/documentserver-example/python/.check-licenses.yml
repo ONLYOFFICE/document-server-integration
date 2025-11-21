@@ -1,0 +1,49 @@
+---
+- - :approve
+  - django-stubs
+  - :who:
+    :why: MIT
+    :versions: []
+    :when: 2025-11-07 10:06:50.553792100 Z
+- - :approve
+  - django-stubs-ext
+  - :who:
+    :why: MIT
+    :versions: []
+    :when: 2025-11-07 10:07:45.678886500 Z
+- - :approve
+  - idna
+  - :who:
+    :why: BSD-3-Clause
+    :versions: []
+    :when: 2025-11-07 10:08:31.344047300 Z
+- - :approve
+  - mypy-extensions
+  - :who:
+    :why: MIT
+    :versions: []
+    :when: 2025-11-07 10:09:26.564110500 Z
+- - :approve
+  - types-pyyaml
+  - :who:
+    :why: Apache-2.0
+    :versions: []
+    :when: 2025-11-07 10:10:57.504396600 Z
+- - :approve
+  - types-requests
+  - :who:
+    :why: Apache-2.0
+    :versions: []
+    :when: 2025-11-07 10:12:16.024338500 Z
+- - :approve
+  - typing-extensions
+  - :who:
+    :why: PSF-2.0
+    :versions: []
+    :when: 2025-11-07 10:13:27.961443200 Z
+- - :approve
+  - urllib3
+  - :who:
+    :why: MIT
+    :versions: []
+    :when: 2025-11-07 10:13:51.477550000 Z

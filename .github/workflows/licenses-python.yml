@@ -1,0 +1,55 @@
+name: Licenses Python
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, develop]
+    paths: ['web/documentserver-example/python/**']
+  pull_request:
+    branches: [master, develop]
+    paths: ['web/documentserver-example/python/**']
+
+jobs:
+  licences:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install PIP
+        run: |
+          python -m pip install --upgrade pip==20.3.4
+          pip install tomli
+        working-directory: ./web/documentserver-example/python
+      - name: Generate requirements.txt from pyproject.toml
+        run: |
+          python - <<'EOF'
+          import tomli
+          with open('pyproject.toml', 'rb') as f:
+              d = tomli.load(f)
+          deps = d.get('project', {}).get('dependencies', [])
+          dev = d.get('project', {}).get('optional-dependencies', {}).get('development', [])
+          with open('requirements.txt', 'w') as out:
+              out.write('\n'.join(deps + dev))
+          print('Generated requirements.txt:')
+          print('\n'.join(deps + dev))
+          EOF
+        working-directory: ./web/documentserver-example/python
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+        working-directory: ./web/documentserver-example/python
+      - name: Get Repository License
+        id: license
+        run: |
+          license="${{ (github.event.repository.license.spdx_id) || (github.event.repository.licenses[0]) }}"
+          echo "License detected: $license"
+          echo "license=$license" >> $GITHUB_OUTPUT
+      - name: Check Licenses
+        uses: ONLYOFFICE/check-licenses@v1
+        with:
+          project_license: ${{ steps.license.outputs.license }}
+          working_directory: ./web/documentserver-example/python

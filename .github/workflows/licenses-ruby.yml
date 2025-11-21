@@ -1,0 +1,34 @@
+name: Licenses Ruby
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, develop]
+    paths: ['web/documentserver-example/ruby/**']
+  pull_request:
+    branches: [master, develop]
+    paths: ['web/documentserver-example/ruby/**']
+
+jobs:
+  licences:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Install Bundler globally
+        run: sudo gem install bundler
+      - name: Bundle Install globally
+        run: |
+          sudo bundle install
+        working-directory: ./web/documentserver-example/ruby
+      - name: Get Repository License
+        id: license
+        run: |
+          license="${{ (github.event.repository.license.spdx_id) || (github.event.repository.licenses[0]) }}"
+          echo "License detected: $license"
+          echo "license=$license" >> $GITHUB_OUTPUT
+      - name: Check Licenses
+        uses: ONLYOFFICE/check-licenses@v1
+        with:
+          project_license: ${{ steps.license.outputs.license }}
+          working_directory: ./web/documentserver-example/ruby
