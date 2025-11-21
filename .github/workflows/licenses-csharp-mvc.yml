@@ -1,0 +1,35 @@
+name: Licenses Csharp MVC
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, develop]
+    paths: ['web/documentserver-example/csharp-mvc/**']
+  pull_request:
+    branches: [master, develop]
+    paths: ['web/documentserver-example/csharp-mvc/**']
+
+jobs:
+  licences:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup .NET SDK
+        uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: '9.0.x'
+      - name: Restore Packages
+        run: dotnet restore
+        working-directory: ./web/documentserver-example/csharp-mvc
+      - name: Get Repository License
+        id: license
+        run: |
+          license="${{ (github.event.repository.license.spdx_id) || (github.event.repository.licenses[0]) }}"
+          echo "License detected: $license"
+          echo "license=$license" >> $GITHUB_OUTPUT
+      - name: Check Licenses
+        uses: ONLYOFFICE/check-licenses@v1
+        with:
+          project_license: ${{ steps.license.outputs.license }}
+          working_directory: ./web/documentserver-example/csharp-mvc
