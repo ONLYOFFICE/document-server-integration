@@ -44,5 +44,61 @@
       "quantity": 1,
       "price": 100
     }
-  ]
+  ],
+  "person": {
+    "name": "John Doe",
+    "firstName": "John",
+    "lastName": "Doe",
+    "dateOfBirth": "01/01/1990",
+    "title": "Software Engineer",
+    "summary": "Experienced professional with expertise in software development and project management.",
+    "email": "john.doe@example.com",
+    "phone": "1234567890",
+    "address": "123 Main Street, Chicago, USA",
+    "skills": [
+      {
+        "name": "Programming",
+        "level": "Advanced"
+      },
+      {
+        "name": "Project Management",
+        "level": "Intermediate"
+      }
+    ],
+    "education": [
+      {
+        "school": "State University",
+        "degree": "Bachelor of Science",
+        "field": "Computer Science",
+        "years": "2008-2012"
+      },
+      {
+        "school": "Community College",
+        "degree": "Associate Degree",
+        "field": "General Studies",
+        "years": "2006-2008"
+      }
+    ],
+    "certifications": "Certified Professional\nProject Management Certificate\nSoftware Development Certification",
+    "workHistory": [
+      {
+        "employer": "Current Job Inc",
+        "position": "Senior Developer",
+        "period": "2018-Present",
+        "description": "Responsible for software development and team coordination."
+      },
+      {
+        "employer": "Second Job Inc",
+        "position": "Developer",
+        "period": "2014-2018",
+        "description": "Developed applications and maintained existing systems."
+      },
+      {
+        "employer": "First Job Inc",
+        "position": "Junior Developer",
+        "period": "2012-2014",
+        "description": "Assisted in software development projects."
+      }
+    ]
+  }
 }
