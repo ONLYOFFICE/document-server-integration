@@ -1,0 +1,47 @@
+name: Licenses PHP Laravel
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, develop]
+    paths: ['web/documentserver-example/php-laravel/**']
+  pull_request:
+    branches: [master, develop]
+    paths: ['web/documentserver-example/php-laravel/**']
+
+jobs:
+  licences:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        php: [8.2]
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: json, dom, curl, libxml, mbstring
+          coverage: none
+      - name: Install NodeJS
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+      - name: Install Dependensies - Composer
+        run: composer install
+        working-directory: ./web/documentserver-example/php-laravel
+      - name: Install Dependensies - NPM
+        run: npm install
+        working-directory: ./web/documentserver-example/php-laravel
+      - name: Get Repository License
+        id: license
+        run: |
+          license="${{ (github.event.repository.license.spdx_id) || (github.event.repository.licenses[0]) }}"
+          echo "License detected: $license"
+          echo "license=$license" >> $GITHUB_OUTPUT
+      - name: Check Licenses
+        uses: ONLYOFFICE/check-licenses@v1
+        with:
+          project_license: ${{ steps.license.outputs.license }}
+          working_directory: ./web/documentserver-example/php-laravel

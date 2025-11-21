@@ -1,0 +1,38 @@
+name: Licenses Nodejs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [master, develop]
+    paths: ['web/documentserver-example/nodejs/**']
+  pull_request:
+    branches: [master, develop]
+    paths: ['web/documentserver-example/nodejs/**']
+
+env:
+  NODE_VERSION: 16
+
+jobs:
+  licences:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+      - name: Install NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Dependencies
+        run: npm install
+        working-directory: ./web/documentserver-example/nodejs
+      - name: Get Repository License
+        id: license
+        run: |
+          license="${{ (github.event.repository.license.spdx_id) || (github.event.repository.licenses[0]) }}"
+          echo "License detected: $license"
+          echo "license=$license" >> $GITHUB_OUTPUT
+      - name: Check Licenses
+        uses: ONLYOFFICE/check-licenses@v1
+        with:
+          project_license: ${{ steps.license.outputs.license }}
+          working_directory: ./web/documentserver-example/nodejs
