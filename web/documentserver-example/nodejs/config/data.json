@@ -100,5 +100,42 @@
         "description": "Assisted in software development projects."
       }
     ]
+  },
+  "employee": {
+    "name": "Sarah Johnson",
+    "jobTitle": "Senior Product Manager",
+    "workMobile": "(555)123-4567",
+    "workPhone": "(555)987-6543",
+    "workEmail": "sarah.johnson@acmeinc.com",
+    "departmentName": "Product Development",
+    "jobPosition": "Senior Product Manager",
+    "workInformation": {
+      "location": {
+        "workAddress": {
+          "name": "Acme Inc. Headquarters",
+          "street": "456 Innovation Drive",
+          "city": "San Francisco",
+          "zip": "94105",
+          "country": "United States"
+        },
+        "workLocation": "Building A, Floor 3, Room 301"
+      },
+      "schedule": {
+        "workingHours": "9:00 AM - 5:00 PM",
+        "timezone": "Pacific Standard Time (PST)"
+      }
+    },
+    "privateInformation": {
+      "privateContact": {
+        "address": "789 Sunset Boulevard, Oakland, CA 94612, United States",
+        "email": "sarah.j.personal@gmail.com",
+        "phone": "(555)234-5678"
+      },
+      "education": {
+        "certificateLevel": "Master's Degree",
+        "fieldOfStudy": "Business Administration",
+        "school": "Stanford University"
+      }
+    }
   }
 }
