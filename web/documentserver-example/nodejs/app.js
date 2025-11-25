@@ -1146,8 +1146,9 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       type = 'desktop';
     }
 
-    const templatesImageUrl = req.DocManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
-    const createUrl = req.DocManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
+    const fileType = fileUtility.getFileType(fileName);
+    const templatesImageUrl = req.DocManager.getTemplateImageUrl(fileType);
+    const createUrl = req.DocManager.getCreateUrl(fileType, userid, type, lang);
     let templates = null;
     if (createUrl != null) {
       templates = [
@@ -1218,14 +1219,14 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     let pluginsConfig;
-    if (mode === 'edit') {
+    if (fileType === fileUtility.fileType.pdf) {
       const baseUrl = configServer.has('exampleUrl') && configServer.get('exampleUrl')
         ? configServer.get('exampleUrl')
         : req.DocManager.getServerUrl();
-      
+
       const pluginGuid = 'asc.{0616AE85-5DBE-4B6B-A0A9-455C4F1503AD}';
       const pluginCode = crypto.randomBytes(16).toString('hex');
-      
+
       pluginsConfig = {
         autostart: [...new Set([
           pluginGuid,
@@ -1261,7 +1262,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       },
       editor: {
         type,
-        documentType: fileUtility.getFileType(fileName),
+        documentType: fileType,
         key,
         token: '',
         callbackUrl: req.DocManager.getCallback(fileName),
