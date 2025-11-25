@@ -1131,8 +1131,9 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       type = 'desktop';
     }
 
-    const templatesImageUrl = req.DocManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
-    const createUrl = req.DocManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
+    const fileType = fileUtility.getFileType(fileName);
+    const templatesImageUrl = req.DocManager.getTemplateImageUrl(fileType);
+    const createUrl = req.DocManager.getCreateUrl(fileType, userid, type, lang);
     let templates = null;
     if (createUrl != null) {
       templates = [
@@ -1216,7 +1217,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       },
       editor: {
         type,
-        documentType: fileUtility.getFileType(fileName),
+        documentType: fileType,
         key,
         token: '',
         callbackUrl: req.DocManager.getCallback(fileName),
