@@ -1234,9 +1234,9 @@ app.get('/editor', (req, res) => { // define a handler for editing document
           },
         },
         pluginsData: [
-          `${baseUrl}/assets/plugin-aiautofill/build/config.json`,
+          `${baseUrl}/assets/plugin-aiautofill/config.json`,
         ],
-        url: `${baseUrl}/assets/plugin-aiautofill/build`,
+        url: `${baseUrl}/assets/plugin-aiautofill`,
       };
     } else {
       pluginsConfig = {
