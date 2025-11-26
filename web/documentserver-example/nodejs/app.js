@@ -48,6 +48,7 @@ const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizat
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
 const verifyPeerOff = configServer.get('verify_peer_off');
+const plugins = config.get('plugins');
 
 if (verifyPeerOff) {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
@@ -1226,23 +1227,33 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       const pluginCode = crypto.randomBytes(16).toString('hex');
       
       pluginsConfig = {
-        autostart: [pluginGuid],
+        autostart: [...new Set([
+          pluginGuid,
+          ...(plugins.autostart || []),
+        ])],
         options: {
           [pluginGuid]: {
             code: pluginCode,
             callback: `${baseUrl}/data`,
           },
+          ...(plugins.options || {}),
         },
-        pluginsData: [
+        pluginsData: [...new Set([
           `${baseUrl}/assets/plugin-aiautofill/config.json`,
-        ],
-        url: `${baseUrl}/assets/plugin-aiautofill`,
+          ...(plugins.pluginsData || []),
+        ])],
       };
     } else {
       pluginsConfig = {
-        autostart: [],
-        options: {},
-        pluginsData: [],
+        autostart: [
+          ...(plugins.autostart || []),
+        ],
+        options: {
+          ...(plugins.options || {}),
+        },
+        pluginsData: [
+          ...(plugins.pluginsData || []),
+        ],
       };
     }
 
