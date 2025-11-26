@@ -1244,17 +1244,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         ])],
       };
     } else {
-      pluginsConfig = {
-        autostart: [
-          ...(plugins.autostart || []),
-        ],
-        options: {
-          ...(plugins.options || {}),
-        },
-        pluginsData: [
-          ...(plugins.pluginsData || []),
-        ],
-      };
+      pluginsConfig = plugins;
     }
 
     // file config data
