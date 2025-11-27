@@ -287,6 +287,11 @@ const checkFileInfo = function checkFileInfo(wopi, req, res, userHost) {
     SupportsUpdate: true,
     SupportsRename: true,
   };
+
+  if (user.id === 'uid-0') {
+    fileInfo.CopyPasteRestrictions = 'BlockAll';
+  }
+
   res.status(200).send(fileInfo);
 };
 

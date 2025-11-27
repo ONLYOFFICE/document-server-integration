@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: wopi CopyPasteRestrictions for anonymous
 - update insertImage formats
 - new mobile index page view
 - update action icons
