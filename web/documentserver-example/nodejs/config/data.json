@@ -1,141 +1,304 @@
 {
-  "seller": {
-    "name": "John Doe",
-    "email": "john.doe@example.com",
-    "phone": "1234567890",
-    "address": "123 Main St, Chicago, USA",
-    "city": "Chicago",
-    "state": "IL",
-    "zip": "60601",
-    "country": "USA"
-  },
-  "deal": {
-    "name": "Deal 1",
-    "number": "1234567890",
-    "date": "2021-01-01",
-    "status": "pending",
-    "amount": 1000,
-    "currency": "USD",
-    "description": "Deal 1 description"
-  },
-  "buyer": {
-    "name": "Jane Doe",
-    "email": "jane.doe@example.com",
-    "phone": "0987654321",
-    "address": "321 Main St, New York, USA",
-    "city": "New York",
-    "state": "NY",
-    "zip": "10001",
-    "country": "USA"
-  },
-  "organization": {
-    "name": "Acme Inc.",
-    "email": "acme@example.com",
-    "phone": "1234567890",
-    "address": "123 Main St, Chicago, USA",
-    "city": "Chicago",
-    "state": "IL",
-    "zip": "60601",
-    "country": "USA"
-  },
-  "products": [
+  "sellers": [
     {
-      "name": "Product 1",
-      "quantity": 1,
-      "price": 100
+      "name": "John Anderson",
+      "email": "john.anderson@example.com",
+      "phone": "+1-234-567-8900",
+      "mobile": "+1-234-567-8901",
+      "address": "123 Main St",
+      "city": "Chicago",
+      "state": "IL",
+      "zip": "60601",
+      "country": "USA",
+      "company": "Tech Solutions LLC"
+    },
+    {
+      "name": "Maria Garcia",
+      "email": "maria.garcia@ventas.es",
+      "phone": "+34-912-345-678",
+      "mobile": "+34-600-123-456",
+      "address": "Calle Mayor 45",
+      "city": "Madrid",
+      "state": "Madrid",
+      "zip": "28013",
+      "country": "Spain",
+      "company": "Soluciones Digitales SA"
     }
   ],
-  "person": {
-    "name": "John Doe",
-    "firstName": "John",
-    "lastName": "Doe",
-    "dateOfBirth": "01/01/1990",
-    "title": "Software Engineer",
-    "summary": "Experienced professional with expertise in software development and project management.",
-    "email": "john.doe@example.com",
-    "phone": "1234567890",
-    "address": "123 Main Street, Chicago, USA",
-    "skills": [
-      {
-        "name": "Programming",
-        "level": "Advanced"
-      },
-      {
-        "name": "Project Management",
-        "level": "Intermediate"
-      }
-    ],
-    "education": [
-      {
-        "school": "State University",
-        "degree": "Bachelor of Science",
-        "field": "Computer Science",
-        "years": "2008-2012"
-      },
-      {
-        "school": "Community College",
-        "degree": "Associate Degree",
-        "field": "General Studies",
-        "years": "2006-2008"
-      }
-    ],
-    "certifications": "Certified Professional\nProject Management Certificate\nSoftware Development Certification",
-    "workHistory": [
-      {
-        "employer": "Current Job Inc",
-        "position": "Senior Developer",
-        "period": "2018-Present",
-        "description": "Responsible for software development and team coordination."
-      },
-      {
-        "employer": "Second Job Inc",
-        "position": "Developer",
-        "period": "2014-2018",
-        "description": "Developed applications and maintained existing systems."
-      },
-      {
-        "employer": "First Job Inc",
-        "position": "Junior Developer",
-        "period": "2012-2014",
-        "description": "Assisted in software development projects."
-      }
-    ]
-  },
-  "employee": {
-    "name": "Sarah Johnson",
-    "jobTitle": "Senior Product Manager",
-    "workMobile": "(555)123-4567",
-    "workPhone": "(555)987-6543",
-    "workEmail": "sarah.johnson@acmeinc.com",
-    "departmentName": "Product Development",
-    "jobPosition": "Senior Product Manager",
-    "workInformation": {
-      "location": {
-        "workAddress": {
-          "name": "Acme Inc. Headquarters",
-          "street": "456 Innovation Drive",
-          "city": "San Francisco",
-          "zip": "94105",
-          "country": "United States"
-        },
-        "workLocation": "Building A, Floor 3, Room 301"
-      },
-      "schedule": {
-        "workingHours": "9:00 AM - 5:00 PM",
-        "timezone": "Pacific Standard Time (PST)"
+  "deals": [
+    {
+      "name": "Enterprise Software License",
+      "number": "DL-2025-001",
+      "date": "2025-01-15",
+      "closeDate": "2025-03-30",
+      "status": "pending",
+      "amount": 125000,
+      "currency": "USD",
+      "description": "Annual enterprise software license with premium support package"
+    },
+    {
+      "name": "Cloud Infrastructure Migration",
+      "number": "DL-2025-002",
+      "date": "2025-02-10",
+      "closeDate": "2025-06-15",
+      "status": "in_progress",
+      "amount": 450000,
+      "currency": "EUR",
+      "description": "Complete cloud migration service with training and support"
+    }
+  ],
+  "buyers": [
+    {
+      "name": "Jane Mitchell",
+      "email": "jane.mitchell@techcorp.com",
+      "phone": "+1-987-654-3210",
+      "mobile": "+1-987-654-3211",
+      "address": "321 Park Avenue",
+      "city": "New York",
+      "state": "NY",
+      "zip": "10001",
+      "country": "USA",
+      "company": "TechCorp International",
+      "department": "IT"
+    },
+    {
+      "name": "Pierre Dubois",
+      "email": "p.dubois@innovatech.fr",
+      "phone": "+33-1-42-34-56-78",
+      "mobile": "+33-6-12-34-56-78",
+      "address": "15 Avenue des Champs-Élysées",
+      "city": "Paris",
+      "state": "Île-de-France",
+      "zip": "75008",
+      "country": "France",
+      "company": "InnovaTech France",
+      "department": "Procurement"
+    }
+  ],
+  "companies": [
+    {
+      "name": "Acme Corporation",
+      "email": "info@acmecorp.com",
+      "phone": "+1-312-555-0100",
+      "website": "https://www.acmecorp.com",
+      "address": "456 Business Plaza",
+      "city": "Chicago",
+      "state": "IL",
+      "zip": "60602",
+      "country": "USA",
+      "industry": "Technology"
+    },
+    {
+      "name": "Global Innovations Ltd",
+      "email": "contact@globalinnov.co.uk",
+      "phone": "+44-20-7123-4567",
+      "website": "https://www.globalinnov.co.uk",
+      "address": "88 Piccadilly Street",
+      "city": "London",
+      "state": "England",
+      "zip": "W1J 9HF",
+      "country": "United Kingdom",
+      "industry": "Consulting"
+    }
+  ],
+  "products": [
+    {
+      "name": "Premium Software Suite",
+      "sku": "SW-PREM-001",
+      "category": "Software",
+      "quantity": 100,
+      "price": 999.99,
+      "currency": "USD",
+      "description": "Comprehensive software package with all premium features"
+    },
+    {
+      "name": "Professional Laptop",
+      "sku": "HW-LAP-PRO-15",
+      "category": "Hardware",
+      "quantity": 50,
+      "price": 1499.99,
+      "currency": "USD",
+      "description": "15-inch professional laptop with high-performance specs"
+    },
+    {
+      "name": "Cloud Storage Plan - Business",
+      "sku": "CLD-STR-BIZ-1TB",
+      "category": "Services",
+      "quantity": 1,
+      "price": 29.99,
+      "currency": "USD",
+      "description": "1TB cloud storage with business features (monthly subscription)"
+    }
+  ],
+  "persons": [
+    {
+      "name": "John Anderson",
+      "firstName": "John",
+      "middleName": "Michael",
+      "lastName": "Anderson",
+      "dateOfBirth": "1990-01-15",
+      "gender": "Male",
+      "title": "Senior Software Engineer",
+      "email": "john.anderson@example.com",
+      "phone": "+1-234-567-8900",
+      "mobile": "+1-234-567-8901",
+      "address": "123 Main Street, Apt 4B",
+      "city": "Chicago",
+      "state": "IL",
+      "zip": "60601",
+      "country": "USA",
+      "website": "johnanderson.dev"
+    },
+    {
+      "name": "Yuki Tanaka",
+      "firstName": "Yuki",
+      "lastName": "Tanaka",
+      "dateOfBirth": "1988-07-22",
+      "gender": "Female",
+      "title": "UX/UI Designer",
+      "email": "yuki.tanaka@design.jp",
+      "phone": "+81-3-1234-5678",
+      "mobile": "+81-90-1234-5678",
+      "address": "1-2-3 Shibuya",
+      "city": "Tokyo",
+      "state": "Tokyo",
+      "zip": "150-0002",
+      "country": "Japan",
+      "website": "yukitanaka.design"
+    },
+    {
+      "name": "Sarah Johnson",
+      "firstName": "Sarah",
+      "lastName": "Johnson",
+      "employeeId": "ACM-2019-1234",
+      "personalEmail": "sarah.j.personal@gmail.com",
+      "department": "Product Development",
+      "jobPosition": "Senior Product Manager",
+      "hireDate": "2019-03-15",
+      "salary": 120000,
+      "salaryCurrency": "USD"
+    },
+    {
+      "name": "Carlos Rodriguez",
+      "firstName": "Carlos",
+      "lastName": "Rodriguez",
+      "employeeId": "ACM-2020-5678",
+      "personalEmail": "carlos.rod.personal@gmail.com",
+      "department": "Engineering",
+      "jobPosition": "DevOps Engineer",
+      "hireDate": "2020-07-20",
+      "salary": 105000,
+      "salaryCurrency": "USD"
+    }
+  ],
+  "invoices": [
+    {
+      "number": "INV-2025-0001",
+      "date": "2025-01-15",
+      "dueDate": "2025-02-15",
+      "status": "paid",
+      "subtotal": 10000,
+      "tax": 800,
+      "taxRate": 8,
+      "discount": 500,
+      "total": 10300,
+      "currency": "USD",
+      "notes": "Payment received on time. Thank you for your business!",
+      "items": [
+        {
+          "productId": "P001",
+          "description": "Premium Software Suite - 10 licenses",
+          "quantity": 10,
+          "unitPrice": 999.99,
+          "total": 9999.90
+        }
+      ]
+    },
+    {
+      "number": "INV-2025-0002",
+      "date": "2025-02-01",
+      "dueDate": "2025-03-01",
+      "status": "pending",
+      "subtotal": 75000,
+      "tax": 6000,
+      "taxRate": 8,
+      "discount": 0,
+      "total": 81000,
+      "currency": "USD",
+      "notes": "Payment terms: Net 30 days",
+      "items": [
+        {
+          "productId": "P002",
+          "description": "Professional Laptop - 50 units",
+          "quantity": 50,
+          "unitPrice": 1499.99,
+          "total": 74999.50
+        }
+      ]
+    }
+  ],
+  "customers": [
+    {
+      "type": "individual",
+      "firstName": "Emily",
+      "lastName": "Chen",
+      "email": "emily.chen@email.com",
+      "phone": "+1-555-111-2222",
+      "dateOfBirth": "1985-09-14",
+      "registrationDate": "2023-01-10",
+      "totalOrders": 15,
+      "totalSpent": 4500.75,
+      "address": {
+        "street": "567 Oak Street",
+        "city": "Seattle",
+        "state": "WA",
+        "zip": "98101",
+        "country": "USA"
       }
     },
-    "privateInformation": {
-      "privateContact": {
-        "address": "789 Sunset Boulevard, Oakland, CA 94612, United States",
-        "email": "sarah.j.personal@gmail.com",
-        "phone": "(555)234-5678"
-      },
-      "education": {
-        "certificateLevel": "Master's Degree",
-        "fieldOfStudy": "Business Administration",
-        "school": "Stanford University"
+    {
+      "type": "business",
+      "companyName": "TechStart Solutions",
+      "contactPerson": "Robert Kim",
+      "email": "robert.kim@techstart.com",
+      "phone": "+1-555-333-4444",
+      "registrationDate": "2022-06-20",
+      "totalOrders": 42,
+      "totalSpent": 125000.00,
+      "address": {
+        "street": "890 Enterprise Boulevard",
+        "city": "Austin",
+        "state": "TX",
+        "zip": "78701",
+        "country": "USA"
       }
     }
-  }
+  ],
+  "events": [
+    {
+      "name": "Annual Tech Conference 2025",
+      "type": "conference",
+      "startDate": "2025-06-15",
+      "endDate": "2025-06-17",
+      "startTime": "09:00",
+      "endTime": "18:00",
+      "timezone": "America/New_York",
+      "location": {
+        "name": "Convention Center",
+        "address": "100 Convention Plaza",
+        "city": "New York",
+        "state": "NY",
+        "zip": "10001",
+        "country": "USA"
+      },
+      "capacity": 5000,
+      "registered": 3500,
+      "status": "upcoming",
+      "organizer": "Tech Events Inc",
+      "description": "Join us for the biggest tech conference of the year featuring keynotes from industry leaders.",
+      "ticketPrice": 299.00,
+      "currency": "USD",
+      "website": "https://techconf2025.com"
+    }
+  ]
 }
