@@ -123,7 +123,7 @@
                                                     <input id="directUrl" type="checkbox" class="checkbox" />
                                                     Try opening on client
                                                     <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's
-                                                             browser without connecting to the document server." src="/images/info.svg" />
+                                                             browser without connecting to the document server. Open each file in only one way." src="/images/info.svg" />
                                                 </label>
                                             </td>
                                         </tr>
