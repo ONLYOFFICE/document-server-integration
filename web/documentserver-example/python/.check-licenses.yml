@@ -47,3 +47,10 @@
     :why: MIT
     :versions: []
     :when: 2025-11-07 10:13:51.477550000 Z
+- - :approve
+  - msgspec
+  - :who:
+    :why: BSD-3-Clause
+    :versions:
+    - 0.20.0
+    :when: 2025-11-07 10:13:51.477550000 Z
