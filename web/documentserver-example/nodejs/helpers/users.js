@@ -116,6 +116,7 @@ const descrUser0 = [
   'Has empty role',
   'Can\'t submit forms',
   'Tour of tips when opening a document',
+  'Without AI Auto Fill Plugin',
 ];
 
 const users = [
