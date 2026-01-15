@@ -20,7 +20,7 @@
         <meta name="server-version" content="<%= ConfigManager.getProperty("version") %>" />
         <!--
         *
-        * (c) Copyright Ascensio System SIA 2025
+        * (c) Copyright Ascensio System SIA 2026
         *
         * Licensed under the Apache License, Version 2.0 (the "License");
         * you may not use this file except in compliance with the License.
@@ -437,7 +437,7 @@
                                 <a href="mailto:sales@onlyoffice.com">Submit your request</a>
                             </td>
                             <td class="copy">
-                                &copy; Ascensio Systems SIA 2025. All rights reserved.
+                                &copy; Ascensio Systems SIA 2026. All rights reserved.
                             </td>
                         </tr>
                     </tbody>
