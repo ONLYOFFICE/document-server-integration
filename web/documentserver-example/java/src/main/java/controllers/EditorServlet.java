@@ -79,6 +79,7 @@ public class EditorServlet extends HttpServlet {
         // an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
         Map<String, Object>[] images = new HashMap[1];
+        images[0] = new HashMap<>();
         images[0].put("fileType", "svg");
         images[0].put("url", DocumentManager.getServerUrl(true) + "/css/img/logo.svg");
         if (isEnableDirectUrl) {
