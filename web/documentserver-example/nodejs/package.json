@@ -52,7 +52,7 @@
     "word-wrap": "1.2.4",
     "pac-resolver": "7.0.0",
     "degenerator": "3.0.1",
-    "qs": "6.7.3",
+    "qs": "6.14.1",
     "json5": "2.2.3"
   }
 }
