@@ -1219,7 +1219,9 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     let pluginsConfig;
-    if (fileType === fileUtility.fileType.pdf && userid !== 'uid-0') {
+    if (fileType === fileUtility.fileType.pdf // pdf form only
+      && userid !== 'uid-0' // users only
+      && mode !== 'comment') { // form field must be editable
       const baseUrl = configServer.has('exampleUrl') && configServer.get('exampleUrl')
         ? configServer.get('exampleUrl')
         : req.DocManager.getServerUrl();
