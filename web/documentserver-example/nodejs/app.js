@@ -17,7 +17,7 @@
  */
 
 // connect the necessary packages and modules
-const crypto = require("crypto");
+const crypto = require('crypto');
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -35,9 +35,9 @@ const documentService = require('./helpers/documentService');
 const fileUtility = require('./helpers/fileUtility');
 const wopiApp = require('./helpers/wopi/wopiRouting');
 const users = require('./helpers/users');
+const dataAutofill = require('./config/data.json');
 
 const configServer = config.get('server');
-const data = require('./config/data.json');
 const siteUrl = configServer.get('siteUrl');
 const enableForgotten = configServer.get('enableForgotten');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : '';
@@ -231,8 +231,8 @@ app.get('/data', (req, res) => { // define a handler for getting sample ai form 
   }
 
   res.send({
-    data: data,
-    code: crypto.randomBytes(16).toString("hex"),
+    data: dataAutofill,
+    code: crypto.randomBytes(16).toString('hex'),
   });
 });
 
