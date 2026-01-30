@@ -99,6 +99,7 @@ type ConvertRequestPayload struct {
 	Key        string `json:"key"`
 	Async      bool   `json:"async"`
 	JwtToken   string `json:"token,omitempty"`
+	Password   string `json:"password"`
 	jwt.RegisteredClaims
 }
 
