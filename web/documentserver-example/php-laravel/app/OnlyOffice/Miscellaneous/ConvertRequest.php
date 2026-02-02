@@ -36,6 +36,9 @@ class ConvertRequest
             false,
             $data['lang'],
             $data['filename'],
+            $data['codePage'] ?? null,
+            $data['delimiter'] ?? null,
+            $data['password'] ?? null,
         );
 
         if (property_exists($result, 'Error')) {

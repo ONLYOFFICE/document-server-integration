@@ -103,6 +103,7 @@ func (cm DefaultConversionManager) GetConverterUri(
 	docKey string,
 	isAsync bool,
 	title string,
+	filePass string,
 ) (string, string, error) {
 	if fromExt == "" {
 		fromExt = utils.GetFileExt(docUri, true)
@@ -115,6 +116,7 @@ func (cm DefaultConversionManager) GetConverterUri(
 		Title:      title,
 		Key:        docKey,
 		Async:      isAsync,
+		Password:   filePass,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * cm.config.JwtExpiresIn)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),

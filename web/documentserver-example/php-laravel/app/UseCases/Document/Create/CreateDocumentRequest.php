@@ -30,7 +30,7 @@ class CreateDocumentRequest
         public mixed $fileContent,
         public string $user,
     ) {
-        if ($fileSize && ($fileSize <= 0 || $fileSize > env('STORAGE_MAXIMUM_FILE_SIZE', 5 * 1024 * 1024))) {
+        if ($fileSize && ($fileSize <= 0 || $fileSize > env('DOCUMENT_STORAGE_MAXIMUM_FILE_SIZE', 5 * 1024 * 1024))) {
             throw new UnexpectedValueException("Incorrect file size: $fileSize");
         }
     }
