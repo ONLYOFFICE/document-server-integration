@@ -90,7 +90,7 @@ func (fm DefaultFormatManager) GetViewedExtensions() (viewed []string) {
 
 func (fm DefaultFormatManager) GetEditedExtensions() (edited []string) {
 	for _, f := range fm.formats {
-		if slices.Contains(f.Actions, "edit") {
+		if slices.Contains(f.Actions, "edit") || slices.Contains(f.Actions, "lossy-edit") {
 			edited = append(edited, f.Name)
 		}
 	}
