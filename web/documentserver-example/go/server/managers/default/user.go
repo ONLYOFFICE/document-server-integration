@@ -31,23 +31,6 @@ type DefaultUserManager struct {
 func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 	users := []models.User{
 		{
-			Id:                "uid-0",
-			Username:          "",
-			Email:             "",
-			Group:             "",
-			ReviewGroups:      nil,
-			CommentGroups:     nil,
-			UserInfoGroups:    nil,
-			Favorite:          -1,
-			DeniedPermissions: []string{"protect"},
-			Description:       descriptionUser0,
-			Templates:         false,
-			Avatar:            false,
-			Goback:            nil,
-			Close:             nil,
-			Roles:             []string{},
-		},
-		{
 			Id:                "uid-1",
 			Username:          "John Smith",
 			Email:             "smith@example.com",
@@ -115,6 +98,23 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 				"visible": true,
 			},
 			Roles: []string{"role"},
+		},
+		{
+			Id:                "uid-0",
+			Username:          "",
+			Email:             "",
+			Group:             "",
+			ReviewGroups:      nil,
+			CommentGroups:     nil,
+			UserInfoGroups:    nil,
+			Favorite:          -1,
+			DeniedPermissions: []string{"protect"},
+			Description:       descriptionUser0,
+			Templates:         false,
+			Avatar:            false,
+			Goback:            nil,
+			Close:             nil,
+			Roles:             []string{},
 		},
 	}
 	return &DefaultUserManager{
@@ -197,7 +197,7 @@ func (um DefaultUserManager) GetUserById(uid string) (models.User, error) {
 		}
 	}
 
-	return um.users[0], nil
+	return um.GetUserById("uid-0")
 }
 
 func (um DefaultUserManager) GetUserInfoById(uid string, serverAddress string) models.UserInfo {
