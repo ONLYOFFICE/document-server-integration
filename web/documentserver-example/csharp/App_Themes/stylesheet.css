@@ -849,6 +849,7 @@ footer a:hover {
     position: absolute;
     right: 0;
     top: 71px;
+    height: calc(100% - 130px);
     scrollbar-color: #D0D5DA transparent;
     scrollbar-width: thin;
 }
