@@ -1231,7 +1231,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
       pluginsConfig = {
         autostart: [...new Set([
-          pluginGuid,
+          (mode === 'fillForms' ? pluginGuid : []),
           ...(plugins.autostart || []),
         ])],
         options: {
