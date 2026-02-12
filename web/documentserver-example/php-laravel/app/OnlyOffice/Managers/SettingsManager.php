@@ -74,7 +74,7 @@ class SettingsManager extends OnlyOfficeSettingsManager
                 ],
             ],
             'file' => [
-                'max_size' => env('DOCUMENT_STORAGE_MAXIMUM_FILE_SIZE', 5 * 1024 * 1024),
+                'max_size' => env('DOCUMENT_STORAGE_MAXIMUM_FILE_SIZE', 100 * 1024 * 1024),
             ],
         ];
     }
