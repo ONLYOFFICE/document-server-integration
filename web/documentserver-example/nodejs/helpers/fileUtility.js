@@ -16,6 +16,7 @@
  *
  */
 
+const pathModule = require('path');
 const supportedFormats = require('../public/assets/document-formats/onlyoffice-docs-formats.json'); // eslint-disable-line
 
 const fileUtility = {};
@@ -39,8 +40,7 @@ fileUtility.getFileNameFromUrl = function getFileNameFromUrl(url, withoutExtensi
 fileUtility.getFileName = function getFileName(path, withoutExtension) {
   if (!path) return '';
 
-  const parts = path.split('/');
-  const fileName = parts.pop(); // get the file name from the last part of the path
+  const fileName = pathModule.basename(path); // get the file name from the last part of the path
 
   // get file name without extension
   if (withoutExtension) {

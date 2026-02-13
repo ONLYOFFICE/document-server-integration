@@ -143,6 +143,7 @@
 
     .scroll-table-body {
         top: 31px;
+        height: calc(100% - 34px);
     }
 
     footer {
@@ -748,6 +749,7 @@
 
     .scroll-table-body {
         top: 36px;
+        height: calc(100% - 34px);
     }
 
     .scroll-table-body tr:first-child {

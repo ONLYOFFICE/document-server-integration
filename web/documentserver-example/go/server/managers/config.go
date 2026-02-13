@@ -74,7 +74,10 @@ type JwtManager interface {
 
 type ConversionManager interface {
 	GetInternalExtension(fileType string) string
-	GetConverterUri(docUri, fromExt, toExt, docKey string, isAsync bool, title string) (string, string, error)
+	GetConverterUri(
+		docUri, fromExt, toExt, docKey string,
+		isAsync bool, title string, filePass string,
+	) (string, string, error)
 }
 
 type CommandManager interface {

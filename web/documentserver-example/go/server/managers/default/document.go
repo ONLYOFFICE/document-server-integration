@@ -78,7 +78,7 @@ func (dm DefaultDocumentManager) sanitizeEditorParameters(parameters *managers.E
 	}
 
 	actions := dm.FormatManager.GetActions(utils.GetFileExt(parameters.Filename, true))
-	parameters.CanEdit = slices.Contains(actions, "edit")
+	parameters.CanEdit = slices.Contains(actions, "edit") || slices.Contains(actions, "lossy-edit")
 
 	if parameters.CanEdit && parameters.PermissionsMode != "view" {
 		parameters.Mode = "edit"

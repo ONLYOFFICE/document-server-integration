@@ -68,7 +68,7 @@ public class ExampleData {
                 "Can view chat",
                 "Has an avatar",
                 "Can submit forms",
-                "Has no roles",
+                "Has role 'Anyone'",
                 "Can start filling"
         );
 
@@ -85,7 +85,7 @@ public class ExampleData {
                 "Can view chat",
                 "Has an avatar",
                 "Can't submit forms",
-                "Has role 'Anyone'",
+                "Has role 'role'",
                 "Can start filling"
         );
 
@@ -105,7 +105,7 @@ public class ExampleData {
                 "Can't close history",
                 "Can't restore the file version",
                 "Can't submit forms",
-                "Has role 'role'",
+                "Has no roles",
                 "Can start filling"
         );
 
@@ -114,19 +114,19 @@ public class ExampleData {
                 "", List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), List.of(FilterState.NULL.toString()),
                 List.of(FilterState.NULL.toString()), false, true, true, true,
-                new Goback(null, false), new Close(null, false), null, true);
+                new Goback(null, false), new Close(null, false), List.of("Anyone"), true);
 
         // create user 2 with the specified parameters
         userService.createUser("Mark Pottato", "pottato@example.com", descriptionUserSecond,
                 "group-2", List.of("", "group-2"), List.of(FilterState.NULL.toString()),
                 List.of("group-2", ""), List.of("group-2"), List.of("group-2", ""), true, true,
-                true, true, new Goback("Go to Documents", null), new Close(null, true), List.of("Anyone"), false);
+                true, true, new Goback("Go to Documents", null), new Close(null, true), List.of("role"), false);
 
         // create user 3 with the specified parameters
         userService.createUser("Hamish Mitchell", null, descriptionUserThird,
                 "group-3", List.of("group-2"), List.of("group-2", "group-3"), List.of("group-2"),
                 new ArrayList<>(), List.of("group-2"), null, true, true, false,
-                null, new Close(null, true), List.of("role"), false);
+                null, new Close(null, true), null, false);
 
         // create user 0 with the specified parameters
         userService.createUser("Anonymous", null, descriptionUserZero, "",

@@ -116,7 +116,7 @@ class ConfigurationManager:
         size = environ.get('MAXIMUM_FILE_SIZE')
         if size:
             return int(size)
-        return 5 * 1024 * 1024
+        return 100 * 1024 * 1024
 
     def conversion_timeout(self) -> int:
         timeout = environ.get('CONVERSION_TIMEOUT')
