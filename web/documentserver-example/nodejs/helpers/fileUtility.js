@@ -16,8 +16,8 @@
  *
  */
 
-const supportedFormats = require('../public/assets/document-formats/onlyoffice-docs-formats.json'); // eslint-disable-line
 const pathModule = require('path');
+const supportedFormats = require('../public/assets/document-formats/onlyoffice-docs-formats.json'); // eslint-disable-line
 
 const fileUtility = {};
 
