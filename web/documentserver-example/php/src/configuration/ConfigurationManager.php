@@ -152,7 +152,7 @@ class ConfigurationManager
     {
         $size = getenv('MAXIMUM_FILE_SIZE');
         if (!$size) {
-            return 5 * 1024 * 1024;
+            return 100 * 1024 * 1024;
         }
         return intval($size);
     }
