@@ -130,7 +130,7 @@ if (typeof jQuery !== "undefined") {
                     var responseText = data.responseText;
                     var response = jq.parseJSON(responseText);
                     if (response.error) {
-                        if (response.error.includes("Incorrect password")) {
+                        if (response.error.includes("-5")) {
                             jq(".current").removeClass("current");
                             jq("#step2").addClass("error");
                             jq("#blockPassword").show();

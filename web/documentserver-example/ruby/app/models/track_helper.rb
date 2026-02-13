@@ -84,6 +84,13 @@ class TrackHelper
       copied['changesurl'] = resolved_uri.to_s
     end
 
+    formsdataurl = copied['formsdataurl']
+    if formsdataurl
+      uri = URI(formsdataurl)
+      resolved_uri = TrackHelper.proxy_manager.resolve_uri(uri)
+      copied['formsdataurl'] = resolved_uri.to_s
+    end
+
     home = copied['home']
     copied['home'] = resolve_process_save_body(home) if home
 
@@ -180,7 +187,9 @@ class TrackHelper
   end
 
   # file force saving process
-  def self.process_force_save(file_data, file_name, user_address)
+  def self.process_force_save(raw_file_data, file_name, user_address)
+    file_data = resolve_process_save_body(raw_file_data)
+
     download_uri = file_data['url']
     if download_uri.eql?(nil)
       saved = 1
@@ -222,7 +231,7 @@ class TrackHelper
 
     begin
       # check if the forcesave type is equal to 3 (the form was submitted)
-      is_submit_form = Integer(file_data['forcesavetype'], 10) == 3
+      is_submit_form = file_data['forcesavetype'].to_s == '3'
 
       if is_submit_form
         file_name = if new_file_name
