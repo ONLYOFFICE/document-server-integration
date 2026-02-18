@@ -283,7 +283,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     if (err) { // if an error occurs
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.write(`{ "error": "${err.message}"}`);
+      res.write(`{ "error": "${err.message}" }`);
       res.end();
       return;
     }
@@ -292,7 +292,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
 
     if (file === undefined) { // if file parameter is undefined
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.write('{ "error": "Uploaded file not found"}');
+      res.write('{ "error": "Uploaded file not found" }');
       res.end();
       return;
     }
@@ -303,7 +303,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     if (fileSizeLimit < file.size || file.size <= 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.write('{ "error": "File size is incorrect"}');
+      res.write('{ "error": "File size is incorrect" }');
       res.end();
       return;
     }
@@ -315,7 +315,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     if (exts.indexOf(curExt) === -1 || fileUtility.getFormatActions(curExt).length === 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.write('{ "error": "File type is not supported"}');
+      res.write('{ "error": "File type is not supported" }');
       res.end();
       return;
     }
@@ -324,7 +324,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'application/json' });
       if (error) { // if an error occurs
-        res.write(`{ "error": "${error}"}`); // write an error message to the response
+        res.write(`{ "error": "${error}" }`); // write an error message to the response
       } else {
         // otherwise, write a new file name to the response
         res.write(`{ "filename": "${file.originalFilename}", "documentType": "${documentType}" }`);
@@ -557,7 +557,7 @@ app.delete('/file', (req, res) => { // define a handler for removing file
     }
 
     res.writeHead(200, { 'Content-Type': 'application/json' });
-    res.write('{"success":true}');
+    res.write('{ "success":true }');
   } catch (ex) {
     console.log(ex);
     res.writeHead(200, { 'Content-Type': 'text/plain' });
@@ -729,7 +729,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
           console.log(`callbackProcessSave error: name = ${fileName} userAddress = ${userAddress} is not exist`);
           response.setHeader('Content-Type', 'application/json');
-          response.write('{"error":1, "message":"file is not exist"}');
+          response.write('{ "error": 1, "message": "file is not exist" }');
           response.end();
           return;
         }
@@ -791,13 +791,13 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       } catch (ex) {
         console.log(ex);
         response.setHeader('Content-Type', 'application/json');
-        response.write(`{"error":1,"message":${JSON.stringify(ex)}}`);
+        response.write(`{ "error": 1, "message":${JSON.stringify(ex)} }`);
         response.end();
         return;
       }
 
       response.setHeader('Content-Type', 'application/json');
-      response.write('{"error":0}');
+      response.write('{ "error": 0 }');
       response.end();
     };
 
@@ -805,7 +805,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     const processSave = async function processSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
         response.setHeader('Content-Type', 'application/json');
-        response.write('{"error":1,"message":"save uri is empty"}');
+        response.write('{ "error": 1, "message": "save uri is empty" }');
         response.end();
         return;
       }
@@ -917,13 +917,13 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         }
       } catch (ex) {
         console.log(ex);
-        response.write(`{"error":1,"message":${JSON.stringify(ex)}}`);
+        response.write(`{ "error":1, "message":${JSON.stringify(ex)} }`);
         response.end();
         return;
       }
 
       response.setHeader('Content-Type', 'application/json');
-      response.write('{"error":0}');
+      response.write('{ "error": 0 }');
       response.end();
     };
 
@@ -931,7 +931,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     const processForceSave = async function processForceSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
         response.setHeader('Content-Type', 'application/json');
-        response.write('{"error":1,"message":"forcesave uri is empty"}');
+        response.write('{ "error":1, "message": "forcesave uri is empty" }');
         response.end();
         return;
       }
@@ -985,7 +985,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     }
 
     response.setHeader('Content-Type', 'application/json');
-    response.write('{"error":0}');
+    response.write('{ "error":0 }');
     response.end();
   };
 
@@ -1025,7 +1025,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     }
     if (!body) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
-      res.write('{"error":1,"message":"body is empty"}');
+      res.write('{ "error": 1, "message": "body is empty" }');
       res.end();
       return;
     }
