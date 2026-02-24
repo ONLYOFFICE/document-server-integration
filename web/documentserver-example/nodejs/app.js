@@ -1226,7 +1226,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         ? configServer.get('exampleUrl')
         : req.DocManager.getServerUrl();
 
-      const pluginGuid = 'asc.{0616AE85-5DBE-4B6B-A0A9-455C4F1503AD}';
+      const pluginGuid = 'asc.{6A95DA5C-857E-4C26-B00B-34876F1EEAD8}';
       const pluginCode = crypto.randomBytes(16).toString('hex');
 
       pluginsConfig = {
