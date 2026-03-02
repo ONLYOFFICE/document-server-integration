@@ -38,7 +38,6 @@ const users = require('./helpers/users');
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl');
 const enableForgotten = configServer.get('enableForgotten');
-const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : '';
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
 const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
@@ -1246,7 +1245,6 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         reviewGroups: JSON.stringify(reviewGroups),
         commentGroups: JSON.stringify(commentGroups),
         userInfoGroups: JSON.stringify(userInfoGroups),
-        fileChoiceUrl,
         submitForm,
         plugins: JSON.stringify(plugins),
         actionData,

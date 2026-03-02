@@ -58,7 +58,6 @@ type EditorConfig struct {
 	Mode          string                 `json:"mode,omitempty"`
 	ActionLink    string                 `json:"actionLink,omitempty"`
 	CreateUrl     string                 `json:"createUrl,omitempty"`
-	FileChoiceUrl string                 `json:"fileChoiceUrl,omitempty"`
 	CoEditing     map[string]interface{} `json:"coEditing,omitempty"`
 	Plugins       map[string]interface{} `json:"plugins,omitempty"`
 	Templates     []Template             `json:"templates,omitempty"`
