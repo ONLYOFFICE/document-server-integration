@@ -398,7 +398,9 @@ if (typeof jQuery != "undefined") {
                         jq("#downloadConverted").removeClass("disable");
                         jq("#hiddenFileName").attr("data",response.filename);
                         if (response.error !== "FileTypeIsNotSupported") {
-                            jq("#beginEditConverted").removeClass("disable");
+                            if (formatManager.isEditable(fileExt)) {
+                                jq("#beginEditConverted").removeClass("disable");
+                            }
                             jq("#beginViewConverted").removeClass("disable");
                             jq("#downloadConverted").attr("data","fromStorage");
                         } else {

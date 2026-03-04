@@ -757,8 +757,8 @@ function getConvertedData(
     $documentRevisionID,
     $async,
     &$convertedDocumentURL,
-    $filePass,
-    $lang,
+    $filePass = null,
+    $lang = null,
     $fileName = null
 ) {
     $convertedDocumentURL = "";

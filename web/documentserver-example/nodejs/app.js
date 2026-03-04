@@ -17,6 +17,7 @@
  */
 
 // connect the necessary packages and modules
+const crypto = require('crypto');
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -34,6 +35,7 @@ const documentService = require('./helpers/documentService');
 const fileUtility = require('./helpers/fileUtility');
 const wopiApp = require('./helpers/wopi/wopiRouting');
 const users = require('./helpers/users');
+const dataAutofill = require('./config/data.json');
 
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl');
@@ -218,6 +220,18 @@ app.get('/download', (req, res) => { // define a handler for downloading files
 
   const filestream = fileSystem.createReadStream(filePath);
   filestream.pipe(res); // send file information to the response by streams
+});
+
+app.get('/data', (req, res) => { // define a handler for getting sample ai form data
+  if (!req.query.code) { // integration must validate incoming codes and generate new ones for each data request
+    res.sendStatus(403);
+    return;
+  }
+
+  res.send({
+    data: dataAutofill,
+    code: crypto.randomBytes(16).toString('hex'),
+  });
 });
 
 app.get('/history', (req, res) => {
@@ -1202,6 +1216,38 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       user.goback.url = `${req.DocManager.getServerUrl()}/`;
     }
 
+    let pluginsConfig;
+    if (fileType === fileUtility.fileType.pdf // pdf form only
+      && userid !== 'uid-0' // users only
+      && mode !== 'comment') { // form field must be editable
+      const baseUrl = configServer.has('exampleUrl') && configServer.get('exampleUrl')
+        ? configServer.get('exampleUrl')
+        : req.DocManager.getServerUrl();
+
+      const pluginGuid = 'asc.{6A95DA5C-857E-4C26-B00B-34876F1EEAD8}';
+      const pluginCode = crypto.randomBytes(16).toString('hex');
+
+      pluginsConfig = {
+        autostart: [...new Set([
+          (mode === 'fillForms' ? pluginGuid : []),
+          ...(plugins.autostart || []),
+        ])],
+        options: {
+          [pluginGuid]: {
+            code: pluginCode,
+            callback: `${baseUrl}/data`,
+          },
+          ...(plugins.options || {}),
+        },
+        pluginsData: [...new Set([
+          `${baseUrl}/assets/plugin-aiautofill/config.json`,
+          ...(plugins.pluginsData || []),
+        ])],
+      };
+    } else {
+      pluginsConfig = plugins;
+    }
+
     // file config data
     const argss = {
       apiUrl: siteUrl + configServer.get('apiUrl'),
@@ -1246,7 +1292,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         commentGroups: JSON.stringify(commentGroups),
         userInfoGroups: JSON.stringify(userInfoGroups),
         submitForm,
-        plugins: JSON.stringify(plugins),
+        plugins: JSON.stringify(pluginsConfig),
         actionData,
         fileKey: userid !== 'uid-0'
           ? JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }) : null,
