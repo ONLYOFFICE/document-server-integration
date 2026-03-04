@@ -8,7 +8,6 @@
 [submodule "web/documentserver-example/nodejs/public/assets/plugin-aiautofill"]
 	path = web/documentserver-example/nodejs/public/assets/plugin-aiautofill
 	url = https://github.com/ONLYOFFICE/plugin-aiautofill.git
-	branch = develop
 [submodule "web/documentserver-example/csharp-mvc/assets/document-templates"]
 	path = web/documentserver-example/csharp-mvc/assets/document-templates
 	url = https://github.com/ONLYOFFICE/document-templates
