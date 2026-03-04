@@ -1,6 +1,7 @@
 # Change Log
 
 ## 1.15.0
+- nodejs: added AI Auto Fill Plugin
 - php-laravel: fix custom jwt header
 - formats for ds v9.3
 - user role
