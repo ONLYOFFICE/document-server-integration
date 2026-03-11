@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,9 +110,13 @@ public class FileModel {
         // write user information to the config (id, name and group)
         editorConfig.getUser().setId(!user.getId().equals("uid-0") ? user.getId() : null);
         editorConfig.getUser().setName(user.getName());
+        editorConfig.getUser().setRoles(user.getRoles());
         editorConfig.getUser().setGroup(user.getGroup());
         editorConfig.getUser().setImage(user.getAvatar() ? DocumentManager.getServerUrl(false)
         + "/css/img/" + user.getId() + ".png" : null);
+
+        editorConfig.getCustomization().getFeatures()
+            .setFeaturesTips(user.getId().equals("uid-0"));
 
         if (user.getGoback() != null) {
             // write the absolute URL to the file location
@@ -301,7 +305,7 @@ public class FileModel {
         public Permissions(final String modeParam, final String typeParam, final Boolean canEdit, final User user) {
             comment = !modeParam.equals("view") && !modeParam.equals("fillForms") && !modeParam.equals("embedded")
                     && !modeParam.equals("blockcontent");
-            copy = !user.getDeniedPermissions().contains("сopy");
+            copy = !user.getDeniedPermissions().contains("copy");
             download = !user.getDeniedPermissions().contains("download");
             edit = canEdit && (modeParam.equals("edit") || modeParam.equals("view") || modeParam.equals("filter")
                     || modeParam.equals("blockcontent"));
@@ -537,6 +541,7 @@ public class FileModel {
         public class User {
             private String id;
             private String name;
+            private List<String> roles;
             private String group;
             private String image;
 
@@ -567,10 +572,15 @@ public class FileModel {
             public void setImage(final String imageParam) {
                 this.image = imageParam;
             }
+
+            public void setRoles(final List<String> rolesParam) {
+                this.roles = rolesParam;
+            }
         }
 
         // customization parameters
         public class Customization {
+            private Features features;
             private Goback goback;
             private Close close;
             private Boolean forcesave;
@@ -592,8 +602,13 @@ public class FileModel {
                 comments = true;
                 feedback = true;
                 forcesave = false;
+                features = new Features();
                 goback = new Goback();
                 close = new Close();
+            }
+
+            public Features getFeatures() {
+                return features;
             }
 
             public Goback getGoback() {
@@ -622,6 +637,18 @@ public class FileModel {
 
             public Boolean getFeedback() {
                 return feedback;
+            }
+
+            public class Features {
+                private Boolean featuresTips;
+
+                public Boolean getFeaturesTips() {
+                    return featuresTips;
+                }
+
+                public void setFeaturesTips(final Boolean featuresTipsParam) {
+                    this.featuresTips = featuresTipsParam;
+                }
             }
 
             public class Goback {

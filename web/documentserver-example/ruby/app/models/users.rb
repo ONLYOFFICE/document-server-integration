@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 #
-# (c) Copyright Ascensio System SIA 2025
+# (c) Copyright Ascensio System SIA 2026
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ class User
   attr_accessor :avatar
   attr_accessor :goback
   attr_accessor :close
+  attr_accessor :roles
 
   def initialize(
     id,
@@ -47,7 +48,8 @@ class User
     templates,
     avatar,
     goback,
-    close
+    close,
+    roles
   )
     @id = id
     @name = name
@@ -63,6 +65,7 @@ class User
     @avatar = avatar
     @goback = goback
     @close = close
+    @roles = roles
   end
 end
 
@@ -70,14 +73,16 @@ end
 class Users
   @descr_user_first = [
     'File author by default',
-    'Doesn’t belong to any group',
+    'Doesn\'t belong to any group',
     'Can review all the changes',
     'Can perform all actions with comments',
-    'The file favorite state is undefined',
-    'Can create files from templates using data from the editor',
     'Can see the information about all users',
+    'This file isn\'t marked as favorite',
+    'Can create files from templates using data from the editor',
     'Has an avatar',
-    'Can submit forms'
+    'Can submit forms',
+    'Has no roles',
+    'Can start filling'
   ]
 
   @descr_user_second = [
@@ -85,43 +90,50 @@ class Users
     'Can review only his own changes or changes made by users with no group',
     'Can view comments, edit his own comments, and comments left by users with no group. ' \
     'Can remove his own comments only',
+    'Can see the information about users from Group2 and users who don\'t belong to any group',
     'This file is marked as favorite',
     'Can create new files from the editor',
-    'Can see the information about users from Group2 and users who don’t belong to any group',
     'Has an avatar',
-    'Can’t submit forms'
+    'Can\'t submit forms',
+    'Has role "Anyone"',
+    'Can start filling'
   ]
 
   @descr_user_third = [
     'Belongs to Group3',
     'Can review changes made by Group2 users',
     'Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users',
-    'This file isn’t marked as favorite',
-    'Can’t copy data from the file to clipboard',
-    'Can’t download the file',
-    'Can’t print the file',
-    'Can create new files from the editor',
     'Can see the information about Group2 users',
-    'Can’t submit forms',
-    'Can’t close history',
-    'Can’t restore the file version'
+    'The file favorite state is undefined',
+    'Can\'t copy data from the file to clipboard',
+    'Can\'t download the file',
+    'Can\'t print the file',
+    'Can create new files from the editor',
+    'Can\'t close history',
+    'Can\'t restore the file version',
+    'Can\'t submit forms',
+    'Has role "role"',
+    'Can start filling'
   ]
 
   @descr_user_null = [
     'The name is requested when the editor is opened',
-    'Doesn’t belong to any group',
+    'Doesn\'t belong to any group',
     'Can review all the changes',
     'Can perform all actions with comments',
+    'Can\'t see anyone\'s information',
     'The file favorite state is undefined',
     "Can't mention others in comments",
     "Can't create new files from the editor",
-    'Can’t see anyone’s information',
     "Can't rename files from the editor",
     "Can't view chat",
     "Can't protect file",
     'View file without collaboration',
-    'Can’t submit forms',
-    'Can’t refresh outdated file'
+    'Can\'t refresh outdated file',
+    'Can\'t submit forms',
+    'Tour of tips when opening a document',
+    'Has empty role',
+    'Can\'t start filling'
   ]
 
   @users = [
@@ -133,13 +145,14 @@ class Users
       nil,
       {},
       nil,
-      nil,
+      false,
       [],
       @descr_user_first,
       true,
       true,
       { blank: false },
-      { visible: false }
+      { visible: false },
+      nil
     ),
     User.new(
       'uid-2',
@@ -159,7 +172,8 @@ class Users
       false,
       true,
       { text: 'Go to Documents' },
-      {}
+      {},
+      ['Anyone']
     ),
     User.new(
       'uid-3',
@@ -173,13 +187,14 @@ class Users
         remove: []
       },
       ['group-2'],
-      false,
+      nil,
       ['copy', 'download', 'print'],
       @descr_user_third,
       false,
       false,
       nil,
-      {}
+      {},
+      ['role']
     ),
     User.new(
       'uid-0',
@@ -195,7 +210,8 @@ class Users
       false,
       false,
       nil,
-      nil
+      nil,
+      []
     )
   ]
 

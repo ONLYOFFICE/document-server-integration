@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,9 @@ class ConvertRequest
             false,
             $data['lang'],
             $data['filename'],
+            $data['codePage'] ?? null,
+            $data['delimiter'] ?? null,
+            $data['password'] ?? null,
         );
 
         if (property_exists($result, 'Error')) {

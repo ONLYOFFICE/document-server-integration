@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,7 @@
  */
 package models
 
-import "github.com/golang-jwt/jwt"
+import "github.com/golang-jwt/jwt/v5"
 
 type Command int
 
@@ -38,9 +38,9 @@ func (c Command) Ordinal() int {
 }
 
 type CommandBody struct {
-	Command            string `json:"c"`
-	Token              string `json:"token,omitempty"`
-	jwt.StandardClaims `json:"-"`
+	Command              string `json:"c"`
+	Token                string `json:"token,omitempty"`
+	jwt.RegisteredClaims `json:"-"`
 }
 
 type CommandResponse struct {

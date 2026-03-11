@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2025
+# (c) Copyright Ascensio System SIA 2026
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -81,6 +81,16 @@ class FormatManager():
             ),
             formats
         )
+        return list(filtered)
+
+    def diagram_extensions(self) -> list[str]:
+        formats = self.diagrams()
+        mapped = map(lambda format: format.extension(), formats)
+        return list(mapped)
+
+    def diagrams(self) -> list[Format]:
+        formats = self.all()
+        filtered = filter(lambda format: format.type == 'diagram', formats)
         return list(filtered)
 
     def pdf_extensions(self) -> list[str]:

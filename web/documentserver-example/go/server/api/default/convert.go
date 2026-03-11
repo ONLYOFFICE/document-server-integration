@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,7 +79,9 @@ func (srv *DefaultServerEndpointsHandler) Convert(w http.ResponseWriter, r *http
 			return
 		}
 
-		newUrl, newExt, err := srv.ConversionManager.GetConverterUri(fileUrl, fileExt, toExt, key, true, filename)
+		newUrl, newExt, err := srv.ConversionManager.GetConverterUri(
+			fileUrl, fileExt, toExt, key, true, filename, payload.Filepass,
+		)
 		if err != nil {
 			response.Error = err.Error()
 			srv.logger.Errorf("File conversion error: %s", err.Error())

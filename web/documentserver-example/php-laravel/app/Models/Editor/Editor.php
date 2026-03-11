@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,6 +119,7 @@ class Editor
             'user' => [
                 'id' => $this->user->id != 'uid-0' ? $this->user->id : null,
                 'name' => $this->user->name,
+                'roles' => $this->user->roles,
                 'group' => $this->user->group,
                 'image' => $this->user->avatar ? $this->config->imagesUrl.$this->user->id.'.png' : null,
             ],
@@ -136,6 +137,9 @@ class Editor
                 'submitForm' => $this->user->id === 'uid-1',
                 'goback' => $this->user->goback !== null ? $this->user->goback : '',
                 'close' => $this->user->close !== null ? $this->user->close : '',
+                'features' => [
+                    'featuresTips' => $this->user->id == 'uid-0',
+                ],
             ],
         ];
     }

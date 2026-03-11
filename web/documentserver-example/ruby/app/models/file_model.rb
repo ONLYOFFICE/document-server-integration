@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 #
-# (c) Copyright Ascensio System SIA 2025
+# (c) Copyright Ascensio System SIA 2026
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -182,6 +182,7 @@ class FileModel
         user: { # the user currently viewing or editing the document
           id: @user.id.eql?('uid-0') ? nil : @user.id,
           name: @user.name,
+          roles: @user.roles,
           group: @user.group,
           image: @user.avatar ? "#{DocumentHelper.get_server_url(false)}/assets/#{@user.id}.png" : nil
         },
@@ -201,7 +202,10 @@ class FileModel
           forcesave: false, # adding the request for the forced file saving to the callback handler
           submitForm: submit_form, # the Submit form button state
           goback: @user.goback.nil? ? '' : @user.goback,
-          close: @user.close.nil? ? '' : @user.close
+          close: @user.close.nil? ? '' : @user.close,
+          features: {
+            featuresTips: @user.id.eql?('uid-0')
+          }
         }
       }
     }

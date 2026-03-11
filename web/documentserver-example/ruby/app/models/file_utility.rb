@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 #
-# (c) Copyright Ascensio System SIA 2025
+# (c) Copyright Ascensio System SIA 2026
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ class FileUtility
   def self.get_file_type(file_name)
     ext = File.extname(file_name).downcase
 
+    return 'diagram' if FileUtility.format_manager.diagram_extensions.include?(ext)
     return 'pdf' if FileUtility.format_manager.pdf_extensions.include?(ext)
     return 'word' if FileUtility.format_manager.document_extensinons.include?(ext)
     return 'cell' if FileUtility.format_manager.spreadsheet_extensinons.include?(ext)

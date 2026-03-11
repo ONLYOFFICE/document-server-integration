@@ -14,7 +14,7 @@
     <meta name="server-version" content=<%= DocManagerHelper.GetVersion() %> />
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2025
+    * (c) Copyright Ascensio System SIA 2026
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -125,7 +125,7 @@
                 <tbody>
                     <tr>
                         <td>
-                            <a href="http://api.onlyoffice.com/editors/howitworks" target="_blank">API Documentation</a>
+                            <a href="https://api.onlyoffice.com/docs/docs-api/get-started/how-it-works/" target="_blank">API Documentation</a>
                         </td>
                         <td>
                             <a href="mailto:sales@onlyoffice.com">Submit your request</a>

@@ -1,6 +1,6 @@
 <?php
 //
-// (c) Copyright Ascensio System SIA 2025
+// (c) Copyright Ascensio System SIA 2026
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ use Example\Common\URL;
 
 class ConfigurationManager
 {
-    public string $version = '1.14.0';
+    public string $version = '1.15.0';
 
     public function getVersion(): string
     {
@@ -152,7 +152,7 @@ class ConfigurationManager
     {
         $size = getenv('MAXIMUM_FILE_SIZE');
         if (!$size) {
-            return 5 * 1024 * 1024;
+            return 100 * 1024 * 1024;
         }
         return intval($size);
     }

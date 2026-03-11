@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,7 +74,7 @@ class SettingsManager extends OnlyOfficeSettingsManager
                 ],
             ],
             'file' => [
-                'max_size' => env('DOCUMENT_STORAGE_MAXIMUM_FILE_SIZE', 5 * 1024 * 1024),
+                'max_size' => env('DOCUMENT_STORAGE_MAXIMUM_FILE_SIZE', 100 * 1024 * 1024),
             ],
         ];
     }

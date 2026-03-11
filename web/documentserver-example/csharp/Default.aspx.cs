@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -254,6 +254,7 @@ namespace OnlineEditorsExample
             if (FormatManager.DocumentExtensions().Contains(ext)) return "word";  // word for text document extensions
             if (FormatManager.SpreadsheetExtensions().Contains(ext)) return "cell";  // cell for spreadsheet extensions
             if (FormatManager.PresentationExtensions().Contains(ext)) return "slide";  // slide for presentation extensions
+            if (FormatManager.DiagramExtensions().Contains(ext)) return "diagram";  // diagram for diagram extensions
 
             return "word";  // the default document type is word
         }

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,5 +22,6 @@ const (
 	ONLYOFFICE_SPREADSHEET     = "cell"
 	ONLYOFFICE_PRESENTATION    = "slide"
 	ONLYOFFICE_PDF             = "pdf"
+	ONLYOFFICE_DIAGRAM         = "diagram"
 	ONLYOFFICE_HISTORY_POSTFIX = "-hist"
 )

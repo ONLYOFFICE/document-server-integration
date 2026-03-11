@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2025
+# (c) Copyright Ascensio System SIA 2026
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -91,6 +91,18 @@ class FormatManager
   def convertible
     all.filter do |format|
       format.actions.include?('auto-convert')
+    end
+  end
+
+  sig { returns(T::Array[String]) }
+  def diagram_extensions
+    diagram.map(&:extension)
+  end
+
+  sig { returns(T::Array[Format]) }
+  def diagram
+    all.filter do |format|
+      format.type == 'diagram'
     end
   end
 

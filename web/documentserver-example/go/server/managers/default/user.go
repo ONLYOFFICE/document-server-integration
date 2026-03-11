@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,22 +31,6 @@ type DefaultUserManager struct {
 func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 	users := []models.User{
 		{
-			Id:                "uid-0",
-			Username:          "",
-			Email:             "",
-			Group:             "",
-			ReviewGroups:      nil,
-			CommentGroups:     nil,
-			UserInfoGroups:    nil,
-			Favorite:          -1,
-			DeniedPermissions: []string{"protect"},
-			Description:       descriptionUser0,
-			Templates:         false,
-			Avatar:            false,
-			Goback:            nil,
-			Close:             nil,
-		},
-		{
 			Id:                "uid-1",
 			Username:          "John Smith",
 			Email:             "smith@example.com",
@@ -54,7 +38,7 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 			ReviewGroups:      nil,
 			CommentGroups:     nil,
 			UserInfoGroups:    nil,
-			Favorite:          -1,
+			Favorite:          0,
 			DeniedPermissions: nil,
 			Description:       descriptionUser1,
 			Templates:         true,
@@ -65,6 +49,7 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 			Close: map[string]interface{}{
 				"visible": false,
 			},
+			Roles: nil,
 		},
 		{
 			Id:           "uid-2",
@@ -89,6 +74,7 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 			Close: map[string]interface{}{
 				"visible": true,
 			},
+			Roles: []string{"Anyone"},
 		},
 		{
 			Id:           "uid-3",
@@ -102,7 +88,7 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 				"remove": "",
 			},
 			UserInfoGroups:    []string{"group-2"},
-			Favorite:          0,
+			Favorite:          -1,
 			DeniedPermissions: []string{"copy", "download", "print"},
 			Description:       descriptionUser3,
 			Templates:         false,
@@ -111,6 +97,24 @@ func NewDefaultUserManager(logger *zap.SugaredLogger) managers.UserManager {
 			Close: map[string]interface{}{
 				"visible": true,
 			},
+			Roles: []string{"role"},
+		},
+		{
+			Id:                "uid-0",
+			Username:          "",
+			Email:             "",
+			Group:             "",
+			ReviewGroups:      nil,
+			CommentGroups:     nil,
+			UserInfoGroups:    nil,
+			Favorite:          -1,
+			DeniedPermissions: []string{"protect"},
+			Description:       descriptionUser0,
+			Templates:         false,
+			Avatar:            false,
+			Goback:            nil,
+			Close:             nil,
+			Roles:             []string{},
 		},
 	}
 	return &DefaultUserManager{
@@ -124,51 +128,60 @@ var descriptionUser0 []string = []string{
 	"Doesn't belong to any group",
 	"Can review all the changes",
 	"Can perform all actions with comments",
+	"Can't see anyone's information",
 	"The file favorite state is undefined",
 	"Can't mention others in comments",
 	"Can't create new files from the editor",
-	"Can't see anyone's information",
 	"Can't rename files from the editor",
 	"Can't view chat",
 	"Can't protect file",
 	"View file without collaboration",
-	"Can't submit forms",
 	"Can't refresh outdated file",
+	"Can't submit forms",
+	"Tour of tips when opening a document",
+	"Has empty role",
+	"Can't start filling",
 }
 var descriptionUser1 []string = []string{
 	"File author by default",
 	"Doesn't belong to any group",
 	"Can review all the changes",
 	"Can perform all actions with comments",
-	"The file favorite state is undefined",
-	"Can create files from templates using data from the editor",
 	"Can see the information about all users",
+	"This file isn't marked as favorite",
+	"Can create files from templates using data from the editor",
 	"Can submit forms",
 	"Has an avatar",
+	"Has no roles",
+	"Can start filling",
 }
 var descriptionUser2 []string = []string{
 	"Belongs to Group2",
 	"Can review only his own changes or changes made by users with no group",
 	"Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
+	"Can see the information about users from Group2 and users who don't belong to any group",
 	"This file is marked as favorite",
 	"Can create new files from the editor",
-	"Can see the information about users from Group2 and users who don’t belong to any group",
-	"Can't submit forms",
 	"Has an avatar",
+	"Can't submit forms",
+	"Has role 'Anyone'",
+	"Can start filling",
 }
 var descriptionUser3 []string = []string{
 	"Belongs to Group3",
 	"Can review changes made by Group2 users",
 	"Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users",
-	"This file isn't marked as favorite",
+	"Can see the information about Group2 users",
+	"The file favorite state is undefined",
 	"Can't copy data from the file to clipboard",
 	"Can't download the file",
 	"Can't print the file",
 	"Can create new files from the editor",
-	"Can see the information about Group2 users",
-	"Can't submit forms",
 	"Can't close history",
 	"Can't restore the file version",
+	"Can't submit forms",
+	"Has role 'role'",
+	"Can start filling",
 }
 
 func (um DefaultUserManager) GetUsers() []models.User {
@@ -184,7 +197,7 @@ func (um DefaultUserManager) GetUserById(uid string) (models.User, error) {
 		}
 	}
 
-	return um.users[0], nil
+	return um.GetUserById("uid-0")
 }
 
 func (um DefaultUserManager) GetUserInfoById(uid string, serverAddress string) models.UserInfo {
@@ -197,6 +210,7 @@ func (um DefaultUserManager) GetUserInfoById(uid string, serverAddress string) m
 			return models.UserInfo{
 				Id:    user.Id,
 				Name:  user.Username,
+				Roles: user.Roles,
 				Email: user.Email,
 				Image: image,
 			}

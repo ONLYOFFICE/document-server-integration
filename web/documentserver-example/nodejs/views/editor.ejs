@@ -3,12 +3,12 @@
 <head runat="server">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, interactive-widget=resizes-content" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no<%= (editor.type === "mobile" ? ", interactive-widget=resizes-content" : "") -%>" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
     <!--
     *
-    * (c) Copyright Ascensio System SIA 2025
+    * (c) Copyright Ascensio System SIA 2026
     *
     * Licensed under the Apache License, Version 2.0 (the "License");
     * you may not use this file except in compliance with the License.
@@ -27,7 +27,34 @@
     <link rel="icon"
         href="images/<%- editor.documentType %>.ico"
         type="image/x-icon" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/editor.css" />
+    <style>
+        html {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            background: #fff;
+            color: #333;
+            font-family: Arial, Tahoma,sans-serif;
+            font-size: 12px;
+            font-weight: normal;
+            height: 100%;
+            margin: 0;
+            overflow-y: hidden;
+            padding: 0;
+            text-decoration: none;
+        }
+
+        .form {
+            height: 100%;
+        }
+
+        div {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
 </head>
 <body>
     <div class="form">
@@ -67,6 +94,10 @@
         };
 
         var onMetaChange = function (event) {  // the meta information of the document is changed via the meta command
+            if (event.data.title !== undefined) {
+                document.title = event.data.title + " - ONLYOFFICE";
+            }
+
             if (event.data.favorite !== undefined) {
                 var favorite = !!event.data.favorite;
                 var title = document.title.replace(/^\☆/g, "");

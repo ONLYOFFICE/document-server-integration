@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2025
+# (c) Copyright Ascensio System SIA 2026
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ from src.common import string
 
 
 class ConfigurationManager:
-    version = '1.14.0'
+    version = '1.15.0'
 
     def getVersion(self) -> str:
         return self.version
@@ -116,7 +116,7 @@ class ConfigurationManager:
         size = environ.get('MAXIMUM_FILE_SIZE')
         if size:
             return int(size)
-        return 5 * 1024 * 1024
+        return 100 * 1024 * 1024
 
     def conversion_timeout(self) -> int:
         timeout = environ.get('CONVERSION_TIMEOUT')

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,14 +33,16 @@ public final class Users {
 
     private static List<String> descriptionUserFirst = new ArrayList<String>() {{
         add("File author by default");
-        add("Doesn’t belong to any group");
+        add("Doesn't belong to any group");
         add("Can review all the changes");
         add("Can perform all actions with comments");
-        add("The file favorite state is undefined");
-        add("Can create files from templates using data from the editor");
         add("Can see the information about all users");
+        add("This file isn't marked as favorite");
+        add("Can create files from templates using data from the editor");
         add("Has an avatar");
         add("Can submit forms");
+        add("Has no roles");
+        add("Can start filling");
     }};
 
     private static List<String> descriptionUserSecond = new ArrayList<String>() {{
@@ -48,63 +50,71 @@ public final class Users {
         add("Can review only his own changes or changes made by users with no group");
         add("Can view comments, edit his own comments and comments left by users with no group."
                 + " Can remove his own comments only");
+        add("Can see the information about users from Group2 and users who don't belong to any group");
         add("This file is marked as favorite");
         add("Can create new files from the editor");
-        add("Can see the information about users from Group2 and users who don’t belong to any group");
         add("Has an avatar");
-        add("Can’t submit forms");
+        add("Can't submit forms");
+        add("Has role 'Anyone'");
+        add("Can start filling");
     }};
 
     private static List<String> descriptionUserThird = new ArrayList<String>() {{
         add("Belongs to Group3");
         add("Can review changes made by Group2 users");
         add("Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users");
-        add("This file isn’t marked as favorite");
-        add("Can’t copy data from the file to clipboard");
-        add("Can’t download the file");
-        add("Can’t print the file");
-        add("Can create new files from the editor");
         add("Can see the information about Group2 users");
-        add("Can’t submit forms");
+        add("The file favorite state is undefined");
+        add("Can't copy data from the file to clipboard");
+        add("Can't download the file");
+        add("Can't print the file");
+        add("Can create new files from the editor");
         add("Can't close history");
         add("Can't restore the file version");
+        add("Can't submit forms");
+        add("Has role 'role'");
+        add("Can start filling");
     }};
 
     private static List<String> descriptionUserZero = new ArrayList<String>() {{
         add("The name is requested when the editor is opened");
-        add("Doesn’t belong to any group");
+        add("Doesn't belong to any group");
         add("Can review all the changes");
         add("Can perform all actions with comments");
+        add("Can't see anyone's information");
         add("The file favorite state is undefined");
         add("Can't mention others in comments");
         add("Can't create new files from the editor");
-        add("Can’t see anyone’s information");
         add("Can't rename files from the editor");
         add("Can't view chat");
         add("Can't protect file");
         add("View file without collaboration");
-        add("Can’t submit forms");
         add("Can't refresh outdated file");
+        add("Can't submit forms");
+        add("Tour of tips when opening a document");
+        add("Has empty role");
+        add("Can't start filling");
     }};
 
     private static List<User> users = new ArrayList<User>() {{
         add(new User("uid-1", "John Smith", "smith@example.com",
                 "", null, new CommentGroups(), null,
-                null, new ArrayList<String>(), descriptionUserFirst, true, true, new Goback(null, false),
-                new Close(null, false)));
+                false, new ArrayList<String>(), descriptionUserFirst, true, true, new Goback(null, false),
+                new Close(null, false), null));
         add(new User("uid-2", "Mark Pottato", "pottato@example.com",
                 "group-2", Arrays.asList("group-2", ""), new CommentGroups(null,
                 Arrays.asList("group-2", ""), Arrays.asList("group-2")), Arrays.asList("group-2", ""),
                 true, new ArrayList<String>(), descriptionUserSecond, false, true,
-                new Goback("Go to Documents", false), new Close(null, true)));
+                new Goback("Go to Documents", false), new Close(null, true), Arrays.asList("Anyone")));
         add(new User("uid-3", "Hamish Mitchell", null,
                 "group-3", Arrays.asList("group-2"), new CommentGroups(Arrays.asList("group-3", "group-2"),
                 Arrays.asList("group-2"), null), Arrays.asList("group-2"),
-                false, Arrays.asList("copy", "download", "print"),
-                descriptionUserThird, false, false, null, new Close(null, true)));
+                null, Arrays.asList("copy", "download", "print"),
+                descriptionUserThird, false, false, null, new Close(null, true), Arrays.asList("role")));
         add(new User("uid-0", null, null,
                 "", null, null, null,
-                null, Arrays.asList("protect"), descriptionUserZero, false, false, null, null));
+                null, Arrays.asList("protect"), descriptionUserZero, false, false, null, null,
+                new ArrayList<String>()));
     }};
 
     private Users() { }

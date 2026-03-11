@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,14 +25,16 @@ namespace OnlineEditorsExample
         static List<string> descr_user_1 = new List<string>()
         {
             "File author by default",
-            "Doesn’t belong to any group",
+            "Doesn't belong to any group",
             "Can review all the changes",
             "Can perform all actions with comments",
-            "The file favorite state is undefined",
-            "Can create files from templates using data from the editor",
             "Can see the information about all users",
+            "This file isn't marked as favorite",
+            "Can create files from templates using data from the editor",
             "Has an avatar",
-            "Can submit forms"
+            "Can submit forms",
+            "Has no roles",
+            "Can start filling"
         };
 
         static List<string> descr_user_2 = new List<string>()
@@ -40,11 +42,13 @@ namespace OnlineEditorsExample
             "Belongs to Group2",
             "Can review only his own changes or changes made by users with no group",
             "Can view comments, edit his own comments and comments left by users with no group. Can remove his own comments only",
+            "Can see the information about users from Group2 and users who don't belong to any group",
             "This file is marked as favorite",
             "Can create new files from the editor",
-            "Can see the information about users from Group2 and users who don’t belong to any group",
             "Has an avatar",
-            "Can’t submit forms"
+            "Can't submit forms",
+            "Has role 'Anyone'",
+            "Can start filling"
         };
 
         static List<string> descr_user_3 = new List<string>()
@@ -52,33 +56,38 @@ namespace OnlineEditorsExample
             "Belongs to Group3",
             "Can review changes made by Group2 users",
             "Can view comments left by Group2 and Group3 users. Can edit comments left by the Group2 users",
-            "This file isn’t marked as favorite",
-            "Can’t copy data from the file to clipboard",
-            "Can’t download the file",
-            "Can’t print the file",
-            "Can create new files from the editor",
             "Can see the information about Group2 users",
-            "Can’t submit forms",
+            "The file favorite state is undefined",
+            "Can't copy data from the file to clipboard",
+            "Can't download the file",
+            "Can't print the file",
+            "Can create new files from the editor",
             "Can't close history",
-            "Can't restore the file version"
+            "Can't restore the file version",
+            "Can't submit forms",
+            "Has role 'role'",
+            "Can start filling"
         };
 
         static List<string> descr_user_0 = new List<string>()
         {
             "The name is requested when the editor is opened",
-            "Doesn’t belong to any group",
+            "Doesn't belong to any group",
             "Can review all the changes",
             "Can perform all actions with comments",
+            "Can't see anyone's information",
             "The file favorite state is undefined",
             "Can't mention others in comments",
             "Can't create new files from the editor",
-            "Can’t see anyone’s information",
             "Can't rename files from the editor",
             "Can't view chat",
             "Can't protect file",
             "View file without collaboration",
-            "Can’t submit forms",
-            "Can’t refresh outdated file"
+            "Can't refresh outdated file",
+            "Can't submit forms",
+            "Tour of tips when opening a document",
+            "Has empty role",
+            "Can't start filling"
         };
 
         private static List<User> users = new List<User>() {
@@ -90,13 +99,14 @@ namespace OnlineEditorsExample
                     null,
                     new Dictionary<string, object>(),
                     null,
-                    null,
+                    false,
                     new List<string>(),
                     descr_user_1,
                     true,
                     true,
                     new Goback(null, false),
-                    new Close(null, false)
+                    new Close(null, false),
+                    null
                 ),
             new User(
                     "uid-2",
@@ -117,7 +127,8 @@ namespace OnlineEditorsExample
                     false,
                     true,
                     new Goback("Go to Documents",null),
-                    new Close(null, true)
+                    new Close(null, true),
+                    new List<string>() { "Anyone" }
                 ),
             new User(
                     "uid-3",
@@ -132,13 +143,14 @@ namespace OnlineEditorsExample
                         { "remove", new List<string>() { } }
                     },
                     new List<string>() { "group-2" },
-                    false,
+                    null,
                     new List<string>() { "copy", "download", "print" },
                     descr_user_3,
                     false,
                     false,
                     null,
-                    new Close(null, true)
+                    new Close(null, true),
+                    new List<string>() { "role" }
                 ),
             new User(
                     "uid-0",
@@ -154,7 +166,8 @@ namespace OnlineEditorsExample
                     false,
                     false,
                     null,
-                    null
+                    null,
+                    new List<string>()
                 )
         };
 
@@ -248,8 +261,9 @@ namespace OnlineEditorsExample
         public bool avatar;
         public Goback goback;
         public Close close;
+        public List<string> roles;
 
-        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates, bool avatar, Goback goback, Close close)
+        public User(string id, string name, string email, string group, List<string> reviewGroups, Dictionary<string, object> commentGroups, List<string> userInfoGroups, bool? favorite, List<string> deniedPermissions, List<string> descriptions, bool templates, bool avatar, Goback goback, Close close, List<string> roles)
         {
             this.id = id;
             this.name = name;
@@ -265,6 +279,7 @@ namespace OnlineEditorsExample
             this.avatar = avatar;
             this.goback = goback;
             this.close = close;
+            this.roles = roles;
         }
     }
 

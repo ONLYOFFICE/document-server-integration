@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -134,12 +134,12 @@ if (typeof jQuery != "undefined") {
 
         if (!formatManager.isAutoConvertible(posExt)) {
             jq("#step2").addClass("done").removeClass("current");
-            loadScripts();
+            onuploaded();
             return;
         }
 
         if (jq("#checkOriginalFormat").is(":checked")) {
-            loadScripts();
+            onuploaded();
             return;
         }
         jq("#step2").addClass("current");
@@ -203,36 +203,16 @@ if (typeof jQuery != "undefined") {
                     if (response.step < 100) {
                         checkConvert(response.fileUri, filePass, fileExt);
                     } else {
+                        jq("#uploadFileName").text(response.filename);
                         jq("#step2").addClass("done").removeClass("current");
-                        loadScripts();
+                        onuploaded();
                     }
                 }
             });
         }, 1000);
     };
 
-    var loadScripts = function () {
-        if (!jq("#mainProgress").is(":visible")) {
-            return;
-        }
-        jq("#step3").addClass("current");
-
-        if (jq("#loadScripts").is(":empty")) {
-            var urlScripts = jq("#loadScripts").attr("data-docs");
-            var frame = '<iframe id="iframeScripts" width=1 height=1 style="position: absolute; visibility: hidden;" ></iframe>';
-            jq("#loadScripts").html(frame);
-            document.getElementById("iframeScripts").onload = onloadScripts;
-            jq("#loadScripts iframe").attr("src", urlScripts);
-        } else {
-            onloadScripts();
-        }
-    };
-
-    var onloadScripts = function () {
-        if (!jq("#mainProgress").is(":visible")) {
-            return;
-        }
-        jq("#step3").addClass("done").removeClass("current");
+    var onuploaded = function () {
         jq("#beginView, #beginEmbedded").removeClass("disable");
 
         var fileName = jq("#hiddenFileName").val();
@@ -288,7 +268,7 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#skipPass", function () {
         jq("#blockPassword").hide();
-        loadScripts();
+        onuploaded();
     });
 
     jq(document).on("click", "#beginEdit:not(.disable)", function () {
@@ -369,7 +349,7 @@ if (typeof jQuery != "undefined") {
         }
 
         jq("#hiddenFileName").val(fileName);
-        jq("#convertStep1").addClass("done");
+        jq("#convertStep1").addClass("error");
         jq("#convertStep2").addClass("waiting");
     });
 
@@ -379,6 +359,7 @@ if (typeof jQuery != "undefined") {
         let fileExt = jq(`#${id}`).attr("data");
         jq(`#${id}`).addClass("orange");
         jq("td[name='convertingTypeButton']").addClass("disable");
+        jq("#convertStep1").removeClass("error").addClass("done");
         jq("#convertStep2").removeClass("waiting").removeClass("done").addClass("current");
         jq("#convertStep2").text('2. File conversion');
         jq("#convert-descr").removeClass("disable");
@@ -432,7 +413,9 @@ if (typeof jQuery != "undefined") {
                         jq("#downloadConverted").removeClass("disable");
                         jq("#hiddenFileName").attr("data",response.filename);
                         if (response.error !== "FileTypeIsNotSupported") {
-                            jq("#beginEditConverted").removeClass("disable");
+                            if (formatManager.isEditable(fileExt)) {
+                                jq("#beginEditConverted").removeClass("disable");
+                            }
                             jq("#beginViewConverted").removeClass("disable");
                             jq("#downloadConverted").attr("data","fromStorage");
                         } else {

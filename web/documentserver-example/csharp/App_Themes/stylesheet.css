@@ -1,6 +1,6 @@
 ﻿/**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -511,10 +511,6 @@ label .checkbox {
     line-height: 150%;
 }
 
-#loadScripts {
-    display: none;
-}
-
 #iframeScripts {
     position: absolute;
     visibility: hidden;
@@ -633,6 +629,11 @@ footer a:hover {
 .stored-edit.pdf,
 .uploadFileName.pdf {
     background-image: url("images/icon_pdf.svg");
+}
+
+.stored-edit.diagram,
+.uploadFileName.diagram {
+    background-image: url("images/icon_vsdx.svg");
 }
 
 .stored-edit span {
@@ -848,6 +849,7 @@ footer a:hover {
     position: absolute;
     right: 0;
     top: 71px;
+    height: calc(100% - 130px);
     scrollbar-color: #D0D5DA transparent;
     scrollbar-width: thin;
 }

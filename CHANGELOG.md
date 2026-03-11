@@ -1,11 +1,28 @@
 # Change Log
 
+## 1.15.0
+- nodejs: added AI Auto Fill Plugin
+- php-laravel: fix custom jwt header
+- formats for ds v9.3
+- user role
+- start filling
+- update demo files
+- set users by parts
+- open the conversion dialog box with a gray check mark on the type selection step
+- preload frame moved from uploading popup
+- change tab title on rename
+- change uploaded file name in popup if converted
+- features tips for anonymous
+- view odg, md
+- edit xlsb
+- support vsdx in diagram editor
+
 ## 1.14.1
 - nodejs: formats for ds v9.1
 
 ## 1.14.0
 - nodejs: set users by parts
-- nodejs: preload frame moved from uploading popap
+- nodejs: preload frame moved from uploading popup
 - nodejs: view odg, md
 - nodejs: edit xlsb
 - nodejs: support vsdx in diagram editor

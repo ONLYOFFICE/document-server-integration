@@ -3,7 +3,7 @@
 namespace App\Models;
 
 /**
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,8 @@ final class User
 
     public ?array $close;
 
+    public ?array $roles;
+
     /**
      * Constructor
      *
@@ -69,7 +71,8 @@ final class User
         ?bool $templates,
         ?bool $avatar,
         ?array $goback,
-        ?array $close
+        ?array $close,
+        ?array $roles
     ) {
         $this->id = $id;
         $this->name = $name;
@@ -85,6 +88,7 @@ final class User
         $this->avatar = $avatar;
         $this->goback = $goback;
         $this->close = $close;
+        $this->roles = $roles;
     }
 
     public function toArray(): array
@@ -104,6 +108,7 @@ final class User
             'avatar' => $this->avatar,
             'goback' => $this->goback,
             'close' => $this->close,
+            'roles' => $this->roles,
         ];
     }
 }

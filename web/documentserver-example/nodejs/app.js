@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
  */
 
 // connect the necessary packages and modules
+const crypto = require('crypto');
 const express = require('express');
 const path = require('path');
 const favicon = require('serve-favicon');
@@ -34,6 +35,7 @@ const documentService = require('./helpers/documentService');
 const fileUtility = require('./helpers/fileUtility');
 const wopiApp = require('./helpers/wopi/wopiRouting');
 const users = require('./helpers/users');
+const dataAutofill = require('./config/data.json');
 
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl');
@@ -177,6 +179,7 @@ app.delete('/forgotten', (req, res) => { // define a handler for removing forgot
     }
   } catch (ex) {
     console.log(ex);
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.write('Server error');
     res.status(500).send();
   }
@@ -219,6 +222,18 @@ app.get('/download', (req, res) => { // define a handler for downloading files
 
   const filestream = fileSystem.createReadStream(filePath);
   filestream.pipe(res); // send file information to the response by streams
+});
+
+app.get('/data', (req, res) => { // define a handler for getting sample ai form data
+  if (!req.query.code) { // integration must validate incoming codes and generate new ones for each data request
+    res.sendStatus(403);
+    return;
+  }
+
+  res.send({
+    data: dataAutofill,
+    code: crypto.randomBytes(16).toString('hex'),
+  });
 });
 
 app.get('/history', (req, res) => {
@@ -282,7 +297,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
   form.parse(req, (err, fields, files) => { // parse this form
     if (err) { // if an error occurs
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
-      res.writeHead(200, { 'Content-Type': 'text/plain' }); // and write the error status and message to the response
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write(`{ "error": "${err.message}"}`);
       res.end();
       return;
@@ -291,7 +306,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     const file = files.uploadedFile[0];
 
     if (file === undefined) { // if file parameter is undefined
-      res.writeHead(200, { 'Content-Type': 'text/plain' }); // write the error status and message to the response
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write('{ "error": "Uploaded file not found"}');
       res.end();
       return;
@@ -302,7 +317,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
     // check if the file size exceeds the maximum file size
     if (fileSizeLimit < file.size || file.size <= 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write('{ "error": "File size is incorrect"}');
       res.end();
       return;
@@ -314,7 +329,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
 
     if (exts.indexOf(curExt) === -1 || fileUtility.getFormatActions(curExt).length === 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
-      res.writeHead(200, { 'Content-Type': 'text/plain' }); // and write the error status and message to the response
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write('{ "error": "File type is not supported"}');
       res.end();
       return;
@@ -322,7 +337,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
 
     fileSystem.rename(file.filepath, `${uploadDir}/${file.originalFilename}`, (error) => { // rename a file
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
-      res.writeHead(200, { 'Content-Type': 'text/plain' });
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       if (error) { // if an error occurs
         res.write(`{ "error": "${error}"}`); // write an error message to the response
       } else {
@@ -391,6 +406,7 @@ app.post('/create', (req, res) => {
     });
   } catch (e) {
     res.status(500);
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write(JSON.stringify({
       error: 1,
       message: e.message,
@@ -520,6 +536,7 @@ app.get('/files', (req, res) => { // define a handler for getting files informat
     res.write(JSON.stringify(filesInDirectoryInfo)); // transform files information into the json string
   } catch (ex) {
     console.log(ex);
+    res.setHeader('Content-Type', 'text/plain');
     res.write('Server error');
   }
   res.end();
@@ -535,6 +552,7 @@ app.get('/files/file/:fileId', (req, res) => { // define a handler for getting f
     res.write(JSON.stringify(fileInfoById));
   } catch (ex) {
     console.log(ex);
+    res.setHeader('Content-Type', 'text/plain');
     res.write('Server error');
   }
   res.end();
@@ -553,9 +571,11 @@ app.delete('/file', (req, res) => { // define a handler for removing file
       req.DocManager.cleanFolderRecursive(req.DocManager.storagePath(''), false);
     }
 
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     res.write('{"success":true}');
   } catch (ex) {
     console.log(ex);
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.write('Server error');
   }
   res.end();
@@ -723,6 +743,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       try {
         if (!req.DocManager.existsSync(req.DocManager.storagePath(fileName, userAddress))) {
           console.log(`callbackProcessSave error: name = ${fileName} userAddress = ${userAddress} is not exist`);
+          response.setHeader('Content-Type', 'application/json');
           response.write('{"error":1, "message":"file is not exist"}');
           response.end();
           return;
@@ -760,7 +781,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
           }
         }
 
-        const changeshistory = body.changeshistory || JSON.stringify(body.history);
+        const changeshistory = JSON.stringify(body.history);
         if (changeshistory) {
           // get the path to the file with document changes
           const pathChangesJson = req.DocManager.changesPath(newFileName, userAddress, version);
@@ -784,11 +805,13 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         }
       } catch (ex) {
         console.log(ex);
+        response.setHeader('Content-Type', 'application/json');
         response.write(`{"error":1,"message":${JSON.stringify(ex)}}`);
         response.end();
         return;
       }
 
+      response.setHeader('Content-Type', 'application/json');
       response.write('{"error":0}');
       response.end();
     };
@@ -796,6 +819,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     // file saving process
     const processSave = async function processSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
+        response.setHeader('Content-Type', 'application/json');
         response.write('{"error":1,"message":"save uri is empty"}');
         response.end();
         return;
@@ -913,6 +937,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         return;
       }
 
+      response.setHeader('Content-Type', 'application/json');
       response.write('{"error":0}');
       response.end();
     };
@@ -920,6 +945,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     // file force saving process
     const processForceSave = async function processForceSave(downloadUri, body, fileName, userAddress) {
       if (!downloadUri) {
+        response.setHeader('Content-Type', 'application/json');
         response.write('{"error":1,"message":"forcesave uri is empty"}');
         response.end();
         return;
@@ -973,6 +999,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       return;
     }
 
+    response.setHeader('Content-Type', 'application/json');
     response.write('{"error":0}');
     response.end();
   };
@@ -992,7 +1019,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
   // check jwt token
   if (cfgSignatureEnable && cfgSignatureUseForRequest) {
     let body = null;
-    if (req.body.hasOwnProperty('token')) { // if request body has its own token
+    if (Object.hasOwn(req.body, 'token')) { // if request body has its own token
       body = documentService.readToken(req.body.token); // read and verify it
     } else {
       const checkJwtHeaderRes = documentService.checkJwtHeader(req); // otherwise, check jwt token headers
@@ -1012,6 +1039,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
       }
     }
     if (!body) {
+      res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write('{"error":1,"message":"body is empty"}');
       res.end();
       return;
@@ -1020,7 +1048,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     return;
   }
 
-  if (req.body.hasOwnProperty('status')) { // if the request body has status parameter
+  if (Object.hasOwn(req.body, 'status')) { // if the request body has status parameter
     await processTrack(res, req.body, fName, uAddress); // track file changes
   } else {
     await readbody(req, res, fName, uAddress); // otherwise, read request body first
@@ -1070,6 +1098,7 @@ app.get('/config', async (req, res) => {
   } catch (ex) {
     console.log(ex);
     res.status(500);
+    res.writeHead(200, { 'Content-Type': 'text/plain' });
     res.write('error');
   }
   res.end();
@@ -1117,8 +1146,9 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       type = 'desktop';
     }
 
-    const templatesImageUrl = req.DocManager.getTemplateImageUrl(fileUtility.getFileType(fileName));
-    const createUrl = req.DocManager.getCreateUrl(fileUtility.getFileType(fileName), userid, type, lang);
+    const fileType = fileUtility.getFileType(fileName);
+    const templatesImageUrl = req.DocManager.getTemplateImageUrl(fileType);
+    const createUrl = req.DocManager.getCreateUrl(fileType, userid, type, lang);
     let templates = null;
     if (createUrl != null) {
       templates = [
@@ -1185,7 +1215,39 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     }
 
     if (user.goback != null) {
-      user.goback.url = `${req.DocManager.getServerUrl()}`;
+      user.goback.url = `${req.DocManager.getServerUrl()}/`;
+    }
+
+    let pluginsConfig;
+    if (fileType === fileUtility.fileType.pdf // pdf form only
+      && userid !== 'uid-0' // users only
+      && mode !== 'comment') { // form field must be editable
+      const baseUrl = configServer.has('exampleUrl') && configServer.get('exampleUrl')
+        ? configServer.get('exampleUrl')
+        : req.DocManager.getServerUrl();
+
+      const pluginGuid = 'asc.{6A95DA5C-857E-4C26-B00B-34876F1EEAD8}';
+      const pluginCode = crypto.randomBytes(16).toString('hex');
+
+      pluginsConfig = {
+        autostart: [...new Set([
+          (mode === 'fillForms' ? pluginGuid : []),
+          ...(plugins.autostart || []),
+        ])],
+        options: {
+          [pluginGuid]: {
+            code: pluginCode,
+            callback: `${baseUrl}/data`,
+          },
+          ...(plugins.options || {}),
+        },
+        pluginsData: [...new Set([
+          `${baseUrl}/assets/plugin-aiautofill/config.json`,
+          ...(plugins.pluginsData || []),
+        ])],
+      };
+    } else {
+      pluginsConfig = plugins;
     }
 
     // file config data
@@ -1202,7 +1264,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       },
       editor: {
         type,
-        documentType: fileUtility.getFileType(fileName),
+        documentType: fileType,
         key,
         token: '',
         callbackUrl: req.DocManager.getCallback(fileName),
@@ -1233,7 +1295,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         userInfoGroups: JSON.stringify(userInfoGroups),
         fileChoiceUrl,
         submitForm,
-        plugins: JSON.stringify(plugins),
+        plugins: JSON.stringify(pluginsConfig),
         actionData,
         fileKey: userid !== 'uid-0'
           ? JSON.stringify({ fileName, userAddress: req.DocManager.curUserHostAddress() }) : null,
@@ -1241,6 +1303,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
         protect: !user.deniedPermissions.includes('protect'),
         goback: user.goback != null ? user.goback : '',
         close: user.close,
+        featuresTips: userid === 'uid-0',
       },
       dataInsertImage: {
         fileType: 'svg',

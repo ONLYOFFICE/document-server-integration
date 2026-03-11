@@ -1,6 +1,6 @@
 <?php
 /**
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,6 +162,7 @@ final class DocEditorView extends View
                 "user" => [  // the user currently viewing or editing the document
                     "id" => $user->id != "uid-0" ? $user->id : null,
                     "name" => $user->name,
+                    "roles" => $user->roles,
                     "group" => $user->group,
                     "image" => $user->avatar ? serverPath(false) . "/assets/images/" . $user->id . ".png" : null
                 ],
@@ -185,6 +186,9 @@ final class DocEditorView extends View
                     // settings for the Open file location menu button and upper right corner button
                     "goback" => $user->goback !== null ? $user->goback : "",
                     "close" => $user->close != null ? $user->close : "",
+                    "features" => [
+                        "featuresTips" => $user->id == "uid-0"
+                    ]
                 ],
             ],
         ];
@@ -254,6 +258,8 @@ final class DocEditorView extends View
 
         if ($user->id != "uid-0") {
             $historyLayout .= "// add mentions for not anonymous users
+                config.events['onRequestStartFilling'] = onRequestStartFilling;
+                config.events['onStartFilling'] = onStartFilling;
                 config.events['onRequestRefreshFile'] = onRequestRefreshFile;
                 config.events['onRequestUsers'] = onRequestUsers;
                 config.events['onRequestSaveAs'] = onRequestSaveAs;

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,7 +165,7 @@ class FileController extends Controller
                     fileType: PathInfo::extension($request->filename),
                     outputType: $request->input('fileExt', 'ooxml'),
                     url: $request->fileUri,
-                    password: $request->password,
+                    password: $request->filePass,
                     user: $request->user,
                     userAddress: $request->ip(),
                     lang: cache('lang', default: 'en'),

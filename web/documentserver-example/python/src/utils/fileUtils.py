@@ -1,6 +1,6 @@
 """
 
- (c) Copyright Ascensio System SIA 2025
+ (c) Copyright Ascensio System SIA 2026
 
  Licensed under the Apache License, Version 2.0 (the "License");
  you may not use this file except in compliance with the License.
@@ -54,5 +54,7 @@ def getFileType(uri):
         return 'cell'
     if ext in format_manager.presentation_extensions():
         return 'slide'
+    if ext in format_manager.diagram_extensions():
+        return 'diagram'
 
     return 'word'  # default file type is word

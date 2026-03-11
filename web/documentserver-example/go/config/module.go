@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,6 +93,7 @@ func NewSpecification() (specification SpecificationConfig, err error) {
 		fm.GetPresentationExtensions(),
 		fm.GetDocumentExtensions(),
 		fm.GetPdfExtensions(),
+		fm.GetDiagramExtensions(),
 	}
 	specification = SpecificationConfig{
 		exts,

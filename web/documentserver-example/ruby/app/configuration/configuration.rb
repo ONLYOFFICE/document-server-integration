@@ -1,5 +1,5 @@
 #
-# (c) Copyright Ascensio System SIA 2025
+# (c) Copyright Ascensio System SIA 2026
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ class ConfigurationManager
 
   sig { void }
   def initialize
-    @version = '1.14.0'
+    @version = '1.15.0'
   end
 
   sig { returns(T.nilable(URI::Generic)) }
@@ -143,7 +143,7 @@ class ConfigurationManager
     env = ENV.fetch('MAXIMUM_FILE_SIZE', nil)
     return Integer(env, 10) if env
 
-    5 * 1024 * 1024
+    100 * 1024 * 1024
   end
 
   sig { returns(Numeric) }

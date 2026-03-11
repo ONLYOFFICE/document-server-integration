@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,7 @@ import (
 	"github.com/ONLYOFFICE/document-server-integration/server/managers"
 	"github.com/ONLYOFFICE/document-server-integration/server/shared"
 	"github.com/ONLYOFFICE/document-server-integration/utils"
-	"github.com/golang-jwt/jwt"
+	"github.com/golang-jwt/jwt/v5"
 	"go.uber.org/zap"
 )
 
@@ -68,6 +68,9 @@ func (cm DefaultConversionManager) GetFileType(filename string) string {
 	if utils.IsInList(ext, exts.Presentation) {
 		return shared.ONLYOFFICE_PRESENTATION
 	}
+	if utils.IsInList(ext, exts.Diagram) {
+		return shared.ONLYOFFICE_DIAGRAM
+	}
 
 	return shared.ONLYOFFICE_DOCUMENT
 }
@@ -100,6 +103,7 @@ func (cm DefaultConversionManager) GetConverterUri(
 	docKey string,
 	isAsync bool,
 	title string,
+	filePass string,
 ) (string, string, error) {
 	if fromExt == "" {
 		fromExt = utils.GetFileExt(docUri, true)
@@ -112,9 +116,10 @@ func (cm DefaultConversionManager) GetConverterUri(
 		Title:      title,
 		Key:        docKey,
 		Async:      isAsync,
-		StandardClaims: jwt.StandardClaims{
-			ExpiresAt: time.Now().Add(time.Minute * cm.config.JwtExpiresIn).Unix(),
-			IssuedAt:  time.Now().Unix(),
+		Password:   filePass,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * cm.config.JwtExpiresIn)),
+			IssuedAt:  jwt.NewNumericDate(time.Now()),
 		},
 	}
 
@@ -125,9 +130,9 @@ func (cm DefaultConversionManager) GetConverterUri(
 	if secret != "" && cm.config.JwtEnabled {
 		headerPayload := managers.ConvertRequestHeaderPayload{
 			Payload: payload,
-			StandardClaims: jwt.StandardClaims{
-				ExpiresAt: time.Now().Add(time.Minute * cm.config.JwtExpiresIn).Unix(),
-				IssuedAt:  time.Now().Unix(),
+			RegisteredClaims: jwt.RegisteredClaims{
+				ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * cm.config.JwtExpiresIn)),
+				IssuedAt:  jwt.NewNumericDate(time.Now()),
 			},
 		}
 		headerToken, err = cm.JwtManager.JwtSign(headerPayload, []byte(secret))

@@ -1,6 +1,6 @@
 /**
  *
- * (c) Copyright Ascensio System SIA 2025
+ * (c) Copyright Ascensio System SIA 2026
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ type FormatManager interface {
 	GetSpreadsheetExtensions() []string
 	GetPresentationExtensions() []string
 	GetPdfExtensions() []string
+	GetDiagramExtensions() []string
 }
 
 func NewFormatManager() (FormatManager, error) {
@@ -89,7 +90,7 @@ func (fm DefaultFormatManager) GetViewedExtensions() (viewed []string) {
 
 func (fm DefaultFormatManager) GetEditedExtensions() (edited []string) {
 	for _, f := range fm.formats {
-		if slices.Contains(f.Actions, "edit") {
+		if slices.Contains(f.Actions, "edit") || slices.Contains(f.Actions, "lossy-edit") {
 			edited = append(edited, f.Name)
 		}
 	}
@@ -141,10 +142,19 @@ func (fm DefaultFormatManager) GetPresentationExtensions() (slide []string) {
 	return
 }
 
-func (fm DefaultFormatManager) GetPdfExtensions() (slide []string) {
+func (fm DefaultFormatManager) GetPdfExtensions() (pdf []string) {
 	for _, f := range fm.formats {
 		if f.FormatType == "pdf" {
-			slide = append(slide, f.Name)
+			pdf = append(pdf, f.Name)
+		}
+	}
+	return
+}
+
+func (fm DefaultFormatManager) GetDiagramExtensions() (diagram []string) {
+	for _, f := range fm.formats {
+		if f.FormatType == "diagram" {
+			diagram = append(diagram, f.Name)
 		}
 	}
 	return

@@ -12,7 +12,7 @@
         <meta name="mobile-web-app-capable" content="yes" />
         <!--
         *
-        * (c) Copyright Ascensio System SIA 2025
+        * (c) Copyright Ascensio System SIA 2026
         *
         * Licensed under the Apache License, Version 2.0 (the "License");
         * you may not use this file except in compliance with the License.
@@ -107,6 +107,10 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
+            if (event.data.title !== undefined) {
+                document.title = event.data.title + " - ONLYOFFICE";
+            }
+
             if (event.data.favorite !== undefined) {
                 var favorite = !!event.data.favorite;
                 var title = document.title.replace(/^\☆/g, "");
@@ -355,16 +359,51 @@
                     users = <%=(String) request.getAttribute("usersForMentions")%>;
             }
 
-            docEditor.setUsers({
+            if ((c === "protect" || c === "mention") && users && event.data.count) {
+                let from = event.data.from;
+                let count = event.data.count;
+                let search = event.data.search;
+                if (from != 0) users = [];
+                var resultCount = 234;
+                for (var i = Math.max(users.length, from); i < Math.min(from + count, resultCount); i++){
+                    users.push({
+                        email: "test@test.test" + (i + 1),
+                        id: "id" + (i + 1),
+                        name: "test_" + search + (i + 1)
+                    });
+                }
+            }
+
+            var result = {
                 "c": c,
                 "users": users,
-            });
+            };
+            if (resultCount) {
+                // support v9.0
+                result.total = 1 + (!event.data.count || users.length < event.data.count ? 0 : (event.data.from + event.data.count));
+                // since v9.0.1
+                result.isPaginated = true;
+            }
+
+            docEditor.setUsers(result);
         };
 
         var onRequestSendNotify = function(event) {  // the user is mentioned in a comment
             event.data.actionLink = replaceActionLink(location.href, JSON.stringify(event.data.actionLink));
             var data = JSON.stringify(event.data);
             innerAlert("onRequestSendNotify: " + data);
+        };
+
+        var onRequestStartFilling = function(event) {
+            var data = event.data;
+            var submit = confirm("Start filling?\n" + JSON.stringify(data));
+            if (submit) {
+                docEditor.startFilling(true);
+            }
+        };
+
+        var onStartFilling = function(event) {
+            innerAlert("The form is ready to fill out.");
         };
 
         config = JSON.parse('<%= FileModel.serialize(Model) %>');
@@ -384,6 +423,8 @@
         };
 
         if (config.editorConfig.user.id) {
+            config.events['onRequestStartFilling'] = onRequestStartFilling;
+            config.events['onStartFilling'] = onStartFilling;
             config.events['onRequestRefreshFile'] = onRequestRefreshFile;
             config.events['onRequestClose'] = onRequestClose;
             // add mentions for not anonymous users
@@ -406,7 +447,7 @@
             }
         }
 
-        var сonnectEditor = function () {
+        var connectEditor = function () {
             docEditor = new DocsAPI.DocEditor("iframeEditor", config);
         };
 
@@ -418,9 +459,9 @@
         };
 
         if (window.addEventListener) {
-            window.addEventListener("load", сonnectEditor);
+            window.addEventListener("load", connectEditor);
         } else if (window.attachEvent) {
-            window.attachEvent("load", сonnectEditor);
+            window.attachEvent("load", connectEditor);
         }
 
     </script>

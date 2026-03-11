@@ -217,6 +217,10 @@
 
         // the meta information of the document is changed via the meta command
         var onMetaChange = function (event) {
+            if (event.data.title !== undefined) {
+                document.title = event.data.title + " - ONLYOFFICE";
+            }
+
             if (event.data.favorite !== undefined) {
                 var favorite = !!event.data.favorite;
                 var title = document.title.replace(/^\☆/g, "");
@@ -369,10 +373,33 @@
                     users = {usersForMentions};
             }
 
-            docEditor.setUsers({
+            if ((c === "protect" || c === "mention") && users && event.data.count) {
+                let from = event.data.from;
+                let count = event.data.count;
+                let search = event.data.search;
+                if (from != 0) users = [];
+                var resultCount = 234;
+                for (var i = Math.max(users.length, from); i < Math.min(from + count, resultCount); i++){
+                    users.push({
+                        email: "test@test.test" + (i + 1),
+                        id: "id" + (i + 1),
+                        name: "test_" + search + (i + 1)
+                    });
+                }
+            }
+
+            var result = {
                 "c": c,
                 "users": users,
-            });
+            };
+            if (resultCount) {
+                // support v9.0
+                result.total = 1 + (!event.data.count || users.length < event.data.count ? 0 : (event.data.from + event.data.count));
+                // since v9.0.1
+                result.isPaginated = true;
+            }
+
+            docEditor.setUsers(result);
         };
 
         var onRequestSendNotify = function (event) {
@@ -381,7 +408,19 @@
             innerAlert("onRequestSendNotify: " + data);
         };
 
-        var сonnectEditor = function () {
+        var onRequestStartFilling = function(event) {
+            var data = event.data;
+            var submit = confirm("Start filling?\n" + JSON.stringify(data));
+            if (submit) {
+                docEditor.startFilling(true);
+            }
+        };
+
+        var onStartFilling = function(event) {
+            innerAlert("The form is ready to fill out.");
+        };
+
+        var connectEditor = function () {
             {fileNotFoundAlert}
 
             config = {config};
@@ -417,9 +456,9 @@
           };
 
         if (window.addEventListener) {
-            window.addEventListener("load", сonnectEditor);
+            window.addEventListener("load", connectEditor);
         } else if (window.attachEvent) {
-            window.attachEvent("load", сonnectEditor);
+            window.attachEvent("load", connectEditor);
         }
 
     </script>
