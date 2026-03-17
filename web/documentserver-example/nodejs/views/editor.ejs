@@ -432,7 +432,7 @@
         };
 
         var onStartFilling = function(event) {
-            innerAlert("The form is ready to fill out.");
+            innerAlert("The form is ready to fill out.\n" + JSON.stringify(event.data));
         };
 
         var onDocumentReady = function(){
@@ -469,7 +469,9 @@
             config.events.onRequestReferenceData = onRequestReferenceData;
             config.events.onRequestReferenceSource = onRequestReferenceSource;
             config.events.onRequestRefreshFile = onRequestRefreshFile;
-            config.events.onRequestStartFilling = onRequestStartFilling;
+            if (<%- JSON.stringify(editor.userid) %> != "uid-1") {
+                config.events.onRequestStartFilling = onRequestStartFilling;
+            }
             config.events.onStartFilling = onStartFilling;
             if (<%- JSON.stringify(editor.userid) %> != "uid-3") {
                 config.events.onRequestHistoryClose = onRequestHistoryClose;
