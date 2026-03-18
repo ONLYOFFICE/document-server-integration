@@ -1256,7 +1256,7 @@ app.get('/editor', async (req, res) => { // define a handler for editing documen
 
     // file config data
     const argss = {
-      apiUrl: siteUrl + configServer.get('apiUrl'),
+      apiUrl: siteUrl + (await documentService.config()).urls.api.replace('/', ''),
       file: {
         name: fileName,
         ext: fileUtility.getFileExtension(fileName, true),

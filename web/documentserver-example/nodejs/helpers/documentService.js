@@ -80,7 +80,7 @@ documentService.getConvertedUriSync = function getConvertedUriSync(
 };
 
 // get the url of the converted file
-documentService.getConvertedUri = function getConvertedUri(
+documentService.getConvertedUri = async function getConvertedUri(
   documentUri,
   fromExtension,
   toExtension,
@@ -111,7 +111,7 @@ documentService.getConvertedUri = function getConvertedUri(
     region: lang,
   };
 
-  const uri = siteUrl + configServer.get('converterUrl'); // get the absolute converter url
+  const uri = siteUrl + (await documentService.config()).urls.converter.replace('/', ''); // get the absolute converter url
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -228,7 +228,7 @@ documentService.getResponseUri = function getResponseUri(json) {
 };
 
 // create a command request
-documentService.commandRequest = function commandRequest(method, documentRevisionId, callback, meta = null) {
+documentService.commandRequest = async function commandRequest(method, documentRevisionId, callback, meta = null) {
   const revisionId = documentService.generateRevisionId(documentRevisionId); // generate the document key value
   const params = { // create a parameter object with command method and the document key value in it
     c: method,
@@ -239,7 +239,7 @@ documentService.commandRequest = function commandRequest(method, documentRevisio
     params.meta = meta;
   }
 
-  const uri = siteUrl + configServer.get('commandUrl'); // get the absolute command url
+  const uri = siteUrl + (await documentService.config()).urls.command.replace('/', ''); // get the absolute command url
   const headers = { // create a headers object
     'Content-Type': 'application/json',
   };
