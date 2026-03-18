@@ -57,12 +57,12 @@ exports.registerRoutes = function registerRoutes(app) {
     });
 
     // Checking supported extensions
-    const editedExts = fileUtility.getEditExtensions().filter((i) => docsExtEdit.includes(i));
-    const fillExts = fileUtility.getFillExtensions().filter((i) => docsExtEdit.includes(i));
+    const editedExts = (await fileUtility.getEditExtensions()).filter((i) => docsExtEdit.includes(i));
+    const fillExts = (await fileUtility.getFillExtensions()).filter((i) => docsExtEdit.includes(i));
 
     try {
       // get all the stored files
-      const files = req.DocManager.getStoredFiles();
+      const files = await req.DocManager.getStoredFiles();
 
       // run through all the files and write the corresponding information to each file
       // eslint-disable-next-line no-restricted-syntax

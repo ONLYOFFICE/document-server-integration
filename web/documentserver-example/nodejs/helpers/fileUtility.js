@@ -17,13 +17,9 @@
  */
 
 const pathModule = require('path');
-const supportedFormats = require('../public/assets/document-formats/onlyoffice-docs-formats.json'); // eslint-disable-line
+const documentService = require('./documentService');
 
 const fileUtility = {};
-
-fileUtility.getFormats = function getFormats() {
-  return supportedFormats;
-};
 
 // get file name from the given url
 fileUtility.getFileNameFromUrl = function getFileNameFromUrl(url, withoutExtension) {
@@ -63,8 +59,9 @@ fileUtility.getFileExtension = function getFileExtension(path, withoutDot, isUrl
 };
 
 // get file type from the given path
-fileUtility.getFileType = function getFileType(path) {
+fileUtility.getFileType = async function getFileType(path) {
   const ext = fileUtility.getFileExtension(path, true); // get the file extension from the given path
+  const supportedFormats = await documentService.formats()
 
   for (let i = 0; i < supportedFormats.length; i++) {
     if (supportedFormats[i].name === ext && supportedFormats[i].type !== '') return supportedFormats[i].type;
@@ -81,34 +78,34 @@ fileUtility.fileType = {
   diagram: 'diagram',
 };
 
-fileUtility.getFormatActions = function getExtensionActions(ext) {
-  return supportedFormats.filter((format) => format.name === ext)[0]?.actions || [];
+fileUtility.getFormatActions = async function getExtensionActions(ext) {
+  return (await documentService.formats()).filter((format) => format.name === ext)[0]?.actions || [];
 };
 
-fileUtility.getSuppotredExtensions = function getSuppotredExtensions() {
-  return supportedFormats.reduce((extensions, format) => [...extensions, format.name], []);
+fileUtility.getSuppotredExtensions = async function getSuppotredExtensions() {
+  return (await documentService.formats()).reduce((extensions, format) => [...extensions, format.name], []);
 };
 
-fileUtility.getViewExtensions = function getViewExtensions() {
-  return supportedFormats.filter(
+fileUtility.getViewExtensions = async function getViewExtensions() {
+  return (await documentService.formats()).filter(
     (format) => format.actions.includes('view'),
   ).reduce((extensions, format) => [...extensions, format.name], []);
 };
 
-fileUtility.getEditExtensions = function getEditExtensions() {
-  return supportedFormats.filter(
+fileUtility.getEditExtensions = async function getEditExtensions() {
+  return (await documentService.formats()).filter(
     (format) => format.actions.includes('edit') || format.actions.includes('lossy-edit'),
   ).reduce((extensions, format) => [...extensions, format.name], []);
 };
 
-fileUtility.getFillExtensions = function getFillExtensions() {
-  return supportedFormats.filter(
+fileUtility.getFillExtensions = async function getFillExtensions() {
+  return (await documentService.formats()).filter(
     (format) => format.actions.includes('fill'),
   ).reduce((extensions, format) => [...extensions, format.name], []);
 };
 
-fileUtility.getConvertExtensions = function getConvertExtensions() {
-  return supportedFormats.filter(
+fileUtility.getConvertExtensions = async function getConvertExtensions() {
+  return (await documentService.formats()).filter(
     (format) => format.actions.includes('auto-convert'),
   ).reduce((extensions, format) => [...extensions, format.name], []);
 };
