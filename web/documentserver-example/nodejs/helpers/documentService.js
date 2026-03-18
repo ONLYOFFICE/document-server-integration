@@ -33,9 +33,38 @@ const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
 const cfgSignatureSecretAlgorithmRequest = configServer.get('token.algorithmRequest');
 
+let _config = undefined;
+let _formats = undefined;
+const _pendingPromise = {
+    'config': null,
+    'formats': null
+}
+
 const documentService = {};
 
 documentService.userIp = null;
+
+documentService.config = async function config() {
+  if (!_config) {
+    _config = await fetchMeta('config');
+    setTimeout(() => {
+      _config = null;
+    }, 1000 * 60 * 60);
+  }
+      
+  return _config;
+};
+
+documentService.formats = async function formats() {
+  if (!_formats) {
+    _formats = await fetchMeta('formats');
+    setTimeout(() => {
+      _formats = null;
+    }, 1000 * 60 * 60);
+  }
+
+  return _formats;
+};
 
 // get the url of the converted file (synchronous)
 documentService.getConvertedUriSync = function getConvertedUriSync(
@@ -276,6 +305,28 @@ documentService.readToken = function readToken(token) {
   }
   return null;
 };
+
+async function fetchMeta(path) {
+  if (_pendingPromise[path]) return _pendingPromise[path];
+
+  _pendingPromise[path] = fetch(siteUrl + 'meta/' + path)
+  .then(r => {
+    let data;
+    try {
+      if (r.status != 200) throw `Failed to fetch ${path}. Response status: ${r.status}`
+      data = r.json();
+    } catch (e) {
+      console.log(e);
+    }
+    return data;
+  })
+  .then(data => {
+    _pendingPromise[path] = null;
+    return data;
+  });
+
+  return _pendingPromise[path];
+}
 
 // save all the functions to the documentService module to export it later in other files
 module.exports = documentService;
