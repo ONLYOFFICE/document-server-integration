@@ -98,7 +98,7 @@ app.get('/', async (req, res) => { // define a handler for default page
       storedFiles: await req.DocManager.getStoredFiles(),
       params: req.DocManager.getCustomParams(),
       users,
-      languages: configServer.get('languages'),
+      languages: (await documentService.config()).langObject,
       serverVersion: config.get('version'),
       enableForgotten,
     });

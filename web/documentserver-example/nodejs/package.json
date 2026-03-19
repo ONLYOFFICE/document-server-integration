@@ -25,6 +25,7 @@
     "he": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
     "jwa": "^2.0.0",
+    "language-name-map": "^0.3.0",
     "log4js": "^6.9.1",
     "mime": "^2.4.6",
     "serve-favicon": "^2.5.0",

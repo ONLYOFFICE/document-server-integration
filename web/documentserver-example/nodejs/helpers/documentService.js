@@ -20,6 +20,7 @@
 const urlModule = require('url');
 const urllib = require('urllib');
 const jwt = require('jsonwebtoken');
+const { getLangNameFromCode } = require('language-name-map');
 const configServer = require('config').get('server');
 const fileUtility = require('./fileUtility');
 const guidManager = require('./guidManager');
@@ -45,6 +46,19 @@ documentService.userIp = null;
 documentService.config = async function config() {
   if (!_config) {
     _config = await fetchMeta('config');
+    _config.langObject = Object.fromEntries(['en', ..._config.langs.filter(v => v != 'en')].map(k => {
+      switch (k) {
+        case 'pt-pt': return [k, 'Portuguese (Portugal)'];
+        case 'sr-cyrl': return [k, 'Serbian (Cyrillic)'];
+        case 'zh-tw': return [k, 'Chinese (Traditional)'];
+        default:
+          try {
+            return [k, getLangNameFromCode(k).name];
+          } catch {
+            return [k, k];
+          }
+      }
+    }));
     setTimeout(() => {
       _config = null;
     }, 1000 * 60 * 60);
