@@ -32,21 +32,43 @@ const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
 const cfgSignatureSecretAlgorithmRequest = configServer.get('token.algorithmRequest');
 
-let _config = undefined;
-let _formats = undefined;
-const _pendingPromise = {
-    'config': null,
-    'formats': null
-}
+let configCache;
+let formatsCache;
+const pendingPromise = {
+  config: null,
+  formats: null,
+};
 
 const documentService = {};
 
 documentService.userIp = null;
 
+async function fetchMeta(path) {
+  if (pendingPromise[path]) return pendingPromise[path];
+
+  pendingPromise[path] = fetch(`${siteUrl}meta/${path}`)
+    .then((r) => {
+      let data;
+      try {
+        if (r.status !== 200) throw new Error(`Failed to fetch ${path}. Response status: ${r.status}`);
+        data = r.json();
+      } catch (e) {
+        console.log(e);
+      }
+      return data;
+    })
+    .then((data) => {
+      pendingPromise[path] = null;
+      return data;
+    });
+
+  return pendingPromise[path];
+}
+
 documentService.config = async function config() {
-  if (!_config) {
-    _config = await fetchMeta('config');
-    _config.langObject = Object.fromEntries(['en', ..._config.langs.filter(v => v != 'en')].map(k => {
+  if (!configCache) {
+    configCache = await fetchMeta('config');
+    configCache.langObject = Object.fromEntries(['en', ...configCache.langs.filter((v) => v !== 'en')].map((k) => {
       switch (k) {
         case 'pt-pt': return [k, 'Portuguese (Portugal)'];
         case 'sr-cyrl': return [k, 'Serbian (Cyrillic)'];
@@ -60,22 +82,22 @@ documentService.config = async function config() {
       }
     }));
     setTimeout(() => {
-      _config = null;
+      configCache = null;
     }, 1000 * 60 * 60);
   }
-      
-  return _config;
+
+  return configCache;
 };
 
 documentService.formats = async function formats() {
-  if (!_formats) {
-    _formats = await fetchMeta('formats');
+  if (!formatsCache) {
+    formatsCache = await fetchMeta('formats');
     setTimeout(() => {
-      _formats = null;
+      formatsCache = null;
     }, 1000 * 60 * 60);
   }
 
-  return _formats;
+  return formatsCache;
 };
 
 // get the url of the converted file (synchronous)
@@ -123,7 +145,8 @@ documentService.getConvertedUri = async function getConvertedUri(
     region: lang,
   };
 
-  const uri = siteUrl + (await documentService.config()).urls.converter.replace('/', ''); // get the absolute converter url
+  // get the absolute converter url
+  const uri = siteUrl + (await documentService.config()).urls.converter.replace('/', '');
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -131,7 +154,8 @@ documentService.getConvertedUri = async function getConvertedUri(
 
   if (cfgSignatureEnable && cfgSignatureUseForRequest) { // if the signature is enabled and it can be used for request
     // write signature authorization header
-    headers[(await documentService.config()).authorization.header] = (await documentService.config()).authorization.prefix + this.fillJwtByUrl(uri, params);
+    const { authorization } = (await documentService.config());
+    headers[authorization.header] = authorization.prefix + this.fillJwtByUrl(uri, params);
     params.token = documentService.getToken(params); // get token and save it to the parameters
   }
 
@@ -256,7 +280,8 @@ documentService.commandRequest = async function commandRequest(method, documentR
     'Content-Type': 'application/json',
   };
   if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-    headers[(await documentService.config()).authorization.header] = (await documentService.config()).authorization.prefix + this.fillJwtByUrl(uri, params);
+    const { authorization } = (await documentService.config());
+    headers[authorization.header] = authorization.prefix + this.fillJwtByUrl(uri, params);
     params.token = documentService.getToken(params);
   }
 
@@ -276,7 +301,8 @@ documentService.commandRequest = async function commandRequest(method, documentR
 // check jwt token headers
 documentService.checkJwtHeader = async function checkJwtHeader(req) {
   let decoded = null;
-  const authorization = req.get((await documentService.config()).authorization.header); // get signature authorization header from the request
+  // get signature authorization header from the request
+  const authorization = req.get((await documentService.config()).authorization.header);
   const authorizationPrefix = (await documentService.config()).authorization.prefix;
   // if authorization header exists and it starts with the authorization header prefix
   if (authorization && authorization.startsWith(authorizationPrefix)) {
@@ -318,28 +344,6 @@ documentService.readToken = function readToken(token) {
   }
   return null;
 };
-
-async function fetchMeta(path) {
-  if (_pendingPromise[path]) return _pendingPromise[path];
-
-  _pendingPromise[path] = fetch(siteUrl + 'meta/' + path)
-  .then(r => {
-    let data;
-    try {
-      if (r.status != 200) throw `Failed to fetch ${path}. Response status: ${r.status}`
-      data = r.json();
-    } catch (e) {
-      console.log(e);
-    }
-    return data;
-  })
-  .then(data => {
-    _pendingPromise[path] = null;
-    return data;
-  });
-
-  return _pendingPromise[path];
-}
 
 // save all the functions to the documentService module to export it later in other files
 module.exports = documentService;

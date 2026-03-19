@@ -1199,7 +1199,8 @@ app.get('/editor', async (req, res) => { // define a handler for editing documen
     const directUrl = req.DocManager.getDownloadUrl(fileName);
     let mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
 
-    let canEdit = (await fileUtility.getEditExtensions()).indexOf(fileExt.slice(1)) !== -1; // check if this file can be edited
+    // check if this file can be edited
+    let canEdit = (await fileUtility.getEditExtensions()).indexOf(fileExt.slice(1)) !== -1;
     if (((!canEdit && mode === 'edit') || mode === 'fillForms')
       && (await fileUtility.getFillExtensions()).indexOf(fileExt.slice(1)) !== -1) {
       mode = 'fillForms';

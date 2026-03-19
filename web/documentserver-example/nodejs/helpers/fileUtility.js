@@ -61,7 +61,7 @@ fileUtility.getFileExtension = function getFileExtension(path, withoutDot, isUrl
 // get file type from the given path
 fileUtility.getFileType = async function getFileType(path) {
   const ext = fileUtility.getFileExtension(path, true); // get the file extension from the given path
-  const supportedFormats = await documentService.formats()
+  const supportedFormats = await documentService.formats();
 
   for (let i = 0; i < supportedFormats.length; i++) {
     if (supportedFormats[i].name === ext && supportedFormats[i].type !== '') return supportedFormats[i].type;

@@ -335,8 +335,11 @@ DocManager.prototype.getStoredFiles = async function getStoredFiles() {
       const item = { // create an object with element data
         time,
         name: storedFiles[i],
+        // eslint-disable-next-line no-await-in-loop
         documentType: await fileUtility.getFileType(storedFiles[i]),
-        canEdit: (await fileUtility.getEditExtensions()).indexOf(fileUtility.getFileExtension(storedFiles[i], true)) !== -1,
+        canEdit:
+          // eslint-disable-next-line no-await-in-loop
+          (await fileUtility.getEditExtensions()).indexOf(fileUtility.getFileExtension(storedFiles[i], true)) !== -1,
         version: version + 1,
       };
 
