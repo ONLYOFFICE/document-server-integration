@@ -279,7 +279,7 @@ app.get('/history', async (req, res) => {
   filestream.pipe(res); // send file information to the response by streams
 });
 
-app.post('/upload', (req, res) => { // define a handler for uploading files
+app.post('/upload', async (req, res) => { // define a handler for uploading files
   req.DocManager = new DocManager(req, res);
   req.DocManager.storagePath(''); // mkdir if not exist
 
@@ -288,7 +288,7 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
   const uploadDirTmp = path.join(uploadDir, 'tmp'); // and create directory for temporary files if it doesn't exist
   req.DocManager.createDirectory(uploadDirTmp);
 
-  const fileSizeLimit = configServer.get('maxFileSize');
+  const fileSizeLimit = (await documentService.config()).limits.maxFileSize;
   // create a new incoming form
   const form = new formidable.IncomingForm({ maxFileSize: fileSizeLimit, maxTotalFileSize: fileSizeLimit });
   form.uploadDir = uploadDirTmp; // and write there all the necessary parameters
@@ -380,7 +380,7 @@ app.post('/create', (req, res) => {
 
     urllib.request(fileUrl, { method: 'GET' }, async (err, data) => {
       // check if the file size exceeds the maximum file size
-      if (configServer.get('maxFileSize') < data.length || data.length <= 0) {
+      if ((await documentService.config()).limits.maxFileSize < data.length || data.length <= 0) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.write(JSON.stringify({ error: 'File size is incorrect' }));
         res.end();
