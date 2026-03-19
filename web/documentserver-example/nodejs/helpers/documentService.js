@@ -27,8 +27,6 @@ const guidManager = require('./guidManager');
 const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
-const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
-const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
 const cfgSignatureSecretAlgorithmRequest = configServer.get('token.algorithmRequest');
@@ -119,7 +117,7 @@ documentService.getConvertedUri = async function getConvertedUri(
 
   if (cfgSignatureEnable && cfgSignatureUseForRequest) { // if the signature is enabled and it can be used for request
     // write signature authorization header
-    headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+    headers[(await documentService.config()).authorization.header] = (await documentService.config()).authorization.prefix + this.fillJwtByUrl(uri, params);
     params.token = documentService.getToken(params); // get token and save it to the parameters
   }
 
@@ -244,7 +242,7 @@ documentService.commandRequest = async function commandRequest(method, documentR
     'Content-Type': 'application/json',
   };
   if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-    headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+    headers[(await documentService.config()).authorization.header] = (await documentService.config()).authorization.prefix + this.fillJwtByUrl(uri, params);
     params.token = documentService.getToken(params);
   }
 
@@ -262,13 +260,14 @@ documentService.commandRequest = async function commandRequest(method, documentR
 };
 
 // check jwt token headers
-documentService.checkJwtHeader = function checkJwtHeader(req) {
+documentService.checkJwtHeader = async function checkJwtHeader(req) {
   let decoded = null;
-  const authorization = req.get(cfgSignatureAuthorizationHeader); // get signature authorization header from the request
+  const authorization = req.get((await documentService.config()).authorization.header); // get signature authorization header from the request
+  const authorizationPrefix = (await documentService.config()).authorization.prefix;
   // if authorization header exists and it starts with the authorization header prefix
-  if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
+  if (authorization && authorization.startsWith(authorizationPrefix)) {
     // the resulting token starts after the authorization header prefix
-    const token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+    const token = authorization.substring(authorizationPrefix.length);
     try {
       decoded = jwt.verify(token, cfgSignatureSecret); // verify signature on jwt token using signature secret
     } catch (err) {

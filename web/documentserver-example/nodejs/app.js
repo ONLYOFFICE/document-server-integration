@@ -43,8 +43,6 @@ const enableForgotten = configServer.get('enableForgotten');
 const fileChoiceUrl = configServer.has('fileChoiceUrl') ? configServer.get('fileChoiceUrl') : '';
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
-const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
-const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
 const verifyPeerOff = configServer.get('verify_peer_off');
@@ -185,7 +183,7 @@ app.delete('/forgotten', (req, res) => { // define a handler for removing forgot
   }
 });
 
-app.get('/download', (req, res) => { // define a handler for downloading files
+app.get('/download', async (req, res) => { // define a handler for downloading files
   req.DocManager = new DocManager(req, res);
 
   const fileName = fileUtility.getFileName(req.query.fileName);
@@ -194,9 +192,10 @@ app.get('/download', (req, res) => { // define a handler for downloading files
 
   if (!!userAddress
         && cfgSignatureEnable && cfgSignatureUseForRequest) {
-    const authorization = req.get(cfgSignatureAuthorizationHeader);
-    if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
-      token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+    const authorization = req.get((await documentService.config()).authorization.header);
+    const authorizationPrefix = (await documentService.config()).authorization.prefix;
+    if (authorization && authorization.startsWith(authorizationPrefix)) {
+      token = authorization.substring(authorizationPrefix.length);
     }
 
     try {
@@ -236,12 +235,13 @@ app.get('/data', (req, res) => { // define a handler for getting sample ai form 
   });
 });
 
-app.get('/history', (req, res) => {
+app.get('/history', async (req, res) => {
   req.DocManager = new DocManager(req, res);
   if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-    const authorization = req.get(cfgSignatureAuthorizationHeader);
-    if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
-      const token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+    const authorization = req.get((await documentService.config()).authorization.header);
+    const authorizationPrefix = (await documentService.config()).authorization.prefix;
+    if (authorization && authorization.startsWith(authorizationPrefix)) {
+      const token = authorization.substring(authorizationPrefix.length);
       try {
         jwt.verify(token, cfgSignatureSecret);
       } catch (err) {
@@ -1022,7 +1022,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     if (Object.hasOwn(req.body, 'token')) { // if request body has its own token
       body = documentService.readToken(req.body.token); // read and verify it
     } else {
-      const checkJwtHeaderRes = documentService.checkJwtHeader(req); // otherwise, check jwt token headers
+      const checkJwtHeaderRes = await documentService.checkJwtHeader(req); // otherwise, check jwt token headers
       if (checkJwtHeaderRes) { // if they exist
         if (checkJwtHeaderRes.payload) {
           body = checkJwtHeaderRes.payload; // get the payload object
