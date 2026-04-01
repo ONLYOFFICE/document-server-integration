@@ -382,7 +382,7 @@ class FileModel
       insert_image['token'] = JwtHelper.encode(insert_image)
     end
 
-    insert_image.to_json.tr('{', '').tr('}', '')
+    insert_image
   end
 
   # get compared file information
