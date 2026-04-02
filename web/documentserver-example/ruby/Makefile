@@ -26,7 +26,8 @@ dev: \
 	export BUNDLE_WITH := development:doc:test
 dev: #           Install development dependencies and initialize the project.
 	@bundle install
-	@bundle exec rake app:update:bin
+	@bundle binstubs railties --path bin --force
+	@test -f bin/rails
 ifeq ($(SORBET_SUPPORTED),1)
 	@bundle exec tapioca init
 endif
@@ -36,7 +37,8 @@ prod: \
 	export BUNDLE_WITHOUT := development:doc:test
 prod: #          Install production dependencies.
 	@bundle install
-	@bundle exec rake app:update:bin
+	@bundle binstubs railties --path bin --force
+	@test -f bin/rails
 
 .PHONY: server-dev
 server-dev: #    Start the development server on localhost at $PORT (default: 3000).
