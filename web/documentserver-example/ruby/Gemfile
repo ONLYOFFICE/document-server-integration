@@ -15,7 +15,6 @@ gem 'rubocop', '~> 1.52', group: :development
 gem 'rubocop-rails', '~> 2.20', group: :development
 gem 'sass-rails', '~> 6.0'
 gem 'sdoc', '~> 2.6', group: :doc
-gem 'yard', '>= 0.9.37', group: :development
 gem 'sorbet-runtime', '~> 0.5.10871'
 gem 'test-unit', '~> 3.6', groups: [:development, :test]
 gem 'turbolinks', '~> 5.2'
@@ -24,6 +23,7 @@ gem 'uglifier', '~> 4.2'
 gem 'uuid', '~> 2.3'
 gem 'web-console', '~> 4.2', groups: [:development, :test]
 gem 'webrick', '~> 1.8.2'
+gem 'yard', '>= 0.9.37', group: :development
 
 # Unfortunately, Sorbet only supports Darwin and Linux-based systems.
 # Additionally, it doesn't support Linux on ARM64, which may be used in a Docker
