@@ -1,5 +1,7 @@
 # Change Log
 
+- nodejs: disable AI plugin for anonymous
+
 ## 1.15.0
 - nodejs: added AI Auto Fill Plugin
 - php-laravel: fix custom jwt header
