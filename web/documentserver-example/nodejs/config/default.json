@@ -17,6 +17,8 @@
     "wopi": {
       "discovery": "hosting/discovery"
     },
+    "configUrl": "meta/config",
+    "formatsUrl": "meta/formats",
     "preloaderUrl": "web-apps/apps/api/documents/preload.html",
     "exampleUrl": null,
     "storageFolder": "./files",
@@ -31,7 +33,10 @@
         "secret": "secret",
         "expiresIn": "5m"
     },
-    "verify_peer_off": true
+    "verify_peer_off": true,
+    "languages": {
+      "aa-AA": "Test Language"
+    }
   },
   "plugins": {
     "pluginsData": []

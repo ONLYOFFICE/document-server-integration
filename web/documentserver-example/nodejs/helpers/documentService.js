@@ -46,7 +46,7 @@ documentService.userIp = null;
 async function fetchMeta(path) {
   if (pendingPromise[path]) return pendingPromise[path];
 
-  pendingPromise[path] = fetch(`${siteUrl}meta/${path}`)
+  pendingPromise[path] = fetch(siteUrl + path)
     .then((r) => {
       let data;
       try {
@@ -67,7 +67,7 @@ async function fetchMeta(path) {
 
 documentService.config = async function config() {
   if (!configCache) {
-    configCache = await fetchMeta('config');
+    configCache = await fetchMeta(configServer.configUrl);
     configCache.langObject = Object.fromEntries(['en', ...configCache.langs.filter((v) => v !== 'en')].map((k) => {
       switch (k) {
         case 'pt-pt': return [k, 'Portuguese (Portugal)'];
@@ -81,6 +81,13 @@ documentService.config = async function config() {
           }
       }
     }));
+
+    if (configServer.languages && typeof configServer.languages === 'object') {
+      Object.keys(configServer.languages).forEach((k) => {
+        configCache.langObject[k] = configServer.languages[k];
+      });
+    }
+
     setTimeout(() => {
       configCache = null;
     }, 1000 * 60 * 60);
@@ -91,7 +98,7 @@ documentService.config = async function config() {
 
 documentService.formats = async function formats() {
   if (!formatsCache) {
-    formatsCache = await fetchMeta('formats');
+    formatsCache = await fetchMeta(configServer.formatsUrl);
     setTimeout(() => {
       formatsCache = null;
     }, 1000 * 60 * 60);
