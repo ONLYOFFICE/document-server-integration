@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: disable AI plugin for anonymous
 - java-spring: docs-integration-sdk updated to 1.8
 - php-laravel: update docs-integration-sdk to 1.4
 - nodejs: wopi CopyPasteRestrictions for anonymous
