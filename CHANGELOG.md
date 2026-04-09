@@ -1,5 +1,6 @@
 # Change Log
 
+- python: disable AI plugin for anonymous
 - php-laravel: disable AI plugin for anonymous
 - php: disable AI plugin for anonymous
 - java: disable AI plugin for anonymous

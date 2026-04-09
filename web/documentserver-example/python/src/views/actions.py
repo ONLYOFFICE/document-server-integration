@@ -353,6 +353,11 @@ def edit(request):
         }
     }
 
+    if user.id == 'uid-0':
+        edConfig['editorConfig']['plugins'] = {
+            'disable': ['asc.{9DC93CDB-B576-4F0C-B55E-FCC9C48DD007}']
+        }
+
     # an image which will be inserted into the document
     dataInsertImage = {
         'fileType': 'svg',
