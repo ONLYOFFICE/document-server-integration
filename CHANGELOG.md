@@ -1,5 +1,6 @@
 # Change Log
 
+- php: disable AI plugin for anonymous
 - java: disable AI plugin for anonymous
 - go: disable AI plugin for anonymous
 - csharp-mvc: disable AI plugin for anonymous
