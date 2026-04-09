@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp-mvc: disable AI plugin for anonymous
 - csharp: disable AI plugin for anonymous
 - nodejs: disable AI plugin for anonymous
 
