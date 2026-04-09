@@ -1,5 +1,6 @@
 # Change Log
 
+- csharp: disable AI plugin for anonymous
 - nodejs: disable AI plugin for anonymous
 
 ## 1.15.0
