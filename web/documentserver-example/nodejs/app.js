@@ -101,6 +101,7 @@ app.get('/', async (req, res) => { // define a handler for default page
       languages: (await documentService.config()).langObject,
       serverVersion: config.get('version'),
       enableForgotten,
+      formats: await documentService.formats(),
     });
   } catch (ex) {
     console.log(ex); // display error message in the console
