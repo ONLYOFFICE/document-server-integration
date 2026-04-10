@@ -3,10 +3,10 @@ name: Licenses PHP Laravel
 on:
   workflow_dispatch:
   push:
-    branches: [master, develop]
+    branches: [main, develop]
     paths: ['web/documentserver-example/php-laravel/**']
   pull_request:
-    branches: [master, develop]
+    branches: [main, develop]
     paths: ['web/documentserver-example/php-laravel/**']
 
 jobs:

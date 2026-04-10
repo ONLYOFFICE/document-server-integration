@@ -3,10 +3,10 @@ name: ESLint
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main, develop]
     paths: ['web/documentserver-example/nodejs/**']
   pull_request:
-    branches: [master, develop]
+    branches: [main, develop]
     paths: ['web/documentserver-example/nodejs/**']
 
 env:

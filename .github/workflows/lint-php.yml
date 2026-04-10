@@ -3,10 +3,10 @@ name: PHPCs
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main, develop]
     paths: ['web/documentserver-example/php/**']
   pull_request:
-    branches: [master, develop]
+    branches: [main, develop]
     paths: ['web/documentserver-example/php/**']
 
 jobs:

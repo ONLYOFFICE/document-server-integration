@@ -1,11 +1,11 @@
 FROM php:8.2.8-fpm-alpine3.18 AS example
 WORKDIR /srv
 COPY . .
+COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
 RUN \
 	chown -R www-data:www-data /srv && \
 	apk update && \
 	apk add --no-cache \
-		composer \
 		make && \
 	make prod
 CMD ["make", "server-prod"]

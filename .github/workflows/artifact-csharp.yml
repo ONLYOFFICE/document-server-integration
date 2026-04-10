@@ -3,10 +3,10 @@ name: Artifact Csharp
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main]
     paths: ['web/documentserver-example/csharp/**']
   pull_request:
-    branches: [master]
+    branches: [main]
     paths: ['web/documentserver-example/csharp/**']
 
 jobs:

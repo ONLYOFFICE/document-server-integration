@@ -114,10 +114,9 @@
 
     // the user is trying to insert an image by clicking the Image from Storage button
     var onRequestInsertImage = function(event) {
-        docEditor.insertImage({  // insert an image into the file
-            "c": event.data.c,
-            <%= raw @file.insert_image %>
-        })
+        var data = <%= raw @file.insert_image.to_json %>;
+        data.c = event.data.c;
+        docEditor.insertImage(data);  // insert an image into the file
     };
 
     // the user is trying to select document for comparing by clicking the Document from Storage button

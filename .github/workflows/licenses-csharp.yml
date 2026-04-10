@@ -3,10 +3,10 @@ name: Licenses Csharp
 on:
   workflow_dispatch:
   push:
-    branches: [master, develop]
+    branches: [main, develop]
     paths: ['web/documentserver-example/csharp/**']
   pull_request:
-    branches: [master, develop]
+    branches: [main, develop]
     paths: ['web/documentserver-example/csharp/**']
 
 jobs:

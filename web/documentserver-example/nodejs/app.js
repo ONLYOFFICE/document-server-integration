@@ -1250,6 +1250,10 @@ app.get('/editor', async (req, res) => { // define a handler for editing documen
       pluginsConfig = plugins;
     }
 
+    if (userid === 'uid-0') {
+      pluginsConfig = { ...pluginsConfig, disable: ['asc.{9DC93CDB-B576-4F0C-B55E-FCC9C48DD007}'] };
+    }
+
     // file config data
     const argss = {
       apiUrl: siteUrl + (await documentService.config()).urls.api.replace('/', ''),

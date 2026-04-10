@@ -3,10 +3,10 @@ name: Rubocop
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main, develop]
     paths: ['web/documentserver-example/ruby/**']
   pull_request:
-    branches: [master, develop]
+    branches: [main, develop]
     paths: ['web/documentserver-example/ruby/**']
 
 jobs:

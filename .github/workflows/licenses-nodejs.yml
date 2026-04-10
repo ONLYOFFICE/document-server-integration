@@ -3,10 +3,10 @@ name: Licenses Nodejs
 on:
   workflow_dispatch:
   push:
-    branches: [master, develop]
+    branches: [main, develop]
     paths: ['web/documentserver-example/nodejs/**']
   pull_request:
-    branches: [master, develop]
+    branches: [main, develop]
     paths: ['web/documentserver-example/nodejs/**']
 
 env:

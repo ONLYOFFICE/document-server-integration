@@ -3,10 +3,10 @@ name: Artifact Python
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main]
     paths: ['web/documentserver-example/python/**']
   pull_request:
-    branches: [master]
+    branches: [main]
     paths: ['web/documentserver-example/python/**']
 
 jobs:

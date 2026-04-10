@@ -8,16 +8,16 @@ These examples show the way to integrate [ONLYOFFICE Docs][2] into your own webs
 The package contains examples written in .Net (C# MVC), .Net (C#), Go, Java, Java Spring, Node.js, PHP, PHP (Laravel), Python and Ruby.
 
 You should change `http://documentserver` to your server address in these files:
-* [.Net (C# MVC)](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/csharp-mvc) - `web/documentserver-example/csharp-mvc/web.appsettings.config`
-* [.Net (C#)](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/csharp) - `web/documentserver-example/csharp/settings.config`
-* [Go](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/go) - `web\documentserver-example\go\config\configuration.json`
-* [Java](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/java) - `web/documentserver-example/java/src/main/resources/settings.properties`
-* [Java Spring](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/java-spring) - `web/documentserver-example/java-spring/src/main/resources/application.properties`
-* [Node.js](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/nodejs) - `web/documentserver-example/nodejs/config/default.json`
-* [PHP](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/php) - `web/documentserver-example/php/src/configuration/ConfigurationManager.php`
-* [PHP (Laravel)](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/php-laravel) - `web/documentserver-example/php-laravel/.env.example`
-* [Python](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/python) - `web/documentserver-example/python/src/configuration/configuration.py`
-* [Ruby](https://github.com/ONLYOFFICE/document-server-integration/tree/master/web/documentserver-example/ruby) - `web/documentserver-example/ruby/app/configuration/configuration.rb`
+* [.Net (C# MVC)](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/csharp-mvc) - `web/documentserver-example/csharp-mvc/web.appsettings.config`
+* [.Net (C#)](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/csharp) - `web/documentserver-example/csharp/settings.config`
+* [Go](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/go) - `web\documentserver-example\go\config\configuration.json`
+* [Java](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/java) - `web/documentserver-example/java/src/main/resources/settings.properties`
+* [Java Spring](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/java-spring) - `web/documentserver-example/java-spring/src/main/resources/application.properties`
+* [Node.js](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/nodejs) - `web/documentserver-example/nodejs/config/default.json`
+* [PHP](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/php) - `web/documentserver-example/php/src/configuration/ConfigurationManager.php`
+* [PHP (Laravel)](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/php-laravel) - `web/documentserver-example/php-laravel/.env.example`
+* [Python](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/python) - `web/documentserver-example/python/src/configuration/configuration.py`
+* [Ruby](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/ruby) - `web/documentserver-example/ruby/app/configuration/configuration.rb`
 
 More information on how to use these examples can be found here: [https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/)
 

@@ -3,10 +3,10 @@ name: Artifact Nodejs
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main]
     paths: ['web/documentserver-example/nodejs/**']
   pull_request:
-    branches: [master]
+    branches: [main]
     paths: ['web/documentserver-example/nodejs/**']
 
 jobs:

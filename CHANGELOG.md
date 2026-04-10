@@ -1,6 +1,9 @@
 # Change Log
 
 - nodejs: use formats, languages, maxFileSize, urls to services, jwt header and prefix from document server meta
+- nodejs: disable AI plugin for anonymous
+- java-spring: docs-integration-sdk updated to 1.8
+- php-laravel: update docs-integration-sdk to 1.4
 - nodejs: wopi CopyPasteRestrictions for anonymous
 - update insertImage formats
 - new mobile index page view

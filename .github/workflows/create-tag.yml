@@ -2,7 +2,7 @@ name: Create Tag
 
 on:
   push:
-    branches: [master]
+    branches: [main]
     paths-ignore:
       - '.github/**'
       - '**/AUTHORS.md'
