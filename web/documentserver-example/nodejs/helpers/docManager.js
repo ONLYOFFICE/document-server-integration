@@ -315,7 +315,7 @@ DocManager.prototype.changesUser = function changesUser(fileName, userAddress, v
 };
 
 // get all the stored files
-DocManager.prototype.getStoredFiles = function getStoredFiles() {
+DocManager.prototype.getStoredFiles = async function getStoredFiles() {
   const userAddress = this.curUserHostAddress();
   const directory = this.storageRootPath(userAddress);
   this.createDirectory(directory);
@@ -335,8 +335,11 @@ DocManager.prototype.getStoredFiles = function getStoredFiles() {
       const item = { // create an object with element data
         time,
         name: storedFiles[i],
-        documentType: fileUtility.getFileType(storedFiles[i]),
-        canEdit: fileUtility.getEditExtensions().indexOf(fileUtility.getFileExtension(storedFiles[i], true)) !== -1,
+        // eslint-disable-next-line no-await-in-loop
+        documentType: await fileUtility.getFileType(storedFiles[i]),
+        canEdit:
+          // eslint-disable-next-line no-await-in-loop
+          (await fileUtility.getEditExtensions()).indexOf(fileUtility.getFileExtension(storedFiles[i], true)) !== -1,
         version: version + 1,
       };
 
@@ -585,10 +588,10 @@ DocManager.prototype.cleanFolderRecursive = function cleanFolderRecursive(folder
 };
 
 // get files information
-DocManager.prototype.getFilesInfo = function getFilesInfo(fileId) {
+DocManager.prototype.getFilesInfo = async function getFilesInfo(fileId) {
   const userAddress = this.curUserHostAddress();
   const directory = this.storageRootPath(userAddress);
-  const filesInDirectory = this.getStoredFiles(); // get all the stored files from the folder
+  const filesInDirectory = await this.getStoredFiles(); // get all the stored files from the folder
   const responseArray = [];
   let responseObject;
   // run through all the files from the directory

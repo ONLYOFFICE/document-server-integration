@@ -1,5 +1,6 @@
 # Change Log
 
+- nodejs: use formats, languages, maxFileSize, urls to services, jwt header and prefix from document server meta
 - nodejs: disable AI plugin for anonymous
 
 ## 1.15.0

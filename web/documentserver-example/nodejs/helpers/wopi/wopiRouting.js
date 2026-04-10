@@ -21,6 +21,7 @@ const tokenValidator = require('./tokenValidator');
 const filesController = require('./filesController');
 const utils = require('./utils');
 const DocManager = require('../docManager');
+const documentService = require('../documentService');
 const fileUtility = require('../fileUtility');
 const users = require('../users');
 
@@ -57,12 +58,12 @@ exports.registerRoutes = function registerRoutes(app) {
     });
 
     // Checking supported extensions
-    const editedExts = fileUtility.getEditExtensions().filter((i) => docsExtEdit.includes(i));
-    const fillExts = fileUtility.getFillExtensions().filter((i) => docsExtEdit.includes(i));
+    const editedExts = (await fileUtility.getEditExtensions()).filter((i) => docsExtEdit.includes(i));
+    const fillExts = (await fileUtility.getFillExtensions()).filter((i) => docsExtEdit.includes(i));
 
     try {
       // get all the stored files
-      const files = req.DocManager.getStoredFiles();
+      const files = await req.DocManager.getStoredFiles();
 
       // run through all the files and write the corresponding information to each file
       // eslint-disable-next-line no-restricted-syntax
@@ -95,7 +96,7 @@ exports.registerRoutes = function registerRoutes(app) {
         convertExts: fileUtility.getConvertExtensions(),
         editedExts,
         fillExts,
-        languages: configServer.get('languages'),
+        languages: (await documentService.config()).langObject,
         enableForgotten: configServer.get('enableForgotten'),
         editNewExts,
       });

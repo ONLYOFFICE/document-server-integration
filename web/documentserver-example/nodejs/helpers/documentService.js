@@ -20,6 +20,7 @@
 const urlModule = require('url');
 const urllib = require('urllib');
 const jwt = require('jsonwebtoken');
+const { getLangNameFromCode } = require('language-name-map');
 const configServer = require('config').get('server');
 const fileUtility = require('./fileUtility');
 const guidManager = require('./guidManager');
@@ -27,15 +28,113 @@ const guidManager = require('./guidManager');
 const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
-const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
-const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
 const cfgSignatureSecretAlgorithmRequest = configServer.get('token.algorithmRequest');
 
+let configCache;
+let formatsCache;
+const pendingPromise = {
+  config: null,
+  formats: null,
+};
+
 const documentService = {};
 
 documentService.userIp = null;
+
+async function fetchMeta(path) {
+  if (pendingPromise[path]) return pendingPromise[path];
+
+  pendingPromise[path] = fetch(siteUrl + path)
+    .then((r) => {
+      let data;
+      try {
+        if (r.status !== 200) throw new Error(`Failed to get ${path}. Response status: ${r.status}`);
+        data = r.json();
+      } catch (e) {
+        console.log(e.message);
+      }
+      return data;
+    })
+    .then((data) => {
+      pendingPromise[path] = null;
+      return data;
+    })
+    .catch((e) => {
+      console.log(`Failed to get ${path}. ${e}`);
+      pendingPromise[path] = null;
+      return null;
+    });
+
+  return pendingPromise[path];
+}
+
+documentService.config = async function config() {
+  if (!configCache) {
+    configCache = await fetchMeta(configServer.configUrl);
+
+    if (!configCache) {
+      return {
+        langObject: {},
+        limits: {
+          maxFileSize: 0,
+        },
+        urls: {
+          command: '',
+          converter: '',
+          api: '',
+        },
+        authorization: {
+          header: '',
+          prefix: '',
+        },
+      };
+    }
+
+    configCache.langObject = Object.fromEntries(['en', ...configCache.langs.filter((v) => v !== 'en')].map((k) => {
+      switch (k) {
+        case 'pt-pt': return [k, 'Portuguese (Portugal)'];
+        case 'sr-cyrl': return [k, 'Serbian (Cyrillic)'];
+        case 'zh-tw': return [k, 'Chinese (Traditional)'];
+        default:
+          try {
+            return [k, getLangNameFromCode(k).name];
+          } catch {
+            return [k, k];
+          }
+      }
+    }));
+
+    if (configServer.languages && typeof configServer.languages === 'object') {
+      Object.keys(configServer.languages).forEach((k) => {
+        configCache.langObject[k] = configServer.languages[k];
+      });
+    }
+
+    setTimeout(() => {
+      configCache = null;
+    }, 1000 * 60 * 60);
+  }
+
+  return configCache;
+};
+
+documentService.formats = async function formats() {
+  if (!formatsCache) {
+    formatsCache = await fetchMeta(configServer.formatsUrl);
+
+    if (!formatsCache) {
+      return [];
+    }
+
+    setTimeout(() => {
+      formatsCache = null;
+    }, 1000 * 60 * 60);
+  }
+
+  return formatsCache;
+};
 
 // get the url of the converted file (synchronous)
 documentService.getConvertedUriSync = function getConvertedUriSync(
@@ -51,7 +150,7 @@ documentService.getConvertedUriSync = function getConvertedUriSync(
 };
 
 // get the url of the converted file
-documentService.getConvertedUri = function getConvertedUri(
+documentService.getConvertedUri = async function getConvertedUri(
   documentUri,
   fromExtension,
   toExtension,
@@ -82,7 +181,8 @@ documentService.getConvertedUri = function getConvertedUri(
     region: lang,
   };
 
-  const uri = siteUrl + configServer.get('converterUrl'); // get the absolute converter url
+  // get the absolute converter url
+  const uri = siteUrl + (await documentService.config()).urls.converter.replace('/', '');
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -90,7 +190,8 @@ documentService.getConvertedUri = function getConvertedUri(
 
   if (cfgSignatureEnable && cfgSignatureUseForRequest) { // if the signature is enabled and it can be used for request
     // write signature authorization header
-    headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+    const { authorization } = (await documentService.config());
+    headers[authorization.header] = authorization.prefix + this.fillJwtByUrl(uri, params);
     params.token = documentService.getToken(params); // get token and save it to the parameters
   }
 
@@ -199,7 +300,7 @@ documentService.getResponseUri = function getResponseUri(json) {
 };
 
 // create a command request
-documentService.commandRequest = function commandRequest(method, documentRevisionId, callback, meta = null) {
+documentService.commandRequest = async function commandRequest(method, documentRevisionId, callback, meta = null) {
   const revisionId = documentService.generateRevisionId(documentRevisionId); // generate the document key value
   const params = { // create a parameter object with command method and the document key value in it
     c: method,
@@ -210,12 +311,13 @@ documentService.commandRequest = function commandRequest(method, documentRevisio
     params.meta = meta;
   }
 
-  const uri = siteUrl + configServer.get('commandUrl'); // get the absolute command url
+  const uri = siteUrl + (await documentService.config()).urls.command.replace('/', ''); // get the absolute command url
   const headers = { // create a headers object
     'Content-Type': 'application/json',
   };
   if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-    headers[cfgSignatureAuthorizationHeader] = cfgSignatureAuthorizationHeaderPrefix + this.fillJwtByUrl(uri, params);
+    const { authorization } = (await documentService.config());
+    headers[authorization.header] = authorization.prefix + this.fillJwtByUrl(uri, params);
     params.token = documentService.getToken(params);
   }
 
@@ -233,13 +335,15 @@ documentService.commandRequest = function commandRequest(method, documentRevisio
 };
 
 // check jwt token headers
-documentService.checkJwtHeader = function checkJwtHeader(req) {
+documentService.checkJwtHeader = async function checkJwtHeader(req) {
   let decoded = null;
-  const authorization = req.get(cfgSignatureAuthorizationHeader); // get signature authorization header from the request
+  // get signature authorization header from the request
+  const authorization = req.get((await documentService.config()).authorization.header);
+  const authorizationPrefix = (await documentService.config()).authorization.prefix;
   // if authorization header exists and it starts with the authorization header prefix
-  if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
+  if (authorization && authorization.startsWith(authorizationPrefix)) {
     // the resulting token starts after the authorization header prefix
-    const token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+    const token = authorization.substring(authorizationPrefix.length);
     try {
       decoded = jwt.verify(token, cfgSignatureSecret); // verify signature on jwt token using signature secret
     } catch (err) {
