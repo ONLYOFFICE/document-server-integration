@@ -54,6 +54,7 @@ const requestDiscovery = async function requestDiscovery(DocManager) {
             ignoreAttributes: false,
             parseAttributeValue: true,
             attrValueProcessor: (val) => he.decode(val, { isAttributeValue: true }),
+            processEntities: false,
           };
           const parser = new xmlParser.XMLParser(xmlParseOptions);
           // create the discovery XML file with the parameters from the response
