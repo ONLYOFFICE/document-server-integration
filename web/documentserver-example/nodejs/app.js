@@ -42,8 +42,6 @@ const siteUrl = configServer.get('siteUrl');
 const enableForgotten = configServer.get('enableForgotten');
 const cfgSignatureEnable = configServer.get('token.enable');
 const cfgSignatureUseForRequest = configServer.get('token.useforrequest');
-const cfgSignatureAuthorizationHeader = configServer.get('token.authorizationHeader');
-const cfgSignatureAuthorizationHeaderPrefix = configServer.get('token.authorizationHeaderPrefix');
 const cfgSignatureSecretExpiresIn = configServer.get('token.expiresIn');
 const cfgSignatureSecret = configServer.get('token.secret');
 const verifyPeerOff = configServer.get('verify_peer_off');
@@ -89,18 +87,19 @@ app.use(favicon(`${__dirname}/public/images/favicon.ico`)); // use favicon
 app.use(bodyParser.json()); // connect middleware that parses json
 app.use(bodyParser.urlencoded({ extended: false })); // connect middleware that parses urlencoded bodies
 
-app.get('/', (req, res) => { // define a handler for default page
+app.get('/', async (req, res) => { // define a handler for default page
   try {
     req.DocManager = new DocManager(req, res);
 
     res.render('index', { // render index template with the parameters specified
       preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-      storedFiles: req.DocManager.getStoredFiles(),
+      storedFiles: await req.DocManager.getStoredFiles(),
       params: req.DocManager.getCustomParams(),
       users,
-      languages: configServer.get('languages'),
+      languages: (await documentService.config()).langObject,
       serverVersion: config.get('version'),
       enableForgotten,
+      formats: await documentService.formats(),
     });
   } catch (ex) {
     console.log(ex); // display error message in the console
@@ -135,14 +134,14 @@ app.get('/forgotten', async (req, res) => {
 
   function getForgottenFile(key) {
     return new Promise((resolve, reject) => {
-      documentService.commandRequest('getForgotten', key, (err, data) => {
+      documentService.commandRequest('getForgotten', key, async (err, data) => {
         if (err) {
           reject(err);
         } else {
           const parsedData = JSON.parse(data);
           resolve({
             name: parsedData.key,
-            documentType: fileUtility.getFileType(parsedData.url),
+            documentType: await fileUtility.getFileType(parsedData.url),
             url: parsedData.url,
           });
         }
@@ -183,7 +182,7 @@ app.delete('/forgotten', (req, res) => { // define a handler for removing forgot
   }
 });
 
-app.get('/download', (req, res) => { // define a handler for downloading files
+app.get('/download', async (req, res) => { // define a handler for downloading files
   req.DocManager = new DocManager(req, res);
 
   const fileName = fileUtility.getFileName(req.query.fileName);
@@ -192,9 +191,10 @@ app.get('/download', (req, res) => { // define a handler for downloading files
 
   if (!!userAddress
         && cfgSignatureEnable && cfgSignatureUseForRequest) {
-    const authorization = req.get(cfgSignatureAuthorizationHeader);
-    if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
-      token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+    const authorization = req.get((await documentService.config()).authorization.header);
+    const authorizationPrefix = (await documentService.config()).authorization.prefix;
+    if (authorization && authorization.startsWith(authorizationPrefix)) {
+      token = authorization.substring(authorizationPrefix.length);
     }
 
     try {
@@ -234,12 +234,13 @@ app.get('/data', (req, res) => { // define a handler for getting sample ai form 
   });
 });
 
-app.get('/history', (req, res) => {
+app.get('/history', async (req, res) => {
   req.DocManager = new DocManager(req, res);
   if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-    const authorization = req.get(cfgSignatureAuthorizationHeader);
-    if (authorization && authorization.startsWith(cfgSignatureAuthorizationHeaderPrefix)) {
-      const token = authorization.substring(cfgSignatureAuthorizationHeaderPrefix.length);
+    const authorization = req.get((await documentService.config()).authorization.header);
+    const authorizationPrefix = (await documentService.config()).authorization.prefix;
+    if (authorization && authorization.startsWith(authorizationPrefix)) {
+      const token = authorization.substring(authorizationPrefix.length);
       try {
         jwt.verify(token, cfgSignatureSecret);
       } catch (err) {
@@ -277,7 +278,7 @@ app.get('/history', (req, res) => {
   filestream.pipe(res); // send file information to the response by streams
 });
 
-app.post('/upload', (req, res) => { // define a handler for uploading files
+app.post('/upload', async (req, res) => { // define a handler for uploading files
   req.DocManager = new DocManager(req, res);
   req.DocManager.storagePath(''); // mkdir if not exist
 
@@ -286,13 +287,13 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
   const uploadDirTmp = path.join(uploadDir, 'tmp'); // and create directory for temporary files if it doesn't exist
   req.DocManager.createDirectory(uploadDirTmp);
 
-  const fileSizeLimit = configServer.get('maxFileSize');
+  const fileSizeLimit = (await documentService.config()).limits.maxFileSize;
   // create a new incoming form
   const form = new formidable.IncomingForm({ maxFileSize: fileSizeLimit, maxTotalFileSize: fileSizeLimit });
   form.uploadDir = uploadDirTmp; // and write there all the necessary parameters
   form.keepExtensions = true;
 
-  form.parse(req, (err, fields, files) => { // parse this form
+  form.parse(req, async (err, fields, files) => { // parse this form
     if (err) { // if an error occurs
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'application/json' });
@@ -321,11 +322,11 @@ app.post('/upload', (req, res) => { // define a handler for uploading files
       return;
     }
 
-    const exts = fileUtility.getSuppotredExtensions(); // all the supported file extensions
+    const exts = await fileUtility.getSuppotredExtensions(); // all the supported file extensions
     const curExt = fileUtility.getFileExtension(file.originalFilename, true);
-    const documentType = fileUtility.getFileType(file.originalFilename);
+    const documentType = await fileUtility.getFileType(file.originalFilename);
 
-    if (exts.indexOf(curExt) === -1 || fileUtility.getFormatActions(curExt).length === 0) {
+    if (exts.indexOf(curExt) === -1 || (await fileUtility.getFormatActions(curExt)).length === 0) {
       // DocManager.cleanFolderRecursive(uploadDirTmp, true);  // if not, clean the folder with temporary files
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write('{ "error": "File type is not supported" }');
@@ -376,19 +377,19 @@ app.post('/create', (req, res) => {
     const userAddress = req.DocManager.curUserHostAddress();
     req.DocManager.historyPath(fileName, userAddress, true);
 
-    urllib.request(fileUrl, { method: 'GET' }, (err, data) => {
+    urllib.request(fileUrl, { method: 'GET' }, async (err, data) => {
       // check if the file size exceeds the maximum file size
-      if (configServer.get('maxFileSize') < data.length || data.length <= 0) {
+      if ((await documentService.config()).limits.maxFileSize < data.length || data.length <= 0) {
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.write(JSON.stringify({ error: 'File size is incorrect' }));
         res.end();
         return;
       }
 
-      const exts = fileUtility.getSuppotredExtensions(); // all the supported file extensions
+      const exts = await fileUtility.getSuppotredExtensions(); // all the supported file extensions
       const curExt = fileUtility.getFileExtension(fileName, true);
 
-      if (exts.indexOf(curExt) === -1 || fileUtility.getFormatActions(curExt).length === 0) {
+      if (exts.indexOf(curExt) === -1 || (await fileUtility.getFormatActions(curExt)).length === 0) {
         // and write the error status and message to the response
         res.writeHead(200, { 'Content-Type': 'application/json' });
         res.write(JSON.stringify({ error: 'File type is not supported' }));
@@ -413,7 +414,7 @@ app.post('/create', (req, res) => {
   }
 });
 
-app.post('/convert', (req, res) => { // define a handler for converting files
+app.post('/convert', async (req, res) => { // define a handler for converting files
   req.DocManager = new DocManager(req, res);
 
   const fileName = fileUtility.getFileName(req.body.filename);
@@ -471,7 +472,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
       if (status !== 200) throw new Error(`Conversion service returned status: ${status}`);
 
       // write a file with a new extension, but with the content from the origin file
-      if (fileUtility.getFileType(correctName) !== null) {
+      if ((await fileUtility.getFileType(correctName)) !== null) {
         fileSystem.writeFileSync(req.DocManager.storagePath(correctName), data);
       } else {
         writeResult(newFileUri.replace('http://localhost/', siteUrl), result, 'FileTypeIsNotSupported');
@@ -507,7 +508,7 @@ app.post('/convert', (req, res) => { // define a handler for converting files
 
   try {
     // check if the file with such an extension can be converted
-    if ((fileUtility.getConvertExtensions().indexOf(fileExt) !== -1) || ('fileExt' in req.body)) {
+    if (((await fileUtility.getConvertExtensions()).indexOf(fileExt) !== -1) || ('fileExt' in req.body)) {
       const storagePath = req.DocManager.storagePath(fileName);
       const stat = fileSystem.statSync(storagePath);
       let key = fileUri + stat.mtime.getTime();
@@ -525,11 +526,11 @@ app.post('/convert', (req, res) => { // define a handler for converting files
   }
 });
 
-app.get('/files', (req, res) => { // define a handler for getting files information
+app.get('/files', async (req, res) => { // define a handler for getting files information
   try {
     req.DocManager = new DocManager(req, res);
     // get the information about the files from the storage path
-    const filesInDirectoryInfo = req.DocManager.getFilesInfo();
+    const filesInDirectoryInfo = await req.DocManager.getFilesInfo();
     res.setHeader('Content-Type', 'application/json');
     res.write(JSON.stringify(filesInDirectoryInfo)); // transform files information into the json string
   } catch (ex) {
@@ -540,12 +541,12 @@ app.get('/files', (req, res) => { // define a handler for getting files informat
   res.end();
 });
 
-app.get('/files/file/:fileId', (req, res) => { // define a handler for getting file information by its id
+app.get('/files/file/:fileId', async (req, res) => { // define a handler for getting file information by its id
   try {
     req.DocManager = new DocManager(req, res);
     const { fileId } = req.params;
     // get the information about the file specified by a file id
-    const fileInfoById = req.DocManager.getFilesInfo(fileId);
+    const fileInfoById = await req.DocManager.getFilesInfo(fileId);
     res.setHeader('Content-Type', 'application/json');
     res.write(JSON.stringify(fileInfoById));
   } catch (ex) {
@@ -1020,7 +1021,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
     if (Object.hasOwn(req.body, 'token')) { // if request body has its own token
       body = documentService.readToken(req.body.token); // read and verify it
     } else {
-      const checkJwtHeaderRes = documentService.checkJwtHeader(req); // otherwise, check jwt token headers
+      const checkJwtHeaderRes = await documentService.checkJwtHeader(req); // otherwise, check jwt token headers
       if (checkJwtHeaderRes) { // if they exist
         if (checkJwtHeaderRes.payload) {
           body = checkJwtHeaderRes.payload; // get the payload object
@@ -1102,7 +1103,7 @@ app.get('/config', async (req, res) => {
   res.end();
 });
 
-app.get('/editor', (req, res) => { // define a handler for editing document
+app.get('/editor', async (req, res) => { // define a handler for editing document
   try {
     req.DocManager = new DocManager(req, res);
 
@@ -1144,7 +1145,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
       type = 'desktop';
     }
 
-    const fileType = fileUtility.getFileType(fileName);
+    const fileType = await fileUtility.getFileType(fileName);
     const templatesImageUrl = req.DocManager.getTemplateImageUrl(fileType);
     const createUrl = req.DocManager.getCreateUrl(fileType, userid, type, lang);
     let templates = null;
@@ -1197,9 +1198,10 @@ app.get('/editor', (req, res) => { // define a handler for editing document
     const directUrl = req.DocManager.getDownloadUrl(fileName);
     let mode = req.query.mode || 'edit'; // mode: view/edit/review/comment/fillForms/embedded
 
-    let canEdit = fileUtility.getEditExtensions().indexOf(fileExt.slice(1)) !== -1; // check if this file can be edited
+    // check if this file can be edited
+    let canEdit = (await fileUtility.getEditExtensions()).indexOf(fileExt.slice(1)) !== -1;
     if (((!canEdit && mode === 'edit') || mode === 'fillForms')
-      && fileUtility.getFillExtensions().indexOf(fileExt.slice(1)) !== -1) {
+      && (await fileUtility.getFillExtensions()).indexOf(fileExt.slice(1)) !== -1) {
       mode = 'fillForms';
       canEdit = true;
     }
@@ -1254,7 +1256,7 @@ app.get('/editor', (req, res) => { // define a handler for editing document
 
     // file config data
     const argss = {
-      apiUrl: siteUrl + configServer.get('apiUrl'),
+      apiUrl: siteUrl + (await documentService.config()).urls.api.replace('/', ''),
       file: {
         name: fileName,
         ext: fileUtility.getFileExtension(fileName, true),
@@ -1412,9 +1414,9 @@ app.post('/historyObj', (req, res) => {
   res.end();
 });
 
-app.get('/formats', (req, res) => {
+app.get('/formats', async (req, res) => {
   try {
-    const formats = fileUtility.getFormats();
+    const formats = await documentService.formats();
     res.json({
       formats,
     });

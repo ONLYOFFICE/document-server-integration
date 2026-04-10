@@ -149,6 +149,9 @@
                                     <ul>
                                         <li>Create a new Document, Spreadsheet, Presentation, or PDF Form or use the sample files</li>
                                         <li>Upload your own files to test using the Upload file button</li>
+                                        <% if (formats && formats.length > 0) { %>
+                                            Supported formats include <%= formats.filter(format => format.actions.includes('view')).map(format => format.name).join(', ') %>
+                                        <% } %>
                                         <li>Select your username and language to simulate different users and environments</li>
                                         <li>Try real-time collaboration by opening the same document using different users in different Web browser sessions</li>
                                     </ul>
