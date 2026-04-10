@@ -50,16 +50,21 @@ async function fetchMeta(path) {
     .then((r) => {
       let data;
       try {
-        if (r.status !== 200) throw new Error(`Failed to fetch ${path}. Response status: ${r.status}`);
+        if (r.status !== 200) throw new Error(`Failed to get ${path}. Response status: ${r.status}`);
         data = r.json();
       } catch (e) {
-        console.log(e);
+        console.log(e.message);
       }
       return data;
     })
     .then((data) => {
       pendingPromise[path] = null;
       return data;
+    })
+    .catch((e) => {
+      console.log(`Failed to get ${path}. ${e}`);
+      pendingPromise[path] = null;
+      return null;
     });
 
   return pendingPromise[path];
@@ -68,6 +73,25 @@ async function fetchMeta(path) {
 documentService.config = async function config() {
   if (!configCache) {
     configCache = await fetchMeta(configServer.configUrl);
+
+    if (!configCache) {
+      return {
+        langObject: {},
+        limits: {
+          maxFileSize: 0,
+        },
+        urls: {
+          command: '',
+          converter: '',
+          api: '',
+        },
+        authorization: {
+          header: '',
+          prefix: '',
+        },
+      };
+    }
+
     configCache.langObject = Object.fromEntries(['en', ...configCache.langs.filter((v) => v !== 'en')].map((k) => {
       switch (k) {
         case 'pt-pt': return [k, 'Portuguese (Portugal)'];
@@ -99,6 +123,11 @@ documentService.config = async function config() {
 documentService.formats = async function formats() {
   if (!formatsCache) {
     formatsCache = await fetchMeta(configServer.formatsUrl);
+
+    if (!formatsCache) {
+      return [];
+    }
+
     setTimeout(() => {
       formatsCache = null;
     }, 1000 * 60 * 60);
