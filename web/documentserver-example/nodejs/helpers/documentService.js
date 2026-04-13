@@ -52,8 +52,14 @@ async function fetchMeta(path) {
     absSiteUrl = DocManager.getServerHost() + siteUrl;
   }
 
-  pendingPromise[path] = fetch(absSiteUrl + path)
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+  pendingPromise[path] = fetch(absSiteUrl + path, {
+    signal: controller.signal,
+  })
     .then((r) => {
+      clearTimeout(timeoutId);
       let data;
       try {
         if (r.status !== 200) throw new Error(`Failed to get ${path}. Response status: ${r.status}`);
@@ -68,7 +74,12 @@ async function fetchMeta(path) {
       return data;
     })
     .catch((e) => {
-      console.log(`Failed to get ${path}. ${e}`);
+      clearTimeout(timeoutId);
+      if (e.name === 'AbortError') {
+        console.log(`Request to ${path} timed out`);
+      } else {
+        console.log(`Failed to get ${path}. ${e}`);
+      }
       pendingPromise[path] = null;
       return null;
     });
