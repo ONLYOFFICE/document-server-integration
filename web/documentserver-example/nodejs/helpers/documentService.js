@@ -24,6 +24,7 @@ const { getLangNameFromCode } = require('language-name-map');
 const configServer = require('config').get('server');
 const fileUtility = require('./fileUtility');
 const guidManager = require('./guidManager');
+const DocManager = require('./docManager');
 
 const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
 const cfgSignatureEnable = configServer.get('token.enable');
@@ -46,7 +47,12 @@ documentService.userIp = null;
 async function fetchMeta(path) {
   if (pendingPromise[path]) return pendingPromise[path];
 
-  pendingPromise[path] = fetch(siteUrl + path)
+  let absSiteUrl = siteUrl;
+  if (absSiteUrl.indexOf('/') === 0) {
+    absSiteUrl = DocManager.getServerHost() + siteUrl;
+  }
+
+  pendingPromise[path] = fetch(absSiteUrl + path)
     .then((r) => {
       let data;
       try {
