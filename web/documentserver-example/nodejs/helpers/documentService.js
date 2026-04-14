@@ -43,11 +43,22 @@ const documentService = {};
 
 documentService.userIp = null;
 
-async function fetchMeta(path) {
+async function fetchMeta(path, docManager) {
   if (pendingPromise[path]) return pendingPromise[path];
 
-  pendingPromise[path] = fetch(siteUrl + path)
+  let absSiteUrl = siteUrl;
+  if (absSiteUrl.indexOf('/') === 0) {
+    absSiteUrl = docManager.getServerHost() + siteUrl;
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+  pendingPromise[path] = fetch(absSiteUrl + path, {
+    signal: controller.signal,
+  })
     .then((r) => {
+      clearTimeout(timeoutId);
       let data;
       try {
         if (r.status !== 200) throw new Error(`Failed to get ${path}. Response status: ${r.status}`);
@@ -62,7 +73,12 @@ async function fetchMeta(path) {
       return data;
     })
     .catch((e) => {
-      console.log(`Failed to get ${path}. ${e}`);
+      clearTimeout(timeoutId);
+      if (e.name === 'AbortError') {
+        console.log(`Request to ${path} timed out`);
+      } else {
+        console.log(`Failed to get ${path}. ${e}`);
+      }
       pendingPromise[path] = null;
       return null;
     });
@@ -70,9 +86,9 @@ async function fetchMeta(path) {
   return pendingPromise[path];
 }
 
-documentService.config = async function config() {
+documentService.config = async function config(docManager) {
   if (!configCache) {
-    configCache = await fetchMeta(configServer.configUrl);
+    configCache = await fetchMeta(configServer.configUrl, docManager);
 
     if (!configCache) {
       return {
@@ -120,9 +136,9 @@ documentService.config = async function config() {
   return configCache;
 };
 
-documentService.formats = async function formats() {
+documentService.formats = async function formats(docManager) {
   if (!formatsCache) {
-    formatsCache = await fetchMeta(configServer.formatsUrl);
+    formatsCache = await fetchMeta(configServer.formatsUrl, docManager);
 
     if (!formatsCache) {
       return [];
@@ -138,6 +154,7 @@ documentService.formats = async function formats() {
 
 // get the url of the converted file (synchronous)
 documentService.getConvertedUriSync = function getConvertedUriSync(
+  docManager,
   documentUri,
   fromExtension,
   toExtension,
@@ -151,6 +168,7 @@ documentService.getConvertedUriSync = function getConvertedUriSync(
 
 // get the url of the converted file
 documentService.getConvertedUri = async function getConvertedUri(
+  docManager,
   documentUri,
   fromExtension,
   toExtension,
@@ -182,7 +200,7 @@ documentService.getConvertedUri = async function getConvertedUri(
   };
 
   // get the absolute converter url
-  const uri = siteUrl + (await documentService.config()).urls.converter.replace('/', '');
+  const uri = siteUrl + (await documentService.config(docManager)).urls.converter.replace('/', '');
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -190,7 +208,7 @@ documentService.getConvertedUri = async function getConvertedUri(
 
   if (cfgSignatureEnable && cfgSignatureUseForRequest) { // if the signature is enabled and it can be used for request
     // write signature authorization header
-    const { authorization } = (await documentService.config());
+    const { authorization } = (await documentService.config(docManager));
     headers[authorization.header] = authorization.prefix + this.fillJwtByUrl(uri, params);
     params.token = documentService.getToken(params); // get token and save it to the parameters
   }
@@ -300,7 +318,13 @@ documentService.getResponseUri = function getResponseUri(json) {
 };
 
 // create a command request
-documentService.commandRequest = async function commandRequest(method, documentRevisionId, callback, meta = null) {
+documentService.commandRequest = async function commandRequest(
+  docManager,
+  method,
+  documentRevisionId,
+  callback,
+  meta = null,
+) {
   const revisionId = documentService.generateRevisionId(documentRevisionId); // generate the document key value
   const params = { // create a parameter object with command method and the document key value in it
     c: method,
@@ -311,12 +335,12 @@ documentService.commandRequest = async function commandRequest(method, documentR
     params.meta = meta;
   }
 
-  const uri = siteUrl + (await documentService.config()).urls.command.replace('/', ''); // get the absolute command url
+  const uri = siteUrl + (await documentService.config(docManager)).urls.command.replace('/', '');
   const headers = { // create a headers object
     'Content-Type': 'application/json',
   };
   if (cfgSignatureEnable && cfgSignatureUseForRequest) {
-    const { authorization } = (await documentService.config());
+    const { authorization } = (await documentService.config(docManager));
     headers[authorization.header] = authorization.prefix + this.fillJwtByUrl(uri, params);
     params.token = documentService.getToken(params);
   }
@@ -338,8 +362,8 @@ documentService.commandRequest = async function commandRequest(method, documentR
 documentService.checkJwtHeader = async function checkJwtHeader(req) {
   let decoded = null;
   // get signature authorization header from the request
-  const authorization = req.get((await documentService.config()).authorization.header);
-  const authorizationPrefix = (await documentService.config()).authorization.prefix;
+  const authorization = req.get((await documentService.config(req.DocManager)).authorization.header);
+  const authorizationPrefix = (await documentService.config(req.DocManager)).authorization.prefix;
   // if authorization header exists and it starts with the authorization header prefix
   if (authorization && authorization.startsWith(authorizationPrefix)) {
     // the resulting token starts after the authorization header prefix
