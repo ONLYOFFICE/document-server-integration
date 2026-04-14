@@ -48,7 +48,7 @@ async function fetchMeta(path, docManager) {
 
   let absSiteUrl = siteUrl;
   if (absSiteUrl.indexOf('/') === 0) {
-    absSiteUrl = docManager.getServerUrl() + siteUrl;
+    absSiteUrl = docManager.getServerHost() + siteUrl;
   }
 
   const controller = new AbortController();
