@@ -58,8 +58,8 @@ exports.registerRoutes = function registerRoutes(app) {
     });
 
     // Checking supported extensions
-    const editedExts = (await fileUtility.getEditExtensions()).filter((i) => docsExtEdit.includes(i));
-    const fillExts = (await fileUtility.getFillExtensions()).filter((i) => docsExtEdit.includes(i));
+    const editedExts = (await fileUtility.getEditExtensions(req.DocManager)).filter((i) => docsExtEdit.includes(i));
+    const fillExts = (await fileUtility.getFillExtensions(req.DocManager)).filter((i) => docsExtEdit.includes(i));
 
     try {
       // get all the stored files
@@ -93,10 +93,10 @@ exports.registerRoutes = function registerRoutes(app) {
         params: req.DocManager.getCustomParams(),
         users,
         preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-        convertExts: fileUtility.getConvertExtensions(),
+        convertExts: fileUtility.getConvertExtensions(req.DocManager),
         editedExts,
         fillExts,
-        languages: (await documentService.config()).langObject,
+        languages: (await documentService.config(req.DocManager)).langObject,
         enableForgotten: configServer.get('enableForgotten'),
         editNewExts,
       });
