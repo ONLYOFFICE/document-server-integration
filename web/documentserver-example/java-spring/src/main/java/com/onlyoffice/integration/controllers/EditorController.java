@@ -207,9 +207,11 @@ public class EditorController {
     @SneakyThrows
     private String getInsertImage() {  // get an image that will be inserted into the document
         Map<String, Object> dataInsertImage = new HashMap<>();
-        Map<String, Object>[] images = new HashMap[1];
-        images[0].put("fileType", "svg");
-        images[0].put("url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.svg");
+        List<Map<String, Object>> images = new ArrayList<>();
+        images.add(Map.of(
+                "fileType", "svg",
+                "url", storagePathBuilder.getServerUrl(true) + "/css/img/logo.svg"
+        ));
         dataInsertImage.put("images", images);
 
         // check if the document token is enabled
