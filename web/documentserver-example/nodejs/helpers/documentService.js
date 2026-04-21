@@ -20,7 +20,6 @@
 const urlModule = require('url');
 const urllib = require('urllib');
 const jwt = require('jsonwebtoken');
-const { getLangNameFromCode } = require('language-name-map');
 const configServer = require('config').get('server');
 const fileUtility = require('./fileUtility');
 const guidManager = require('./guidManager');
@@ -108,17 +107,20 @@ documentService.config = async function config(docManager) {
       };
     }
 
+    const dn = new Intl.DisplayNames(['en'], { type: 'language' });
     configCache.langObject = Object.fromEntries(['en', ...configCache.langs.filter((v) => v !== 'en')].map((k) => {
       switch (k.toLowerCase()) {
-        case 'pt-pt': return ['pt-PT', 'Portuguese (Portugal)'];
-        case 'sr-cyrl': return ['sr-Cyrl', 'Serbian (Cyrillic)'];
-        case 'zh-tw': return ['zh-TW', 'Chinese (Traditional)'];
-        default:
-          try {
-            return [k, getLangNameFromCode(k).name];
-          } catch {
-            return [k, k];
-          }
+        case 'pt-pt': k = 'pt-PT';
+          break;
+        case 'sr-cyrl': k = 'sr-Cyrl';
+          break;
+        case 'zh-tw': k = 'zh-TW';
+          break;
+      }
+      try {
+        return [k, dn.of(k)];
+      } catch {
+        return [k, k];
       }
     }));
 
