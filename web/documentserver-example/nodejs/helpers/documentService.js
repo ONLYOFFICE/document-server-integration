@@ -109,10 +109,10 @@ documentService.config = async function config(docManager) {
     }
 
     configCache.langObject = Object.fromEntries(['en', ...configCache.langs.filter((v) => v !== 'en')].map((k) => {
-      switch (k) {
-        case 'pt-pt': return [k, 'Portuguese (Portugal)'];
-        case 'sr-cyrl': return [k, 'Serbian (Cyrillic)'];
-        case 'zh-tw': return [k, 'Chinese (Traditional)'];
+      switch (k.toLowerCase()) {
+        case 'pt-pt': return ['pt-PT', 'Portuguese (Portugal)'];
+        case 'sr-cyrl': return ['sr-Cyrl', 'Serbian (Cyrillic)'];
+        case 'zh-tw': return ['zh-TW', 'Chinese (Traditional)'];
         default:
           try {
             return [k, getLangNameFromCode(k).name];
