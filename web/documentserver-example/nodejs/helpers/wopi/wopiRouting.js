@@ -89,7 +89,7 @@ exports.registerRoutes = function registerRoutes(app) {
         params: req.DocManager.getCustomParams(),
         users,
         preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-        languages: (await documentService.config()).langObject,
+        languages: (await documentService.config(req.DocManager)).langObject,
         enableForgotten: configServer.get('enableForgotten'),
         editNewExts,
       });

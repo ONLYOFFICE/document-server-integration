@@ -336,9 +336,9 @@ DocManager.prototype.getStoredFiles = async function getStoredFiles() {
         time,
         name: storedFiles[i],
         // eslint-disable-next-line no-await-in-loop
-        documentType: await fileUtility.getFileType(storedFiles[i]),
+        documentType: await fileUtility.getFileType(this, storedFiles[i]),
         // eslint-disable-next-line no-await-in-loop
-        actions: await fileUtility.getFormatActions(fileUtility.getFileExtension(storedFiles[i], true)),
+        actions: await fileUtility.getFormatActions(this, fileUtility.getFileExtension(storedFiles[i], true)),
         version: version + 1,
       };
 
