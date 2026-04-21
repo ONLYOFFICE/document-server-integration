@@ -43,7 +43,7 @@ const documentService = {};
 
 documentService.userIp = null;
 
-async function fetchMeta(path, docManager) {
+async function fetchMeta(docManager, path) {
   if (pendingPromise[path]) return pendingPromise[path];
 
   let absSiteUrl = siteUrl;
@@ -88,7 +88,7 @@ async function fetchMeta(path, docManager) {
 
 documentService.config = async function config(docManager) {
   if (!configCache) {
-    configCache = await fetchMeta(configServer.configUrl, docManager);
+    configCache = await fetchMeta(docManager, configServer.configUrl);
 
     if (!configCache) {
       return {
@@ -138,7 +138,7 @@ documentService.config = async function config(docManager) {
 
 documentService.formats = async function formats(docManager) {
   if (!formatsCache) {
-    formatsCache = await fetchMeta(configServer.formatsUrl, docManager);
+    formatsCache = await fetchMeta(docManager, configServer.formatsUrl);
 
     if (!formatsCache) {
       return [];
