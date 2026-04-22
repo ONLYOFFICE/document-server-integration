@@ -53,7 +53,10 @@ const requestDiscovery = async function requestDiscovery(DocManager) {
             attributeNamePrefix: '',
             ignoreAttributes: false,
             parseAttributeValue: true,
-            attrValueProcessor: (val) => he.decode(val, { isAttributeValue: true }),
+            attributeValueProcessor: (attrName, attrValue) => {
+              // Decode HTML entities in attribute values
+              return he.decode(attrValue, { isAttributeValue: true });
+            },
             processEntities: false,
           };
           const parser = new xmlParser.XMLParser(xmlParseOptions);
