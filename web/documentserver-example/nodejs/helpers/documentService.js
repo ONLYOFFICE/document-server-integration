@@ -107,22 +107,7 @@ documentService.config = async function config(docManager) {
       };
     }
 
-    const dn = new Intl.DisplayNames(['en'], { type: 'language' });
-    configCache.langObject = Object.fromEntries(['en', ...configCache.langs.filter((v) => v !== 'en')].map((k) => {
-      switch (k.toLowerCase()) {
-        case 'pt-pt': k = 'pt-PT';
-          break;
-        case 'sr-cyrl': k = 'sr-Cyrl';
-          break;
-        case 'zh-tw': k = 'zh-TW';
-          break;
-      }
-      try {
-        return [k, dn.of(k)];
-      } catch {
-        return [k, k];
-      }
-    }));
+    configCache.langObject = ['en', ...configCache.langs.filter((v) => v !== 'en')];
 
     if (configServer.languages && typeof configServer.languages === 'object') {
       Object.keys(configServer.languages).forEach((k) => {
