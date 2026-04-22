@@ -95,8 +95,16 @@
                                             <span class="select-user">Language</span>
                                             <img class="info info-tooltip" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="images/info.svg" />
                                             <select class="select-user collectable" name="lang" id="language">
-                                                <% Object.keys(languages).forEach(key => { %>
-                                                    <option value="<%= key %>"><%= languages[key] %></option>
+                                                <% languages.forEach(lang => { 
+                                                    let displayName = lang;
+                                                    try {
+                                                        displayName = new Intl.DisplayNames(['en'], { type: 'language' }).of(lang) || lang;
+                                                    } catch (e) {
+                                                        console.error(`Failed to get display name for language: ${lang}`, e);
+                                                        displayName = lang;
+                                                    }
+                                                %>
+                                                    <option value="<%= lang %>"><%= displayName %></option>
                                                 <% }) %>
                                             </select>
                                         </td>
