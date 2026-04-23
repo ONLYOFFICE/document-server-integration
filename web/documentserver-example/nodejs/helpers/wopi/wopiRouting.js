@@ -108,13 +108,16 @@ exports.registerRoutes = function registerRoutes(app) {
     }
   });
   // define a handler for creating a new wopi editing session
-  app.get('/wopi-new', (req, res) => {
+  app.get('/wopi-new', async (req, res) => {
     const { fileExt } = req.query; // get the file extension from the request
 
     req.DocManager = new DocManager(req, res);
 
     if (fileExt) { // if the file extension exists
-      const fileName = req.DocManager.getCorrectName(`new.${fileExt}`);
+      // get an action for the specified extension and name
+      const action = await utils.getAction(req.DocManager, fileExt, 'editnew');
+      const requestedFileName = utils.getEditNewFileName(`new.${fileExt}`, action);
+      let fileName = req.DocManager.getCorrectName(requestedFileName);
       const redirectPath = `${req.DocManager.getServerUrl(true)}/wopi-action/`
       + `${encodeURIComponent(fileName)}?action=editnew${req.DocManager.getCustomParams()}`; // get the redirect path
       res.redirect(redirectPath);
