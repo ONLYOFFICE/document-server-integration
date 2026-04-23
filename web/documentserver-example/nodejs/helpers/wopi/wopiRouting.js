@@ -125,15 +125,16 @@ exports.registerRoutes = function registerRoutes(app) {
     try {
       req.DocManager = new DocManager(req, res);
 
-      let fileName = req.DocManager.getCorrectName(req.params.id);
-      const fileExt = fileUtility.getFileExtension(fileName, true); // get the file extension from the request
+      const requestedFileExt = fileUtility.getFileExtension(req.params.id, true); // get the file extension from the request
       const user = users.getUser(req.query.userid); // get a user by the id
 
       // get an action for the specified extension and name
-      const action = await utils.getAction(req.DocManager, fileExt, req.query.action);
+      const action = await utils.getAction(req.DocManager, requestedFileExt, req.query.action);
+      const requestedFileName = utils.getEditNewFileName(req.params.id, action);
+      let fileName = req.DocManager.getCorrectName(requestedFileName);
 
       if (action && req.query.action === 'editnew') {
-        fileName = req.DocManager.requestEditnew(req, fileName, user);
+        fileName = req.DocManager.requestEditnew(requestedFileName, fileName, user);
       }
 
       // render wopiAction template with the parameters specified
@@ -142,7 +143,7 @@ exports.registerRoutes = function registerRoutes(app) {
           req.DocManager.getServerUrl(true),
           req.DocManager.curUserHostAddress(),
           action,
-          req.params.id,
+          fileName,
         ),
         token: 'test',
         tokenTtl: Date.now() + 1000 * 60 * 60 * 10,

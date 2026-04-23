@@ -103,11 +103,14 @@ DocManager.prototype.getCorrectName = function getCorrectName(fileName, userAddr
 };
 
 // processes a request editnew
-DocManager.prototype.requestEditnew = function requestEditnew(req, fileName, user) {
+DocManager.prototype.requestEditnew = function requestEditnew(requestedFileName, fileName, user) {
   let correctName = fileName;
-  if (req.params.id !== fileName) { // processes a repeated request editnew
-    this.fileRemove(req.params.id);
-    correctName = this.getCorrectName(req.params.id);
+  if (requestedFileName !== fileName) { // processes a repeated request editnew
+    const requestedFilePath = this.storagePath(requestedFileName);
+    if (this.existsSync(requestedFilePath)) {
+      this.fileRemove(requestedFileName);
+    }
+    correctName = this.getCorrectName(requestedFileName);
   }
   this.fileSizeZero(correctName);
   this.saveFileData(correctName, user.id, user.name);
