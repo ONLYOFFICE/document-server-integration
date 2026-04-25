@@ -1,5 +1,6 @@
 # Change Log
 
+##
 - nodejs: use formats, languages, maxFileSize, urls to services, jwt header and prefix from document server meta
 - nodejs: disable AI plugin for anonymous
 - java-spring: docs-integration-sdk updated to 1.8
@@ -19,6 +20,8 @@
 - csharp: display mode buttons by actions
 - nodejs: display mode buttons by actions
 - nodejs: wopi UserCanOnlyComment
+- nodejs: setUsers for c=filler
+- nodejs: system start filling panel for default user
 
 ## 1.15.0
 - nodejs: added AI Auto Fill Plugin
