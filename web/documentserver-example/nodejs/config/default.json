@@ -34,9 +34,9 @@
         "expiresIn": "5m"
     },
     "verify_peer_off": true,
-    "languages": {
-      "aa-AA": "Test Language"
-    }
+    "languages": [
+      "aa-AA"
+    ]
   },
   "plugins": {
     "pluginsData": []
