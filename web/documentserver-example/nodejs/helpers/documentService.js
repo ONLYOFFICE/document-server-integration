@@ -110,9 +110,7 @@ documentService.config = async function config(docManager) {
     configCache.langObject = ['en', ...configCache.langs.filter((v) => v !== 'en')];
 
     if (configServer.languages && typeof configServer.languages === 'object') {
-      Object.keys(configServer.languages).forEach((k) => {
-        configCache.langObject[k] = configServer.languages[k];
-      });
+      configCache.langObject.push(...Object.values(configServer.languages));
     }
 
     setTimeout(() => {
