@@ -55,7 +55,7 @@ exports.registerRoutes = function registerRoutes(app) {
     actions.forEach((el) => {
       if (el.name === 'edit') docsExtEdit.push(`${el.ext}`);
       if (el.name === 'editnew') {
-        let ext = el.newext && el.newext !== '' ? el.newext : el.ext;
+        const ext = el.newext && el.newext !== '' ? el.newext : el.ext;
         editNewExts[ext] = utils.getEditNewText(ext);
       }
     });
@@ -113,7 +113,7 @@ exports.registerRoutes = function registerRoutes(app) {
       // get an action for the specified extension and name
       const action = await utils.getAction(req.DocManager, fileExt, 'editnew');
       const requestedFileName = utils.getEditNewFileName(`new.${fileExt}`, action);
-      let fileName = req.DocManager.getCorrectName(requestedFileName);
+      const fileName = req.DocManager.getCorrectName(requestedFileName);
       const redirectPath = `${req.DocManager.getServerUrl(true)}/wopi-action/`
       + `${encodeURIComponent(fileName)}?action=editnew${req.DocManager.getCustomParams()}`; // get the redirect path
       res.redirect(redirectPath);
