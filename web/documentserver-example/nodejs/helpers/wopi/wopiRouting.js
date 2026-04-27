@@ -126,12 +126,13 @@ exports.registerRoutes = function registerRoutes(app) {
 
       const user = users.getUser(req.query.userid); // get a user by the id
 
-      const fileExt = fileUtility.getFileExtension(req.params.id, true); // get the file extension from the request
+      let fileName = req.params.id;
+      const fileExt = fileUtility.getFileExtension(fileName, true); // get the file extension from the request
       // get an action for the specified extension and name
       const action = await utils.getAction(req.DocManager, fileExt, req.query.action);
-      let fileName = req.DocManager.getCorrectName(req.params.id);
 
       if (action && req.query.action === 'editnew') {
+        fileName = req.DocManager.getCorrectName(fileName);
         fileName = req.DocManager.requestEditnew(req.params.id, fileName, user);
       }
 
