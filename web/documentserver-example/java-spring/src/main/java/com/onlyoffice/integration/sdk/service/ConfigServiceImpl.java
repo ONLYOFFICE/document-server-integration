@@ -39,6 +39,7 @@ import com.onlyoffice.model.documenteditor.config.editorconfig.CoEditing;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Customization;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Embedded;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Mode;
+import com.onlyoffice.model.documenteditor.config.editorconfig.Plugins;
 import com.onlyoffice.model.documenteditor.config.editorconfig.Template;
 import com.onlyoffice.model.documenteditor.config.editorconfig.customization.Goback;
 import com.onlyoffice.model.documenteditor.config.editorconfig.customization.Close;
@@ -305,6 +306,19 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
                    .shareUrl(url)
                    .toolbarDocked(Toolbar.TOP)
                    .build();
+    }
+
+    @Override
+    public Plugins getPlugins(Object object) {
+        com.onlyoffice.integration.entities.User appUser = userService.getCurrentUser();
+
+        if (appUser.getId() == 4) {
+            return Plugins.builder()
+                    .disable(List.of("asc.{9DC93CDB-B576-4F0C-B55E-FCC9C48DD007}"))
+                    .build();
+        }
+
+        return super.getPlugins(object);
     }
 
     private CommentGroups getCommentGroups(final Permission userPermissions) {
