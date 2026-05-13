@@ -91,7 +91,7 @@ documentService.config = async function config(docManager) {
 
     if (!configCache) {
       return {
-        langObject: {},
+        langObject: [],
         limits: {
           maxFileSize: 0,
         },
