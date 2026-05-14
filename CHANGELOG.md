@@ -2,15 +2,7 @@
 
 ##
 - nodejs: use formats, languages, maxFileSize, urls to services, jwt header and prefix from document server meta
-- ruby: disable AI plugin for anonymous
-- python: disable AI plugin for anonymous
-- php-laravel: disable AI plugin for anonymous
-- php: disable AI plugin for anonymous
-- java: disable AI plugin for anonymous
-- go: disable AI plugin for anonymous
-- csharp-mvc: disable AI plugin for anonymous
-- csharp: disable AI plugin for anonymous
-- nodejs: disable AI plugin for anonymous
+- disable AI plugin for anonymous
 - java-spring: docs-integration-sdk updated to 1.8
 - php-laravel: update docs-integration-sdk to 1.4
 - nodejs: wopi CopyPasteRestrictions for anonymous
