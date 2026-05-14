@@ -19,10 +19,10 @@
 package com.onlyoffice.integration.sdk.manager;
 
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
-import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.DefaultUrlManager;
 import com.onlyoffice.model.documenteditor.config.document.DocumentType;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -43,8 +43,6 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
 
     @Autowired
     private FileStoragePathBuilder storagePathBuilder;
-    @Autowired
-    private DocumentManager documentManager;
 
     public UrlManagerImpl(final SettingsManager settingsManager) {
         super(settingsManager);
@@ -57,12 +55,16 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
 
     @Override
     public String getCreateUrl(final String fileId) {
-        return getCreateUrl(fileId, false);
+        String extension = FilenameUtils.getExtension(fileId);
+
+        return getCreateUrl(extension, false);
     }
 
     @Override
     public String getCreateSampleUrl(final String fileId) {
-        return getCreateUrl(fileId, true);
+        String extension = FilenameUtils.getExtension(fileId);
+
+        return getCreateUrl(extension, true);
     }
 
     @Override
@@ -106,8 +108,7 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
         }
     }
 
-    public String getTemplateImageUrl(final String fileName) {
-        DocumentType documentType = documentManager.getDocumentType(fileName);  // get the file type
+    public String getTemplateImageUrl(final DocumentType documentType) {
         String path = storagePathBuilder.getServerUrl(true);  // get server URL
         switch (documentType) {
             case WORD: // get URL to the template image for the word document type
@@ -139,10 +140,9 @@ public class UrlManagerImpl extends DefaultUrlManager implements UrlManager {
     }
 
     // get URL to the created file
-    private String getCreateUrl(final String fileName, final Boolean sample) {
-        String fileExt = documentManager.getExtension(fileName);
+    private String getCreateUrl(final String extension, final Boolean sample) {
         String url = storagePathBuilder.getServerUrl(true)
-                + "/create?fileExt=" + fileExt + "&sample=" + sample;
+                + "/create?fileExt=" + extension + "&sample=" + sample;
         return url;
     }
 }

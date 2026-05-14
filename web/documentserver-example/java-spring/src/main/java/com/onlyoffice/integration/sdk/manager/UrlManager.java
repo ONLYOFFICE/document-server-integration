@@ -18,8 +18,10 @@
 
 package com.onlyoffice.integration.sdk.manager;
 
+import com.onlyoffice.model.documenteditor.config.document.DocumentType;
+
 public interface UrlManager extends com.onlyoffice.manager.url.UrlManager {
     String getCreateSampleUrl(String fileId);
     String getHistoryFileUrl(String fileName, Integer version, String file, Boolean forDocumentServer);
-    String getTemplateImageUrl(String fileName);
+    String getTemplateImageUrl(DocumentType fileName);
 }

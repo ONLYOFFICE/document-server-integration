@@ -30,6 +30,7 @@ import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.model.common.User;
 import com.onlyoffice.model.documenteditor.Config;
+import com.onlyoffice.model.documenteditor.config.document.DocumentType;
 import com.onlyoffice.model.documenteditor.config.document.Info;
 import com.onlyoffice.model.documenteditor.config.document.Permissions;
 import com.onlyoffice.model.documenteditor.config.document.ReferenceData;
@@ -185,6 +186,7 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
         if (!appUser.getName().equals("Anonymous")) {
 
             String fileName = getDocumentManager().getDocumentName(fileId);
+            DocumentType documentType = getDocumentManager().getDocumentType(fileName);
 
             return List.of(
                     Template.builder()
@@ -193,7 +195,7 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
                             .url(getUrlManager().getCreateUrl(fileName))
                             .build(), // create a blank template
                     Template.builder()
-                            .image(urlManager.getTemplateImageUrl(fileName))
+                            .image(urlManager.getTemplateImageUrl(documentType))
                             .title("With sample content")
                             .url(urlManager.getCreateSampleUrl(fileName))
                             .build()// create a template with sample content using the template image
