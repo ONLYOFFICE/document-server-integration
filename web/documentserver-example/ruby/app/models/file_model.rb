@@ -210,6 +210,10 @@ class FileModel
       }
     }
 
+    if @user.id.eql?('uid-0')
+      config[:editorConfig][:plugins] = { disable: ['asc.{9DC93CDB-B576-4F0C-B55E-FCC9C48DD007}'] }
+    end
+
     if JwtHelper.enabled? # check if a secret key to generate token exists or not
       config['token'] = JwtHelper.encode(config) # encode a payload object into a token and write it to the config
     end

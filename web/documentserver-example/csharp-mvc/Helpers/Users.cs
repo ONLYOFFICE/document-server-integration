@@ -88,7 +88,8 @@ namespace OnlineEditorsExampleMVC.Helpers
             "Can't submit forms",
             "Tour of tips when opening a document",
             "Has empty role",
-            "Can't start filling"
+            "Can't start filling",
+            "Without AI Plugins"
         };
 
         private static List<User> users = new List<User>() {

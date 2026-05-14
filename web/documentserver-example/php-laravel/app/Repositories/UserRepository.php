@@ -85,6 +85,7 @@ class UserRepository
             'Tour of tips when opening a document',
             'Has empty role',
             'Can\'t start filling',
+            'Without AI Plugins',
         ];
         $this->users = [
             new User(

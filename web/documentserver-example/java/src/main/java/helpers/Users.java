@@ -94,6 +94,7 @@ public final class Users {
         add("Tour of tips when opening a document");
         add("Has empty role");
         add("Can't start filling");
+        add("Without AI Plugins");
     }};
 
     private static List<User> users = new ArrayList<User>() {{

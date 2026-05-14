@@ -193,6 +193,12 @@ final class DocEditorView extends View
             ],
         ];
 
+        if ($user->id == 'uid-0') {
+            $config['editorConfig']['plugins'] = [
+                'disable' => ['asc.{9DC93CDB-B576-4F0C-B55E-FCC9C48DD007}']
+            ];
+        }
+
         // an image for inserting
         $dataInsertImage = $isEnableDirectUrl ? [
             "images" => [

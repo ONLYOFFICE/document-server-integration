@@ -308,6 +308,14 @@ namespace OnlineEditorsExample
                     }
                 };
 
+            if (user.id.Equals("uid-0"))
+            {
+                ((Dictionary<string, object>)config["editorConfig"])["plugins"] = new Dictionary<string, object>
+                {
+                    { "disable", new List<string> { "asc.{9DC93CDB-B576-4F0C-B55E-FCC9C48DD007}" } }
+                };
+            }
+
             // if the secret key to generate token exists
             if (JwtManager.Enabled)
             {

@@ -105,7 +105,7 @@ class Editor
             ],
         ];
 
-        return [
+        $editorConfig = [
             'actionLink' => $this->config->actionLink ? json_decode($this->config->actionLink) : null,
             'mode' => $this->config->mode,
             'lang' => $this->config->lang,
@@ -142,5 +142,13 @@ class Editor
                 ],
             ],
         ];
+
+        if ($this->user->id === 'uid-0') {
+            $editorConfig['plugins'] = [
+                'disable' => ['asc.{9DC93CDB-B576-4F0C-B55E-FCC9C48DD007}'],
+            ];
+        }
+
+        return $editorConfig;
     }
 }

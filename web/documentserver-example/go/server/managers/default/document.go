@@ -145,6 +145,12 @@ func (dm DefaultDocumentManager) BuildDocumentConfig(
 			plugins = nil
 		}
 	}
+	if user.Id == "uid-0" {
+		if plugins == nil {
+			plugins = make(map[string]interface{})
+		}
+		plugins["disable"] = []string{"asc.{9DC93CDB-B576-4F0C-B55E-FCC9C48DD007}"}
+	}
 	submitForm := user.Id == "uid-1"
 
 	dm.logger.Debugf("Generating file %s config", parameters.Filename)

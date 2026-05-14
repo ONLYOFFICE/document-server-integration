@@ -118,6 +118,14 @@ public class FileModel {
         editorConfig.getCustomization().getFeatures()
             .setFeaturesTips(user.getId().equals("uid-0"));
 
+        if (user.getId().equals("uid-0")) {
+            HashMap<String, Object> plugins = new HashMap<>();
+            List<String> disable = new ArrayList<>();
+            disable.add("asc.{9DC93CDB-B576-4F0C-B55E-FCC9C48DD007}");
+            plugins.put("disable", disable);
+            editorConfig.setPlugins(plugins);
+        }
+
         if (user.getGoback() != null) {
             // write the absolute URL to the file location
             editorConfig.getCustomization().getGoback()
@@ -441,6 +449,7 @@ public class FileModel {
         private User user;
         private Customization customization;
         private Embedded embedded;
+        private HashMap<String, Object> plugins;
 
         public EditorConfig(final String actionData) {
             // get the action in the document that will be scrolled to (bookmark or comment)
@@ -478,6 +487,10 @@ public class FileModel {
 
         public Embedded getEmbedded() {
             return embedded;
+        }
+
+        public HashMap<String, Object> getPlugins() {
+            return plugins;
         }
 
         // set parameters for the embedded document
@@ -523,6 +536,10 @@ public class FileModel {
 
         public void setTemplates(final List<Map<String, String>> templatesParam) {
             this.templates = templatesParam;
+        }
+
+        public void setPlugins(final HashMap<String, Object> pluginsParam) {
+            this.plugins = pluginsParam;
         }
 
         public User getUser() {

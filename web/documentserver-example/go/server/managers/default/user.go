@@ -141,6 +141,7 @@ var descriptionUser0 []string = []string{
 	"Tour of tips when opening a document",
 	"Has empty role",
 	"Can't start filling",
+	"Without AI Plugins",
 }
 var descriptionUser1 []string = []string{
 	"File author by default",
