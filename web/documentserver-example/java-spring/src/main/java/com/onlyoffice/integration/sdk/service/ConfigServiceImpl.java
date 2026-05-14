@@ -309,10 +309,10 @@ public class ConfigServiceImpl extends DefaultConfigService implements ConfigSer
     }
 
     @Override
-    public Plugins getPlugins(Object object) {
+    public Plugins getPlugins(final Object object) {
         com.onlyoffice.integration.entities.User appUser = userService.getCurrentUser();
 
-        if (appUser.getId() == 4) {
+        if (String.valueOf(appUser.getId()).equals("4")) {
             return Plugins.builder()
                     .disable(List.of("asc.{9DC93CDB-B576-4F0C-B55E-FCC9C48DD007}"))
                     .build();
