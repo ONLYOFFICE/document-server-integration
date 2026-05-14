@@ -51,6 +51,5 @@ type Document struct {
 	Version       string        `json:"version"`
 	Permissions   Permissions   `json:"permissions,omitempty"`
 	ReferenceData ReferenceData `json:"referenceData"`
-	CanEdit       bool
-	CanFill       bool
+	Actions       []string
 }

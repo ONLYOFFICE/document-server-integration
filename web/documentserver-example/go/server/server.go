@@ -30,9 +30,8 @@ import (
 )
 
 type Server struct {
-	Http                *http.Server
-	Config              config.ApplicationConfig
-	ServerSpecification config.SpecificationConfig
+	Http   *http.Server
+	Config config.ApplicationConfig
 	*api.ServerAPI
 	Logger *zap.SugaredLogger
 	*managers.Managers
@@ -40,16 +39,15 @@ type Server struct {
 	isRunning bool
 }
 
-func New(config config.ApplicationConfig, specification config.SpecificationConfig,
+func New(config config.ApplicationConfig,
 	logger *zap.SugaredLogger, managers *managers.Managers, api *api.ServerAPI, reg *handlers.CallbackRegistry) *Server {
 	srv := Server{
-		Config:              config,
-		ServerSpecification: specification,
-		ServerAPI:           api,
-		Logger:              logger,
-		isRunning:           false,
-		Managers:            managers,
-		CallbackRegistry:    reg,
+		Config:           config,
+		ServerAPI:        api,
+		Logger:           logger,
+		isRunning:        false,
+		Managers:         managers,
+		CallbackRegistry: reg,
 	}
 
 	r := srv.configureRouter()

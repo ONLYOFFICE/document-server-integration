@@ -198,6 +198,13 @@ namespace OnlineEditorsExample
             return cachedFormats;
         }
 
+        public static List<string> GetFormatActions(string extension)
+        {
+            return All()
+                .Find(format => format.Extension() == extension)
+                .Actions;
+        }
+
         private static string GetPath()
         {
             string path = Path.Combine(GetDirectory(), "onlyoffice-docs-formats.json");

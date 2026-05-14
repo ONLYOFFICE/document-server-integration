@@ -36,19 +36,19 @@ import (
 )
 
 type DefaultStorageManager struct {
-	config        config.ApplicationConfig
-	specification config.SpecificationConfig
-	logger        *zap.SugaredLogger
+	config config.ApplicationConfig
+	logger *zap.SugaredLogger
 	managers.ConversionManager
+	managers.FormatManager
 }
 
-func NewDefaultStorageManager(config config.ApplicationConfig, specification config.SpecificationConfig,
-	logger *zap.SugaredLogger, conversionManager managers.ConversionManager) managers.StorageManager {
+func NewDefaultStorageManager(config config.ApplicationConfig, logger *zap.SugaredLogger,
+	conversionManager managers.ConversionManager, formatManager managers.FormatManager) managers.StorageManager {
 	return &DefaultStorageManager{
 		config,
-		specification,
 		logger,
 		conversionManager,
+		formatManager,
 	}
 }
 
@@ -115,11 +115,10 @@ func (sm DefaultStorageManager) GetStoredFiles(remoteAddress string) ([]models.D
 		}
 
 		documents = append(documents, models.Document{
-			FileType: sm.ConversionManager.GetFileType(filename),
+			FileType: sm.FormatManager.GetFileType(filename),
 			Title:    filename,
 			Url:      sm.GeneratePublicFileUri(filename, remoteAddress, managers.FileMeta{}),
-			CanEdit:  !sm.ConversionManager.IsCanConvert(utils.GetFileExt(filename, true)),
-			CanFill:  sm.ConversionManager.IsCanFill(utils.GetFileExt(filename, true)),
+			Actions:  sm.FormatManager.GetActions(utils.GetFileExt(filename, true)),
 			Version:  fmt.Sprint(version),
 		})
 	}

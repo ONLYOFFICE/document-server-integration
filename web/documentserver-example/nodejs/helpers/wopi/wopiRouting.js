@@ -21,6 +21,7 @@ const tokenValidator = require('./tokenValidator');
 const filesController = require('./filesController');
 const utils = require('./utils');
 const DocManager = require('../docManager');
+const documentService = require('../documentService');
 const fileUtility = require('../fileUtility');
 const users = require('../users');
 
@@ -49,20 +50,19 @@ exports.registerRoutes = function registerRoutes(app) {
     const actions = await utils.getDiscoveryInfo(req.DocManager);
     const wopiEnable = actions.length !== 0;
     const docsExtEdit = []; // Supported extensions for WOPI
-    const editNewExts = [];
+    const editNewExts = {};
 
     actions.forEach((el) => {
       if (el.name === 'edit') docsExtEdit.push(`${el.ext}`);
-      if (el.name === 'editnew') editNewExts.push({ ext: el.ext, text: utils.getEditNewText(el.ext) });
+      if (el.name === 'editnew') {
+        const ext = el.newext && el.newext !== '' ? el.newext : el.ext;
+        editNewExts[ext] = utils.getEditNewText(ext);
+      }
     });
-
-    // Checking supported extensions
-    const editedExts = fileUtility.getEditExtensions().filter((i) => docsExtEdit.includes(i));
-    const fillExts = fileUtility.getFillExtensions().filter((i) => docsExtEdit.includes(i));
 
     try {
       // get all the stored files
-      const files = req.DocManager.getStoredFiles();
+      const files = await req.DocManager.getStoredFiles();
 
       // run through all the files and write the corresponding information to each file
       // eslint-disable-next-line no-restricted-syntax
@@ -92,10 +92,7 @@ exports.registerRoutes = function registerRoutes(app) {
         params: req.DocManager.getCustomParams(),
         users,
         preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
-        convertExts: fileUtility.getConvertExtensions(),
-        editedExts,
-        fillExts,
-        languages: configServer.get('languages'),
+        languages: (await documentService.config(req.DocManager)).langObject,
         enableForgotten: configServer.get('enableForgotten'),
         editNewExts,
       });
@@ -107,13 +104,16 @@ exports.registerRoutes = function registerRoutes(app) {
     }
   });
   // define a handler for creating a new wopi editing session
-  app.get('/wopi-new', (req, res) => {
+  app.get('/wopi-new', async (req, res) => {
     const { fileExt } = req.query; // get the file extension from the request
 
     req.DocManager = new DocManager(req, res);
 
     if (fileExt) { // if the file extension exists
-      const fileName = req.DocManager.getCorrectName(`new.${fileExt}`);
+      // get an action for the specified extension and name
+      const action = await utils.getAction(req.DocManager, fileExt, 'editnew');
+      const requestedFileName = utils.getEditNewFileName(`new.${fileExt}`, action);
+      const fileName = req.DocManager.getCorrectName(requestedFileName);
       const redirectPath = `${req.DocManager.getServerUrl(true)}/wopi-action/`
       + `${encodeURIComponent(fileName)}?action=editnew${req.DocManager.getCustomParams()}`; // get the redirect path
       res.redirect(redirectPath);
@@ -124,15 +124,16 @@ exports.registerRoutes = function registerRoutes(app) {
     try {
       req.DocManager = new DocManager(req, res);
 
-      let fileName = req.DocManager.getCorrectName(req.params.id);
-      const fileExt = fileUtility.getFileExtension(fileName, true); // get the file extension from the request
       const user = users.getUser(req.query.userid); // get a user by the id
 
+      let fileName = req.params.id;
+      const fileExt = fileUtility.getFileExtension(fileName, true); // get the file extension from the request
       // get an action for the specified extension and name
       const action = await utils.getAction(req.DocManager, fileExt, req.query.action);
 
       if (action && req.query.action === 'editnew') {
-        fileName = req.DocManager.requestEditnew(req, fileName, user);
+        fileName = req.DocManager.getCorrectName(fileName);
+        fileName = req.DocManager.requestEditnew(req.params.id, fileName, user);
       }
 
       // render wopiAction template with the parameters specified
@@ -141,7 +142,7 @@ exports.registerRoutes = function registerRoutes(app) {
           req.DocManager.getServerUrl(true),
           req.DocManager.curUserHostAddress(),
           action,
-          req.params.id,
+          fileName,
         ),
         token: 'test',
         tokenTtl: Date.now() + 1000 * 60 * 60 * 10,

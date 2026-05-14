@@ -95,7 +95,7 @@ const descrUser3 = [
   'Can\'t restore the file version',
   'Can start filling',
   'Has role "role"',
-  'Can\'t submit forms',
+  'Can submit forms',
 ];
 
 const descrUser0 = [
@@ -179,7 +179,7 @@ const users = [
     false,
     null,
     {},
-    false,
+    true,
     ['role'],
   ),
   new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null, false, []),

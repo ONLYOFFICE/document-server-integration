@@ -44,6 +44,16 @@ public final class FormatManager {
         return this.formats;
     }
 
+    public List<String> getFormatActions(final String ext) {
+        return this
+                .all()
+                .stream()
+                .filter(format -> format.getName().equals(ext))
+                .findFirst()
+                .get()
+                .getActions();
+    }
+
     public List<Format> getFormatsByAction(final String action) {
         return this
                 .all()

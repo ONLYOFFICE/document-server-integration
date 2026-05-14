@@ -107,6 +107,11 @@ public final class DocumentManager {
         return DocumentManager.formatManager.autoConvertExtensions();
     }
 
+    // get actions for the file extension
+    public static List<String> getFormatActions(final String ext) {
+        return DocumentManager.formatManager.getFormatActions(ext);
+    }
+
     // get current user host address
     public static String curUserHostAddress(final String userAddress) {
         String userAddr = userAddress;

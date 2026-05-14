@@ -29,7 +29,6 @@ func (srv *DefaultServerEndpointsHandler) Index(w http.ResponseWriter, r *http.R
 	}
 
 	data := map[string]interface{}{
-		"Extensions":       srv.specification.Extensions,
 		"Users":            srv.Managers.UserManager.GetUsers(),
 		"Files":            files,
 		"Preloader":        srv.config.DocumentServerHost + srv.config.DocumentServerPreloader,
@@ -38,5 +37,8 @@ func (srv *DefaultServerEndpointsHandler) Index(w http.ResponseWriter, r *http.R
 		"ServerVersion":    srv.config.Version,
 	}
 
-	indexTemplate.Execute(w, data) // nolint: errcheck
+	err = indexTemplate.Execute(w, data)
+	if err != nil {
+		srv.logger.Errorf("Could not execute template: %s", err.Error())
+	}
 }

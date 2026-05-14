@@ -41,11 +41,23 @@
 <body>
     <form id="form1">
         <header>
-            <div class="center">
+            <div class="center main-nav">
                 <a href="./">
                     <img src="/images/logo.svg" alt="ONLYOFFICE" />
                 </a>
             </div>
+            <menu class="responsive-nav">
+                <li>
+                    <a href="./">
+                        <img src ="/images/mobile-logo.svg" alt="ONLYOFFICE" />
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onclick="toggleSidePanel(event)">
+                        <img src ="/images/mobile-menu.svg" alt="ONLYOFFICE" />
+                    </a>
+                </li>
+            </menu>
         </header>
         <div class="center main">
             <table class="table-main">
@@ -111,13 +123,16 @@
                                                     <input id="directUrl" type="checkbox" class="checkbox" />
                                                     Try opening on client
                                                     <img id="directUrlInfo" class="info info-tooltip" data-id="directUrlInfo" data-tooltip="Some files can be opened in the user's
-                                                             browser without connecting to the document server." src="/images/info.svg" />
+                                                             browser without connecting to the document server. Open each file in only one way." src="/images/info.svg" />
                                                 </label>
                                             </td>
                                         </tr>
                                     </table>
                                 </div>
                             </div>
+                            <button class="mobile-close-btn" onclick="toggleSidePanel(event)">
+                                <img src="/images/close.svg" alt="">
+                            </button>
                         </td>
                         <td class="section">
                             <div class="main-panel">
@@ -172,94 +187,102 @@
                                                             <span>{{ $file['filename'] }}</span>
                                                         </a>
                                                     </td>
+
+                                                    <!-- 1-2 -->
                                                     @if ($file['format']->isEditable())
-                                                    <td class="contentCells contentCells-icon">
-                                                        <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}'&action=edit&type=desktop" target="_blank">
-                                                            <img src="/images/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens" />
-                                                        </a>
-                                                    </td>
-                                                    <td class="contentCells contentCells-icon">
-                                                        <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}'&action=edit&type=mobile" target="_blank">
-                                                            <img src="/images/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices" />
-                                                        </a>
-                                                    </td>
+                                                        <td class="contentCells contentCells-icon" data-section="EDITOR">
+                                                            <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}'&action=edit&type=desktop" target="_blank">
+                                                                <img src="/images/edit.svg" alt="Open for full size screens" title="Open for full size screens" />
+                                                            </a>
+                                                        </td>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}'&action=edit&type=mobile" target="_blank">
+                                                                <img src="/images/mobileEdit.svg" alt="Open for mobile devices" title="Open for mobile devices" />
+                                                            </a>
+                                                        </td>
+                                                    @else
+                                                        <td class="contentCells contentCells-icon" data-section="EDITOR">
+                                                        <td class="contentCells contentCells-icon">
+                                                    @endif
+
+                                                    <!-- 3 -->
                                                     @if (!$file['format']->isPDF())
-                                                    <td class="contentCells contentCells-icon">
-                                                        <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=comment&type=desktop" target="_blank">
-                                                            <img src="/images/comment.svg" alt="Open in editor for comment" title="Open in editor for comment" />
-                                                        </a>
-                                                    </td>
-                                                    @endif
-                                                    @if ($file['format']->isWord())
-                                                    <td class="contentCells contentCells-icon">
-                                                        <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=review&type=desktop" target="_blank">
-                                                            <img src="/images/review.svg" alt="Open in editor for review" title="Open in editor for review" />
-                                                        </a>
-                                                    </td>
-                                                    <td class="contentCells contentCells-icon ">
-                                                        <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=blockcontent&type=desktop" target="_blank">
-                                                            <img src="/images/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification" />
-                                                        </a>
-                                                    </td>
-                                                    @elseif ($file['format']->isCell())
-                                                    <td class="contentCells contentCells-icon">
-                                                        <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=filter&type=desktop" target="_blank">
-                                                            <img src="/images/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                        </a>
-                                                    </td>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=comment&type=desktop" target="_blank">
+                                                                <img src="/images/comment.svg" alt="Open for comment" title="Open for comment" />
+                                                            </a>
+                                                        </td>
                                                     @else
-                                                    <td class="contentCells contentCells-icon"></td>
-                                                    <td class="contentCells contentCells-icon"></td>
+                                                        <td class="contentCells contentCells-icon"></td>
                                                     @endif
+
+                                                    <!-- 4-5 -->
                                                     @if ($file['format']->isFillable())
-                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                        <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=fillForms&type=desktop" target="_blank">
-                                                            <img src="/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" />
-                                                        </a>
-                                                    </td>
+                                                        <td class="contentCells contentCells-icon">
+                                                            <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=fillForms&type=desktop" target="_blank">
+                                                                <img src="/images/formsubmit.svg" alt="Open for filling in forms" title="Open for filling in forms" />
+                                                            </a>
+                                                        </td>
+                                                        <td class="contentCells contentCells-icon contentCells-shift">
+                                                            <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=fillForms&type=desktop" target="_blank">
+                                                                <img src="/images/mobile-fill-forms.svg" alt="Open for filling in forms for mobile devices" title="Open for filling in forms for mobile devices" />
+                                                            </a>
+                                                        </td>
                                                     @else
-                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
+
+                                                        <!-- 4 -->
+                                                        @if ($file['format']->isWord())
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=review&type=desktop" target="_blank">
+                                                                    <img src="/images/review.svg" alt="Open for review" title="Open for review" />
+                                                                </a>
+                                                            </td>
+                                                        @elseif ($file['format']->isCell())
+                                                            <td class="contentCells contentCells-icon">
+                                                                <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=filter&type=desktop" target="_blank">
+                                                                    <img src="/images/filter.svg" alt="Open without access to change the filter" title="Open without access to change the filter" />
+                                                                </a>
+                                                            </td>
+                                                        @else
+                                                            <td class="contentCells contentCells-icon"></td>
+                                                        @endif
+
+                                                        <!-- 5 -->
+                                                        @if ($file['format']->isWord())
+                                                            <td class="contentCells contentCells-icon contentCells-shift">
+                                                                <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=blockcontent&type=desktop" target="_blank">
+                                                                    <img src="/images/block-content.svg" alt="Open without content control modification" title="Open without content control modification" />
+                                                                </a>
+                                                            </td>
+                                                        @else
+                                                            <td class="contentCells contentCells-icon contentCells-shift"></td>
+                                                        @endif
                                                     @endif
-                                                    @elseif ($file['format']->isFillable())
-                                                    <td class="contentCells contentCells-icon">
-                                                        <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=fillForms&type=desktop" target="_blank">
-                                                            <img src="/images/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" />
-                                                        </a>
-                                                    </td>
-                                                    <td class="contentCells contentCells-icon"></td>
-                                                    <td class="contentCells contentCells-icon"></td>
-                                                    <td class="contentCells contentCells-icon"></td>
-                                                    <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                        <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=fillForms&type=desktop" target="_blank">
-                                                            <img src="/images/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms" />
-                                                        </a>
-                                                    </td>
-                                                    @else
-                                                    <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
-                                                    @endif
-                                                    <td class="contentCells contentCells-icon firstContentCellViewers">
+
+                                                    <td class="contentCells contentCells-icon firstContentCellViewers" data-section="VIEWERS">
                                                         <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=view&type=desktop" target="_blank">
-                                                            <img src="/images/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens" />
+                                                            <img src="/images/view.svg" alt="Open for full size screens" title="Open for full size screens" />
                                                         </a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon">
                                                         <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=view&type=mobile" target="_blank">
-                                                            <img src="/images/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices" />
+                                                            <img src="/images/mobileView.svg" alt="Open for mobile devices" title="Open for mobile devices" />
                                                         </a>
                                                     </td>
                                                     <td class="contentCells contentCells-icon contentCells-shift">
                                                         <a href="editor?fileID={{ urlencode($file['filename']) }}&user={{ htmlentities($user) . "&$directUrlArg" }}&action=embedded&type=embedded" target="_blank">
-                                                            <img src="/images/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode" />
+                                                            <img src="/images/embedview.svg" alt="Open in embedded mode" title="Open in embedded mode" />
                                                         </a>
                                                     </td>
+
                                                     @if ($file['format']->getType() != null)
-                                                    <td class="contentCells contentCells-icon">
+                                                    <td class="contentCells contentCells-icon" data-section="ACTIONS">
                                                         <a class="convert-file" data="{{ $file['filename'] }}" data-type="{{ $file['format']->getType() }}">
                                                             <img class="icon-action" src="/images/convert.svg" alt="Convert" title="Convert" />
                                                         </a>
                                                     </td>
                                                     @else
-                                                    <td class="contentCells contentCells-icon downloadContentCellShift"></td>
+                                                    <td class="contentCells contentCells-icon downloadContentCellShift" data-section="ACTIONS"></td>
                                                     @endif
                                                     <td class="contentCells contentCells-icon downloadContentCellShift">
                                                         <a href="{{ $file['url'] }}">
@@ -269,6 +292,11 @@
                                                     <td class="contentCells contentCells-icon contentCells-shift">
                                                         <a class="delete-file" data="{{ $file['filename'] }}">
                                                             <img class="icon-action" src="/images/delete.svg" alt="Delete" title="Delete" /></a>
+                                                    </td>
+                                                    <td class="contentCells contentCells-icon">
+                                                        <a href="#" onclick="toggleContextMenu(event)">
+                                                            <img src="/images/open-context.svg" alt="Open context menu" title="Open context menu" />
+                                                        </a>
                                                     </td>
                                                 </tr>
                                                 @endforeach
@@ -383,7 +411,7 @@
                 <div id="beginEditConverted" class="button converting wide gray disable">EDIT</div>
                 <div id="cancelEdit" class="button converting gray">CANCEL</div>
             </div>
-        </div>form>
+        </div>
 
         <iframe id="iframeScripts" src="{{ $preloaderUrl }}" width=1 height=1 style="position: absolute; visibility: hidden; top: 0;" ></iframe>
 
@@ -409,6 +437,11 @@
             </div>
         </footer>
     </form>
+
+    <div id="mobileContextMenu" onclick="toggleContextMenu(event)">
+        <div class="context-body" id="mobileContextMenuBody">
+        </div>
+    </div>
 
     <script type="text/javascript" src="/js/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" src="/js/jquery-migrate-3.4.1.min.js"></script>

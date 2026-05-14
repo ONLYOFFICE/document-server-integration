@@ -119,6 +119,46 @@ The following table shows the environment variables that is used to configure th
 
 Check out the [Laravel documentation](https://laravel.com/docs/11.x/deployment#server-configuration) page in case you are having installation or configuration problems with the framework.
 
+## File API methods used in this example 
+
+The methods described below are available for PHP Laravel test example.
+
+### POST `/upload`
+
+|                        |                                                              |
+| ---------------------- | ------------------------------------------------------------ |
+| **Summary**            | Upload file to test example via request                      |
+| **URL**                | /upload                                                      |
+| **Method**             | POST                                                         |
+| **URL Params**         | `user=[string]` - user id. |
+| **Request<br>Headers** | `Content-Type: multipart/form-data`                          |
+| **Request<br>Body**    | `uploadedFile=@<filepath>`<br> `filepath` - file for uploading<br />Multipart body with the file binary contents |
+| **Response**           | **Code:** 200 OK <br />**Content on success:**<br /> `{ "filename": <filename>}`<br />**Content on error:**<br /> `{ "error": "File type is not supported" }` <br /> Or <br /> `{ "error": "File size is incorrect" }` |
+| **Sample**             | `curl -X POST -F uploadedFile=@filename.docx http://localhost/upload?user=uid-1` |
+
+
+### DELETE `/files/delete`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Delete one file or all files                                 |
+| **URL**            | /files/delete                                                        |
+| **Method**         | DELETE                                                       |
+| ****URL Params**** | **Optional:**<br /> `filename=[string]` - file for deleting. <br /> *WARNING! Without this parameter, all files will be deleted* |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `{ "success": true }` |
+| **Sample**         | **Delete one file:**<br />`curl -X DELETE http://localhost/files/delete?filename=filename.docx`<br />**Delete all files:**<br />`curl -X DELETE http://localhost/files/delete`<br /> |
+
+
+### GET `/files`
+
+|                    |                                                              |
+| ------------------ | ------------------------------------------------------------ |
+| **Summary**        | Get information about all files                              |
+| **URL**            | /files                                                       |
+| **Method**         | GET                                                          |
+| **Response**       | **Code:** 200 OK <br /> **Success:**<br /> `[{ "version": <file_version>, "id": <file_id>, "contentLength": <file_size_in_kilobytes>, "pureContentLength": <file_size_in_bytes>, "title": <file_name>, "updated": <last_change_date>}, ..., {...}]` |
+| **Sample**         | `curl -X GET http://localhost/files`                        |
+
 ## Security Info
 
 Please keep in mind the following security aspects when you are using test examples:

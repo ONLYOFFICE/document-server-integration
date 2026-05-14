@@ -37,13 +37,13 @@
         </div>
         <menu class="responsive-nav">
             <li>
-              <a href="#" onclick="toggleSidePanel(event)">
-                <img src="css/img/mobile-menu.svg" alt="ONLYOFFICE" />
-              </a>
+                <a href="./">
+                    <img src ="css/img/mobile-logo.svg" alt="ONLYOFFICE" />
+                </a>
             </li>
             <li>
-              <a href="./">
-                <img src ="css/img/mobile-logo.svg" alt="ONLYOFFICE" />
+              <a href="#" onclick="toggleSidePanel(event)">
+                <img src="css/img/mobile-menu.svg" alt="ONLYOFFICE" />
               </a>
             </li>
         </menu>
@@ -109,6 +109,7 @@
                                             </select>
                                         </td>
                                     </tr>
+                                    <tr></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -173,109 +174,112 @@
                                                 <span th:text="${files[iState.index].getName()}"></span>
                                                 </a>
                                             </td>
+
+                                            <!-- 1-2 -->
                                             <th:block th:if="${filesEditable[iState.index]}">
-                                                <td class="contentCells contentCells-icon">
+                                                <td class="contentCells contentCells-icon" data-section="EDITOR">
                                                     <a
                                                        th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='edit')}" target="_blank">
-                                                    <img src="css/img/desktop.svg" alt="Open in editor for full size screens" title="Open in editor for full size screens"/>
+                                                    <img src="css/img/edit.svg" alt="Open for full size screens" title="Open for full size screens"/>
                                                     </a>
                                                 </td>
                                                 <td class="contentCells contentCells-icon">
                                                     <a
                                                        th:href="@{/editor(fileName=${files[iState.index].getName()},type='mobile',action='edit')}" target="_blank">
-                                                    <img src="css/img/mobile.svg" alt="Open in editor for mobile devices" title="Open in editor for mobile devices"/>
+                                                    <img src="css/img/mobileEdit.svg" alt="Open for mobile devices" title="Open for mobile devices"/>
                                                     </a>
                                                 </td>
-                                                <div th:if="not ${docTypes[iState.index]} eq 'pdf'">
+                                            </th:block>
+                                            <div th:unless="${filesEditable[iState.index]}">
+                                                <td class="contentCells contentCells-icon" data-section="EDITOR"></td>
+                                                <td class="contentCells contentCells-icon"></td>
+                                            </div>
+
+                                            <!-- 3 -->
+                                            <div th:if="${docTypes[iState.index]} != 'pdf'">
+                                                <td class="contentCells contentCells-icon">
+                                                    <a
+                                                    th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='comment')}" target="_blank">
+                                                        <img src="css/img/comment.svg" alt="Open for comment" title="Open for comment"/>
+                                                    </a>
+                                                </td>
+                                            </div>
+                                            <div th:unless="${docTypes[iState.index]} != 'pdf'">
+                                                <td class="contentCells contentCells-icon"></td>
+                                            </div>
+
+                                            <!-- 4-5 -->
+                                            <div th:if="${isFillFormDoc[iState.index]}">
+                                                <td class="contentCells contentCells-icon">
+                                                    <a
+                                                       th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='fillForms')}" target="_blank">
+                                                        <img src="css/img/formsubmit.svg" alt="Open for filling in forms" title="Open for filling in forms"/>
+                                                    </a>
+                                                </td>
+                                                <td class="contentCells contentCells-icon contentCells-shift">
+                                                    <a
+                                                       th:href="@{/editor(fileName=${files[iState.index].getName()},type='mobile',action='fillForms')}" target="_blank">
+                                                        <img src="css/img/mobile-fill-forms.svg" alt="Open for filling in forms for mobile devices" title="Open for filling in forms for mobile devices" />
+                                                    </a>
+                                                </td>
+                                            </div>
+                                            <div th:unless="${isFillFormDoc[iState.index]}">
+
+                                                <!-- 4 -->
+                                                <div th:if="${docTypes[iState.index]} eq 'word'">
                                                     <td class="contentCells contentCells-icon">
                                                         <a
-                                                        th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='comment')}" target="_blank">
-                                                            <img src="css/img/comment.svg" alt="Open in editor for comment" title="Open in editor for comment"/>
+                                                           th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='review')}" target="_blank">
+                                                        <img src="css/img/review.svg" alt="Open for review" title="Open for review"/>
                                                         </a>
                                                     </td>
                                                 </div>
-                                                    <div th:if="${docTypes[iState.index]} eq 'word'">
-                                                        <td class="contentCells contentCells-icon">
-                                                            <a
-                                                               th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='review')}" target="_blank">
-                                                            <img src="css/img/review.svg" alt="Open in editor for review" title="Open in editor for review"/>
-                                                            </a>
-                                                        </td>
-                                                    </div>
-                                                    <div th:if="${docTypes[iState.index]} eq 'cell'">
-                                                        <td class="contentCells contentCells-icon">
-                                                            <a
-                                                               th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='filter')}" target="_blank">
-                                                            <img src="css/img/filter.svg" alt="Open in editor without access to change the filter" title="Open in editor without access to change the filter" />
-                                                            </a>
-                                                        </td>
-                                                    </div>
-                                                    <div th:if="${docTypes[iState.index]} eq 'word'">
-                                                        <td class="contentCells contentCells-icon">
-                                                            <a
-                                                               th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='blockcontent')}" target="_blank">
-                                                            <img src="css/img/block-content.svg" alt="Open in editor without content control modification" title="Open in editor without content control modification"/>
-                                                            </a>
-                                                        </td>
-                                                    </div>
-                                                    <div th:if="not (${docTypes[iState.index]}  eq 'word')">
-                                                        <td class="contentCells contentCells-icon"></td>
-                                                    </div>
-                                                    <div th:if="${docTypes[iState.index]} eq 'slide'">
-                                                        <td class="contentCells contentCells-icon "></td>
-                                                    </div>
-                                                    <div th:if="${isFillFormDoc[iState.index]}">
-                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                            <a
-                                                               th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='fillForms')}" target="_blank">
-                                                                <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                            </a>
-                                                        </td>
-                                                    </div>
-                                                    <div th:if="${not isFillFormDoc[iState.index]}">
-                                                        <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift"></td>
-                                                    </div>
-                                            </th:block>
-                                            <th:block th:if="${isFillFormDoc[iState.index] and not filesEditable[iState.index]}">
-                                                <td class="contentCells contentCells-icon "></td>
-                                                <td class="contentCells contentCells-icon">
-                                                    <a
-                                                       th:href="@{/editor(fileName=${files[iState.index].getName()},type='mobile',action='fillForms')}" target="_blank">
-                                                        <img src="css/img/mobile-fill-forms.svg" alt="Open in editor for filling in forms for mobile devices" title="Open in editor for filling in forms for mobile devices" />
-                                                    </a>
-                                                </td>
-                                                <td class="contentCells contentCells-icon "></td>
-                                                <td class="contentCells contentCells-icon "></td>
-                                                <td class="contentCells contentCells-icon "></td>
-                                                <td class="contentCells contentCells-shift contentCells-icon firstContentCellShift">
-                                                    <a
-                                                       th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='fillForms')}" target="_blank">
-                                                        <img src="css/img/fill-forms.svg" alt="Open in editor for filling in forms" title="Open in editor for filling in forms"/>
-                                                    </a>
-                                                </td>
-                                            </th:block>
-                                            <th:block th:if="${not filesEditable[iState.index]}">
-                                                <td class="contentCells contentCells-shift contentCells-icon contentCellsEmpty" colspan="6"></td>
-                                            </th:block>
-                                            <td class="contentCells contentCells-icon firstContentCellViewers">
+                                                <div th:if="${docTypes[iState.index]} eq 'cell'">
+                                                    <td class="contentCells contentCells-icon">
+                                                        <a
+                                                           th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='filter')}" target="_blank">
+                                                        <img src="css/img/filter.svg" alt="Open without access to change the filter" title="Open without access to change the filter" />
+                                                        </a>
+                                                    </td>
+                                                </div>
+                                                <div th:unless="${docTypes[iState.index]} eq 'cell' or ${docTypes[iState.index]} eq 'word'">
+                                                    <td class="contentCells contentCells-icon"></td>
+                                                </div>
+
+                                                <!-- 5 -->
+                                                <div th:if="${docTypes[iState.index]} eq 'word'">
+                                                    <td class="contentCells contentCells-icon contentCells-shift">
+                                                        <a
+                                                           th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='blockcontent')}" target="_blank">
+                                                        <img src="css/img/block-content.svg" alt="Open without content control modification" title="Open without content control modification"/>
+                                                        </a>
+                                                    </td>
+                                                </div>
+                                                <div th:unless="${docTypes[iState.index]} eq 'word'">
+                                                    <td class="contentCells contentCells-icon contentCells-shift"></td>
+                                                </div>
+                                            </div>
+
+                                            <td class="contentCells contentCells-icon firstContentCellViewers" data-section="VIEWERS">
                                                 <a
                                                    th:href="@{/editor(fileName=${files[iState.index].getName()},type='desktop',action='view')}" target="_blank">
-                                                <img src="css/img/desktop.svg" alt="Open in viewer for full size screens" title="Open in viewer for full size screens"/>
+                                                <img src="css/img/view.svg" alt="Open for full size screens" title="Open for full size screens"/>
                                                 </a>
                                             </td>
                                             <td class="contentCells contentCells-icon">
                                                 <a
                                                    th:href="@{/editor(fileName=${files[iState.index].getName()},type='mobile',action='view')}" target="_blank">
-                                                <img src="css/img/mobile.svg" alt="Open in viewer for mobile devices" title="Open in viewer for mobile devices"/>
+                                                <img src="css/img/mobileView.svg" alt="Open for mobile devices" title="Open for mobile devices"/>
                                                 </a>
                                             </td>
                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                 <a
                                                    th:href="@{/editor(fileName=${files[iState.index].getName()},type='embedded',action='embedded')}" target="_blank">
-                                                <img src="css/img/embeded.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
+                                                <img src="css/img/embedview.svg" alt="Open in embedded mode" title="Open in embedded mode"/>
                                                 </a>
                                             </td>
-                                            <td class="contentCells contentCells-icon">
+
+                                            <td class="contentCells contentCells-icon" data-section="ACTIONS">
                                                 <a class="convert-file" th:data="${files[iState.index].getName()}" th:data-type="${docTypes[iState.index]}">
                                                     <img class="icon-action" src="css/img/convert.svg" alt="Convert" title="Convert" /></a>
                                             </td>
@@ -287,6 +291,11 @@
                                             <td class="contentCells contentCells-icon contentCells-shift">
                                                 <a class="delete-file" th:attr="data-filename=${files[iState.index].getName()}">
                                                     <img class="icon-action" src="css/img/delete.svg" alt="Delete" title="Delete" />
+                                                </a>
+                                            </td>
+                                            <td class="contentCells contentCells-icon">
+                                                <a href="#" onclick="toggleContextMenu(event)">
+                                                    <img src="css/img/open-context.svg" alt="Open context menu" title="Open context menu" />
                                                 </a>
                                             </td>
                                         </tr>
@@ -398,6 +407,11 @@
             </table>
         </div>
     </footer>
+
+    <div id="mobileContextMenu" onclick="toggleContextMenu(event)">
+        <div class="context-body" id="mobileContextMenuBody">
+        </div>
+    </div>
 
     <script type="text/javascript" src="scripts/jquery-3.6.4.min.js"></script>
     <script type="text/javascript" src="scripts/jquery-migrate-3.4.1.min.js"></script>

@@ -21,6 +21,7 @@ const urlModule = require('url');
 const urllib = require('urllib');
 const xmlParser = require('fast-xml-parser');
 const he = require('he');
+const fileUtility = require('../fileUtility');
 
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl'); // the path to the editors installation
@@ -53,7 +54,9 @@ const requestDiscovery = async function requestDiscovery(DocManager) {
             attributeNamePrefix: '',
             ignoreAttributes: false,
             parseAttributeValue: true,
-            attrValueProcessor: (val) => he.decode(val, { isAttributeValue: true }),
+            // Decode HTML entities in attribute values
+            attributeValueProcessor: (attrName, attrValue) => he.decode(attrValue, { isAttributeValue: true }),
+            processEntities: false,
           };
           const parser = new xmlParser.XMLParser(xmlParseOptions);
           // create the discovery XML file with the parameters from the response
@@ -71,6 +74,7 @@ const requestDiscovery = async function requestDiscovery(DocManager) {
                   checkLicense: app.checkLicense === 'true',
                   name: action.name,
                   ext: action.ext || '',
+                  newext: action.newext || '',
                   progid: action.progid || '',
                   isDefault: !!action.default,
                   urlsrc: action.urlsrc,
@@ -169,6 +173,19 @@ const getActionUrl = function getActionUrl(host, userAddress, action, filename) 
   return `${action.urlsrc.replace(/<.*&>/g, '')}WOPISrc=${encodeURIComponent(WOPISrc)}`;
 };
 
+const getEditNewFileName = function getEditNewFileName(fileName, action) {
+  if (!action || action.name !== 'editnew' || !action.newext) {
+    return fileName;
+  }
+
+  const ext = fileUtility.getFileExtension(fileName);
+  if (!ext) {
+    return fileName;
+  }
+
+  return `${fileUtility.getFileName(fileName, true)}.${action.newext}`;
+};
+
 const getEditNewText = function getEditNewText(ext) {
   if (typeof ext !== 'string') return null;
   switch (ext) {
@@ -193,4 +210,5 @@ exports.getAction = getAction;
 exports.getActions = getActions;
 exports.getProofKey = getProofKey;
 exports.getActionUrl = getActionUrl;
+exports.getEditNewFileName = getEditNewFileName;
 exports.getDefaultAction = getDefaultAction;

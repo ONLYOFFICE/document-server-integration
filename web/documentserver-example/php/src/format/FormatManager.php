@@ -181,6 +181,21 @@ class FormatManager
         );
     }
 
+    /**
+     * @return string[]
+     */
+    public function formatActions(string $extension): array
+    {
+        $formats = $this->all();
+        $actions = [];
+        foreach ($formats as $format) {
+            if ($format->extension() === $extension) {
+                $actions = $format->actions;
+            }
+        }
+        return $actions;
+    }
+
     private function file(): Path
     {
         $directory = $this->directory();

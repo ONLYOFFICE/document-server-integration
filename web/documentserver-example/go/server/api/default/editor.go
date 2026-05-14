@@ -67,8 +67,12 @@ func (srv *DefaultServerEndpointsHandler) Editor(w http.ResponseWriter, r *http.
 		"usersForMentions": usersForMentions,
 		"usersInfo":        usersInfo,
 		"dataInsertImage": map[string]interface{}{
-			"fileType": "svg",
-			"url":      remoteAddr + "/static/images/logo.svg",
+			"images": []map[string]interface{}{
+				{
+					"fileType": "svg",
+					"url":      remoteAddr + "/static/images/logo.svg",
+				},
+			},
 		},
 		"dataDocument": map[string]interface{}{
 			"fileType": "docx",

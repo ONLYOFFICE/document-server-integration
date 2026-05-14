@@ -1,5 +1,7 @@
 # Change Log
 
+##
+- nodejs: use formats, languages, maxFileSize, urls to services, jwt header and prefix from document server meta
 - ruby: disable AI plugin for anonymous
 - python: disable AI plugin for anonymous
 - php-laravel: disable AI plugin for anonymous
@@ -9,6 +11,25 @@
 - csharp-mvc: disable AI plugin for anonymous
 - csharp: disable AI plugin for anonymous
 - nodejs: disable AI plugin for anonymous
+- java-spring: docs-integration-sdk updated to 1.8
+- php-laravel: update docs-integration-sdk to 1.4
+- nodejs: wopi CopyPasteRestrictions for anonymous
+- update insertImage formats
+- new mobile index page view
+- update action icons
+- php-laravel: 5 editor icons on index page
+- java-spring: 5 editor icons on index page
+- ruby: display mode buttons by actions
+- python: display mode buttons by actions
+- php: display mode buttons by actions
+- java: display mode buttons by actions
+- go: display mode buttons by actions
+- csharp-mvc: display mode buttons by actions
+- csharp: display mode buttons by actions
+- nodejs: display mode buttons by actions
+- nodejs: wopi UserCanOnlyComment
+- nodejs: setUsers for c=filler
+- nodejs: system start filling panel for default user
 
 ## 1.15.0
 - nodejs: added AI Auto Fill Plugin

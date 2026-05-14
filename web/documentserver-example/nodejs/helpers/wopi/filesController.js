@@ -281,11 +281,17 @@ const checkFileInfo = function checkFileInfo(wopi, req, res, userHost) {
     Version: version,
     UserCanWrite: true,
     UserCanRename: user.id !== 'uid-0',
+    UserCanOnlyComment: user.id === 'uid-3',
     SupportsGetLock: true,
     SupportsLocks: true,
     SupportsUpdate: true,
     SupportsRename: true,
   };
+
+  if (user.id === 'uid-0') {
+    fileInfo.CopyPasteRestrictions = 'BlockAll';
+  }
+
   res.status(200).send(fileInfo);
 };
 
