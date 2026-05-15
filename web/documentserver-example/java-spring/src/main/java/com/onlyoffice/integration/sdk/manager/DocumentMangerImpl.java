@@ -22,6 +22,7 @@ import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.manager.document.DefaultDocumentManager;
 import com.onlyoffice.manager.settings.SettingsManager;
+import com.onlyoffice.provider.FormatsProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -48,8 +49,8 @@ public class DocumentMangerImpl extends DefaultDocumentManager implements Docume
     @Autowired
     private FileStorageMutator storageMutator;
 
-    public DocumentMangerImpl(final SettingsManager settingsManager) {
-        super(settingsManager);
+    public DocumentMangerImpl(final SettingsManager settingsManager, final FormatsProvider formatsProvider) {
+        super(settingsManager, formatsProvider);
     }
 
     @Override

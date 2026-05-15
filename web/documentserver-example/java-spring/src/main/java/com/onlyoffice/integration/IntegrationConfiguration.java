@@ -27,19 +27,24 @@ import com.onlyoffice.manager.security.DefaultJwtManager;
 import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.UrlManager;
+import com.onlyoffice.provider.DocumentServerFormatsProvider;
+import com.onlyoffice.provider.FormatsProvider;
 import com.onlyoffice.service.convert.ConvertService;
 import com.onlyoffice.service.convert.DefaultConvertServiceV2;
+import lombok.extern.slf4j.Slf4j;
 import org.json.simple.parser.JSONParser;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 
 @Configuration
+@Slf4j
 public class IntegrationConfiguration {
 
     @Value("${files.storage}")
@@ -87,8 +92,26 @@ public class IntegrationConfiguration {
     }
 
     @Bean
+    public FormatsProvider formatsProvider(final DocumentServerClient documentServerClient) {
+        return new DocumentServerFormatsProvider(documentServerClient);
+    }
+
+    @Bean
     public ConvertService convertService(final DocumentManager documentManager, final UrlManager urlManager,
                                          final DocumentServerClient documentServerClient) {
         return new DefaultConvertServiceV2(documentManager, urlManager, documentServerClient);
+    }
+
+    @Bean
+    public ApplicationRunner documentServerFormatsCacheWarmupRunner(final FormatsProvider formatsProvider) {
+        return args -> {
+            if (formatsProvider instanceof DocumentServerFormatsProvider) {
+                try {
+                    ((DocumentServerFormatsProvider) formatsProvider).getFormatsOrThrow();
+                } catch (Exception e) {
+                    log.warn("Could not load formats from Document Server", e);
+                }
+            }
+        };
     }
 }
