@@ -138,6 +138,13 @@
                                 <ul>
                                     <li>Create a new Document, Spreadsheet, Presentation, or PDF Form or use the sample files</li>
                                     <li>Upload your own files to test using the Upload file button</li>
+                                    <li th:if="${formats != null and !formats.isEmpty()}">
+                                        Supported formats include
+                                        <span th:text="${#strings.listJoin(
+                                            formats.?[actions.contains('view')].![name],
+                                            ', '
+                                        )}"></span>
+                                    </li>
                                     <li>Select your username and language to simulate different users and environments</li>
                                     <li>Try real-time collaboration by opening the same document using different users in different Web browser sessions</li>
                                 </ul>

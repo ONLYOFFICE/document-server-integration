@@ -122,6 +122,7 @@ public class IndexController {
         model.addAttribute("files", files);
         model.addAttribute("docTypes", docTypes);
         model.addAttribute("filesEditable", filesEditable);
+        model.addAttribute("formats", documentManager.getFormats());
         model.addAttribute("datadocs", urlManager.getDocumentServerPreloaderApiUrl());
         model.addAttribute("tooltip", tooltip);
         model.addAttribute("users", users);
