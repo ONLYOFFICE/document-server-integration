@@ -21,12 +21,14 @@ package com.onlyoffice.integration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.onlyoffice.client.ApacheHttpclientDocumentServerClient;
 import com.onlyoffice.client.DocumentServerClient;
+import com.onlyoffice.client.dto.ConfigResponse;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.manager.document.DocumentManager;
 import com.onlyoffice.manager.security.DefaultJwtManager;
 import com.onlyoffice.manager.security.JwtManager;
 import com.onlyoffice.manager.settings.SettingsManager;
 import com.onlyoffice.manager.url.UrlManager;
+import com.onlyoffice.model.settings.SettingsConstants;
 import com.onlyoffice.provider.DocumentServerFormatsProvider;
 import com.onlyoffice.provider.FormatsProvider;
 import com.onlyoffice.service.convert.ConvertService;
@@ -111,6 +113,37 @@ public class IntegrationConfiguration {
                 } catch (Exception e) {
                     log.warn("Could not load formats from Document Server", e);
                 }
+            }
+        };
+    }
+
+    @Bean
+    public ApplicationRunner documentServerConfigSyncRunner(final DocumentServerClient documentServerClient,
+                                                           final SettingsManager settingsManager) {
+        return args -> {
+            try {
+                ConfigResponse config = documentServerClient.getConfig();
+
+                if (config == null || config.getAuthorization() == null) {
+                    log.warn("Document Server config does not contain authorization settings");
+                    return;
+                }
+
+                String securityHeader = config.getAuthorization().getHeader();
+                if (securityHeader == null || securityHeader.isBlank()) {
+                    log.warn("Document Server config does not contain a security header");
+                } else {
+                    settingsManager.setSetting(SettingsConstants.SECURITY_HEADER, securityHeader);
+                }
+
+                String securityPrefix = config.getAuthorization().getPrefix();
+                if (securityPrefix == null) {
+                    log.warn("Document Server config does not contain a security prefix");
+                } else {
+                    settingsManager.setSetting(SettingsConstants.SECURITY_PREFIX, securityPrefix);
+                }
+            } catch (Exception e) {
+                log.warn("Could not sync settings from Document Server config", e);
             }
         };
     }
