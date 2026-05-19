@@ -22,6 +22,7 @@ import com.onlyoffice.integration.documentserver.storage.FileStorageMutator;
 import com.onlyoffice.integration.documentserver.storage.FileStoragePathBuilder;
 import com.onlyoffice.manager.document.DefaultDocumentManager;
 import com.onlyoffice.manager.settings.SettingsManager;
+import com.onlyoffice.model.common.Format;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,6 +35,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -66,6 +68,19 @@ public class DocumentMangerImpl extends DefaultDocumentManager implements Docume
     @Override
     public String getDocumentName(final String fileId) {
         return storagePathBuilder.getFileName(fileId);
+    }
+
+    @Override
+    public Map<String, Boolean> getLossyEditableMap() {
+        Map<String, Boolean> result = new HashMap<>();
+
+        for (Format format : this.getFormats()) {
+            if (format.getActions().contains("lossy-edit")) {
+                result.put(format.getName(), true);
+            }
+        }
+
+        return result;
     }
 
     @Override
