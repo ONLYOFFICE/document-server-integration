@@ -1,5 +1,11 @@
 # Change Log
 
+##
+- nodejs: use formats, languages, maxFileSize, urls to services, jwt header and prefix from document server meta
+- nodejs: disable AI plugin for anonymous
+- nodejs: setUsers for c=filler
+- nodejs: system start filling panel for default user
+
 ## 1.15.0
 - nodejs: added AI Auto Fill Plugin
 - php-laravel: fix custom jwt header

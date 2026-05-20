@@ -55,6 +55,18 @@ if (typeof jQuery != "undefined") {
 
     mustReload = false;
 
+    jq('#language option').each(function() {
+        const langCode = this.value;
+        let displayName = langCode;
+        try {
+            displayName = new Intl.DisplayNames(['en'], { type: 'language' }).of(langCode) || langCode;
+        } catch (e) {
+            console.error(`Failed to get display name for language: ${langCode}`, e);
+            displayName = langCode;
+        }
+        this.textContent = displayName;
+    });
+
     if ("" != language && undefined != language)
         jq("#language").val(language);
     else

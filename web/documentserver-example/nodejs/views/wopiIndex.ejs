@@ -62,9 +62,9 @@
                             <div class="clearFix">
                                 <div class="create-panel clearFix">
                                     <ul class="try-editor-list clearFix">
-                                        <% editNewExts.forEach( type => { %>
+                                        <% Object.entries(editNewExts).forEach( ([ext, text]) => { %>
                                             <li>
-                                                <a class="try-editor <%= type.ext %> reload-page action-link" target="_blank" href="wopi-new?fileExt=<%= type.ext %>" title="Create new <%= type.text %>"><%= type.text %></a>
+                                                <a class="try-editor <%= ext %> reload-page action-link" target="_blank" href="wopi-new?fileExt=<%= ext %>" title="Create new <%= text %>"><%= text %></a>
                                             </li>
                                         <% }) %>
                                     </ul>
@@ -95,8 +95,8 @@
                                             <span class="select-user">Language</span>
                                             <img class="info info-tooltip" data-id="language" data-tooltip="Choose the language for ONLYOFFICE editors interface" src="images/info.svg" />
                                             <select class="select-user collectable" name="lang" id="language">
-                                                <% Object.keys(languages).forEach(key => { %>
-                                                    <option value="<%= key %>"><%= languages[key] %></option>
+                                                <% languages.forEach(lang => { %>
+                                                    <option value="<%= lang %>"><%= lang %></option>
                                                 <% }) %>
                                             </select>
                                         </td>

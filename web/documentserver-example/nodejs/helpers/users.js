@@ -95,7 +95,7 @@ const descrUser3 = [
   'Can\'t restore the file version',
   'Can start filling',
   'Has role "role"',
-  'Can\'t submit forms',
+  'Can submit forms',
 ];
 
 const descrUser0 = [
@@ -116,7 +116,7 @@ const descrUser0 = [
   'Has empty role',
   'Can\'t submit forms',
   'Tour of tips when opening a document',
-  'Without AI Auto Fill Plugin',
+  'Without AI Plugins',
 ];
 
 const users = [
@@ -179,7 +179,7 @@ const users = [
     false,
     null,
     {},
-    false,
+    true,
     ['role'],
   ),
   new User('uid-0', null, null, null, null, {}, [], null, ['protect'], descrUser0, false, false, null, null, false, []),

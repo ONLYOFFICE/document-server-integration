@@ -51,7 +51,7 @@ DocManager.prototype.createDirectory = function createDirectory(directory) {
 
 // get the language from the request
 DocManager.prototype.getLang = function getLang() {
-  if (/^[a-z]{2}(-[a-zA-z]{4})?(-[A-Z]{2})?$/.test(this.req.query.lang)) {
+  if (/^[a-z]{2,3}(?:-[A-Z][a-z]{3})?(?:-(?:[A-Z]{2}|\d{3}))?$/.test(this.req.query.lang)) {
     return this.req.query.lang;
   } // the default language value is English
   return 'en';
@@ -103,11 +103,11 @@ DocManager.prototype.getCorrectName = function getCorrectName(fileName, userAddr
 };
 
 // processes a request editnew
-DocManager.prototype.requestEditnew = function requestEditnew(req, fileName, user) {
+DocManager.prototype.requestEditnew = function requestEditnew(requestedFileName, fileName, user) {
   let correctName = fileName;
-  if (req.params.id !== fileName) { // processes a repeated request editnew
-    this.fileRemove(req.params.id);
-    correctName = this.getCorrectName(req.params.id);
+  if (requestedFileName !== fileName) { // processes a repeated request editnew
+    this.fileRemove(requestedFileName);
+    correctName = this.getCorrectName(requestedFileName);
   }
   this.fileSizeZero(correctName);
   this.saveFileData(correctName, user.id, user.name);
@@ -315,7 +315,7 @@ DocManager.prototype.changesUser = function changesUser(fileName, userAddress, v
 };
 
 // get all the stored files
-DocManager.prototype.getStoredFiles = function getStoredFiles() {
+DocManager.prototype.getStoredFiles = async function getStoredFiles() {
   const userAddress = this.curUserHostAddress();
   const directory = this.storageRootPath(userAddress);
   this.createDirectory(directory);
@@ -335,8 +335,12 @@ DocManager.prototype.getStoredFiles = function getStoredFiles() {
       const item = { // create an object with element data
         time,
         name: storedFiles[i],
-        documentType: fileUtility.getFileType(storedFiles[i]),
-        canEdit: fileUtility.getEditExtensions().indexOf(fileUtility.getFileExtension(storedFiles[i], true)) !== -1,
+        // eslint-disable-next-line no-await-in-loop
+        documentType: await fileUtility.getFileType(this, storedFiles[i]),
+        canEdit:
+          // eslint-disable-next-line no-await-in-loop
+          (await fileUtility.getEditExtensions(this))
+            .indexOf(fileUtility.getFileExtension(storedFiles[i], true)) !== -1,
         version: version + 1,
       };
 
@@ -585,10 +589,10 @@ DocManager.prototype.cleanFolderRecursive = function cleanFolderRecursive(folder
 };
 
 // get files information
-DocManager.prototype.getFilesInfo = function getFilesInfo(fileId) {
+DocManager.prototype.getFilesInfo = async function getFilesInfo(fileId) {
   const userAddress = this.curUserHostAddress();
   const directory = this.storageRootPath(userAddress);
-  const filesInDirectory = this.getStoredFiles(); // get all the stored files from the folder
+  const filesInDirectory = await this.getStoredFiles(); // get all the stored files from the folder
   const responseArray = [];
   let responseObject;
   // run through all the files from the directory
