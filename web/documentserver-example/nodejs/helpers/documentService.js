@@ -182,6 +182,9 @@ documentService.getConvertedUri = async function getConvertedUri(
     key: revisionId,
     password: filePass,
     region: lang,
+    thumbnail: {
+      first: false,
+    },
   };
 
   // get the absolute converter url
