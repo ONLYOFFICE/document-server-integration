@@ -117,7 +117,12 @@ namespace OnlineEditorsExampleMVC.Helpers
                 { "title", title },
                 { "url", documentUri },
                 { "password", filePass },
-                { "region", lang }
+                { "region", lang },
+                { "thumbnail", new Dictionary<string, object>()
+                    {
+                        { "first", false }
+                    }
+                }
             };
 
             if (JwtManager.Enabled && JwtManager.SignatureUseForRequest)
