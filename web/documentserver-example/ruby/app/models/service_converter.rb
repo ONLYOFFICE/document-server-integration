@@ -58,7 +58,10 @@ class ServiceConverter
       title:,
       key: document_revision_id,
       password: file_pass,
-      region: lang
+      region: lang,
+      thumbnail: {
+        first: false
+      }
     }
 
     data = nil
