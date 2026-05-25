@@ -49,6 +49,7 @@ import com.onlyoffice.model.commandservice.commandrequest.Command;
 import com.onlyoffice.model.commandservice.commandrequest.Meta;
 import com.onlyoffice.model.convertservice.ConvertRequest;
 import com.onlyoffice.model.convertservice.ConvertResponse;
+import com.onlyoffice.model.convertservice.convertrequest.Thumbnail;
 import com.onlyoffice.model.documenteditor.Callback;
 import com.onlyoffice.model.documenteditor.config.document.ReferenceData;
 import com.onlyoffice.service.convert.ConvertService;
@@ -251,6 +252,10 @@ public class FileController {
                         .region(lang)
                         .async(true)
                         .title(fileName)
+                        .thumbnail(Thumbnail.builder()
+                                .first(false)
+                                .build()
+                        )
                         .build();
 
                 ConvertResponse convertResponse = convertService.processConvert(convertRequest, fileName);
