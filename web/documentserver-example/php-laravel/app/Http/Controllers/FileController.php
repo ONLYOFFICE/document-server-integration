@@ -169,7 +169,7 @@ class FileController extends Controller
                     user: $request->user,
                     userAddress: $request->ip(),
                     lang: cache('lang', default: 'en'),
-                    thumbnail: [ 'first' => false ],
+                    thumbnail: ['first' => false],
                 ));
 
             if (array_key_exists('step', $result)) {
