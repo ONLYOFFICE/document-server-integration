@@ -29,5 +29,6 @@ class ConvertRequest
         public string $user,
         public string $userAddress,
         public string $lang = 'en',
+        public ?array $thumbnail = null,
     ) {}
 }

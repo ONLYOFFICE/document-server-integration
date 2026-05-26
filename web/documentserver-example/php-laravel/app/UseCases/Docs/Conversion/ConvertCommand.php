@@ -52,6 +52,7 @@ class ConvertCommand
             'key' => $key,
             'user' => $request->user,
             'lang' => $request->lang,
+            'thumbnail' => $request->thumbnail,
         ];
 
         try {
