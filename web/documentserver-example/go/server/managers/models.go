@@ -92,15 +92,20 @@ type ConvertPayload struct {
 }
 
 type ConvertRequestPayload struct {
-	DocUrl     string `json:"url"`
-	OutputType string `json:"outputtype"`
-	FileType   string `json:"filetype"`
-	Title      string `json:"title"`
-	Key        string `json:"key"`
-	Async      bool   `json:"async"`
-	JwtToken   string `json:"token,omitempty"`
-	Password   string `json:"password"`
+	DocUrl     string           `json:"url"`
+	OutputType string           `json:"outputtype"`
+	FileType   string           `json:"filetype"`
+	Title      string           `json:"title"`
+	Key        string           `json:"key"`
+	Async      bool             `json:"async"`
+	JwtToken   string           `json:"token,omitempty"`
+	Password   string           `json:"password"`
+	Thumbnail  ThumbnailPayload `json:"thumbnail"`
 	jwt.RegisteredClaims
+}
+
+type ThumbnailPayload struct {
+	First bool `json:"first"`
 }
 
 type ConvertRequestHeaderPayload struct {

@@ -83,6 +83,9 @@ func (cm DefaultConversionManager) GetConverterUri(
 		Key:        docKey,
 		Async:      isAsync,
 		Password:   filePass,
+		Thumbnail: managers.ThumbnailPayload{
+			First: false,
+		},
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * cm.config.JwtExpiresIn)),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
