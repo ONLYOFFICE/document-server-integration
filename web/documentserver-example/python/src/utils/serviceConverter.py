@@ -38,7 +38,10 @@ def getConvertedData(docUri, fromExt, toExt, docKey, isAsync, filePass=None, lan
         'title': title,
         'key': docKey,
         'password': filePass,
-        'region': lang
+        'region': lang,
+        'thumbnail': {
+            'first': False,
+        },
     }
 
     headers = {'accept': 'application/json'}

@@ -692,6 +692,9 @@ function sendRequestToConvertService(
         "key" => $documentRevisionID,
         "password" => $filePass,
         "region" => $lang,
+        "thumbnail" => [
+            "first" => false,
+        ],
     ];
 
     // add header token

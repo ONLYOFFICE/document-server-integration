@@ -1,6 +1,7 @@
 # Change Log
 
 ##
+- converting all pages to images
 - nodejs: handle 'newext' in WOPI discovery
 - nodejs: use formats, languages, maxFileSize, urls to services, jwt header and prefix from document server meta
 - disable AI plugin for anonymous

@@ -60,6 +60,7 @@ public final class ServiceConverter {
         private Boolean async;
         private String token;
         private String password;
+        private Map<String, Object> thumbnail;
 
         public void setRegion(final String regionParam) {
             this.region = regionParam;
@@ -124,6 +125,14 @@ public final class ServiceConverter {
         public void setPassword(final String passwordParam) {
             this.password = passwordParam;
         }
+
+        public Map<String, Object> getThumbnail() {
+            return thumbnail;
+        }
+
+        public void setThumbnail(final Map<String, Object> thumbnailParam) {
+            this.thumbnail = thumbnailParam;
+        }
     }
 
     static {
@@ -163,6 +172,7 @@ public final class ServiceConverter {
         body.setTitle(title);
         body.setKey(documentRevId);
         body.setPassword(filePass);
+        body.setThumbnail(Map.of("first", false));
         if (isAsync) {
             body.setAsync(true);
         }

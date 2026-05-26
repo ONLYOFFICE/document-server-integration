@@ -39,6 +39,7 @@ class ConvertRequest
             $data['codePage'] ?? null,
             $data['delimiter'] ?? null,
             $data['password'] ?? null,
+            $data['thumbnail'] ?? null,
         );
 
         if (property_exists($result, 'Error')) {
