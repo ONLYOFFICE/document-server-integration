@@ -1,29 +1,29 @@
 # Change Log
 
 ##
-- converting all pages to images
 - nodejs: handle 'newext' in WOPI discovery
 - nodejs: use formats, languages, maxFileSize, urls to services, jwt header and prefix from document server meta
-- disable AI plugin for anonymous
-- java-spring: docs-integration-sdk updated to 1.8
-- php-laravel: update docs-integration-sdk to 1.4
 - nodejs: wopi CopyPasteRestrictions for anonymous
-- update insertImage formats
-- new mobile index page view
-- update action icons
-- php-laravel: 5 editor icons on index page
-- java-spring: 5 editor icons on index page
-- ruby: display mode buttons by actions
-- python: display mode buttons by actions
-- php: display mode buttons by actions
-- java: display mode buttons by actions
-- go: display mode buttons by actions
-- csharp-mvc: display mode buttons by actions
-- csharp: display mode buttons by actions
 - nodejs: display mode buttons by actions
 - nodejs: wopi UserCanOnlyComment
 - nodejs: setUsers for c=filler
 - nodejs: system start filling panel for default user
+- csharp: display mode buttons by actions
+- csharp-mvc: display mode buttons by actions
+- go: display mode buttons by actions
+- java: display mode buttons by actions
+- java-spring: docs-integration-sdk updated to 1.8
+- java-spring: 5 editor icons on index page
+- php: display mode buttons by actions
+- php-laravel: update docs-integration-sdk to 1.4
+- php-laravel: 5 editor icons on index page
+- python: display mode buttons by actions
+- ruby: display mode buttons by actions
+- converting all pages to images
+- disable AI plugin for anonymous
+- update insertImage formats
+- new mobile index page view
+- update action icons
 
 ## 1.15.0
 - nodejs: added AI Auto Fill Plugin
