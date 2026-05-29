@@ -95,7 +95,7 @@ exports.registerRoutes = function registerRoutes(app) {
         storedFiles: wopiEnable ? files : [],
         params: req.DocManager.getCustomParams(),
         users,
-        preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
+        preloaderUrl: req.DocManager.getSiteUrl(siteUrl) + configServer.get('preloaderUrl'),
         convertExts: fileUtility.getConvertExtensions(req.DocManager),
         editedExts,
         fillExts,

@@ -45,15 +45,10 @@ documentService.userIp = null;
 async function fetchMeta(path, docManager) {
   if (pendingPromise[path]) return pendingPromise[path];
 
-  let absSiteUrl = siteUrl;
-  if (absSiteUrl.indexOf('/') === 0) {
-    absSiteUrl = docManager.getServerHost() + siteUrl;
-  }
-
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), 2000);
 
-  pendingPromise[path] = fetch(absSiteUrl + path, {
+  pendingPromise[path] = fetch(docManager.getSiteUrl(siteUrl) + path, {
     signal: controller.signal,
   })
     .then((r) => {
@@ -185,7 +180,8 @@ documentService.getConvertedUri = async function getConvertedUri(
   };
 
   // get the absolute converter url
-  const uri = siteUrl + (await documentService.config(docManager)).urls.converter.replace('/', '');
+  const uri = docManager.getSiteUrl(siteUrl)
+    + (await documentService.config(docManager)).urls.converter.replace('/', '');
   const headers = {
     'Content-Type': 'application/json',
     Accept: 'application/json',
@@ -320,7 +316,7 @@ documentService.commandRequest = async function commandRequest(
     params.meta = meta;
   }
 
-  const uri = siteUrl + (await documentService.config(docManager)).urls.command.replace('/', '');
+  const uri = docManager.getSiteUrl(siteUrl) + (await documentService.config(docManager)).urls.command.replace('/', '');
   const headers = { // create a headers object
     'Content-Type': 'application/json',
   };
