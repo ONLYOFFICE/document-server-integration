@@ -107,7 +107,7 @@ app.get('/', async (req, res) => { // define a handler for default page
     req.DocManager = new DocManager(req, res);
 
     res.render('index', { // render index template with the parameters specified
-      preloaderUrl: siteUrl + configServer.get('preloaderUrl'),
+      preloaderUrl: req.DocManager.getSiteUrl(siteUrl) + configServer.get('preloaderUrl'),
       storedFiles: await req.DocManager.getStoredFiles(),
       params: req.DocManager.getCustomParams(),
       users,
@@ -375,11 +375,7 @@ app.post('/create', (req, res) => {
   try {
     req.DocManager = new DocManager(req, res);
 
-    let host = siteUrl;
-    if (host.indexOf('/') === 0) {
-      host = req.DocManager.getServerHost();
-    }
-    if (urlModule.parse(fileUrl).host !== urlModule.parse(host).host) {
+    if (urlModule.parse(fileUrl).host !== urlModule.parse(req.DocManager.getSiteUrl(siteUrl)).host) {
       res.writeHead(200, { 'Content-Type': 'application/json' });
       res.write(JSON.stringify({ error: 'File domain is incorrect' }));
       res.end();
@@ -1295,7 +1291,8 @@ app.get('/editor', async (req, res) => { // define a handler for editing documen
 
     // file config data
     const argss = {
-      apiUrl: siteUrl + (await documentService.config(req.DocManager)).urls.api.replace('/', ''),
+      apiUrl: req.DocManager.getSiteUrl(siteUrl)
+        + (await documentService.config(req.DocManager)).urls.api.replace('/', ''),
       file: {
         name: fileName,
         ext: fileUtility.getFileExtension(fileName, true),

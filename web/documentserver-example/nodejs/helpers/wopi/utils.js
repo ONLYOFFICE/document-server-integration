@@ -29,14 +29,9 @@ const siteUrl = configServer.get('siteUrl'); // the path to the editors installa
 let cache = null;
 
 const requestDiscovery = async function requestDiscovery(DocManager) {
-  let absSiteUrl = siteUrl;
-  if (absSiteUrl.indexOf('/') === 0) {
-    absSiteUrl = DocManager.getServerHost() + siteUrl;
-  }
-
   // eslint-disable-next-line no-unused-vars
   return new Promise((resolve, reject) => {
-    const uri = absSiteUrl + configServer.get('wopi.discovery');
+    const uri = DocManager.getSiteUrl(siteUrl) + configServer.get('wopi.discovery');
     const actions = [];
     let proofKey = null;
 
