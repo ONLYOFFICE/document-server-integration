@@ -27,6 +27,7 @@ const formidable = require('formidable');
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const mime = require('mime');
+const { pipeline } = require('stream');
 const urllib = require('urllib');
 const urlModule = require('url');
 const { emitWarning } = require('process');
@@ -36,6 +37,20 @@ const fileUtility = require('./helpers/fileUtility');
 const wopiApp = require('./helpers/wopi/wopiRouting');
 const users = require('./helpers/users');
 const dataAutofill = require('./config/data.json');
+
+const pipeFileToResponse = function pipeFileToResponse(filePath, res) {
+  const filestream = fileSystem.createReadStream(filePath);
+  pipeline(filestream, res, (err) => {
+    if (!err || err.code === 'ERR_STREAM_PREMATURE_CLOSE') {
+      return;
+    }
+
+    console.error(err);
+    if (!res.headersSent) {
+      res.sendStatus(500);
+    }
+  });
+};
 
 const configServer = config.get('server');
 const siteUrl = configServer.get('siteUrl');
@@ -220,8 +235,7 @@ app.get('/download', async (req, res) => { // define a handler for downloading f
 
   res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`);
 
-  const filestream = fileSystem.createReadStream(filePath);
-  filestream.pipe(res); // send file information to the response by streams
+  pipeFileToResponse(filePath, res); // send file information to the response by streams
 });
 
 app.get('/data', (req, res) => { // define a handler for getting sample ai form data
@@ -276,8 +290,7 @@ app.get('/history', async (req, res) => {
   res.setHeader('Content-Type', mime.getType(Path));
   res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(file)}`);
 
-  const filestream = fileSystem.createReadStream(Path);
-  filestream.pipe(res); // send file information to the response by streams
+  pipeFileToResponse(Path, res); // send file information to the response by streams
 });
 
 app.post('/upload', async (req, res) => { // define a handler for uploading files
@@ -603,8 +616,7 @@ app.get('/csv', (req, res) => { // define a handler for downloading csv files
 
   res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(fileName)}`);
 
-  const filestream = fileSystem.createReadStream(csvPath);
-  filestream.pipe(res); // send file information to the response by streams
+  pipeFileToResponse(csvPath, res); // send file information to the response by streams
 });
 
 app.post('/reference', (req, res) => { // define a handler for renaming file
