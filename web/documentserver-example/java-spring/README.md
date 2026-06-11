@@ -25,7 +25,7 @@ To connect the editors to your website, specify the path to the editors installa
 ```
  files.storage=
  server.port=port
- files.docservice.url.site=https://documentserver/
+ docservice.url=https://documentserver/
 ```
 
 where the **documentserver** is the name of the server with the ONLYOFFICE Docs installed, **port** is any available port and **files.storage** is the path where files will be created and stored (in the project folder by default). You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
@@ -96,7 +96,7 @@ To run the Java example code, install the Java version 11 appropriate for your O
 
 ### Step 5. Configure JWT 
 
-Open the *src/main/resouces/application.properties* file and [specify the same secret key](https://helpcenter.onlyoffice.com/installation/docs-configure-jwt.aspx) as used in your Document Server to enable JWT: 
+Open the *src/main/resources/application.properties* file and [specify the same secret key](https://helpcenter.onlyoffice.com/installation/docs-configure-jwt.aspx) as used in your Document Server to enable JWT:
 
 ```
 docservice.security.key=secret
@@ -176,7 +176,7 @@ See the detailed guide to learn how to install Document Server [for Linux](https
     ```
     files.storage=
     server.port=port
-    files.docservice.url.site=https://documentserver/
+    docservice.url=https://documentserver/
     ```
 
 	where the **documentserver** is the name of the server with the ONLYOFFICE Docs installed, **port** is any available port and **files.storage** is the path where files will be created and stored (in the project folder by default). You can set an absolute path.
@@ -267,7 +267,7 @@ See the detailed guide to learn how to install Document Server [for Docker](http
    ```
    files.storage=
    server.port=port
-   files.docservice.url.site=https://documentserver/
+   docservice.url=https://documentserver/
    ```
 
     where the **documentserver** is the name of the server with the ONLYOFFICE Docs installed, **port** is any available port and **files.storage** is the path where files will be created and stored (in the project folder by default). You can set an absolute path.
