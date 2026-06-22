@@ -207,6 +207,41 @@ documentService.getConvertedUri = async function getConvertedUri(
   );
 };
 
+documentService.convertFile = async function convertFile(
+  documentServerUrl,
+  converterPath,
+  filePath,
+  params,
+  token,
+  callback,
+) {
+  const url = new URL(documentServerUrl);
+  const requestParams = token
+    ? { ...params, token }
+    : params;
+
+  url.pathname = [
+    url.pathname,
+    converterPath,
+  ]
+    .join('/')
+    .replace(/\/+/g, '/');
+
+  urllib.request(
+    urlModule.parse(url.href),
+    {
+      method: 'POST',
+      files: {
+        file: filePath,
+      },
+      data: {
+        params: JSON.stringify(requestParams),
+      },
+    },
+    callback,
+  );
+};
+
 // generate the document key value
 documentService.generateRevisionId = function generateRevisionId(expectedKey) {
   const maxKeyLength = 128; // the max key length is 128
