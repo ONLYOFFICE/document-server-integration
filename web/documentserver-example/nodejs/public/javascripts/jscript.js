@@ -428,7 +428,7 @@ if (typeof jQuery != "undefined") {
                 async: true,
                 type: "post",
                 dataType: "json",
-                data: {filename: fileName, filePass: filePass, lang: language, fileExt: fileExt, keepOriginal: true},
+                data: {filename: fileName, filePass: filePass, lang: language, fileExt: fileExt, keepOriginal: true, sendFileInRequest: jq("#sendFileInRequest").is(":checked")},
                 url: UrlConverter,
                 complete: function (data) {
                     try {
