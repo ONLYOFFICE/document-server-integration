@@ -458,7 +458,7 @@ DocManager.prototype.countVersion = function countVersion(directory) {
   return i;
 };
 
-DocManager.prototype.getHistoryObject = function getHistoryObject(fileName, userAddr = null, userDirectUrl = null) {
+DocManager.prototype.getHistoryObject = function getHistoryObject(fileName, userAddr = null, userDirectUrl = false) {
   const userAddress = userAddr || this.curUserHostAddress();
   const historyPath = this.historyPath(fileName, userAddress);
   const key = this.getKey(fileName);

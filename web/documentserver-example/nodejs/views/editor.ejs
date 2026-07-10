@@ -114,7 +114,7 @@
 
         var onRequestHistory = function (event) {  // the user is trying to show the document version history
             const fileName = "<%- file.name %>" || null;
-            const directUrl = "<%- file.directUrl %>" || null;
+            const directUrl = !!"<%- file.directUrl %>";
             const data = {
               fileName: fileName,
               directUrl: directUrl
@@ -146,7 +146,7 @@
           const version = event.data.version;
           const url = event.data.url;
           const fileName = "<%- file.name %>" || null;
-          const directUrl = "<%- file.directUrl %>" || null;
+          const directUrl = !!"<%- file.directUrl %>";
           const restoreData = {
             version: version,
             url: url,
@@ -354,7 +354,7 @@
               }
               if (firstXlsxName) {
                 let data = {
-                  directUrl : "<%- file.directUrl %>" || false,
+                  directUrl : !!"<%- file.directUrl %>",
                   path : firstXlsxName
                 };
                 let xhr = new XMLHttpRequest();
