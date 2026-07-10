@@ -116,26 +116,26 @@
             const fileName = "<%- file.name %>" || null;
             const directUrl = !!"<%- file.directUrl %>";
             const data = {
-              fileName: fileName,
-              directUrl: directUrl
+                fileName: fileName,
+                directUrl: directUrl
             };
             let xhr = new XMLHttpRequest();
             xhr.open("POST", "historyObj");
             xhr.setRequestHeader("Content-Type", "application/json");
             xhr.send(JSON.stringify(data));
             xhr.onload = function () {
-              historyObject = JSON.parse(xhr.responseText);
-              docEditor.refreshHistory(  // show the document version history
-                {
-                  currentVersion: historyObject.countVersion,
-                  history: historyObject.history
-                });
+                historyObject = JSON.parse(xhr.responseText);
+                docEditor.refreshHistory(  // show the document version history
+                    {
+                        currentVersion: historyObject.countVersion,
+                        history: historyObject.history
+                    });
             }
         };
 
         var onRequestHistoryData = function (event) {  // the user is trying to click the specific document version in the document version history
-          const version = event.data;
-          docEditor.setHistoryData(historyObject.historyData[version-1]);  // send the link to the document for viewing the version history
+            const version = event.data;
+            docEditor.setHistoryData(historyObject.historyData[version-1]);  // send the link to the document for viewing the version history
         };
 
         var onRequestHistoryClose = function (event){  // the user is trying to go back to the document from viewing the document version history
@@ -143,42 +143,42 @@
         };
 
         var onRequestRestore = function (event) { // the user is trying to restore file version
-          const version = event.data.version;
-          const url = event.data.url;
-          const fileName = "<%- file.name %>" || null;
-          const directUrl = !!"<%- file.directUrl %>";
-          const restoreData = {
-            version: version,
-            url: url,
-            fileName: fileName,
-          };
-          let xhr = new XMLHttpRequest();
-          xhr.open("PUT", "restore");
-          xhr.setRequestHeader('Content-Type', 'application/json');
-          xhr.send(JSON.stringify(restoreData));
-          xhr.onload = function () {
-            const response = JSON.parse(xhr.responseText);
-            if (response.success && !response.error) {
-              const dataForHistory = {
+            const version = event.data.version;
+            const url = event.data.url;
+            const fileName = "<%- file.name %>" || null;
+            const directUrl = !!"<%- file.directUrl %>";
+            const restoreData = {
+                version: version,
+                url: url,
                 fileName: fileName,
-                directUrl: directUrl
-              };
-              let xhr = new XMLHttpRequest();
-              xhr.open("POST", "historyObj");
-              xhr.setRequestHeader("Content-Type", "application/json");
-              xhr.send(JSON.stringify(dataForHistory));
-              xhr.onload = function () {
-                historyObject = JSON.parse(xhr.responseText);
-                docEditor.refreshHistory(  // show the document version history
-                  {
-                    currentVersion: historyObject.countVersion,
-                    history: historyObject.history
-                  });
-              }
-            } else {
-              innerAlert(response.error);
+            };
+            let xhr = new XMLHttpRequest();
+            xhr.open("PUT", "restore");
+            xhr.setRequestHeader('Content-Type', 'application/json');
+            xhr.send(JSON.stringify(restoreData));
+            xhr.onload = function () {
+                const response = JSON.parse(xhr.responseText);
+                if (response.success && !response.error) {
+                    const dataForHistory = {
+                        fileName: fileName,
+                        directUrl: directUrl
+                    };
+                    let xhr = new XMLHttpRequest();
+                    xhr.open("POST", "historyObj");
+                    xhr.setRequestHeader("Content-Type", "application/json");
+                    xhr.send(JSON.stringify(dataForHistory));
+                    xhr.onload = function () {
+                        historyObject = JSON.parse(xhr.responseText);
+                        docEditor.refreshHistory(  // show the document version history
+                        {
+                            currentVersion: historyObject.countVersion,
+                            history: historyObject.history
+                        });
+                    }
+                } else {
+                    innerAlert(response.error);
+                }
             }
-          }
         }
 
         var onError = function (event) {  // an error or some other specific event occurs
@@ -332,49 +332,49 @@
         };
 
         var onRequestReferenceSource = function (event) {
-          innerAlert("onRequestReferenceSource");
-          let xhr = new XMLHttpRequest();
-          xhr.open("GET", "files/");
-          xhr.setRequestHeader("Content-Type", "application/json");
-          xhr.send();
-          xhr.onload = function () {
-            if (xhr.status === 200) {
-              let fileList = JSON.parse(xhr.responseText);
-              let firstXlsxName;
-              let file;
-              for (var i = 0; i < fileList.length; i++) {
-                file = fileList[i];
-                if (file["title"]) {
-                  if (getFileExt(file["title"]) === "xlsx")
-                  {
-                    firstXlsxName = file["title"];
-                    break;
-                  }
+            innerAlert("onRequestReferenceSource");
+            let xhr = new XMLHttpRequest();
+            xhr.open("GET", "files/");
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send();
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    let fileList = JSON.parse(xhr.responseText);
+                    let firstXlsxName;
+                    let file;
+                    for (var i = 0; i < fileList.length; i++) {
+                        file = fileList[i];
+                        if (file["title"]) {
+                            if (getFileExt(file["title"]) === "xlsx")
+                            {
+                                firstXlsxName = file["title"];
+                                break;
+                            }
+                        }
+                    }
+                    if (firstXlsxName) {
+                        let data = {
+                            directUrl : !!"<%- file.directUrl %>",
+                            path : firstXlsxName
+                        };
+                        let xhr = new XMLHttpRequest();
+                        xhr.open("POST", "reference");
+                        xhr.setRequestHeader("Content-Type", "application/json");
+                        xhr.send(JSON.stringify(data));
+                        xhr.onload = function () {
+                            if (xhr.status === 200) {
+                                docEditor.setReferenceSource(JSON.parse(xhr.responseText));
+                            } else {
+                                innerAlert("/reference - bad status");
+                            }
+                        }
+                    } else {
+                        innerAlert("No *.xlsx files");
+                    }
+                } else {
+                    innerAlert("/files - bad status");
                 }
-              }
-              if (firstXlsxName) {
-                let data = {
-                  directUrl : !!"<%- file.directUrl %>",
-                  path : firstXlsxName
-                };
-                let xhr = new XMLHttpRequest();
-                xhr.open("POST", "reference");
-                xhr.setRequestHeader("Content-Type", "application/json");
-                xhr.send(JSON.stringify(data));
-                xhr.onload = function () {
-                  if (xhr.status === 200) {
-                    docEditor.setReferenceSource(JSON.parse(xhr.responseText));
-                  } else {
-                    innerAlert("/reference - bad status");
-                  }
-                }
-              } else {
-                innerAlert("No *.xlsx files");
-              }
-            } else {
-              innerAlert("/files - bad status");
             }
-          }
         };
 
         var onRequestSaveAs = function (event) {  //  the user is trying to save file by clicking Save Copy as... button
@@ -506,10 +506,10 @@
         };
 
         const getFileExt = function (fileName) {
-          if (fileName.indexOf(".")) {
-            return fileName.split('.').reverse()[0];
-          }
-          return false;
+            if (fileName.indexOf(".")) {
+                return fileName.split('.').reverse()[0];
+            }
+            return false;
         };
 
         if (window.addEventListener) {
