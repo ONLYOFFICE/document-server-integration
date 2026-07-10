@@ -652,7 +652,7 @@ app.post('/reference', (req, res) => { // define a handler for renaming file
     if (req.body.link.indexOf(req.DocManager.getServerUrl()) === -1) {
       result({
         url: req.body.link,
-        directUrl: req.body.link,
+        directUrl: req.body.directUrl ? req.body.link : null,
       });
       return;
     }
