@@ -425,6 +425,7 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
   const internalFileExt = 'ooxml';
   const convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
   const { keepOriginal } = req.body;
+  const sendFileInRequest = req.body.sendFileInRequest === true || req.body.sendFileInRequest === 'true';
   const response = res;
 
   const writeResult = function writeResult(filename, step, error) {
@@ -442,7 +443,7 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
     response.end();
   };
 
-  const callback = async function callback(err, resp) {
+  const callback = async function callback(err, data, resp) {
     if (err) { // if an error occurs
       // check what type of error it is
       if (err.name === 'ConnectionTimeoutError' || err.name === 'ResponseTimeoutError') {
@@ -454,28 +455,48 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
     }
 
     try {
-      const responseData = documentService.getResponseUri(resp.toString());
-      const result = responseData.percent;
-      const newFileUri = responseData.uri; // get the callback url
-      const newFileType = `.${responseData.fileType}`; // get the file type
+      if (resp.status !== 200) throw new Error(`Conversion service returned status: ${resp.status}`);
 
-      if (result !== 100) { // if the status isn't 100
-        writeResult(fileName, result, null); // write the origin file to the result object
-        return;
+      let responseData;
+      try {
+        responseData = documentService.getResponseUri(data.toString()); // try to parse the response as json
+      } catch (e) {
+        responseData = null; // the response is the converted file body itself
       }
 
-      // get the file name with a new extension
-      const correctName = req.DocManager.getCorrectName(fileUtility.getFileName(fileName, true) + newFileType);
+      let result;
+      let correctName;
+      let fileData;
 
-      const { status, data } = await urllib.request(newFileUri, { method: 'GET' });
+      if (responseData) {
+        result = responseData.percent;
 
-      if (status !== 200) throw new Error(`Conversion service returned status: ${status}`);
+        if (result !== 100) { // if the status isn't 100
+          writeResult(fileName, result, null); // write the origin file to the result object
+          return;
+        }
+
+        // get the file name with a new extension
+        const newFileType = `.${responseData.fileType}`; // get the file type
+        correctName = req.DocManager.getCorrectName(fileUtility.getFileName(fileName, true) + newFileType);
+
+        const fileResponse = await urllib.request(responseData.uri, { method: 'GET' });
+
+        if (fileResponse.status !== 200) throw new Error(`Conversion service returned status: ${fileResponse.status}`);
+
+        fileData = fileResponse.data;
+      } else {
+        result = 100;
+        correctName = req.DocManager.getCorrectName(`${fileUtility.getFileName(fileName, true)}.${convExt}`);
+        fileData = data;
+      }
 
       // write a file with a new extension, but with the content from the origin file
       if ((await fileUtility.getFileType(req.DocManager, correctName)) !== null) {
-        fileSystem.writeFileSync(req.DocManager.storagePath(correctName), data);
+        fileSystem.writeFileSync(req.DocManager.storagePath(correctName), fileData);
       } else {
-        writeResult(newFileUri.replace('http://localhost/', siteUrl), result, 'FileTypeIsNotSupported');
+        const uri = responseData ? responseData.uri.replace('http://localhost/', siteUrl) : null;
+        writeResult(uri, result, 'FileTypeIsNotSupported');
         return;
       }
       // remove file with the origin extension
@@ -493,7 +514,7 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
           path.join(correctHistoryPath, `${fileName}.txt`),
           path.join(correctHistoryPath, `${correctName}.txt`),
         ); // change the name of the .txt file with document information
-      } else if (newFileType !== null) {
+      } else {
         const user = users.getUser(req.query.userid);
 
         req.DocManager.saveFileData(correctName, user.id, user.name);
@@ -514,19 +535,51 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
       let key = fileUri + stat.mtime.getTime();
 
       key = documentService.generateRevisionId(key); // get document key
-      // get the url to the converted file
-      documentService.getConvertedUri(
-        req.DocManager,
-        fileUri,
-        fileExt,
-        convExt,
-        key,
-        true,
-        callback,
-        filePass,
-        lang,
-        fileName,
-      );
+
+      if (sendFileInRequest) {
+        const dsConfig = await documentService.config(req.DocManager);
+        const documentServerUrl = req.DocManager.getSiteUrl(siteUrl);
+        const converterFromFilePath = dsConfig.urls.converterFromFile.replace(/^\//, '');
+
+        const convParams = {
+          async: true,
+          outputtype: convExt.replace('.', ''),
+          filetype: fileExt.replace('.', ''),
+          title: fileName,
+          key,
+          password: filePass,
+          region: lang,
+          thumbnail: { first: false },
+        };
+
+        let token = null;
+        if (cfgSignatureEnable && cfgSignatureUseForRequest) {
+          token = documentService.getToken(convParams);
+        }
+
+        documentService.convertFile(
+          documentServerUrl,
+          converterFromFilePath,
+          storagePath,
+          convParams,
+          token,
+          callback,
+        );
+      } else {
+        // get the url to the converted file
+        documentService.getConvertedUri(
+          req.DocManager,
+          fileUri,
+          fileExt,
+          convExt,
+          key,
+          true,
+          callback,
+          filePass,
+          lang,
+          fileName,
+        );
+      }
     } else {
       // if the file with such an extension can't be converted, write the origin file to the result object
       writeResult(fileName, null, null);
