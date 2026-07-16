@@ -457,19 +457,16 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
     try {
       if (resp.status !== 200) throw new Error(`Conversion service returned status: ${resp.status}`);
 
-      let responseData;
-      try {
-        responseData = documentService.getResponseUri(data.toString()); // try to parse the response as json
-      } catch (e) {
-        responseData = null; // the response is the converted file body itself
-      }
-
       let result;
       let correctName;
       let fileData;
+      let fileUrl;
 
-      if (responseData) {
+      const contentType = (resp.headers && resp.headers['content-type']) || '';
+      if (contentType.includes('application/json')) {
+        const responseData = documentService.getResponseUri(data.toString());
         result = responseData.percent;
+        fileUrl = responseData.uri;
 
         if (result !== 100) { // if the status isn't 100
           writeResult(fileName, result, null); // write the origin file to the result object
@@ -480,7 +477,7 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
         const newFileType = `.${responseData.fileType}`; // get the file type
         correctName = req.DocManager.getCorrectName(fileUtility.getFileName(fileName, true) + newFileType);
 
-        const fileResponse = await urllib.request(responseData.uri, { method: 'GET' });
+        const fileResponse = await urllib.request(fileUrl, { method: 'GET' });
 
         if (fileResponse.status !== 200) throw new Error(`Conversion service returned status: ${fileResponse.status}`);
 
@@ -495,7 +492,7 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
       if ((await fileUtility.getFileType(req.DocManager, correctName)) !== null) {
         fileSystem.writeFileSync(req.DocManager.storagePath(correctName), fileData);
       } else {
-        const uri = responseData ? responseData.uri.replace('http://localhost/', siteUrl) : null;
+        const uri = fileUrl ? fileUrl.replace('http://localhost/', siteUrl) : null;
         writeResult(uri, result, 'FileTypeIsNotSupported');
         return;
       }
