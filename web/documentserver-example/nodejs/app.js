@@ -428,7 +428,7 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
   const sendFileInRequest = req.body.sendFileInRequest === true || req.body.sendFileInRequest === 'true';
   const response = res;
 
-  const writeResult = function writeResult(filename, step, error) {
+  const writeResult = function writeResult(filename, step, fileData, error) {
     const result = {};
 
     // write file name, step and error values to the result object if they are defined
@@ -437,6 +437,8 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
     if (step !== null) result.step = step;
 
     if (error !== null) result.error = error;
+
+    if (fileData) result.fileData = fileData.toString('base64');
 
     response.setHeader('Content-Type', 'application/json');
     response.write(JSON.stringify(result));
@@ -447,9 +449,9 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
     if (err) { // if an error occurs
       // check what type of error it is
       if (err.name === 'ConnectionTimeoutError' || err.name === 'ResponseTimeoutError') {
-        writeResult(fileName, 0, null); // despite the timeout errors, write the file to the result object
+        writeResult(fileName, 0, null, null); // despite the timeout errors, write the file to the result object
       } else {
-        writeResult(null, null, JSON.stringify(err)); // other errors trigger an error message
+        writeResult(null, null, null, JSON.stringify(err)); // other errors trigger an error message
       }
       return;
     }
@@ -461,6 +463,7 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
       let correctName;
       let fileData;
       let fileUrl;
+      let isFileBodyInResponse = false;
 
       const contentType = (resp.headers && resp.headers['content-type']) || '';
       if (contentType.includes('application/json')) {
@@ -469,7 +472,7 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
         fileUrl = responseData.uri;
 
         if (result !== 100) { // if the status isn't 100
-          writeResult(fileName, result, null); // write the origin file to the result object
+          writeResult(fileName, result, null, null); // write the origin file to the result object
           return;
         }
 
@@ -486,14 +489,21 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
         result = 100;
         correctName = req.DocManager.getCorrectName(`${fileUtility.getFileName(fileName, true)}.${convExt}`);
         fileData = data;
+        isFileBodyInResponse = true;
       }
 
       // write a file with a new extension, but with the content from the origin file
       if ((await fileUtility.getFileType(req.DocManager, correctName)) !== null) {
         fileSystem.writeFileSync(req.DocManager.storagePath(correctName), fileData);
       } else {
-        const uri = fileUrl ? fileUrl.replace('http://localhost/', siteUrl) : null;
-        writeResult(uri, result, 'FileTypeIsNotSupported');
+        let uri = fileUrl ? fileUrl.replace('http://localhost/', siteUrl) : null;
+        if (isFileBodyInResponse) {
+          // get the file name from the content-disposition header when there is no conversion url to rely on
+          const contentDisposition = (resp.headers && resp.headers['content-disposition']) || '';
+          const filenameMatch = /filename\*?=(?:UTF-\d[^'"]*'')?"?([^";]+)"?/i.exec(contentDisposition);
+          uri = filenameMatch ? decodeURIComponent(filenameMatch[1]) : null;
+        }
+        writeResult(uri, result, isFileBodyInResponse ? fileData : null, 'FileTypeIsNotSupported');
         return;
       }
       // remove file with the origin extension
@@ -517,10 +527,10 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
         req.DocManager.saveFileData(correctName, user.id, user.name);
       }
 
-      writeResult(correctName, result, null); // write a file with a new name to the result object
+      writeResult(correctName, result, null, null); // write a file with a new name to the result object
     } catch (e) {
       if (!e.message.includes('-9')) console.log(e); // display error message in the console
-      writeResult(null, null, e.message);
+      writeResult(null, null, null, e.message);
     }
   };
 
@@ -579,11 +589,11 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
       }
     } else {
       // if the file with such an extension can't be converted, write the origin file to the result object
-      writeResult(fileName, null, null);
+      writeResult(fileName, null, null, null);
     }
   } catch (ex) {
     console.log(ex);
-    writeResult(null, null, 'Server error');
+    writeResult(null, null, null, 'Server error');
   }
 });
 

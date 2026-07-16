@@ -138,6 +138,7 @@ if (typeof jQuery != "undefined") {
     });
 
     var timer = null;
+    var convertedFileData = null;
     var checkConvert = function (filePass, fileType) {
         filePass = filePass ? filePass : null;
         if (timer != null) {
@@ -340,7 +341,13 @@ if (typeof jQuery != "undefined") {
 
     jq(document).on("click", "#downloadConverted:not(.disable)", function () {
         var fileId = jq('#hiddenFileName').attr("data");
-        if (jq("#downloadConverted").attr("data") == "fromConverter") window.location.assign(fileId);
+        if (jq("#downloadConverted").attr("data") == "fromConverter") {
+            if (convertedFileData) {
+                downloadBase64File(convertedFileData, fileId);
+            } else {
+                window.location.assign(fileId);
+            }
+        }
         else window.location.href = "download?fileName=" + encodeURIComponent(fileId);
     });
 
@@ -411,7 +418,8 @@ if (typeof jQuery != "undefined") {
         jq("#beginEditConverted").addClass("disable");
         jq("#beginViewConverted").addClass("disable");
         mustReload = true;
-        
+        convertedFileData = null;
+
         convertFile();
     });
 
@@ -461,6 +469,7 @@ if (typeof jQuery != "undefined") {
                             jq("#downloadConverted").attr("data","fromStorage");
                         } else {
                             jq("#downloadConverted").attr("data","fromConverter");
+                            convertedFileData = response.fileData ? response.fileData : null;
                         }
                         jq("td[name='convertingTypeButton']").removeClass("disable orange");
                     }
@@ -586,6 +595,24 @@ if (typeof jQuery != "undefined") {
     }).mouseout(function () {
         jq("div.tooltip").remove();
     });
+}
+
+function downloadBase64File(base64Data, fileName) {
+    var byteCharacters = atob(base64Data);
+    var byteNumbers = new Array(byteCharacters.length);
+    for (var i = 0; i < byteCharacters.length; i++) {
+        byteNumbers[i] = byteCharacters.charCodeAt(i);
+    }
+    var blob = new Blob([new Uint8Array(byteNumbers)]);
+
+    var link = document.createElement("a");
+    var url = URL.createObjectURL(blob);
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 }
 
 function getUrlVars() {
