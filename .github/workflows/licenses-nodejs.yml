@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: Install Dependencies
-        run: npm install
+        run: npm ci
         working-directory: ./web/documentserver-example/nodejs
       - name: Get Repository License
         id: license

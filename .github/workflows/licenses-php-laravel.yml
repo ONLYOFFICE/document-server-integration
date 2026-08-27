@@ -32,7 +32,7 @@ jobs:
         run: composer install
         working-directory: ./web/documentserver-example/php-laravel
       - name: Install Dependensies - NPM
-        run: npm install
+        run: npm ci
         working-directory: ./web/documentserver-example/php-laravel
       - name: Get Repository License
         id: license
