@@ -16,6 +16,8 @@
  *
  */
 
+const crypto = require('crypto');
+const fileSystem = require('fs');
 const pathModule = require('path');
 const documentService = require('./documentService');
 
@@ -108,6 +110,18 @@ fileUtility.getConvertExtensions = async function getConvertExtensions(docManage
   return (await documentService.formats(docManager)).filter(
     (format) => format.actions.includes('auto-convert'),
   ).reduce((extensions, format) => [...extensions, format.name], []);
+};
+
+// calculate the sha-256 digest of the file for the Content-Digest header (RFC 9530)
+fileUtility.getContentDigest = function getContentDigest(filePath) {
+  return new Promise((resolve, reject) => {
+    const hash = crypto.createHash('sha256');
+    const filestream = fileSystem.createReadStream(filePath);
+
+    filestream.on('data', (chunk) => hash.update(chunk));
+    filestream.on('error', reject);
+    filestream.on('end', () => resolve(`sha-256=:${hash.digest('base64')}:`));
+  });
 };
 
 // get url parameters

@@ -168,13 +168,29 @@ const unlockAndRelock = function unlockAndRelock(wopi, req, res, userHost) {
 };
 
 // request a message to retrieve a file
-const getFile = function getFile(wopi, req, res, userHost) {
+const getFile = async function getFile(wopi, req, res, userHost) {
   const userAddress = req.DocManager.curUserHostAddress(userHost);
 
   const storagePath = req.DocManager.storagePath(wopi.id, userAddress);
 
+  if (!fileSystem.existsSync(storagePath)) {
+    res.sendStatus(404);
+    return;
+  }
+
+  let contentDigest;
+  try {
+    // get the file checksum before sending the response headers
+    contentDigest = await fileUtility.getContentDigest(storagePath);
+  } catch (err) {
+    console.log(`getContentDigest error: path = ${storagePath} message = ${err.message}`);
+    res.sendStatus(500);
+    return;
+  }
+
   res.setHeader('Content-Length', fileSystem.statSync(storagePath).size);
   res.setHeader('Content-Type', mime.getType(storagePath));
+  res.setHeader('Content-Digest', contentDigest);
 
   res.setHeader('Content-Disposition', `attachment; filename*=UTF-8''${encodeURIComponent(wopi.id)}`);
 

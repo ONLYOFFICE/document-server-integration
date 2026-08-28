@@ -1,6 +1,7 @@
 # Change Log
 
 ##
+- nodejs: Content-Digest header on file download
 - nodejs: handle 'newext' in WOPI discovery
 - nodejs: use formats, languages, maxFileSize, urls to services, jwt header and prefix from document server meta
 - nodejs: wopi CopyPasteRestrictions for anonymous

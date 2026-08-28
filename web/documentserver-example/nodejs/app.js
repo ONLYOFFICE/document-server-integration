@@ -38,7 +38,18 @@ const wopiApp = require('./helpers/wopi/wopiRouting');
 const users = require('./helpers/users');
 const dataAutofill = require('./config/data.json');
 
-const pipeFileToResponse = function pipeFileToResponse(filePath, res) {
+const pipeFileToResponse = async function pipeFileToResponse(filePath, res) {
+  let contentDigest;
+  try {
+    // get the file checksum before sending the response headers
+    contentDigest = await fileUtility.getContentDigest(filePath);
+  } catch (err) {
+    console.log(`getContentDigest error: path = ${filePath} message = ${err.message}`);
+    res.sendStatus(500);
+    return;
+  }
+  res.setHeader('Content-Digest', contentDigest);
+
   const filestream = fileSystem.createReadStream(filePath);
   pipeline(filestream, res, (err) => {
     if (!err || err.code === 'ERR_STREAM_PREMATURE_CLOSE') {
