@@ -88,7 +88,7 @@ DocManager.prototype.getCorrectName = function getCorrectName(fileName, userAddr
   const maxName = configServer.get('maxNameLength');
   let baseName = fileUtility.getFileName(fileName, true);
   baseName = baseName.replace(/[/\\?%*:|"<>]/g, '_').substr(0, maxName)
-    + (fileName.length > maxName ? '[...]' : '');
+    + (baseName.length > maxName ? '[...]' : '');
   const ext = fileUtility.getFileExtension(fileName); // get file extension from the url
   let name = baseName + ext; // get full file name
   let index = 1;
