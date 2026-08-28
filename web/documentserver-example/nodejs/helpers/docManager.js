@@ -331,7 +331,19 @@ DocManager.prototype.getStoredFiles = async function getStoredFiles() {
   const result = [];
   const storedFiles = fileSystem.readdirSync(directory); // read the user host directory contents
   for (let i = 0; i < storedFiles.length; i++) { // run through all the elements from the folder
-    const stats = fileSystem.lstatSync(path.join(directory, storedFiles[i])); // save element parameters
+    let stats;
+    const filePath = path.join(directory, storedFiles[i]);
+    try {
+      stats = fileSystem.lstatSync(filePath); // save element parameters
+    } catch (ex) {
+      // the file could have been removed or is temporarily locked between readdirSync and lstatSync
+      console.error(`lstat failed for "${filePath}": ${ex.code || ex.message}`, {
+        exists: fileSystem.existsSync(filePath),
+        absolute: path.resolve(filePath),
+      });
+      // eslint-disable-next-line no-continue
+      continue;
+    }
 
     if (!stats.isDirectory()) { // if the element isn't a directory
       const historyPath = this.historyPath(storedFiles[i], userAddress); // get the path to the file history
