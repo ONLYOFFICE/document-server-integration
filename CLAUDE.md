@@ -29,30 +29,9 @@ orients you across the eleven.
 
 ## Per-example commands
 
-Run from inside the example's own directory. The per-example `CLAUDE.md` files carry the exact invocations.
-
-| Example | Install | Run | Lint | Test |
-|---|---|---|---|---|
-| nodejs | `npm install` (or `make` from repo root) | `npm start` (port 3000) | `npm run lint` / `npm run lint:fix` | — |
-| php | `make dev` | `make server-dev` (port 9000) | `make lint` (phpcs) | `make test` (phpunit) |
-| php-laravel | `make install` | `make compose-start` | `pint --test` | `phpunit` |
-| python | `make dev` | `make server-dev` (port 8000) | `make lint` (flake8), `make types` (mypy, not yet wired into CI) | `make test` |
-| ruby | `make dev` | `make server-dev` (port 3000) | `make lint` (rubocop; + sorbet on macOS or x86_64 Linux) | `make test` |
-| go | `go mod download` | `go run main.go` (port 3000) | `golangci-lint run` | — |
-| java | — | build WAR + deploy to a servlet container | `mvn package` (checkstyle runs in the build) | — |
-| java-spring | — | `mvn spring-boot:run` (port 4000; use a system `mvn`, not `./mvnw`) | `mvn package` (checkstyle) | — |
-| csharp, csharp-mvc | — | Visual Studio / IIS (`.sln`) | — | — |
-
-`make help` in php/python/ruby prints the full recipe list. Docker entry points differ per example:
-`make compose-dev` / `make compose-prod` (python, ruby), `make compose-prod` only (php — there is no
-`compose-dev` there), `make compose-start` / `make compose-stop` (php-laravel), and a bare
-`docker compose up` (java, java-spring).
-
-### Running a single test
-
-- php: `./vendor/bin/phpunit src/format/FormatManagerEditableTests.php`
-- python: `python -m unittest src.format.format_tests`
-- ruby: `bundle exec ruby app/format/format_tests.rb`
+Each example’s own `CLAUDE.md` carries its exact install/run/lint/test invocations, ports, single-test
+forms and Docker entry points — they differ per example and are not guessable from here. `make help` in
+php/python/ruby prints the full recipe list.
 
 Test files are **colocated with the source**, not in a `tests/` tree, and are discovered by suffix:
 `*Tests.php` (php), `*_tests.py` (python), `*_tests.rb` (ruby). Meaningful tests exist only in php/python/ruby;
