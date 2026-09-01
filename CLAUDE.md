@@ -19,11 +19,17 @@ time; changing behaviour in one does *not* change the others.
 A change to a user-visible feature is normally expected to be **ported to every example**. Look at the git
 log to see the pattern: one commit per language with the same subject
 (`feat(python): when converting a multi-page document...`, `feat(go): ...`, …). When asked for a feature
-without a named language, ask which examples are in scope rather than assuming all of them.
+without a named language, ask which examples are in scope rather than assuming all of them. The `js` example
+is the exception: it is a frozen static page with no backend, absent from CI and from the release artifacts,
+and has never taken part in these sweeps.
+
+**Every example directory has its own `CLAUDE.md`** with verified, example-specific detail — commands, code
+map, storage layout, gotchas. When working inside one example, that file is the authority; this one only
+orients you across the eleven.
 
 ## Per-example commands
 
-Run from inside the example's own directory.
+Run from inside the example's own directory. The per-example `CLAUDE.md` files carry the exact invocations.
 
 | Example | Install | Run | Lint | Test |
 |---|---|---|---|---|
@@ -34,7 +40,7 @@ Run from inside the example's own directory.
 | ruby | `make dev` | `make server-dev` (port 3000) | `make lint` (rubocop + sorbet on macOS/x86_64 only) | `make test` |
 | go | `go mod download` | `go run main.go` (port 3000) | `golangci-lint run` | — |
 | java | — | build WAR + deploy to a servlet container | `mvn package` (checkstyle runs in the build) | — |
-| java-spring | — | `./mvnw spring-boot:run` | `mvn package` (checkstyle) | — |
+| java-spring | — | `mvn spring-boot:run` (`./mvnw` is broken — `.mvn/wrapper/` is not committed) | `mvn package` (checkstyle) | — |
 | csharp, csharp-mvc | — | Visual Studio / IIS (`.sln`) | — | — |
 
 `make help` in php/python/ruby prints the full recipe list. Docker is available via
@@ -47,7 +53,9 @@ Run from inside the example's own directory.
 - ruby: `bundle exec ruby -Itest app/format/format_tests.rb`
 
 Test files are **colocated with the source**, not in a `tests/` tree, and are discovered by suffix:
-`*Tests.php` (php), `*_tests.py` (python), `*_tests.rb` (ruby). Only php/python/ruby have tests at all.
+`*Tests.php` (php), `*_tests.py` (python), `*_tests.rb` (ruby). Only php/python/ruby have tests at all, and
+no CI workflow runs any of them — `make test` in python and ruby currently **fails out of the box**, because
+both assert version `1.6.0` while their configuration reports `1.15.0`.
 
 ## Submodules
 
@@ -57,47 +65,67 @@ and [`document-formats`](https://github.com/ONLYOFFICE/document-formats) (the fo
 viewed/edited/filled/converted). CI does `git submodule update --init --recursive` before anything else —
 a fresh clone without it produces examples that cannot create or classify files.
 
-## The integration architecture (shared by all examples)
+## The integration architecture
 
-Every example implements the same set of HTTP endpoints and the same on-disk storage layout. Reading
-`web/documentserver-example/nodejs/app.js` plus `helpers/docManager.js` and `helpers/documentService.js` is the
-fastest way to understand the whole model; `go/server/api/default/*.go` mirrors it file-per-endpoint and is the
-clearest map of the endpoint set.
+All 11 examples solve the same problem the same way, but **they are not uniform** — they were written and
+evolved separately, and the differences are real. Treat what follows as the shape of the model, not as a
+contract, and verify details against the example you are actually in. Each example directory has its own
+`CLAUDE.md` with its verified specifics; read that first.
 
-**Endpoints** (names vary slightly per framework): `/` index, `/editor` (builds the editor config and renders
-the page), `/config`, `/upload`, `/create`, `/convert`, `/download`, `/files`, `/history`, `/historyObj`,
-`/restore`, `/rename`, `/reference`, `/formats`, `/forgotten`, and `/track`.
+Reading `nodejs/app.js` plus `helpers/docManager.js` and `helpers/documentService.js` is the fastest way to
+understand the model as a whole; `go/server/api/default/*.go` is the clearest map of the endpoint set, one
+file per endpoint.
 
-**`/track` is the core of the integration.** Document Server POSTs a callback here with a `status`:
-`1` editing, `2`/`3` MustSave/Corrupted, `4` closed with no changes, `6`/`7` MustForceSave/CorruptedForceSave.
-On save the example downloads `url` from the callback, rotates the current file into the history tree, and
-writes the new content in its place.
+**Endpoints** — roughly `/` index, `/editor`, `/config`, `/upload`, `/create`, `/convert`, `/download`,
+`/files`, `/history`, `/restore`, `/rename`, `/reference`, `/formats`, `/forgotten`, and the save callback.
+Names diverge more than "slightly": the callback is `/track` in most, `/callback` in go, and
+`IndexServlet?type=track` in java, which exposes its whole API as `?type=<action>` on one servlet rather than
+as routes. php uses `/objhistory` where nodejs uses `/historyObj`, and has no `/create` at all.
 
-**Storage layout** — files are per-client-IP, versions are directories:
+**The save callback is the core of the integration.** Document Server POSTs a `status`: `1` editing, `2`/`3`
+MustSave/Corrupted, `4` closed with no changes, `6`/`7` MustForceSave/CorruptedForceSave. On save the example
+downloads `url` from the callback, rotates the current file into the history tree, and writes the new content
+in its place. Not every example handles every status: go implements only `2`, `3`, `4` and has no force-save
+at all (`Customization.Forcesave` is hardcoded `false`), while java defines `1`, `2`, `3`, `6`, `7` and never
+handles `4`.
+
+**Storage layout** — versions are numbered directories, but the details differ. The majority form is:
 
 ```
-<storageFolder>/<user host address>/
-  <filename>                       current version
-  <filename>-history/
-    1/  prev.<ext>  diff.zip  changes.txt  key.txt  user.txt
+<storage root>/<user host address>/
+  <filename>                    current version
+  <filename>-hist/
+    createdInfo.json            author of version 1
+    1/  prev.<ext>  diff.zip  changes.json  key.txt
     2/  ...
 ```
 
-The "user address" partitioning is why the examples appear to have per-visitor storage without any
-authentication.
+**nodejs is the outlier**, not the reference: it uses `-history`, `changes.txt` and a per-version `user.txt`.
+php-laravel differs completely (`info.json` / `history.json` / `changes.zip` / `N.<ext>`, force-saves on a
+separate disk). go uses `-hist` but stores a current-version meta file at `<filename>-hist/<filename>.json`.
 
-**JWT** is the only security boundary. Each example has a `JwtManager`/`jwtManager` equivalent that signs
-outgoing requests to Document Server and validates the incoming `Authorization` header on `/track` and
-`/download`. Config keys are `token.enable` / `token.secret` / `token.useforrequest` (or `JWT_IS_ENABLED`,
-`files.docservice.secret`, …). Secret and header name must match the Document Server's.
+The per-client-IP partitioning is **not universal** either: go ignores the user address entirely and keeps one
+flat folder; java-spring keys the folder on the *server's* own host IP; csharp, csharp-mvc and java drop the
+partition when the configured storage path is absolute; and php-laravel loses it behind the bundled nginx
+because `trustProxies()` is unset. Do not assume per-visitor isolation without checking.
 
-**Users** are a hardcoded fixture, identical across examples: `uid-1`…`uid-3` plus `uid-0` (anonymous). Their
-permission sets exercise different editor capabilities (review-only, comment-only, filler, etc.), so changing
-one user's flags changes what the demo demonstrates.
+**JWT** is the only security boundary — it signs outgoing requests to Document Server and validates the
+incoming `Authorization` header on the callback and download routes. Most examples have **no enable flag**:
+JWT is on iff the secret is non-empty (csharp, csharp-mvc, java, java-spring, php, php-laravel, python, ruby).
+Only nodejs (`token.enable`) and go (`JWT_IS_ENABLED`) have an explicit switch. Secret and header name must
+match the Document Server's.
 
-**Formats** come from the `document-formats` submodule and are exposed through a per-example `FormatManager`
-that answers "is this extension viewable / editable / fillable / auto-convertible". Newer examples
-(nodejs) also fetch `meta/formats` and `meta/config` from the running Document Server at runtime and cache them.
+**Users** are a hardcoded fixture of four: three permissioned users plus an anonymous one, whose permission
+sets are what the demo actually demonstrates (review-only, comment-only, filler, protect). Most examples
+identify them as `uid-1`…`uid-3` / `uid-0`; java-spring instead uses an integer database id in a `uid` cookie
+(1–4, where 4 is Anonymous).
+
+**Formats** come from the `document-formats` submodule via a per-example `FormatManager`. Exceptions:
+java-spring and php-laravel have no `document-formats` submodule and get the table from the external
+`docs-integration-sdk` instead. nodejs additionally fetches `meta/formats` and `meta/config` from the running
+Document Server at runtime and caches them for an hour — no other example does.
+
+**WOPI exists only in nodejs.** All ten agents verified this independently; a WOPI change is never ported.
 
 ## Configuration
 
