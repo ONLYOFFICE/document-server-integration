@@ -10,9 +10,8 @@ sibling implementations of the same application (`../go`, `../nodejs`, `../php`,
 **Not `../java`**, the JavaEE/WAR example — same vendor, same `com.onlyoffice.integration` package prefix,
 different codebase.
 
-Deliberately unhardened: no authorization, no validation of link parameters, `@CrossOrigin("*")` on every
-controller, no check of who calls `/track`. That is intentional — do not "fix" it as if this were production
-code. Real bugs (path traversal past the storage root, crashes, leaks) are still worth fixing.
+Locally open by design: `@CrossOrigin("*")` on every controller, and nothing checks who calls `/track`. See
+*Security posture* in `../../../CLAUDE.md` — this is intentional, and not something to harden.
 
 ## Commands
 
@@ -26,10 +25,9 @@ docker compose up        # docker-compose.yaml → `mvn clean spring-boot:run`, 
 
 CI (`.github/workflows/lint-spring.yml`, gated on `web/documentserver-example/java-spring/**`) installs
 temurin 11 and runs `mvn -version && mvn package` — no separate lint or test step. **There are no tests
-here**: no `src/test`, no `spring-boot-starter-test`. `./mvnw` does not work in a fresh clone — `.mvn/wrapper/`
-is not committed and the script reads `.mvn/wrapper/maven-wrapper.properties`; use a system `mvn`, as the
-README and CI do. Submodules must be initialised (`git submodule update --init --recursive`) or "Create new"
-/ sample file creation breaks; exactly one is wired in here, `src/main/resources/assets/document-templates`.
+here**: no `src/test`, no `spring-boot-starter-test`. Use a system `mvn`, as the README and CI do — not
+`./mvnw`. Submodules must be initialised (`git submodule update --init --recursive`) or "Create new" /
+sample file creation breaks; exactly one is wired in here, `src/main/resources/assets/document-templates`.
 Unlike `java`, `php`, `python`, `go`, `ruby` and `csharp*` there is **no `document-formats` submodule** — the
 format table comes from the SDK.
 
@@ -42,9 +40,9 @@ Everything is in `src/main/resources/application.properties` — no profiles, no
 `files.docservice.url.example` (address this example is reachable at *from* Document Server), `server.port`,
 `server.version` (release version — bump with the siblings' config files), `enable-forgotten`,
 `spring.datasource.*` (in-memory H2, console at `/h2`), and the `url.*` mappings, injected straight into the
-`@GetMapping("${url.…}")` annotations. Caveat: `SettingsManagerImpl` loads this file off the classpath
-*itself* (`docservice.` prefix) rather than through the Spring environment, so `-Ddocservice.url=…` or an env
-var reaches `@Value` fields but **not** the SDK.
+`@GetMapping("${url.…}")` annotations. Note that `SettingsManagerImpl` loads this file off the classpath
+itself (`docservice.` prefix) rather than through the Spring environment, so the SDK reads the file, not the
+Spring property sources.
 
 ## Code map
 
@@ -123,25 +121,20 @@ and history data. **Formats** come from the SDK's bundled table, exposed at `/fo
   building, callback dispatch, JWT, the convert/command services, the HTTP client, the format table. `sdk/`
   only *customises* it by subclassing the SDK defaults, so when something looks unimplemented here read the
   SDK superclass first — and an SDK bump can change behaviour with no diff in this directory.
-- **No WOPI**: `nodejs` is the only one of the 11 that implements it (verified by grep). Do not look for a
-  counterpart here or assume a WOPI change needs porting.
 - `documents/` is the runtime storage root and `target/` is Maven output — **neither is committed** (both are
   in the repo-root `.gitignore`) though both may exist locally from earlier runs. Ignore both when exploring.
 
 ## Conventions
 
-- **Every `.java` file starts with the Apache-2.0 ONLYOFFICE header**, machine-enforced here: checkstyle's
-  `Header` module compares the opening lines byte-for-byte against `onlyoffice.header` (current year
-  included), so a new file without it **fails `mvn package`** at the `validate` phase.
+Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../CLAUDE.md`. Here, additionally:
+
+- The licence header is machine-enforced: checkstyle compares the opening lines byte-for-byte against
+  `onlyoffice.header`, current year included, at the `validate` phase.
 - `checkstyle.xml` is sun_checks-derived, `severity=error`: `LineLength` 120, no tabs, no trailing whitespace,
   newline at EOF, `FinalParameters` (every method parameter must be `final`), `MagicNumber` (put literals in
   `Constants`), `HiddenField`, `VisibilityModifier`, `AvoidStarImport`, `UnusedImports`, `TodoComment`.
   `checkstyle-suppressions.xml` disables `DesignForExtension`, `ParameterNumber` and the Javadoc checks.
-- **User-visible changes need a CHANGELOG entry at the repository root** (`../../../CHANGELOG.md`), under the
-  top unreleased `##` heading, prefixed with the example name: `java-spring: <what changed>`. Release tagging
-  parses that file. Commits use Conventional Commits with the example as scope: `feat(java-spring): …`.
-- Features here are usually ported to the other 10 examples in separate commits. Expect that follow-up rather
-  than editing sibling directories in the same change.
+- `server.version` in `application.properties` is the release number.
 
 ## Gotchas
 

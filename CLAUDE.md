@@ -40,7 +40,7 @@ Run from inside the example's own directory. The per-example `CLAUDE.md` files c
 | ruby | `make dev` | `make server-dev` (port 3000) | `make lint` (rubocop + sorbet on macOS/x86_64 only) | `make test` |
 | go | `go mod download` | `go run main.go` (port 3000) | `golangci-lint run` | — |
 | java | — | build WAR + deploy to a servlet container | `mvn package` (checkstyle runs in the build) | — |
-| java-spring | — | `mvn spring-boot:run` (`./mvnw` is broken — `.mvn/wrapper/` is not committed) | `mvn package` (checkstyle) | — |
+| java-spring | — | `mvn spring-boot:run` (port 4000; use a system `mvn`, not `./mvnw`) | `mvn package` (checkstyle) | — |
 | csharp, csharp-mvc | — | Visual Studio / IIS (`.sln`) | — | — |
 
 `make help` in php/python/ruby prints the full recipe list. Docker entry points differ per example:
@@ -57,9 +57,8 @@ Run from inside the example's own directory. The per-example `CLAUDE.md` files c
 Test files are **colocated with the source**, not in a `tests/` tree, and are discovered by suffix:
 `*Tests.php` (php), `*_tests.py` (python), `*_tests.rb` (ruby). Meaningful tests exist only in php/python/ruby;
 php-laravel is the exception to the colocation rule but has nothing to run — a `phpunit.xml` and the two
-Laravel scaffold tests under `tests/`. No CI workflow runs any of them, and `make test` in python and ruby
-currently **fails out of the box**, because both assert version `1.6.0` while their configuration reports
-`1.15.0`.
+Laravel scaffold tests under `tests/`. No CI workflow runs any of them, so treat a red `make test` as
+information, not as something your change broke.
 
 ## Submodules
 
@@ -141,14 +140,24 @@ them together.
 
 ## Conventions
 
+**These rules hold for all 11 examples and live only here — the per-example `CLAUDE.md` files do not repeat
+them, they point back at this section.** Anything an example states about its own conventions is an addition
+or an exception to what follows.
+
 - **Every source file carries the Apache-2.0 ONLYOFFICE header** (`(c) Copyright Ascensio System SIA <year>`).
-  Java enforces it via checkstyle against `onlyoffice.header`; other languages rely on convention. New files
-  must include it.
+  New files must include it. java and java-spring enforce it in the build — checkstyle's `Header` module
+  compares each `.java` file against `onlyoffice.header`, so a missing or stale-year header fails the build.
+  Everywhere else it is convention only; copy the header from a neighbouring file.
 - **Commits** use Conventional Commits with the example as scope: `feat(nodejs): …`, `fix(php-laravel): …`.
   Older commits use the bare `nodejs: …` form; prefer the conventional form.
-- **CHANGELOG.md** is release-critical: `create-tag.yml` and `release.yml` parse the first version number in
-  it to name the tag and slice the release notes. Add an entry under the top unreleased `##` heading, prefixed
-  with the example name (`nodejs: …`), for user-visible changes.
+- **CHANGELOG.md** at the repository root is release-critical: `create-tag.yml` and `release.yml` parse the
+  first version number in it to name the tag and slice the release notes. For a user-visible change add an
+  entry under the top unreleased `##` heading, prefixed with the example name (`nodejs: …`).
+- **A feature is ported to the other examples in separate commits, one per language.** When you add one, do
+  not edit sibling directories in the same change — expect a follow-up commit instead. The exception is `js`,
+  which has never taken part in these sweeps.
+- **Submodules must be initialised** (`git submodule update --init --recursive`) or "Create new" and format
+  classification break in every example that has them.
 - CI runs lint per example, gated on `paths: ['web/documentserver-example/<name>/**']`, so a change only
   triggers its own language's workflow.
 

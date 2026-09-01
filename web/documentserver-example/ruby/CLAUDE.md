@@ -9,9 +9,9 @@ system that opens files in Document Server, receives save callbacks, and keeps v
 11 sibling implementations of the same application (see `../` for `go`, `java`, `nodejs`, `php`, `python`, …);
 they share no code.
 
-Deliberately unhardened: no authorization, no validation of link parameters, no check of who calls `/track`,
-`Rack::Cors` with `origins '*'`, `config.hosts << /.*/`. That is intentional — do not "fix" it as if this were
-production code. Real bugs (path traversal past the storage root, crashes, leaks) are still worth fixing.
+Locally open by design: nothing checks who calls `/track`, `Rack::Cors` uses `origins '*'`, and
+`config.hosts << /.*/` accepts any Host header. See *Security posture* in `../../../CLAUDE.md` — this is
+intentional, and not something to harden.
 
 ## Commands
 
@@ -111,7 +111,7 @@ permission sets are what the demo demonstrates. `uid-0` is special-cased through
 no mentions, no `referenceData.fileKey`, strict co-editing, AI plugin off); unknown ids fall back to `uid-1`.
 
 **Formats** come only from the `document-formats` submodule — unlike nodejs, this example does not fetch
-`meta/config`/`meta/formats` from a running Document Server. **No WOPI**: nodejs is the only example with it.
+`meta/config`/`meta/formats` from a running Document Server.
 
 ## Rails and tooling specifics
 
@@ -130,32 +130,21 @@ no mentions, no `referenceData.fileKey`, strict co-editing, AI plugin off); unkn
 
 ## Conventions
 
-- Every source file starts with the Apache-2.0 ONLYOFFICE header (`(c) Copyright Ascensio System SIA <year>`),
-  above the `# frozen_string_literal: true` / `# typed:` sigils. New files must include it.
+Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../CLAUDE.md`. Here, additionally:
+
+- The licence header sits above the `# frozen_string_literal: true` / `# typed:` sigils.
 - `.rubocop.yml` is strict in unusual ways: parens on every call (`Style/MethodCallWithArgsParentheses`),
   `Style/StringHashKeys`, `brackets` symbol/word arrays, inline `private def`, one `attr_accessor` per line,
   line length 120, `Metrics` disabled. Run `make lint` before finishing.
-- **User-visible changes need a CHANGELOG entry at the repository root** (`../../../CHANGELOG.md`), under the
-  top unreleased `##` heading, prefixed with the example name: `ruby: <what changed>`. Release tagging parses
-  that file.
-- Commits use Conventional Commits with the example as scope: `feat(ruby): …`, `fix(ruby): …`.
-- Features here are usually ported to the other 10 examples in separate commits. When adding one, expect that
-  follow-up rather than editing sibling directories in the same change.
+- `ConfigurationManager#version` is the release number.
 
 ## Gotchas
 
-- `make test` fails out of the box: `ConfigurationManagerTests#test_corresponds_the_latest_version` asserts
-  `'1.6.0'` while `ConfigurationManager#version` is `1.15.0`. CI never runs the tests, so it went unnoticed.
 - `SSL_VERIFY_PEER_MODE_ENABLED=true` **disables** certificate checking (`DocumentHelper.verify_ssl` sets
   `OpenSSL::SSL::VERIFY_NONE`). The name says the opposite of what it does.
 - `DocumentHelper` keeps the current request's IP and base URL in class-level `@remote_ip`/`@base_url` set by
-  `DocumentHelper.init` — shared mutable state across concurrent requests. Several actions never call `init`,
-  and `index` calls it from inside `app/views/home/index.html.erb` rather than from the controller.
-- Two call sites do not match `DocumentHelper.get_download_url(file_name, is_server_url:)` and raise
-  `ArgumentError`: `home#refresh_config` (positional `false`) and `home#reference` (`is_serverUrl:` typo).
-  `refresh_config` also renders "File not found" without returning, so a missing file double-renders.
-- Dead code: `DocumentHelper.get_file_uri`, `FileModel#file_uri` (called to no effect in `#history`) and
-  `#file_uri_user` — storage is not served statically, everything goes through `/download`.
-- `compose-base.yml` alone is not runnable: it names build `target: example`, a stage that does not exist in
-  the `Dockerfile`; the overlays supply the real target. Go through `make compose-dev`/`compose-prod`.
-- The `example-prod` Dockerfile stage runs `make dev` (development gems included) and differs only in `CMD`.
+  `DocumentHelper.init` — shared mutable state across concurrent requests. `index` calls it from inside
+  `app/views/home/index.html.erb` rather than from the controller. Do not assume thread safety here.
+- Storage is not served statically: everything a client or Document Server fetches goes through `/download`.
+- Go through `make compose-dev` / `make compose-prod` — `compose-base.yml` on its own does not select a
+  Dockerfile stage, the overlays do.

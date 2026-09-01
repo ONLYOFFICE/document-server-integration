@@ -6,8 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 A single static HTML page that embeds the ONLYOFFICE Docs (Document Server) editor for a document at an
 arbitrary URL. Five files (`OnlineEditorsExampleJS.html`, `init.js`, `stylesheet.css`, `logo.svg`, `LICENSE`),
-a couple of hundred lines all told. Deliberately unhardened demo code — do not "fix" it as if it were
-production; real bugs are still worth fixing.
+a couple of hundred lines all told. See *Security posture* in `../../../CLAUDE.md` — this is demo code and
+not something to harden.
 
 It sits next to 10 sibling examples under `../` (`csharp`, `csharp-mvc`, `go`, `java`, `java-spring`,
 `nodejs`, `php`, `php-laravel`, `python`, `ruby`), but it is **not one of them**: those are full client+server
@@ -73,11 +73,10 @@ does not have.
 
 ## Conventions
 
-- `OnlineEditorsExampleJS.html`, `init.js` and `stylesheet.css` carry the Apache-2.0 ONLYOFFICE header
-  (`(c) Copyright Ascensio System SIA 2026`); `logo.svg` does not. New files must include it.
-- User-visible changes need a CHANGELOG entry at the repository root (`../../../CHANGELOG.md`) under the top
-  unreleased `##` heading, prefixed `js: …` — though no entry has ever used this scope. Release tagging parses
-  that file.
-- Commits use Conventional Commits with the example as scope: `feat(js): …`, `fix(js): …`.
-- The cross-example porting rule does **not** apply. The git log shows this directory has never taken part in
-  the one-commit-per-language feature sweeps the other 10 share; changes here need no counterpart elsewhere.
+Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../CLAUDE.md`. Here, additionally:
+
+- `OnlineEditorsExampleJS.html`, `init.js` and `stylesheet.css` carry the licence header; `logo.svg` does not.
+- **The cross-example porting rule does not apply here.** The git log shows this directory has never taken
+  part in the one-commit-per-language feature sweeps the other 10 share, so a change here needs no
+  counterpart elsewhere.
+- No CHANGELOG entry has ever used the `js:` scope.

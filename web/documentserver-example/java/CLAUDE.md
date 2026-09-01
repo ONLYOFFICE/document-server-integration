@@ -10,9 +10,9 @@ One of 11 sibling implementations of the same application (see `../` for `go`, `
 `ruby`, …); they share no code. **`../java-spring` is a separate example, not a newer version of this one** —
 never edit it as part of a change here.
 
-Deliberately unhardened: no authorization, no validation of link parameters, no check of who calls the
-`track` action, `CorsFilter` with `cors.allowed.origins = *` in `web.xml`. That is intentional — do not "fix"
-it as if this were production code. Real bugs (path traversal past the storage root, crashes) still count.
+Locally open by design: nothing checks who calls the `track` action, and `web.xml` registers a `CorsFilter` with
+`cors.allowed.origins = *`. See *Security posture* in `../../../CLAUDE.md` — this is intentional, and not something
+to harden.
 
 ## Commands
 
@@ -119,22 +119,16 @@ id, and `uid-0` is special-cased (no mentions, no protect list, no user info).
   `MagicNumber`, `FinalParameters`, `HiddenField`, `VisibilityModifier`, `AvoidStarImport`, `UnusedImports`,
   `TodoComment` (a literal `TODO` fails the build). `checkstyle-suppressions.xml` disables `ParameterNumber`,
   `DesignForExtension` and the Javadoc checks.
-- **No WOPI here** — `nodejs` is the only one of the 11 examples with a WOPI implementation, so do not look
-  for a counterpart or assume a WOPI change needs porting here.
 - `target/` is gitignored (only an empty `target/.keep` is tracked); build output is **not** committed.
 
 ## Conventions
 
-- **Every `.java` file must start with the Apache-2.0 ONLYOFFICE header, and this is machine-enforced.**
-  Checkstyle's `Header` module compares each `.java` file line-for-line against `onlyoffice.header`, so a new
-  file without it — or with a different year — fails `mvn package`. Copy `onlyoffice.header` verbatim; JSPs
-  carry the same text inside an HTML comment.
-- **User-visible changes need a CHANGELOG entry at the repository root** (`../../../CHANGELOG.md`), under the
-  top unreleased `##` heading, prefixed `java: ` — release tagging parses that file.
-- Commits use Conventional Commits with the example as scope: `feat(java): …`, `fix(java): …`.
-- Features here are usually ported to the other 10 examples in **separate commits** — expect that follow-up
-  rather than editing sibling directories in the same change.
-- `version` in `settings.properties` tracks the release; bump it together with the siblings' config files.
+Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../CLAUDE.md`. Here, additionally:
+
+- The licence header is machine-enforced: checkstyle compares each `.java` file line-for-line against
+  `onlyoffice.header`, so copy that file verbatim. JSPs carry the same text inside an HTML comment.
+- Checkstyle is the entire quality gate — see *What is specific to this example* for what it rejects.
+- `version` in `settings.properties` is the release number.
 
 ## Gotchas
 

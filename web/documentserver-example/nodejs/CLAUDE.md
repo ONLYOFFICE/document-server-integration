@@ -9,9 +9,8 @@ system that opens files in Document Server, receives save callbacks, and keeps v
 11 sibling implementations of the same application (see `../` for `go`, `java`, `php`, `python`, `ruby`, …);
 they share no code.
 
-Deliberately unhardened: no authorization, no validation of link parameters, no check of who calls `/track`,
-`Access-Control-Allow-Origin: *`. That is intentional — do not "fix" it as if this were production code.
-Real bugs (path traversal past the storage root, crashes, leaks) are still worth fixing.
+Locally open by design: nothing checks who calls `/track`, and `Access-Control-Allow-Origin: *` is set on
+downloads. See *Security posture* in `../../../CLAUDE.md` — this is intentional, and not something to harden.
 
 ## Commands
 
@@ -37,8 +36,7 @@ Uses [node-config](https://github.com/node-config/node-config). `config/default.
 the port (80) and `siteUrl`, so behaviour differs from a bare `npm start`.
 
 `docker-entrypoint.sh` injects a `NODE_CONFIG` JSON overlay from `DS_URL`, `JWT_ENABLED` and `JWT_SECRET`.
-It also writes `JWT_HEADER` into `server.token.authorizationHeader`, but **that key is read nowhere** — the
-header name comes from Document Server's `meta/config` (see below), so `JWT_HEADER` has no effect.
+The JWT header name is not a local setting here — it comes from Document Server's `meta/config` (see below).
 
 Keys that matter most: `server.siteUrl` (Document Server address — the `http://documentserver/` placeholder
 must be replaced), `server.storageFolder` / `server.storagePath`, `server.token.*` (JWT),
@@ -112,20 +110,12 @@ Routes are registered separately by `helpers/wopi/wopiRouting.js` (`/wopi`, `/wo
 
 ## Conventions
 
-- Every source file starts with the Apache-2.0 ONLYOFFICE header (`(c) Copyright Ascensio System SIA <year>`).
-  New files must include it.
+Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../CLAUDE.md`. Here, additionally:
+
 - ESLint is airbnb-base with `max-len` 120, `no-console` off, and `String.prototype` extension allowed
   (`app.js` adds `hashCode` and `format`). Run `npm run lint` before finishing.
-- **User-visible changes need a CHANGELOG entry at the repository root** (`../../../CHANGELOG.md`), under the
-  top unreleased `##` heading, prefixed with the example name: `nodejs: <what changed>`. Release tagging
-  parses that file.
-- Commits use Conventional Commits with the example as scope: `feat(nodejs): …`, `fix(nodejs): …`.
-- Features here are usually ported to the other 10 examples in separate commits. When adding one, expect that
-  follow-up rather than editing sibling directories in the same change.
-- The `version` in `package.json` and `config/default.json` tracks the release; bump together with the
-  siblings' config files.
+- The release version sits in both `package.json` and `config/default.json` — bump them together.
 
 ## Gotchas
 
-- `helpers/cacheManager.js` is dead code — nothing requires it.
 - `server.verify_peer_off` sets `NODE_TLS_REJECT_UNAUTHORIZED=0` process-wide at startup.

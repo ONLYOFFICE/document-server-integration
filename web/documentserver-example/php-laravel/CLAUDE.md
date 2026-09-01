@@ -9,9 +9,8 @@ system that opens files in Document Server, receives save callbacks, and keeps v
 sibling implementations of the same application under `../`; they share no code, and `../php` is a *separate*,
 framework-less example — never treat the two as one codebase.
 
-Deliberately unhardened: no authorization, no validation of link parameters, permissive CORS
-(`Access-Control-Allow-Origin: *` on the download endpoints). That is intentional — do not "fix" it as if this
-were production code. Real bugs (path traversal past the storage root, crashes, leaks) are still worth fixing.
+Locally open by design: permissive CORS (`Access-Control-Allow-Origin: *`) on the download endpoints. See *Security
+posture* in `../../../CLAUDE.md` — this is intentional, and not something to harden.
 
 ## Commands
 
@@ -127,33 +126,24 @@ the AI plugin through `plugins.disable`).
 - Depends on the external SDK **`onlyoffice/docs-integration-sdk` pinned to `1.4`** (1.4.0 in `composer.lock`);
   `SettingsManager`, `JWTManager`, `DocumentManager`, `FormatManager` and `CallbackService` all extend its
   classes — read the base under `vendor/onlyoffice/docs-integration-sdk/src/` before changing their behaviour.
-  **No WOPI here**: `nodejs` is the only one of the 11 that implements it, so never port WOPI changes.
 
 ## Conventions
 
-- Every source file should start with the Apache-2.0 ONLYOFFICE header (`(c) Copyright Ascensio System SIA
-  <year>`). Coverage is partial — roughly a quarter of `app/**.php` has it, and the Laravel-scaffolded files
-  (middleware, providers, `bootstrap/`, `routes/`) do not. New files must include it.
-- Run `./vendor/bin/pint` before finishing; `pint --test` is the CI gate.
-- **User-visible changes need a CHANGELOG entry at the repository root** (`../../../CHANGELOG.md`) under the top
-  unreleased `##` heading, prefixed with the example name: `php-laravel: <what changed>`. Release tagging parses
-  that file. Commits use Conventional Commits with the example as scope: `feat(php-laravel): …`.
-- Features here are usually ported to the other 10 examples in separate commits — expect that follow-up rather
-  than editing sibling directories in the same change.
+Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../CLAUDE.md`. Here, additionally:
+
+- Licence-header coverage is partial: roughly a quarter of `app/**.php` has it, and the Laravel-scaffolded
+  files (middleware, providers, `bootstrap/`, `routes/`) do not. New files should still carry it.
+- Run `./vendor/bin/pint` before finishing — `pint --test` is the only CI gate.
+- `DOCUMENT_SERVER_VERSION` carries the release version, rendered as the `server-version` meta tag.
 
 ## Gotchas
 
 - `vendor/` and `node_modules/` are **gitignored, not committed**; so are `public/build/`, `public/storage/`,
   `.env` and `storage/*.key`. A fresh checkout needs `composer install`, `npm install`, `npm run build`.
-- `SettingsManager` and `EnsureForgottenPageEnabled` call `env()` at runtime outside `config/`, so
-  `php artisan config:cache` silently breaks every ONLYOFFICE setting — do not add it to any recipe.
-- `SettingsManager` sets `'jwtPrefix' => env('DOCUMENT_SERVER_JWT_HEADER', 'Bearer ')` — the *header* variable,
-  not a prefix one; with the default `.env` the prefix becomes `Authorization`. The middlewares sidestep it by
-  hardcoding `Str::after($header, 'Bearer ')`.
+- `SettingsManager` and `EnsureForgottenPageEnabled` call `env()` at runtime outside `config/`, which
+  `php artisan config:cache` is incompatible with — do not add that command to any recipe.
 - No `trustProxies()` is configured, so behind the bundled nginx proxy `$request->ip()` is the proxy's address
   and every visitor shares one storage directory.
-- `app/Repositories/FormatRepository.php` is dead code (nothing constructs it), and the `formats` disk points at
-  `public/assets/document-formats`, which has no submodule here and is never read.
 - `storage/` must be writable by the web server — the php-fpm Dockerfile does
   `chgrp -R www-data ./storage && chmod -R 775 ./storage` for exactly this reason.
 - `DOCUMENT_SERVER_JWT_SECRET=secret` in `.env.example` is a placeholder that `docker-compose.yml` also feeds to

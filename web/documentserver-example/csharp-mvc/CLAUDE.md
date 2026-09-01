@@ -9,10 +9,8 @@ system that opens files in Document Server, receives save callbacks, and keeps v
 sibling implementations of the same application (see `../` for `csharp`, `go`, `java`, `nodejs`, `php`, …);
 they share no code.
 
-Deliberately unhardened: no authorization, no validation of link parameters, `Access-Control-Allow-Origin: *`
-(set in `Web.config`), certificate validation disabled by default. That is intentional — do not "fix" it as if
-this were production code. Real bugs (path traversal past the storage root, crashes, leaks) are still worth
-fixing.
+Locally open by design: `Access-Control-Allow-Origin: *` from `Web.config`, and certificate validation off by
+default. See *Security posture* in `../../../CLAUDE.md` — this is intentional, and not something to harden.
 
 ## Commands
 
@@ -116,23 +114,18 @@ null `referenceData.fileKey`. **Formats** come only from the `document-formats` 
 - The `csharp` sibling (`../csharp`, WebForms) is a near-duplicate: same `WebEditor.ashx.cs` handler and helper
   classes, but flat at the project root instead of `Helpers/`+`Models/`, with `Default.aspx` / `DocEditor.aspx`
   code-behind in place of controllers and views. A change here usually needs the same change there.
-- **No WOPI here.** Only `nodejs` implements WOPI; do not look for a counterpart or assume porting.
 - Both C# examples wire `assets/document-formats` *and* `assets/document-templates` in the repo-root
   `.gitmodules` (several other examples get templates only). `assets/**` files are listed individually as
   `<Content Include=...>` in the `.csproj`, so a new template or format file must be added there too.
 
 ## Conventions
 
-- Every source file starts with the Apache-2.0 ONLYOFFICE header (`(c) Copyright Ascensio System SIA <year>`).
-  New files must include it; nothing enforces it here, it is convention only — as is style generally, since
-  there is no linter (match the surrounding file: 4-space indent, Allman braces, `// lowercase` comments).
-- **User-visible changes need a CHANGELOG entry at the repository root** (`../../../CHANGELOG.md`), under the
-  top unreleased `##` heading, prefixed with the example name: `csharp-mvc: <what changed>`. Release tagging
-  parses that file.
-- Commits use Conventional Commits with the example as scope: `feat(csharp-mvc): …`, `fix(csharp-mvc): …`.
-- Features here are usually ported to the other 10 examples in separate commits. Expect that follow-up rather
-  than editing sibling directories in the same change — including the near-duplicate `csharp`.
-- The `version` key in `web.appsettings.config` tracks the release; bump it with the siblings' config files.
+Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../CLAUDE.md`. Here, additionally:
+
+- No linter and no analyzers — style is by convention only. Match the surrounding file: 4-space indent,
+  Allman braces, `// lowercase` comments.
+- The porting follow-up most often lands in `../csharp`, a near-duplicate of this example.
+- The `version` key in `web.appsettings.config` is the release number.
 
 ## Gotchas
 
@@ -142,8 +135,3 @@ null `referenceData.fileKey`. **Formats** come only from the `document-formats` 
   output. Ignore them when exploring, as well as `Scripts/` (third-party JS).
 - `files.docservice.verify-peer-off` defaults to `true`; `DocManagerHelper.VerifySSL()` then installs a
   process-wide `ServerCertificateValidationCallback` accepting every certificate and pins TLS to 1.0–1.2.
-- `enable-forgotten` is read with `bool.Parse` and `files.docservice.languages` is split without guards — an
-  empty or malformed value throws rather than falling back. `EntityFramework` is a `PackageReference` with a
-  `configSections` entry, but no code uses it.
-- Callback and download URLs are built with a lowercase `webeditor.ashx` path while the file on disk is
-  `WebEditor.ashx` — fine on IIS/Windows, a trap if hosting ever becomes case-sensitive.

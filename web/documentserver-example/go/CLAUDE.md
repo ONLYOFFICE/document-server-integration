@@ -9,9 +9,8 @@ opens files in Document Server, receives save callbacks, and keeps version histo
 implementations of the same application (see `../` for `nodejs`, `java`, `php`, `python`, `ruby`, …); they
 share no code.
 
-Deliberately unhardened: no authorization, no validation of link parameters, no check of who calls
-`/callback`, `/download` and `/remove` open to anyone. That is intentional — do not "fix" it as if this were
-production code. Real bugs (path traversal past the storage root, crashes, leaks) are still worth fixing.
+Locally open by design: nothing checks who calls `/callback`, and `/download` and `/remove` are open to anyone. See
+*Security posture* in `../../../CLAUDE.md` — this is intentional, and not something to harden.
 
 ## Commands
 
@@ -119,34 +118,21 @@ special-cased: strict co-editing, no mentions/protect/user info, AI plugin disab
 - **One file per endpoint** in `server/api/default/` — the root CLAUDE.md points agents here as the clearest
   map of the endpoint set in the repository — and **pluggable callback handlers** keyed by status code in a
   registry, rather than a switch inside the callback endpoint as in most siblings.
-- **There is no WOPI here** (nodejs is the only example with it) — do not look for a counterpart.
 
 ## Conventions
 
-- Every source file starts with the Apache-2.0 ONLYOFFICE header (`(c) Copyright Ascensio System SIA <year>`)
-  as a `/** … */` block above `package`. New files must include it.
-- `.golangci.yml` is `enable-all` minus a long disable list; `lll` 120, `gofmt.simplify: false`, `errcheck`
-  excludes `(net/http.ResponseWriter).Write`. Deliberate unchecked errors carry `// nolint: errcheck`.
-- **User-visible changes need a CHANGELOG entry at the repository root** (`../../../CHANGELOG.md`), under the
-  top unreleased `##` heading, prefixed `go: <what changed>`. Release tagging parses that file.
-- Commits use Conventional Commits with the example as scope: `feat(go): …`, `fix(go): …`.
-- Features here are usually ported to the other 10 examples in separate commits. When adding one, expect that
-  follow-up rather than editing sibling directories in the same change.
-- `VERSION` in `config/configuration.json` tracks the release (bump with the siblings' config files) and is
-  surfaced as `serverVersion` in history metadata and on the index page.
+Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../CLAUDE.md`. Here, additionally:
+
+- The licence header is a `/** … */` block above `package`.
+- `.golangci.yml` is `enable-all` minus a long disable list; `lll` 120, `gofmt.simplify: false` (so do not run
+  `gofmt -s`), `errcheck` excludes `(net/http.ResponseWriter).Write`. Deliberate unchecked errors carry
+  `// nolint: errcheck`. Run `golangci-lint run` before finishing.
+- `VERSION` in `config/configuration.json` is the release version, surfaced as `serverVersion` in history
+  metadata and on the index page.
 
 ## Gotchas
 
 - `NewDefaultFormatManager` returns an error if `static/assets/document-formats/onlyoffice-docs-formats.json`
   is missing, and fx aborts startup. An uninitialised submodule looks like a DI failure, not a missing file.
-- `SERVER_ADDRESS` is honoured **only** in `editor.go` and `convert.go`. `/config`, `/reference` and
-  `/historyObj` always call `generateUrl(r)`, and `index.go` passes bare `r.Host` (no scheme) into
-  `GetStoredFiles`. Behind a proxy or with a non-default external address these disagree.
-- The history-metadata timestamp layout is `"2006-02-1 15:04:05"` (in `create.go`, `upload.go`, `convert.go`,
-  `restore.go`). In Go's reference layout that is year-**day**-month; changing it means changing all four.
-- `utils.IsInList` has no callers, and `ConversionManager.GetInternalExtension` is declared and implemented
-  but never invoked — both are dead code.
 - `/convert` sends `thumbnail.first = false`, which is what produces one image per page when converting to
   JPG/PNG/BMP/GIF. Do not "simplify" it away.
-- `RemoveAll` deletes the entire storage root directory, `DELETE /remove` is unauthenticated, and
-  `CreateDirectory` uses mode `0777`.

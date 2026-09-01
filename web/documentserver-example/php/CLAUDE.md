@@ -9,9 +9,8 @@ that opens files in Document Server, receives save callbacks, and keeps version 
 sibling implementations of the same application (see `../` for `go`, `java`, `nodejs`, `php-laravel`,
 `python`, `ruby`, …); they share no code. **No framework** — routing, templating and storage are hand-rolled.
 
-Deliberately unhardened: no authorization, no validation of link parameters, no check of who calls `/track`,
-`Access-Control-Allow-Origin: *` on downloads. That is intentional — do not "fix" it as if this were
-production code. Real bugs (path traversal past the storage root, crashes, leaks) are still worth fixing.
+Locally open by design: nothing checks who calls `/track`, and `Access-Control-Allow-Origin: *` is set on
+downloads. See *Security posture* in `../../../CLAUDE.md` — this is intentional, and not something to harden.
 
 ## Commands
 
@@ -136,42 +135,28 @@ only user for whom the Submit-form button appears (`DocEditorView`).
   config reaches workers, 100M upload limits) + `proxy/nginx.conf` (`:80` the example, `:8080` reverse-proxies
   Document Server) + `Dockerfile` (targets `example`, `proxy`) + `docker-compose.yml`. `make server-dev`
   instead uses PHP's built-in server, which serves `assets/` directly and needs no nginx.
-- **No WOPI here** — nodejs is the only example implementing WOPI. Do not look for a counterpart and do not
-  port WOPI changes into this directory.
 
 ## Conventions
 
-- Every source file starts with the Apache-2.0 ONLYOFFICE header (`(c) Copyright Ascensio System SIA <year>`);
-  `licenses-php.yml` checks licenses in CI. Its position relative to `namespace` varies between files.
+Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../CLAUDE.md`. Here, additionally:
+
+- The licence header's position relative to `namespace` varies between files. `licenses-php.yml` checks
+  dependency licences, not headers.
 - **phpcs**, per `phpcs.xml`: `PSR2`, plus `Generic.Files.LineLength` at 120 (no absolute limit), plus
   `Squiz.NamingConventions.ValidVariableName` with `PublicHasUnderscore` and `PrivateNoUnderscore` muted. It
-  checks exactly `src` and `index.php` — `templates/` and `assets/` are not linted. `lint-php.yml` runs
-  `phpcs src index.php` on changes under `web/documentserver-example/php/**`. CI runs lint, license check and
-  artifact build only — **`make test` is not wired into any workflow**.
-- **User-visible changes need a CHANGELOG entry at the repository root** (`../../../CHANGELOG.md`), under the
-  top unreleased `##` heading, prefixed `php: `. Release tagging parses that file.
-- Commits use Conventional Commits with the example as scope: `feat(php): …`, `fix(php): …`. Features here are
-  usually ported to the other 10 examples in separate commits — expect that follow-up rather than editing
-  sibling directories (`php-laravel` included) in the same change.
+  checks exactly `src` and `index.php` — `templates/` and `assets/` are not linted. Run `make lint` before
+  finishing.
+- CI runs lint, licence check and artifact build only; `make test` is wired into no workflow.
+- `ConfigurationManager::$version` is the only place the release version lives — `composer.json` has no
+  `version` field.
 
 ## Gotchas
 
 - `index.php` opens with `<?php // phpcs:ignore PSR1.Files.SideEffects.FoundWithSymbols` — the file both
   declares functions and calls them; keep the comment on line 1. `routers()` also sets
-  `Content-Type: application/json` for **every** route up front, HTML routes overriding it afterwards (there
-  is a `TODO: delete fallback` comment on it).
-- `readBody()` assigns `$data = ""` before checking `$data["token"]`, so the "JWT in body" branch is
-  unreachable and a token is only ever accepted from the header. The check is also gated on
-  `tokenUseForRequest()`, so `JWT_USE_FOR_REQUEST=false` disables incoming validation on `/track` entirely.
-- `getCurUserHostAddress()` calls `preg_replace("[^0-9a-zA-Z.=]", '_', …)`. PHP reads `[`/`]` as the pattern
-  delimiters, so the intended character class is not one and the sanitisation is a no-op — while
-  `$userAddress` comes straight from the `/track` and `/download` query strings. `getClientIp()` does it
-  correctly with `/…/` delimiters. `download()` likewise reads `$_GET["&dmode"]`, a key that can never be set.
-- `src/configuration/ConfigurationManagerJWTUseForRequest.php` is a real `TestCase` whose name does not end in
-  `Tests.php`, so `make test` silently skips it. Test classes also live in `…\Tests` sub-namespaces the PSR-4
-  map does not cover; they load only because phpunit includes the file directly.
-- `IndexView::getStoredListLayout()` is dead code (constructs `IndexStoredListView` with no arguments); the
-  live one is `IndexStoredListView::getStoredListLayout()`.
+  `Content-Type: application/json` for **every** route up front, HTML routes overriding it afterwards.
+- Incoming JWT validation on `/track` is gated on `tokenUseForRequest()`, so `JWT_USE_FOR_REQUEST=false`
+  switches off callback verification as well as outgoing signing.
 - `View::__construct` loads templates via the relative path `./templates/<name>.tpl` and `sendlog()` writes to
   `logs/webedior-ajax.log`, both relative to cwd — run from the example root or pages render empty with no
   error. Logging happens on every request and includes full request bodies.

@@ -9,9 +9,9 @@ system that opens files in Document Server, receives save callbacks, and keeps v
 sibling implementations of the same application (see `../` for `go`, `java`, `nodejs`, `php`, `ruby`, …);
 they share no code.
 
-Deliberately unhardened: no authorization, no validation of link parameters, no check of who calls `/track`,
-`Access-Control-Allow-Origin: *`. That is intentional — do not "fix" it as if this were production code.
-Real bugs (path traversal past the storage root, crashes, leaks) are still worth fixing.
+Locally open by design: nothing checks who calls `/track`, and `Access-Control-Allow-Origin: *` is set on
+`/downloadhistory`. See *Security posture* in `../../../CLAUDE.md` — this is intentional, and not something to
+harden.
 
 ## Commands
 
@@ -108,8 +108,6 @@ bare payload.
 no chat, mentions, `createUrl` or `referenceData.fileKey`, strict coediting, feature tips, and the AI plugin
 disabled by GUID `asc.{9DC93CDB-B576-4F0C-B55E-FCC9C48DD007}`.
 
-**No WOPI here** — only the nodejs example implements it. Do not look for a counterpart or assume porting.
-
 ## What is specific to this example
 
 **Django, used minimally**: no apps, models, ORM, migrations or `settings.py`. Templates live in `templates/`;
@@ -130,37 +128,22 @@ to `url`/`changesurl` of every `/track` callback; `actions.saveAs`, `actions.res
 
 ## Conventions
 
-- Every source file starts with the Apache-2.0 ONLYOFFICE header (`(c) Copyright Ascensio System SIA <year>`).
-  `src/utils` and `src/views` wrap it in a module docstring, the newer packages use `#` comments — match the
-  neighbours. `manage.py` is the one file without a header.
+Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../CLAUDE.md`. Here, additionally:
+
+- `src/utils` and `src/views` wrap the licence header in a module docstring, the newer packages use `#`
+  comments — match the neighbours. `manage.py` is the one file without a header.
 - `.flake8`: `max-line-length = 120`, `max-complexity = 15`, `F4*` ignored in `__init__.py` (the packages
   re-export with `import *`). Run `make lint` before finishing.
-- **User-visible changes need a CHANGELOG entry at the repository root** (`../../../CHANGELOG.md`), under the
-  top unreleased `##` heading, prefixed with the example name: `python: <what changed>`. Release tagging parses
-  that file. Commits use Conventional Commits scoped to the example: `feat(python): …`, `fix(python): …`.
-- Features here are usually ported to the other 10 examples in separate commits. When adding one, expect that
-  follow-up rather than editing sibling directories in the same change.
 - The version is duplicated in `pyproject.toml`, `ConfigurationManager.version` and `configuration_tests.py`;
-  bump all three together with the siblings' config files.
+  bump all three together.
 
 ## Gotchas
 
-- **`make test` currently fails**: `configuration_tests.ConfigurationManagerTests` asserts version `1.6.0`
-  while `ConfigurationManager.version` is `1.15.0` — the test was not updated with the release.
 - **mypy is configured but not in CI.** `.github/workflows/lint-python.yml` runs `make dev` + `make lint` only;
   `make types` is commented out behind `# TODO: Configure mypy`. Expect pre-existing errors.
 - `python-magic` needs the native libmagic (`docManager.download` calls `magic.from_file`). The Dockerfile
   `apk add`s it; a bare `make dev` on Windows/macOS can import-fail without it.
-- The `example-prod` image installs production deps but its `CMD` is still `make server-dev`, so
-  `make compose-prod` runs the Django development server with `DEBUG` on.
-- `GET /csv` is broken: `actions.csv` is `def csv():` with no `request` parameter, so Django's call raises
-  `TypeError` and mail-merge data never loads.
-- `enable_forgotten()` returns `environ.get('ENABLE_FORGOTTEN', True)` raw — it skips `string.boolean`, so
-  `ENABLE_FORGOTTEN=false` is a truthy string and the page stays enabled.
 - `ssl_verify_peer_mode_enabled()` defaults to `False` and goes straight into `requests(verify=…)`, so TLS
-  certificates are **not** verified unless you opt in. `conversion_timeout()` is dead — a hardcoded `timeout=5`
-  is used instead.
-- `docManager.getServerUrl` reads `req.headers.get("x-forwarded-proto") or req.scheme + "://" + req.get_host()`
-  — precedence means a *present* `X-Forwarded-Proto` returns just the scheme. Behind a proxy set `EXAMPLE_URL`.
-- `docManager.getFileUri` builds `<host><STATIC_URL><addr>/<file>` and `STATIC_URL` has no leading slash, so it
-  is not a usable download URL; it only feeds `generateFileKey`'s hash. Use `getDownloadUrl` for anything real.
+  certificates are **not** verified unless you opt in.
+- `docManager.getFileUri` only feeds `generateFileKey`'s hash; use `getDownloadUrl` for anything a client or
+  Document Server has to fetch. Behind a proxy set `EXAMPLE_URL` rather than relying on request headers.
