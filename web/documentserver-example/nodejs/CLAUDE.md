@@ -32,8 +32,9 @@ Submodules must be initialised or file creation and the AI plugin break:
 Uses [node-config](https://github.com/node-config/node-config). `config/default.json` holds everything;
 `config/<NODE_ENV>.json` overrides it. Environments are named `development-windows` / `development-linux` /
 `development-mac` / `production-windows` / `production-linux` — `run-develop.py` sets
-`NODE_ENV=development-<platform>` and `NODE_CONFIG_DIR=./config`. Note that the development overrides change
-the port (80) and `siteUrl`, so behaviour differs from a bare `npm start`.
+`NODE_ENV=development-<platform>` and `NODE_CONFIG_DIR=./config`. Every development override points
+`siteUrl` at `http://127.0.0.1:8000/`, and `development-windows.json` additionally moves the port to 80 —
+so behaviour differs from a bare `npm start`, and differs again between platforms.
 
 `docker-entrypoint.sh` injects a `NODE_CONFIG` JSON overlay from `DS_URL`, `JWT_ENABLED` and `JWT_SECRET`.
 The JWT header name is not a local setting here — it comes from Document Server's `meta/config` (see below).

@@ -52,7 +52,7 @@ Run from inside the example's own directory. The per-example `CLAUDE.md` files c
 
 - php: `./vendor/bin/phpunit src/format/FormatManagerEditableTests.php`
 - python: `python -m unittest src.format.format_tests`
-- ruby: `bundle exec ruby -Itest app/format/format_tests.rb`
+- ruby: `bundle exec ruby app/format/format_tests.rb`
 
 Test files are **colocated with the source**, not in a `tests/` tree, and are discovered by suffix:
 `*Tests.php` (php), `*_tests.py` (python), `*_tests.rb` (ruby). Meaningful tests exist only in php/python/ruby;
