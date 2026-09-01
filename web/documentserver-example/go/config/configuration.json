@@ -10,9 +10,9 @@
   "DOC_SERVER_PRELOADER_URL" : "web-apps/apps/api/documents/preload.html",
   "DOC_SERVER_COMMAND_URL" : "command",
 
-  "JWT_IS_ENABLED" : false,
+  "JWT_IS_ENABLED" : true,
   "JWT_EXPIRES_IN" : 5,
-  "JWT_SECRET" : "secret",
+  "JWT_SECRET" : "developer-only-not-a-real-secret",
   "JWT_HEADER" : "Authorization",
 
   "STORAGE_PATH" : "filestore",

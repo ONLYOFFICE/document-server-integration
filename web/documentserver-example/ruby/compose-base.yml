@@ -7,7 +7,7 @@ services:
     expose:
       - "80"
     environment:
-      - JWT_SECRET=your-256-bit-secret
+      - JWT_SECRET=developer-only-not-a-real-secret
 
   example:
     container_name: example
@@ -21,7 +21,7 @@ services:
       - DOCUMENT_SERVER_PRIVATE_URL=http://proxy:8080
       - DOCUMENT_SERVER_PUBLIC_URL=http://localhost:8080
       - EXAMPLE_URL=http://proxy
-      - JWT_SECRET=your-256-bit-secret
+      - JWT_SECRET=developer-only-not-a-real-secret
       - PORT=80
 
   proxy:

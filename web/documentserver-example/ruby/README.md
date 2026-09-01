@@ -72,7 +72,7 @@ The example is configured by changing environment variables.
 | `DOCUMENT_SERVER_PRIVATE_URL` | The URL through which the server will communicate with Document Server. | `http://proxy:8080` |
 | `DOCUMENT_SERVER_PUBLIC_URL` | The URL through which a user will communicate with Document Server. | `http://localhost:8080` |
 | `EXAMPLE_URL` | The URL through which Document Server will communicate with the server. | `http://proxy` |
-| `JWT_SECRET` | JWT authorization secret. Leave blank to disable authorization. | `your-256-bit-secret` |
+| `JWT_SECRET` | JWT authorization secret. Leave blank to disable authorization. | `developer-only-not-a-real-secret` |
 | `PORT` | The port on which the server should be running. | `80` |
 
 ## File API methods used in this example 

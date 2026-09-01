@@ -20,6 +20,7 @@
 - php-laravel: 5 editor icons on index page
 - python: display mode buttons by actions
 - ruby: display mode buttons by actions
+- set default secret
 - converting all pages to images
 - disable AI plugin for anonymous
 - update insertImage formats

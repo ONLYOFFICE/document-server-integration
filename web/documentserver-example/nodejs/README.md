@@ -52,7 +52,7 @@ Also, [specify the same secret key](https://helpcenter.onlyoffice.com/installati
 {
     "server": {
         "token": {
-            "secret": "secret"
+            "secret": "developer-only-not-a-real-secret"
         }
     }
 }
@@ -173,7 +173,7 @@ See the detailed guide to learn how to [install Document Server for Linux](https
     {
       "server": {
         "token": {
-          "secret": "secret"
+          "secret": "developer-only-not-a-real-secret"
         }
       }
     }

@@ -113,7 +113,7 @@ The following table shows the environment variables that is used to configure th
 | `DOCUMENT_STORAGE_PRIVATE_URL`| The URL address used by the Document Server to communicate with the server. | `http://proxy`          |
 | `DOCUMENT_SERVER_PUBLIC_URL`  | The URL address used by the client to communicate with the Document Server. | `http://localhost:8080` |
 | `DOCUMENT_SERVER_PRIVATE_URL` | The URL address used by the server to communicate with the Document Server. | `http://proxy:8080`     |
-| `DOCUMENT_SERVER_JWT_SECRET`  | JWT authorization secret.                                               | `your-256-bit-secret`   |
+| `DOCUMENT_SERVER_JWT_SECRET`  | JWT authorization secret.                                               | `developer-only-not-a-real-secret`   |
 
 ## Troubleshooting
 

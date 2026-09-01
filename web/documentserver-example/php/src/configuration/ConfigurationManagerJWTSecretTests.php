@@ -46,9 +46,9 @@ final class ConfigurationManagerJWTSecretTests extends TestCase
 
     public function testAssignsAValueFromTheEnvironment()
     {
-        putenv('JWT_SECRET=your-256-bit-secret');
+        putenv('JWT_SECRET=developer-only-not-a-real-secret');
         $configManager = new ConfigurationManager();
         $secret = $configManager->jwtSecret();
-        $this->assertEquals('your-256-bit-secret', $secret);
+        $this->assertEquals('developer-only-not-a-real-secret', $secret);
     }
 }

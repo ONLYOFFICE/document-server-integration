@@ -201,10 +201,10 @@ class ConfigurationManagerJWTSecretTests < Test::Unit::TestCase
   end
 
   def test_assigns_a_value_from_the_environment
-    ENV['JWT_SECRET'] = 'your-256-bit-secret'
+    ENV['JWT_SECRET'] = 'developer-only-not-a-real-secret'
     config_manager = ConfigurationManager.new
     secret = config_manager.jwt_secret
-    assert_equal(secret, 'your-256-bit-secret')
+    assert_equal(secret, 'developer-only-not-a-real-secret')
   end
 end
 

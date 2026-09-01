@@ -97,7 +97,7 @@ To run the Java example code, install the Java version 11 appropriate for your O
 Open the *src/main/resources/application.properties* file and [specify the same secret key](https://helpcenter.onlyoffice.com/installation/docs-configure-jwt.aspx) as used in your Document Server to enable JWT:
 
 ```
-docservice.security.key=secret
+docservice.security.key=developer-only-not-a-real-secret
 ```
 
 ### Step 6. Start application with Maven
@@ -191,7 +191,7 @@ See the detailed guide to learn how to install Document Server [for Linux](https
     [Specify the same secret key](https://helpcenter.onlyoffice.com/installation/docs-configure-jwt.aspx) as used in your Document Server to enable JWT:
 
     ```
-    docservice.security.key=secret
+    docservice.security.key=developer-only-not-a-real-secret
     ```
 
 5. Install **Maven**:
@@ -287,7 +287,7 @@ See the detailed guide to learn how to install Document Server [for Docker](http
     [Specify the same secret key](https://helpcenter.onlyoffice.com/installation/docs-configure-jwt.aspx) as used in your Document Server to enable JWT:
 
     ```
-    docservice.security.key=secret
+    docservice.security.key=developer-only-not-a-real-secret
     ```
 
 6. Run the next command in the java example directory:

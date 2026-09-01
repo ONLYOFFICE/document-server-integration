@@ -203,12 +203,12 @@ class ConfigurationManagerJWTSecretTests(TestCase):
         self.assertEqual(secret, '')
 
     @patch.dict(environ, {
-        'JWT_SECRET': 'your-256-bit-secret'
+        'JWT_SECRET': 'developer-only-not-a-real-secret'
     })
     def test_assigns_a_value_from_the_environment(self):
         config_manager = ConfigurationManager()
         secret = config_manager.jwt_secret()
-        self.assertEqual(secret, 'your-256-bit-secret')
+        self.assertEqual(secret, 'developer-only-not-a-real-secret')
 
 
 class ConfigurationManagerJWTHeaderTests(TestCase):

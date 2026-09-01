@@ -24,7 +24,7 @@ SERVER_PORT=port
 DOC_SERVER_HOST=http://documentserver/
 
 JWT_IS_ENABLED=flag
-JWT_SECRET=secret
+JWT_SECRET=developer-only-not-a-real-secret
 JWT_HEADER=Authorization
 ```
 
@@ -62,7 +62,7 @@ Also, [specify the same secret key](https://helpcenter.onlyoffice.com/installati
 
 ```
 {
-    "JWT_SECRET" : "secret",
+    "JWT_SECRET" : "developer-only-not-a-real-secret",
 }
 ```
 
