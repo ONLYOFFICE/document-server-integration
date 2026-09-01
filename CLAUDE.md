@@ -43,8 +43,10 @@ Run from inside the example's own directory. The per-example `CLAUDE.md` files c
 | java-spring | — | `mvn spring-boot:run` (`./mvnw` is broken — `.mvn/wrapper/` is not committed) | `mvn package` (checkstyle) | — |
 | csharp, csharp-mvc | — | Visual Studio / IIS (`.sln`) | — | — |
 
-`make help` in php/python/ruby prints the full recipe list. Docker is available via
-`make compose-dev` / `make compose-prod` (python, ruby) or `docker compose up` (php, php-laravel, java).
+`make help` in php/python/ruby prints the full recipe list. Docker entry points differ per example:
+`make compose-dev` / `make compose-prod` (python, ruby), `make compose-prod` only (php — there is no
+`compose-dev` there), `make compose-start` / `make compose-stop` (php-laravel), and a bare
+`docker compose up` (java, java-spring).
 
 ### Running a single test
 
@@ -53,9 +55,11 @@ Run from inside the example's own directory. The per-example `CLAUDE.md` files c
 - ruby: `bundle exec ruby -Itest app/format/format_tests.rb`
 
 Test files are **colocated with the source**, not in a `tests/` tree, and are discovered by suffix:
-`*Tests.php` (php), `*_tests.py` (python), `*_tests.rb` (ruby). Only php/python/ruby have tests at all, and
-no CI workflow runs any of them — `make test` in python and ruby currently **fails out of the box**, because
-both assert version `1.6.0` while their configuration reports `1.15.0`.
+`*Tests.php` (php), `*_tests.py` (python), `*_tests.rb` (ruby). Meaningful tests exist only in php/python/ruby;
+php-laravel is the exception to the colocation rule but has nothing to run — a `phpunit.xml` and the two
+Laravel scaffold tests under `tests/`. No CI workflow runs any of them, and `make test` in python and ruby
+currently **fails out of the box**, because both assert version `1.6.0` while their configuration reports
+`1.15.0`.
 
 ## Submodules
 
@@ -120,12 +124,13 @@ sets are what the demo actually demonstrates (review-only, comment-only, filler,
 identify them as `uid-1`…`uid-3` / `uid-0`; java-spring instead uses an integer database id in a `uid` cookie
 (1–4, where 4 is Anonymous).
 
-**Formats** come from the `document-formats` submodule via a per-example `FormatManager`. Exceptions:
-java-spring and php-laravel have no `document-formats` submodule and get the table from the external
-`docs-integration-sdk` instead. nodejs additionally fetches `meta/formats` and `meta/config` from the running
-Document Server at runtime and caches them for an hour — no other example does.
+**Formats** come from the `document-formats` submodule via a per-example `FormatManager`. Three examples
+have no such submodule: java-spring and php-laravel get the table from the external `docs-integration-sdk`
+instead, and nodejs has no local table at all — it fetches `meta/formats` and `meta/config` from the running
+Document Server, caches them for an hour, and takes the JWT header name from there too. No other example
+talks to Document Server for its format table.
 
-**WOPI exists only in nodejs.** All ten agents verified this independently; a WOPI change is never ported.
+**WOPI exists only in nodejs.** No other example has a counterpart; a WOPI change is never ported.
 
 ## Configuration
 

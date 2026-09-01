@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this directory.
 
 ## What this is
 
@@ -63,7 +63,8 @@ var reaches `@Value` fields but **not** the SDK.
   `createMeta`): all path math and file IO. `documentserver/managers/` — `callback/DefaultCallbackManager`
   (`processEditing`/`processSave`/`processForceSave`) and `history/DefaultHistoryManager` (`getHistory`,
   `getHistoryData`, `versionDir`). Also `models/enums/Action`, `serializers/FilterState` +
-  `SerializerFilter` (the `NULL` sentinel = "no group filter"), `util/Constants` (`ANONYMOUS_USER_ID = 4`).
+  `SerializerFilter` (the `NULL` sentinel = "no group filter"), `documentserver/util/Constants`
+  (`ANONYMOUS_USER_ID = 4`).
 - `dto/` — request/response bodies. `entities/` — JPA `User`, `Group`, `Permission`, `Goback`, `Close`;
   `repositories/` — Spring Data interfaces (only custom query: `findGroupByName`); `services/` — `UserServices`
   (`createUser`, `findUserById`, `getCurrentUser` from the `uid` cookie), `Group`/`PermissionServices`.

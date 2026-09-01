@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this directory.
 
 ## What this is
 
@@ -45,6 +45,8 @@ binding redirects). Everything is read via `WebConfigurationManager.AppSettings`
   "secret is non-empty". Plus `files.docservice.token.useforrequest`, `.expires-in` (minutes), `.header`.
 - `storage-path` (see below), `filesize-max` (bytes), `filename-max` (chars), `files.docservice.timeout`
   (conversion polling), `enable-forgotten`, `version`.
+- `files.docservice.verify-peer-off` — **ships as `true`**, so `VerifySSL()` installs a process-wide
+  `ServerCertificateValidationCallback` that accepts every certificate. Opt out deliberately, not by accident.
 - `files.docservice.languages` — **pipe-separated `code:Label` pairs in one string**, parsed by
   `_Default.GetLanguages()` with a naive `Split('|')` / `Split(':')`; a pair missing its colon throws.
 

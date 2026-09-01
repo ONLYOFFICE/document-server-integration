@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this directory.
 
 ## What this is
 
@@ -36,8 +36,9 @@ Uses [node-config](https://github.com/node-config/node-config). `config/default.
 `NODE_ENV=development-<platform>` and `NODE_CONFIG_DIR=./config`. Note that the development overrides change
 the port (80) and `siteUrl`, so behaviour differs from a bare `npm start`.
 
-`docker-entrypoint.sh` injects a `NODE_CONFIG` JSON overlay from `DS_URL`, `JWT_ENABLED`, `JWT_SECRET`,
-`JWT_HEADER`.
+`docker-entrypoint.sh` injects a `NODE_CONFIG` JSON overlay from `DS_URL`, `JWT_ENABLED` and `JWT_SECRET`.
+It also writes `JWT_HEADER` into `server.token.authorizationHeader`, but **that key is read nowhere** — the
+header name comes from Document Server's `meta/config` (see below), so `JWT_HEADER` has no effect.
 
 Keys that matter most: `server.siteUrl` (Document Server address — the `http://documentserver/` placeholder
 must be replaced), `server.storageFolder` / `server.storagePath`, `server.token.*` (JWT),
@@ -64,8 +65,9 @@ must be replaced), `server.storageFolder` / `server.storagePath`, `server.token.
 ## The integration model
 
 **Routes**: `/` index, `/editor`, `/config`, `/upload`, `/create`, `/convert`, `/download`, `/files`,
-`/history`, `/historyObj`, `/restore`, `/rename`, `/reference`, `/formats`, `/csv`, `/data`, `/forgotten`,
-and `/track`.
+`/files/file/:fileId`, `/history`, `/historyObj`, `/restore`, `/rename`, `/reference`, `/formats`, `/csv`,
+`/data`, `/forgotten` (`GET` lists, `DELETE` removes one), `/file` (`DELETE` — one file by `?filename=`, or
+all of the user's files when it is absent), and `/track`.
 
 **`/track` is the core.** Document Server POSTs a callback with a `status`: `1` editing, `2`/`3`
 MustSave/Corrupted, `4` closed without changes, `6`/`7` MustForceSave/CorruptedForceSave. On save the handler
@@ -78,6 +80,7 @@ its place. Force-save (6/7) writes into `forcesavePath` instead of creating a ve
 <storageFolder>/<user host address>/
   <filename>                    current version
   <filename>-history/
+    <filename>.txt              author of version 1 (createdInfo.json's counterpart elsewhere)
     1/  prev.<ext>  diff.zip  changes.txt  key.txt  user.txt
     2/  ...
 ```

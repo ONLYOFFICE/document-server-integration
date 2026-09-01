@@ -1,19 +1,20 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this directory.
 
 ## What this is
 
 A single static HTML page that embeds the ONLYOFFICE Docs (Document Server) editor for a document at an
-arbitrary URL. Five files, ~120 lines of hand-written code. Deliberately unhardened demo code — do not "fix"
-it as if it were production; real bugs are still worth fixing.
+arbitrary URL. Five files (`OnlineEditorsExampleJS.html`, `init.js`, `stylesheet.css`, `logo.svg`, `LICENSE`),
+a couple of hundred lines all told. Deliberately unhardened demo code — do not "fix" it as if it were
+production; real bugs are still worth fixing.
 
 It sits next to 10 sibling examples under `../` (`csharp`, `csharp-mvc`, `go`, `java`, `java-spring`,
 `nodejs`, `php`, `php-laravel`, `python`, `ruby`), but it is **not one of them**: those are full client+server
 document management systems with storage, history and a `/track` save callback. This one has no backend of any
 kind — it only demonstrates instantiating `DocsAPI.DocEditor` in a browser.
 
-**It is effectively frozen.** `git log --oneline -- .` shows 34 commits; the last functional change was
+**It is effectively frozen.** `git log --oneline -- .` is a short list; the last functional change was
 `support xlsb` (2022-02-06), everything since is the annual copyright bump. It is absent from the root
 `Readme.md` and `CHANGELOG.md`, has no CI workflow (no `lint-js.yml`, no `artifact-js.yml` in
 `.github/workflows/`), and `release.yml` ships zips for the other 10 examples only — not this one.
