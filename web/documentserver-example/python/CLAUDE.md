@@ -99,7 +99,8 @@ writes `<name>-form<ext>` as a new file and dumps `formsdataurl` into a sibling 
 No `user.txt`, no `changes.txt`; `getFileVersion` counts subdirectories, so the tree is the source of truth.
 
 **JWT** is the only security boundary. `/track` unwraps the body token or the `JWT_HEADER` bearer token;
-`/download` and `/downloadhistory` check the header only when `dmode` is absent and `JWT_USE_FOR_REQUEST` is on.
+`/downloadhistory` checks the header only when `dmode` is absent and `JWT_USE_FOR_REQUEST` is on; `/download`
+carries a third condition and **skips validation altogether when `userAddress` is not in the query**.
 Converter and command requests are signed twice: a header token over `{'payload': …}`, a body `token` over the
 bare payload.
 
@@ -135,7 +136,8 @@ Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../C
 - `.flake8`: `max-line-length = 120`, `max-complexity = 15`, `F4*` ignored in `__init__.py` (the packages
   re-export with `import *`). Run `make lint` before finishing.
 - The version is duplicated in `pyproject.toml`, `ConfigurationManager.version` and `configuration_tests.py`;
-  bump all three together.
+  bump all three together. The test copy is stale right now (`1.6.0` against `1.15.0`), so
+  `test_corresponds_the_latest_version` already fails — `make test` is red before you touch anything.
 
 ## Gotchas
 

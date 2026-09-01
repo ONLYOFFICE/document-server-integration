@@ -11,8 +11,8 @@ One of 11 sibling implementations of the same application (see `../` for `go`, `
 never edit it as part of a change here.
 
 Locally open by design: nothing checks who calls the `track` action, and `web.xml` registers a `CorsFilter` with
-`cors.allowed.origins = *`. See *Security posture* in `../../../CLAUDE.md` — this is intentional, and not something
-to harden.
+`cors.allowed.origins = *`. See *Security posture* in `../../../CLAUDE.md` — this is intentional, and not
+something to harden.
 
 ## Commands
 
@@ -44,6 +44,8 @@ flag** — `tokenEnabled()` is true iff `files.docservice.secret` is non-empty, 
 what turns JWT on.
 
 ## Code map
+
+Java paths below are relative to `src/main/java/`; the JSPs live in `src/main/webapp/`.
 
 - `controllers/IndexServlet.java` (~1170 lines, `/IndexServlet`, `@MultipartConfig`) — almost all work.
   `processRequest` switches on the **`type` query parameter**: `upload`, `download`, `downloadhistory`,

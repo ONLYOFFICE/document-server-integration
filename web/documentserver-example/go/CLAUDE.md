@@ -96,7 +96,7 @@ The postfix is `-hist` and the per-version change file is `changes.json` (not `-
 `user.txt` as in nodejs). `/download` and `/history` do not stream bytes — they 301/303 redirect to the
 `/static/...` URL, so the file server is what actually serves documents to Document Server.
 
-**JWT** (`managers/default/jwt.go`) is the only security boundary, active only when `JWT_IS_ENABLED` is true
+**JWT** (`server/managers/default/jwt.go`) is the only security boundary, active only when `JWT_IS_ENABLED` is true
 *and* `JWT_SECRET` is non-empty. Outgoing payload structs embed `jwt.RegisteredClaims` directly and are signed
 HS256; incoming callbacks are read from the `JWT_HEADER` header (`Bearer ` prefix stripped by
 `strings.Split(theader, " ")[1]`), falling back to the body `token`.
@@ -105,10 +105,11 @@ HS256; incoming callbacks are read from the `JWT_HEADER` header (`Bearer ` prefi
 fetch (nodejs has one, this example does not). Which buttons appear per file on the index page comes from
 `FormatManager.GetActions(ext)`.
 
-**Users** — the same four-user fixture as the siblings, in `managers/default/user.go`: `uid-1`…`uid-3` plus
-`uid-0` (anonymous), each with a `Description` slice rendered on the index page. The current user is the
-`uid` cookie (default `uid-1`); `GetUserById` recurses to `uid-0` for anything unknown, which is
-special-cased: strict co-editing, no mentions/protect/user info, AI plugin disabled by GUID, feature tips on.
+**Users** — the same four-user fixture as the siblings, in `server/managers/default/user.go`:
+`uid-1`…`uid-3` plus `uid-0` (anonymous), each with a `Description` slice rendered on the index page. The
+current user is the `uid` cookie (default `uid-1`); `GetUserById` recurses to `uid-0` for anything unknown,
+which is special-cased: strict co-editing, no mentions/protect/user info, AI plugin disabled by GUID,
+feature tips on.
 
 ## What makes this example unique
 

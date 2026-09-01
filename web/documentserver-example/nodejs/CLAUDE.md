@@ -49,14 +49,18 @@ must be replaced), `server.storageFolder` / `server.storagePath`, `server.token.
 - `app.js` — every HTTP route in one ~1500-line file. This is where nearly all work happens.
 - `bin/www` — server bootstrap only.
 - `helpers/docManager.js` — instantiated per request as `req.DocManager`. Owns all storage path building
-  (`storagePath`, `historyPath`, `versionPath`, `diffPath`, `changesPath`, `keyPath`, `forcesavePath`),
-  URL building for Document Server (`getCallback`, `getDownloadUrl`, `getServerUrl`), and the file list.
+  (`storageRootPath`, `storagePath`, `historyPath`, `versionPath`, `prevFilePath`, `diffPath`, `changesPath`,
+  `keyPath`, `changesUser`, `forcesavePath`), URL building for Document Server (`getCallback`,
+  `getDownloadUrl`, `getServerUrl`), and the file list.
 - `helpers/documentService.js` — everything that talks to Document Server: conversion
   (`getConvertedUri`), `commandRequest`, JWT sign/verify (`getToken`, `readToken`, `checkJwtHeader`,
   `fillJwtByUrl`), and `config`/`formats` meta fetching.
 - `helpers/fileUtility.js` — extension/name parsing, format classification
   (`getViewExtensions`, `getEditExtensions`, `getFillExtensions`, `getConvertExtensions`), `getContentDigest`.
 - `helpers/users.js` — the hardcoded user fixture.
+- `helpers/guidManager.js` — `newGuid()`, used only as a fallback conversion title in `documentService`.
+- `helpers/cacheManager.js` — a 30-second key/value cache that nothing imports; dead code, and *not* the
+  `meta/config` cache (that one is module vars in `documentService.js`).
 - `helpers/wopi/` — the WOPI implementation (see below).
 - `views/*.ejs` — EJS templates; `editor.ejs` is where the editor config object is assembled.
 - `config/data.json` — sample data served at `/data` for the AI autofill plugin.
@@ -105,9 +109,10 @@ mentions, no AI plugin, coediting restrictions.
 and do not assume a WOPI change needs porting.
 
 Routes are registered separately by `helpers/wopi/wopiRouting.js` (`/wopi`, `/wopi-new`, `/wopi-action/:id`,
-`/wopi/files/:id`, `/wopi/files/:id/contents`, `/wopi/folders/:id`, `/wopi/upload`). Supporting pieces:
-`filesController.js` (CheckFileInfo, GetFile, PutFile, Lock/Unlock …), `lockManager.js`, `tokenValidator.js`
-(proof-key validation), `discovery` parsing driven by `server.wopi.discovery`.
+`/wopi/files/:id`, `/wopi/files/:id/contents`, `/wopi/folders/:id`, `/wopi/folders/:id/contents`,
+`/wopi/upload`). Supporting pieces: `filesController.js` (CheckFileInfo, GetFile, PutFile, Lock/Unlock …),
+`lockManager.js`, `tokenValidator.js` (proof-key validation), `discovery` parsing driven by
+`server.wopi.discovery`.
 
 ## Conventions
 
@@ -115,7 +120,8 @@ Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../C
 
 - ESLint is airbnb-base with `max-len` 120, `no-console` off, and `String.prototype` extension allowed
   (`app.js` adds `hashCode` and `format`). Run `npm run lint` before finishing.
-- The release version sits in both `package.json` and `config/default.json` — bump them together.
+- The release version is `version` in `config/default.json`. `package.json` has a `version` field too, but
+  it is stale and unrelated (`1.6.0` against `1.15.0`) — do not treat the two as a pair to bump.
 
 ## Gotchas
 

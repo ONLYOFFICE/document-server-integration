@@ -46,7 +46,8 @@ URLs are built from the private one), `DOCUMENT_SERVER_JWT_{SECRET,HEADER,ALGORI
 `DOCUMENT_STORAGE_DISPLAY_FORGOTTEN_PAGE`, and `DOCUMENT_SERVER_VERSION` (the release version, rendered as the
 `server-version` meta tag; bump it with the siblings' configs). The `http://documentserver` placeholder is
 **not** in a config file here — it is the fallback default of `env('DOCUMENT_SERVER_PUBLIC_URL', …)` in
-`SettingsManager`; `.env.example` ships `http://localhost:8080` / `http://proxy:8080` to match `docker-compose.yml`.
+`SettingsManager`; `.env.example` ships `http://localhost:8080` / `http://proxy:8080` to match
+`docker-compose.yml`.
 
 ## Code map
 
@@ -66,12 +67,13 @@ URLs are built from the private one), `DOCUMENT_SERVER_JWT_{SECRET,HEADER,ALGORI
   `$request->input('payload')`, not the raw body, so an unsigned callback body never reaches the handler.
 - `EnsureForgottenPageEnabled` — `abort(403)` unless `DOCUMENT_STORAGE_DISPLAY_FORGOTTEN_PAGE` is truthy.
 
-All three JWT middlewares skip validation entirely when `dmode` is on the query string (embedded mode).
+Both JWT middlewares (`EnsureJWTTokenIsPresent`, `CheckAndDecodeJWTPayload`) skip validation entirely when
+`dmode` is on the query string (embedded mode). The other two above have nothing to do with JWT.
 
 Below the controllers, `app/UseCases/**` holds one invokable class per operation (`__invoke(Request $dto)`);
 `app/Repositories/` owns storage (`FileRepository` = the `files` disk, `VersionRepository` = the history tree,
 `ForceSavedFilesRepository`, `UserRepository` = the user fixture); `app/OnlyOffice/Managers/` and
-`Services/CallbackService.php` (the `/track` state machine) all extend SDK base classes;
+`app/OnlyOffice/Services/CallbackService.php` (the `/track` state machine) all extend SDK base classes;
 `app/Models/Editor/Editor::open()` is the single place per-user permissions and customization are decided; and
 `app/Helpers/URL/FileURL` builds every Document Server-facing URL.
 
@@ -131,8 +133,9 @@ the AI plugin through `plugins.disable`).
 
 Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../CLAUDE.md`. Here, additionally:
 
-- Licence-header coverage is partial: roughly a quarter of `app/**.php` has it, and the Laravel-scaffolded
-  files (middleware, providers, `bootstrap/`, `routes/`) do not. New files should still carry it.
+- Licence-header coverage is partial: roughly a quarter of `app/**.php` **lacks** it — 16 of the 43 files
+  under `app/UseCases/`, every middleware, `AppServiceProvider` and three controllers; so do `bootstrap/`
+  and `routes/`. New files should still carry it.
 - Run `./vendor/bin/pint` before finishing — `pint --test` is the only CI gate.
 - `DOCUMENT_SERVER_VERSION` carries the release version, rendered as the `server-version` meta tag.
 

@@ -37,7 +37,7 @@ Run from inside the example's own directory. The per-example `CLAUDE.md` files c
 | php | `make dev` | `make server-dev` (port 9000) | `make lint` (phpcs) | `make test` (phpunit) |
 | php-laravel | `make install` | `make compose-start` | `pint --test` | `phpunit` |
 | python | `make dev` | `make server-dev` (port 8000) | `make lint` (flake8), `make types` (mypy, not yet wired into CI) | `make test` |
-| ruby | `make dev` | `make server-dev` (port 3000) | `make lint` (rubocop + sorbet on macOS/x86_64 only) | `make test` |
+| ruby | `make dev` | `make server-dev` (port 3000) | `make lint` (rubocop; + sorbet on macOS or x86_64 Linux) | `make test` |
 | go | `go mod download` | `go run main.go` (port 3000) | `golangci-lint run` | — |
 | java | — | build WAR + deploy to a servlet container | `mvn package` (checkstyle runs in the build) | — |
 | java-spring | — | `mvn spring-boot:run` (port 4000; use a system `mvn`, not `./mvnw`) | `mvn package` (checkstyle) | — |
@@ -62,10 +62,11 @@ information, not as something your change broke.
 
 ## Submodules
 
-`.gitmodules` wires two external repos into most examples' asset folders:
-[`document-templates`](https://github.com/ONLYOFFICE/document-templates) (blank files created by "Create new")
-and [`document-formats`](https://github.com/ONLYOFFICE/document-formats) (the format table driving what can be
-viewed/edited/filled/converted). CI does `git submodule update --init --recursive` before anything else —
+`.gitmodules` wires three external repos into the examples' asset folders:
+[`document-templates`](https://github.com/ONLYOFFICE/document-templates) (blank files created by "Create new"),
+[`document-formats`](https://github.com/ONLYOFFICE/document-formats) (the format table driving what can be
+viewed/edited/filled/converted) and [`plugin-aiautofill`](https://github.com/ONLYOFFICE/plugin-aiautofill),
+the last wired into `nodejs` only. CI does `git submodule update --init --recursive` before anything else —
 a fresh clone without it produces examples that cannot create or classify files.
 
 ## The integration architecture
@@ -75,9 +76,9 @@ evolved separately, and the differences are real. Treat what follows as the shap
 contract, and verify details against the example you are actually in. Each example directory has its own
 `CLAUDE.md` with its verified specifics; read that first.
 
-Reading `nodejs/app.js` plus `helpers/docManager.js` and `helpers/documentService.js` is the fastest way to
-understand the model as a whole; `go/server/api/default/*.go` is the clearest map of the endpoint set, one
-file per endpoint.
+Reading `nodejs/app.js` plus `nodejs/helpers/docManager.js` and `nodejs/helpers/documentService.js` is the
+fastest way to understand the model as a whole; `go/server/api/default/*.go` is the clearest map of the
+endpoint set, one file per endpoint. Paths in this file are relative to `web/documentserver-example/`.
 
 **Endpoints** — roughly `/` index, `/editor`, `/config`, `/upload`, `/create`, `/convert`, `/download`,
 `/files`, `/history`, `/restore`, `/rename`, `/reference`, `/formats`, `/forgotten`, and the save callback.
@@ -90,7 +91,9 @@ MustSave/Corrupted, `4` closed with no changes, `6`/`7` MustForceSave/CorruptedF
 downloads `url` from the callback, rotates the current file into the history tree, and writes the new content
 in its place. Not every example handles every status: go implements only `2`, `3`, `4` and has no force-save
 at all (`Customization.Forcesave` is hardcoded `false`), while java defines `1`, `2`, `3`, `6`, `7` and never
-handles `4`.
+handles `4`. Status `4` in fact reaches a handler in only three examples — go, php-laravel and java-spring,
+whose handler just logs "not supported yet". In nodejs, php, python, ruby, csharp, csharp-mvc and java it
+falls through the dispatch to a bare `{"error":0}`.
 
 **Storage layout** — versions are numbered directories, but the details differ. The majority form is:
 
@@ -103,7 +106,8 @@ handles `4`.
     2/  ...
 ```
 
-**nodejs is the outlier**, not the reference: it uses `-history`, `changes.txt` and a per-version `user.txt`.
+**nodejs is the outlier**, not the reference: `changes.txt` and a per-version `user.txt` are unique to it, and
+its `-history` suffix is shared only with php-laravel — every other example with storage uses `-hist`.
 php-laravel differs completely (`info.json` / `history.json` / `changes.zip` / `N.<ext>`, force-saves on a
 separate disk). go uses `-hist` but stores a current-version meta file at `<filename>-hist/<filename>.json`.
 
@@ -135,8 +139,10 @@ talks to Document Server for its format table.
 
 The Document Server address (`http://documentserver`) is a placeholder in every example and must be replaced
 to run anything. Per-example config file locations are listed in `Readme.md`. The `version` value is duplicated
-into each config file (`package.json`, `pyproject.toml`, `configuration.json`, `settings.config`, …) — bump
-them together.
+into each example's config file (`nodejs/config/default.json`, `python/pyproject.toml`,
+`go/config/configuration.json`, `csharp/settings.config`, …) — bump them together. nodejs's `package.json`
+carries a `version` too, but it tracks nothing and is stale (`1.6.0` against `1.15.0`); the live number is
+in `nodejs/config/default.json`.
 
 ## Conventions
 

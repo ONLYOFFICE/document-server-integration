@@ -46,6 +46,9 @@ Spring property sources.
 
 ## Code map
 
+Java paths below are relative to `src/main/java/com/onlyoffice/integration/`; `templates/` and `static/`
+are under `src/main/resources/`.
+
 - `IntegrationApplication` (entry point); `IntegrationConfiguration` (beans for `JwtManager`,
   `DocumentServerClient`, `ConvertService`, `ModelMapper`/`ObjectMapper`/`JSONParser`, and a `@PostConstruct`
   configuring the storage root); `ExampleData` (inserts the four demo users into H2 on boot).
@@ -80,9 +83,10 @@ Spring property sources.
 `Permission`, `Goback`, `Close` and nothing else — no files, no history, no document metadata. `ExampleData`
 recreates the same four users on every start, so the database is disposable by design. IDs are auto-increment
 `1`…`4`, and `4` is Anonymous (`Constants.ANONYMOUS_USER_ID`). The current user is the **`uid` cookie holding
-that integer id** — not the `uid-1` string form other examples use; `static/scripts/jscript.js` sets it from
-the index-page selector, defaulting to `1`. `@CookieValue("uid")` is mandatory on `/editor`, `/upload`,
-`/saveas` and `/restore`, so those 400 without it.
+that integer id** — not the `uid-1` string form other examples use;
+`src/main/resources/static/scripts/jscript.js` sets it from the index-page selector, defaulting to `1`.
+`@CookieValue("uid")` is mandatory on `/editor`, `/upload`, `/saveas` and `/restore`, so those 400
+without it.
 
 *Documents are plain files on disk*, per `LocalFileStorage`:
 

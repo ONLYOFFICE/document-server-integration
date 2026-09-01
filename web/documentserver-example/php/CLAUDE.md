@@ -23,7 +23,8 @@ make test             # ./vendor/bin/phpunit --test-suffix "Tests.php" ... src
 make compose-prod     # docker compose build && up --detach; make restart recreates + drops the volume
 ```
 
-No `compose-dev` and no lint-fix recipe here (unlike python/ruby). Needs PHP 8.2 (`.php-version` 8.2.11) and
+No `compose-dev` here (unlike python/ruby) and no lint-fix recipe — nodejs is the only example with one
+(`npm run lint:fix`); python and ruby have none either. Needs PHP 8.2 (`.php-version` 8.2.11) and
 Composer 2.6.5 (`.composer-version`).
 
 Tests are colocated with the sources as `src/**/*Tests.php`. There is **no `phpunit.xml`**, so a bare
@@ -50,7 +51,8 @@ both directories exist but are empty in a fresh clone).
 - `STORAGE_PATH` (`storage`, relative to the example root), `SINGLE_USER`, `MAXIMUM_FILE_SIZE` (100 MB),
   `CONVERSION_TIMEOUT` (120000), `ENABLE_FORGOTTEN` (true), `ADDRESS`, `PORT`.
 
-`ConfigurationManager::$version` (`1.15.0`) is the only place the release version lives — `composer.json` has
+`ConfigurationManager->version` (`1.15.0`, a plain instance property — not static despite the name reading
+that way) is the only place the release version lives — `composer.json` has
 no `version` field. `languages()` there is the hardcoded language list for the index page.
 
 ## Code map
@@ -147,7 +149,7 @@ Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../C
   checks exactly `src` and `index.php` — `templates/` and `assets/` are not linted. Run `make lint` before
   finishing.
 - CI runs lint, licence check and artifact build only; `make test` is wired into no workflow.
-- `ConfigurationManager::$version` is the only place the release version lives — `composer.json` has no
+- `ConfigurationManager->version` is the only place the release version lives — `composer.json` has no
   `version` field.
 
 ## Gotchas
