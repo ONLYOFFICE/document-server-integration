@@ -447,9 +447,10 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
   const internalFileExt = 'ooxml';
   const convExt = req.body.fileExt ? req.body.fileExt : internalFileExt;
   const { keepOriginal } = req.body;
+  const sendFileInRequest = req.body.sendFileInRequest === true || req.body.sendFileInRequest === 'true';
   const response = res;
 
-  const writeResult = function writeResult(filename, step, error) {
+  const writeResult = function writeResult(filename, step, fileData, error) {
     const result = {};
 
     // write file name, step and error values to the result object if they are defined
@@ -459,45 +460,72 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
 
     if (error !== null) result.error = error;
 
+    if (fileData) result.fileData = fileData.toString('base64');
+
     response.setHeader('Content-Type', 'application/json');
     response.write(JSON.stringify(result));
     response.end();
   };
 
-  const callback = async function callback(err, resp) {
+  const callback = async function callback(err, data, resp) {
     if (err) { // if an error occurs
       // check what type of error it is
       if (err.name === 'ConnectionTimeoutError' || err.name === 'ResponseTimeoutError') {
-        writeResult(fileName, 0, null); // despite the timeout errors, write the file to the result object
+        writeResult(fileName, 0, null, null); // despite the timeout errors, write the file to the result object
       } else {
-        writeResult(null, null, JSON.stringify(err)); // other errors trigger an error message
+        writeResult(null, null, null, JSON.stringify(err)); // other errors trigger an error message
       }
       return;
     }
 
     try {
-      const responseData = documentService.getResponseUri(resp.toString());
-      const result = responseData.percent;
-      const newFileUri = responseData.uri; // get the callback url
-      const newFileType = `.${responseData.fileType}`; // get the file type
+      if (resp.status !== 200) throw new Error(`Conversion service returned status: ${resp.status}`);
 
-      if (result !== 100) { // if the status isn't 100
-        writeResult(fileName, result, null); // write the origin file to the result object
-        return;
+      let result;
+      let correctName;
+      let fileData;
+      let fileUrl;
+      let isFileBodyInResponse = false;
+
+      const contentType = (resp.headers && resp.headers['content-type']) || '';
+      if (contentType.includes('application/json')) {
+        const responseData = documentService.getResponseUri(data.toString());
+        result = responseData.percent;
+        fileUrl = responseData.uri;
+
+        if (result !== 100) { // if the status isn't 100
+          writeResult(fileName, result, null, null); // write the origin file to the result object
+          return;
+        }
+
+        // get the file name with a new extension
+        const newFileType = `.${responseData.fileType}`; // get the file type
+        correctName = req.DocManager.getCorrectName(fileUtility.getFileName(fileName, true) + newFileType);
+
+        const fileResponse = await urllib.request(fileUrl, { method: 'GET' });
+
+        if (fileResponse.status !== 200) throw new Error(`Conversion service returned status: ${fileResponse.status}`);
+
+        fileData = fileResponse.data;
+      } else {
+        result = 100;
+        correctName = req.DocManager.getCorrectName(`${fileUtility.getFileName(fileName, true)}.${convExt}`);
+        fileData = data;
+        isFileBodyInResponse = true;
       }
-
-      // get the file name with a new extension
-      const correctName = req.DocManager.getCorrectName(fileUtility.getFileName(fileName, true) + newFileType);
-
-      const { status, data } = await urllib.request(newFileUri, { method: 'GET' });
-
-      if (status !== 200) throw new Error(`Conversion service returned status: ${status}`);
 
       // write a file with a new extension, but with the content from the origin file
       if ((await fileUtility.getFileType(req.DocManager, correctName)) !== null) {
-        fileSystem.writeFileSync(req.DocManager.storagePath(correctName), data);
+        fileSystem.writeFileSync(req.DocManager.storagePath(correctName), fileData);
       } else {
-        writeResult(newFileUri.replace('http://localhost/', siteUrl), result, 'FileTypeIsNotSupported');
+        let uri = fileUrl ? fileUrl.replace('http://localhost/', siteUrl) : null;
+        if (isFileBodyInResponse) {
+          // get the file name from the content-disposition header when there is no conversion url to rely on
+          const contentDisposition = (resp.headers && resp.headers['content-disposition']) || '';
+          const filenameMatch = /filename\*?=(?:UTF-\d[^'"]*'')?"?([^";]+)"?/i.exec(contentDisposition);
+          uri = filenameMatch ? decodeURIComponent(filenameMatch[1]) : null;
+        }
+        writeResult(uri, result, isFileBodyInResponse ? fileData : null, 'FileTypeIsNotSupported');
         return;
       }
       // remove file with the origin extension
@@ -515,16 +543,16 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
           path.join(correctHistoryPath, `${fileName}.txt`),
           path.join(correctHistoryPath, `${correctName}.txt`),
         ); // change the name of the .txt file with document information
-      } else if (newFileType !== null) {
+      } else {
         const user = users.getUser(req.query.userid);
 
         req.DocManager.saveFileData(correctName, user.id, user.name);
       }
 
-      writeResult(correctName, result, null); // write a file with a new name to the result object
+      writeResult(correctName, result, null, null); // write a file with a new name to the result object
     } catch (e) {
       if (!e.message.includes('-9')) console.log(e); // display error message in the console
-      writeResult(null, null, e.message);
+      writeResult(null, null, null, e.message);
     }
   };
 
@@ -536,26 +564,58 @@ app.post('/convert', async (req, res) => { // define a handler for converting fi
       let key = fileUri + stat.mtime.getTime();
 
       key = documentService.generateRevisionId(key); // get document key
-      // get the url to the converted file
-      documentService.getConvertedUri(
-        req.DocManager,
-        fileUri,
-        fileExt,
-        convExt,
-        key,
-        true,
-        callback,
-        filePass,
-        lang,
-        fileName,
-      );
+
+      if (sendFileInRequest) {
+        const dsConfig = await documentService.config(req.DocManager);
+        const documentServerUrl = req.DocManager.getSiteUrl(siteUrl);
+        const converterFromFilePath = dsConfig.urls.converterFromFile.replace(/^\//, '');
+
+        const convParams = {
+          async: true,
+          outputtype: convExt.replace('.', ''),
+          filetype: fileExt.replace('.', ''),
+          title: fileName,
+          key,
+          password: filePass,
+          region: lang,
+          thumbnail: { first: false },
+        };
+
+        let token = null;
+        if (cfgSignatureEnable && cfgSignatureUseForRequest) {
+          token = documentService.getToken(convParams);
+        }
+
+        documentService.convertFile(
+          documentServerUrl,
+          converterFromFilePath,
+          storagePath,
+          convParams,
+          token,
+          callback,
+        );
+      } else {
+        // get the url to the converted file
+        documentService.getConvertedUri(
+          req.DocManager,
+          fileUri,
+          fileExt,
+          convExt,
+          key,
+          true,
+          callback,
+          filePass,
+          lang,
+          fileName,
+        );
+      }
     } else {
       // if the file with such an extension can't be converted, write the origin file to the result object
-      writeResult(fileName, null, null);
+      writeResult(fileName, null, null, null);
     }
   } catch (ex) {
     console.log(ex);
-    writeResult(null, null, 'Server error');
+    writeResult(null, null, null, 'Server error');
   }
 });
 
