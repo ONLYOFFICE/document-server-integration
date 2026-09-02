@@ -29,7 +29,7 @@ orients you across the eleven.
 
 ## Per-example commands
 
-Each example’s own `CLAUDE.md` carries its exact install/run/lint/test invocations, ports, single-test
+Each example's own `CLAUDE.md` carries its exact install/run/lint/test invocations, ports, single-test
 forms and Docker entry points — they differ per example and are not guessable from here. `make help` in
 php/python/ruby prints the full recipe list.
 
@@ -104,7 +104,7 @@ match the Document Server's.
 **Users** are a hardcoded fixture of four: three permissioned users plus an anonymous one, whose permission
 sets are what the demo actually demonstrates (review-only, comment-only, filler, protect). Most examples
 identify them as `uid-1`…`uid-3` / `uid-0`; java-spring instead uses an integer database id in a `uid` cookie
-(1–4, where 4 is Anonymous).
+(1-4, where 4 is Anonymous).
 
 **Formats** come from the `document-formats` submodule via a per-example `FormatManager`. Three examples
 have no such submodule: java-spring and php-laravel get the table from the external `docs-integration-sdk`

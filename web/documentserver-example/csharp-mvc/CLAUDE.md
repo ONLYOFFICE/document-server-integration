@@ -134,4 +134,4 @@ Repo-wide rules (licence header, commits, CHANGELOG, porting) are in `../../../C
 - `bin/`, `obj/` and `packages/` are gitignored repo-wide and **not** committed; a fresh clone has no build
   output. Ignore them when exploring, as well as `Scripts/` (third-party JS).
 - `files.docservice.verify-peer-off` defaults to `true`; `DocManagerHelper.VerifySSL()` then installs a
-  process-wide `ServerCertificateValidationCallback` accepting every certificate and pins TLS to 1.0–1.2.
+  process-wide `ServerCertificateValidationCallback` accepting every certificate and pins TLS to 1.0-1.2.
