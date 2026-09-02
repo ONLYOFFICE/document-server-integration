@@ -59,3 +59,15 @@
     :why: MIT
     :versions: []
     :when: 2025-11-07 10:13:51.477550000 Z
+- - :approve
+  - ast-serialize
+  - :who:
+    :why: MIT
+    :versions: []
+    :when: 2026-09-02 11:56:57.000000000 Z
+- - :approve
+  - librt
+  - :who:
+    :why: MIT
+    :versions: []
+    :when: 2026-09-02 11:56:57.000000000 Z
