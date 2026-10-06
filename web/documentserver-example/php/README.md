@@ -59,7 +59,7 @@ If you have Docker with Docker Compose, you can run the example together with it
 docker compose up --build --detach
 ```
 
-Open `http://localhost` in your browser. The environment variables are set in the `docker-compose.yml` file. JWT is enabled with the `your-256-bit-secret` secret. If you change it, change `JWT_SECRET` for both the `documentserver` and `example` services.
+Open `http://localhost` in your browser. The environment variables are set in the `docker-compose.yml` file. JWT is enabled with the `developer-only-not-a-real-secret` secret. If you change it, change `JWT_SECRET` for both the `documentserver` and `example` services.
 
 ## File API methods used in this example
 

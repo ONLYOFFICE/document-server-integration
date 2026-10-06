@@ -35,7 +35,7 @@ docservice.security.key=developer-only-not-a-real-secret
 
 - `docservice.url`: the address of the server with ONLYOFFICE Docs installed. Replace `documentserver` with its name or IP address.
 - `files.storage`: the folder where the example creates and stores files. If it is empty, the example uses the `documents` folder in the directory you run it from. You can set an absolute path. In this file, escape each backslash, for example, `D:\\folder`. The user running the example needs read and write permissions to this folder.
-- `docservice.security.key`: must match the JWT settings of ONLYOFFICE Docs. JWT is enabled in ONLYOFFICE Docs by default, but the key is empty here, which disables JWT in the example. Set it to the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
+- `docservice.security.key`: must match the JWT settings of ONLYOFFICE Docs. The default is `developer-only-not-a-real-secret`, a test value for development only. Replace it with the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
 - `files.docservice.url.example`: the address at which ONLYOFFICE Docs reaches the example, without a trailing slash, for example, `http://192.168.1.10:4000`. Set it if ONLYOFFICE Docs runs on another computer or in Docker, where the address you open in the browser, such as `localhost`, points somewhere else.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) in the `createConfig` method of the `src/main/java/com/onlyoffice/integration/sdk/service/ConfigServiceImpl.java` file.
@@ -97,7 +97,7 @@ The methods described below are available for Java (Spring) test example.
 
 ## Troubleshooting
 
-- **The document security token is not correctly formed**: JWT is disabled in the example (`docservice.security.key` is empty), or `docservice.security.key` does not match the secret of ONLYOFFICE Docs.
+- **The document security token is not correctly formed**: `docservice.security.key` does not match the secret of ONLYOFFICE Docs. It is set to the test value by default, so replace it with your server's secret.
 - **Download failed**: ONLYOFFICE Docs cannot reach the example. Set `files.docservice.url.example` in `application.properties` to an address that ONLYOFFICE Docs can resolve.
 
 For more information, see the [documentation](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/java-spring-example/).

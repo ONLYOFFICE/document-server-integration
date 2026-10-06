@@ -36,7 +36,7 @@ files.docservice.secret=developer-only-not-a-real-secret
 
 - `files.docservice.url.site`: the address of the server with ONLYOFFICE Docs installed. Replace `documentserver` with its name or IP address and keep the trailing slash. The example runs in a Docker container, so do not use `localhost`: the address must be reachable both from your browser and from the container.
 - `storage-folder`: the folder where the example creates and stores files. A relative path is resolved inside the deployed application, so with Docker the files are kept in the container. You can set an absolute path. In a `.properties` file, escape each backslash, for example, `D:\\folder`. The user running the example needs read and write permissions to this folder.
-- `files.docservice.secret`: must match the JWT secret of ONLYOFFICE Docs. It is empty by default, which disables JWT in the example. JWT is enabled in ONLYOFFICE Docs by default, so set this key to the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
+- `files.docservice.secret`: must match the JWT secret of ONLYOFFICE Docs. The default is `developer-only-not-a-real-secret`, a test value for development only. Replace it with the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
 - `files.docservice.url.example`: the address at which ONLYOFFICE Docs reaches the example. Set it if ONLYOFFICE Docs runs on another computer or in Docker, where the address you open in the browser, such as `localhost`, points somewhere else.
 
 The settings file is packaged into the application when it is built, so rebuild the example after each change.
@@ -90,7 +90,7 @@ The methods described below are available for Java test example.
 
 ## Troubleshooting
 
-- **The document security token is not correctly formed**: `files.docservice.secret` is empty, which disables JWT in the example, or it does not match the secret of ONLYOFFICE Docs.
+- **The document security token is not correctly formed**: `files.docservice.secret` does not match the secret of ONLYOFFICE Docs. It is set to the test value by default, so replace it with your server's secret and rebuild the example.
 - **Download failed**: ONLYOFFICE Docs cannot reach the example. Set `files.docservice.url.example` in `src/main/resources/settings.properties` to an address that ONLYOFFICE Docs can resolve, and rebuild the example.
 
 For more information, see the [documentation](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/java-example/).

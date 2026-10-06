@@ -29,7 +29,7 @@ Open the `config/configuration.json` file and edit the following keys:
 {
   "SERVER_ADDRESS": "",
   "DOC_SERVER_HOST": "http://documentserver/",
-  "JWT_IS_ENABLED": false,
+  "JWT_IS_ENABLED": true,
   "JWT_SECRET": "developer-only-not-a-real-secret",
   "STORAGE_PATH": "filestore"
 }
@@ -37,7 +37,7 @@ Open the `config/configuration.json` file and edit the following keys:
 
 - `DOC_SERVER_HOST`: the address of the server with ONLYOFFICE Docs installed. Replace `documentserver` with its name or IP address.
 - `STORAGE_PATH`: the folder where the example creates and stores files. It is created inside the `static` folder of the example, so set a relative path. The user running the example needs read and write permissions to this folder.
-- `JWT_IS_ENABLED` and `JWT_SECRET`: must match the JWT settings of ONLYOFFICE Docs. JWT is enabled in ONLYOFFICE Docs by default, so set `JWT_IS_ENABLED` to `true` and replace the `JWT_SECRET` value with the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
+- `JWT_IS_ENABLED` and `JWT_SECRET`: must match the JWT settings of ONLYOFFICE Docs. JWT is enabled in both by default, so leave `JWT_IS_ENABLED` set to `true`. `JWT_SECRET` defaults to `developer-only-not-a-real-secret`, a test value for development only. Replace it with the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
 - `SERVER_ADDRESS`: the address at which ONLYOFFICE Docs reaches the example, with the protocol and port and without a trailing slash, for example, `http://192.168.1.10:3000`. Set it if ONLYOFFICE Docs runs on another computer or in Docker, where the address you open in the browser, such as `localhost`, points somewhere else.
 
 Each key can also be set as an environment variable with the same name, for example, `JWT_SECRET`. An environment variable overrides the value in the file.
@@ -104,7 +104,7 @@ The methods described below are available for Go test example.
 
 ## Troubleshooting
 
-- **The document security token is not correctly formed**: JWT is disabled in the example (`JWT_IS_ENABLED` is `false`), or `JWT_SECRET` does not match the secret of ONLYOFFICE Docs.
+- **The document security token is not correctly formed**: JWT is disabled in the example (`JWT_IS_ENABLED` is `false`), or `JWT_SECRET` does not match the secret of ONLYOFFICE Docs. It is set to the test value by default, so replace it with your server's secret.
 - **Download failed**: ONLYOFFICE Docs cannot reach the example. Set `SERVER_ADDRESS` in `config/configuration.json` to an address that ONLYOFFICE Docs can resolve.
 
 For more information, see the [documentation](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/go-example/).

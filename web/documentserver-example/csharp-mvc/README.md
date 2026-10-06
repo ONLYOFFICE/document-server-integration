@@ -40,7 +40,7 @@ Open the `web.appsettings.config` file and edit the following keys:
 
 - `files.docservice.url.site`: the address of the server with ONLYOFFICE Docs installed. Replace `documentserver` with its name or IP address, and keep the trailing slash.
 - `storage-path`: the folder where the example creates and stores files. If it is empty, the example stores files in its own folder, in a subfolder named after the user's IP address. You can set an absolute path, for example, `D:\folder`. The IIS application pool identity needs read and write permissions to this folder.
-- `files.docservice.secret`: must match the JWT settings of ONLYOFFICE Docs. The key is empty by default, which disables JWT in the example. JWT is enabled in ONLYOFFICE Docs by default, so set this key to the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
+- `files.docservice.secret`: must match the JWT settings of ONLYOFFICE Docs. The default is `developer-only-not-a-real-secret`, a test value for development only. Replace it with the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
 - `files.docservice.url.example`: the address at which ONLYOFFICE Docs reaches the example. Set it if ONLYOFFICE Docs runs on another computer or in Docker, where the address you open in the browser, such as `localhost`, points somewhere else.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) in the `Models/FileModel.cs` file.
@@ -93,7 +93,7 @@ The methods described below are available for .Net (C# MVC) test example.
 
 ## Troubleshooting
 
-- **The document security token is not correctly formed**: JWT is disabled in the example (`files.docservice.secret` is empty), or `files.docservice.secret` does not match the secret of ONLYOFFICE Docs.
+- **The document security token is not correctly formed**: `files.docservice.secret` does not match the secret of ONLYOFFICE Docs. It is set to the test value by default, so replace it with your server's secret.
 - **Download failed**: ONLYOFFICE Docs cannot reach the example. Set `files.docservice.url.example` in `web.appsettings.config` to an address that ONLYOFFICE Docs can resolve.
 
 For more information, see the [documentation](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/net-example/).

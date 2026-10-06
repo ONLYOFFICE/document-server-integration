@@ -40,7 +40,7 @@ DOCUMENT_SERVER_JWT_SECRET=developer-only-not-a-real-secret
 
 - `DOCUMENT_SERVER_PUBLIC_URL` and `DOCUMENT_SERVER_PRIVATE_URL`: the address of your ONLYOFFICE Docs server.
 - `DOCUMENT_STORAGE_PRIVATE_URL`: the address at which ONLYOFFICE Docs reaches the example. The name `proxy` resolves only inside the Docker network.
-- `DOCUMENT_SERVER_JWT_SECRET`: the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
+- `DOCUMENT_SERVER_JWT_SECRET`: the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server. The default is `developer-only-not-a-real-secret`, a test value for development only.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) in the `app/Models/Editor/Editor.php` file.
 
@@ -94,7 +94,7 @@ The methods described below are available for PHP Laravel test example.
 
 ## Troubleshooting
 
-- **The document security token is not correctly formed**: JWT is disabled in the example (`DOCUMENT_SERVER_JWT_SECRET` is empty), or `DOCUMENT_SERVER_JWT_SECRET` does not match the secret of ONLYOFFICE Docs. If you changed it after the first start, recreate the volume with `docker compose down -v`.
+- **The document security token is not correctly formed**: `DOCUMENT_SERVER_JWT_SECRET` does not match the secret of ONLYOFFICE Docs. If you changed it after the first start, recreate the volume with `docker compose down -v`.
 - **Download failed**: ONLYOFFICE Docs cannot reach the example. Set `DOCUMENT_STORAGE_PRIVATE_URL` in `.env` to an address that ONLYOFFICE Docs can resolve.
 - **Laravel installation or configuration problems**: see the [Laravel documentation](https://laravel.com/docs/11.x/deployment#server-configuration).
 
