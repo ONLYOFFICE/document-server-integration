@@ -1,91 +1,62 @@
-## Overview
+# .NET (C#) integration
 
-This example will help you integrate ONLYOFFICE Docs into your web application written in .Net (C#).
+The .NET (C#) integration example is a small ASP.NET Web Forms application for .NET Framework 4.8 that lists files, opens them in ONLYOFFICE Docs, and saves them back through the callback handler. Run it to see a complete integration working before you write your own. The example runs on Windows only, under IIS. For the MVC version, see the [.NET (C# MVC) example](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/csharp-mvc).
 
-**Please note**: It is intended for testing purposes and demonstrating functionality of the editors. Do NOT use this integration example on your own server without proper code modifications! In case you enabled the test example, disable it before going for production.
+> [!WARNING]
+> This example is for testing only. It has no authentication, does not validate link parameters or save requests, and accepts requests from any site, so anyone who can reach it can read and change its files. Do not run it on a public server, and disable it before going to production.
 
-## Step 1. Install ONLYOFFICE Docs
+## Prerequisites
 
-Download and install ONLYOFFICE Docs (packaged as Document Server).
+- **ONLYOFFICE Docs**: [self-hosted](https://www.onlyoffice.com/download?from=api#docs-developer) or [cloud](https://www.onlyoffice.com/docs-registration?from=api).
+- **.NET Framework 4.8**: see the [official website](https://dotnet.microsoft.com/download/dotnet-framework/net48).
+- **Internet Information Services (IIS)**: see the [official website](https://learn.microsoft.com/iis/get-started/whats-new-in-iis-10/installing-iis-10).
+- **Visual Studio**: see the [official website](https://visualstudio.microsoft.com/downloads/).
+- **Git**: see the [official website](https://git-scm.com/downloads).
 
-See the detailed guide to learn how to install Document Server [for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx), [for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx), or [for Docker](https://helpcenter.onlyoffice.com/server/developer-edition/docker/docker-installation.aspx).
+When you turn on IIS in **Windows Features**, open **Internet Information Services** > **World Wide Web Services** and select **.NET Extensibility 4.8**, **ASP.NET 4.8**, **ISAPI Extensions**, **ISAPI Filters**, **Default Document**, and **Request Filtering**. In Visual Studio, install the **ASP.NET and web development** workload.
 
-## Step 2. Download the .Net (C#) code for the editors integration
+## Step 1. Download the example
 
-Download the [.Net (C#) example](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/) from our site.
+Clone the [example repository](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/csharp), go to the .NET (C#) example, and fetch its submodules:
 
-To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *settings.config* file:
-```
-<add key="storage-path" value=""/>
-<add key="files.docservice.url.site" value="https://documentserver/" />
-```
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed and the **storage-path** is the path where files will be created and stored. You can set an absolute path.
-
-If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) in the *DocEditor.aspx* file.
-
-## Step 3. Install the prerequisites
-
-Check that your system meets the requirements:
-* **Microsoft .NET Framework**: version 4.5 (download it from the [official Microsoft website](https://www.microsoft.com/en-US/download/details.aspx?id=30653));
-* **Internet Information Services**: version 7 or later.
-
-Configure the IIS components for the server to work correctly:
-1.	Open Windows features:
-
-	**Start** -> **Control Panel** -> **Programs** -> **Programs and Features** -> **Turn Windows features on or off**
-
-2. In the opened window, find **Internet Information Services** and choose all the necessary features. To do this, open the **World Wide Web Services** list and check the following components:
-* **Application Development Features**: .NET Extensibility 4.8, ASP.NET 4.8, ISAPI Extensions, ISAPI Filters,
-* **Common HTTP Features**: Default Document,
-* **Security**: Request Filtering.
-
-## Step 4. Configure JWT 
-
-Open the *settings.config* file and [specify the same secret key](https://helpcenter.onlyoffice.com/installation/docs-configure-jwt.aspx) as used in your Document Server to enable JWT: 
-
-```
-<add key="files.docservice.secret" value="secret" />
+```sh
+git clone --depth 1 https://github.com/ONLYOFFICE/document-server-integration
+cd document-server-integration/web/documentserver-example/csharp
+git submodule update --init --depth 1 .
 ```
 
-## Step 5. Run your website with the editors
-1. Run the Internet Information Service (IIS) Manager:
+## Step 2. Configure the connection
 
-	**Start** -> **Control Panel** -> **System and Security** -> **Administrative Tools** -> **Internet Information Services (IIS) Manager**
+Open the `settings.config` file and edit the following keys:
 
-2. Add your website in the IIS Manager.
+```xml
+<appSettings>
+  <add key="files.docservice.url.site" value="http://documentserver/"/>
+  <add key="storage-path" value=""/>
+  <add key="files.docservice.secret" value="" />
+  <add key="files.docservice.url.example" value=""/>
+</appSettings>
+```
 
-	On the **Connections** panel right-click the **Sites** node in the tree, then click **Add Website**.
+- `files.docservice.url.site`: the address of the server with ONLYOFFICE Docs installed. Replace `documentserver` with its name or IP address, and keep the trailing slash.
+- `storage-path`: the folder where the example creates and stores files. If it is empty, the example stores files in its own folder, in a subfolder named after the user's IP address. You can set an absolute path, for example, `D:\folder`. The IIS application pool identity needs read and write permissions to this folder.
+- `files.docservice.secret`: must match the JWT settings of ONLYOFFICE Docs. The key is empty by default, which disables JWT in the example. JWT is enabled in ONLYOFFICE Docs by default, so set this key to the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
+- `files.docservice.url.example`: the address at which ONLYOFFICE Docs reaches the example. Set it if ONLYOFFICE Docs runs on another computer or in Docker, where the address you open in the browser, such as `localhost`, points somewhere else.
 
-	![add](screenshots/add.png)
-3. In the **Add Website** dialog box specify the name of the folder with the .Net (C#) project in the **Site name** box.
-	
-	Specify the path to the folder with your project in the **Physical Path** box.
-	
-	Specify the unique value used only for this website in the **Port** box.
+If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) in the `DocEditor.aspx.cs` file.
 
-	![sitename](screenshots/sitename.png)
-4. Check for the .NET platform version specified in IIS Manager for you website. Choose **v4.0.** version.
+## Step 3. Build and run the example
 
-	**Application Pools** -> right-click the platform name -> **Set application Pool defaults** -> **.NET CLR version**
+1. Open `OnlineEditorsExample.sln` in Visual Studio and select **Build** > **Build Solution**. Visual Studio restores the NuGet packages and compiles the example into the `bin` folder.
+2. In IIS Manager, right-click **Sites** and select **Add Website**. Set **Physical path** to the example folder and **Port** to any free port.
+3. In **Application Pools**, make sure that the pool of the new site uses **.NET CLR version** `v4.0`.
+4. Right-click the site and select **Manage Website** > **Browse**.
 
-	![platform](screenshots/platform.png)
-5. Browse your website with the IIS Manager:
+The browser opens `http://localhost:<port>/`. You will see the example's start page, where you can upload a file or create a new document, spreadsheet, presentation, or PDF form.
 
-	Right-click the site -> **Manage Website** -> **Browse**
-	
-	![browse](screenshots/browse.png)
+## Troubleshooting
 
-## Step 6. Check accessibility
+- **The document security token is not correctly formed**: JWT is disabled in the example (`files.docservice.secret` is empty), or `files.docservice.secret` does not match the secret of ONLYOFFICE Docs.
+- **Download failed**: ONLYOFFICE Docs cannot reach the example. Set `files.docservice.url.example` in `settings.config` to an address that ONLYOFFICE Docs can resolve.
 
-In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files.
-
-Make sure that the Document Server in its turn has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
-
-## Important security info
-
-Please keep in mind the following security aspects when you are using test examples:
-
-* There is no protection of the storage from unauthorized access since there is no need for authorization.
-* There are no checks against parameter substitution in links, since the parameters are generated by the code according to the pre-arranged scripts.
-* There are no data checks in requests of saving the file after editing, since each test example is intended for requests only from ONLYOFFICE Document Server.
-* There are no prohibitions on using test examples from other sites, since they are intended to interact with ONLYOFFICE Document Server from another domain.
+For more information, see the [documentation](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/net-example/).

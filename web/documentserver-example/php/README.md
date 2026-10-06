@@ -1,85 +1,69 @@
-## Overview
+# PHP integration
 
-This example will help you integrate ONLYOFFICE Docs into your web application written on PHP.
+The PHP integration example is a small plain PHP application, built without a framework, that lists files, opens them in ONLYOFFICE Docs, and saves them back through the callback handler. Run it to see a complete integration working before you write your own.
 
-> [!WARNING]  
-> It is intended for testing purposes and demonstrating functionality of the editors. **DO NOT** use this integration example on your own server without proper code modifications. In case you enabled the test example, disable it before going for production.
+> [!WARNING]
+> This example is for testing only. It has no authentication, does not validate link parameters or save requests, and accepts requests from any site, so anyone who can reach it can read and change its files. Do not run it on a public server, and disable it before going to production.
 
-## Installation
+## Prerequisites
 
-The PHP example offers various installation options, but we highly recommend using Docker for this purpose.
+- **ONLYOFFICE Docs**: [self-hosted](https://www.onlyoffice.com/download?from=api#docs-developer) or [cloud](https://www.onlyoffice.com/docs-registration?from=api).
+- **PHP**: see the [official website](https://www.php.net/downloads).
+- **Composer**: see the [official website](https://getcomposer.org/download/).
+- **Git**: see the [official website](https://git-scm.com/downloads).
 
-### Using Docker
+## Step 1. Download the example
 
-To run the example using [Docker](https://docker.com), you will need [Docker Desktop 4.17.0](https://docs.docker.com/desktop) or [Docker Engine 20.10.23](https://docs.docker.com/engine) with [Docker Compose 2.15.1](https://docs.docker.com/compose). Additionally, you might want to consider installing [GNU Make 4.4.1](https://gnu.org/software/make), although it is optional. These are the minimum versions required for the tools.
-
-Once you have everything installed, download the release archive and unarchive it.
-
-```sh
-$ curl --output PHP.Example.zip --location https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/PHP.Example.zip
-$ unzip PHP.Example.zip
-```
-
-Then open the example directory and [up containers](./Makefile#L60).
+Clone the [example repository](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/php), go to the PHP example, and fetch its submodules:
 
 ```sh
-$ cd "PHP Example"
-$ make compose-prod
+git clone --depth 1 https://github.com/ONLYOFFICE/document-server-integration
+cd document-server-integration/web/documentserver-example/php
+git submodule update --init --depth 1 .
 ```
 
-By default, the server starts at `localhost:80`.
+## Step 2. Configure the connection
 
-To configure the example, you can edit the environment variables in [`docker-compose.yml`](./docker-compose.yml). See [below](#configuration) for more information about environment variables.
-
-### On Local Machine
-
-Before diving into the example, you will need to install ONLYOFFICE Document Server (also known as Docs). Check the detailed guide to learn how to install it on [Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx), [Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx), or [Docker](https://helpcenter.onlyoffice.com/installation/docs-developer-install-docker.aspx).
-
-To run the example on your local machine, you will need [PHP 8.2.11](https://php.net) with [Composer 2.6.5](https://getcomposer.org). Additionally, you might want to consider installing [GNU Make 4.4.1](https://gnu.org/software/make), although it is optional. These are the minimum versions required for the tools.
-
-Once you have everything installed, download the release archive and unarchive it.
+The example has no configuration file. It reads its settings from environment variables, so set them in the terminal where you will run the example in the next step:
 
 ```sh
-$ curl --output PHP.Example.zip --location https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/PHP.Example.zip
-$ unzip PHP.Example.zip
+export DOCUMENT_SERVER_PUBLIC_URL=http://documentserver
+export STORAGE_PATH=storage
+export JWT_SECRET=secret
+export EXAMPLE_URL=http://example.com:9000
 ```
 
-Then open the example directory, [install dependencies](./Makefile#L16), and [start the server](./Makefile#L40).
+On Windows, use `set NAME=value` in Command Prompt or `$env:NAME = "value"` in PowerShell instead of `export`.
+
+- `DOCUMENT_SERVER_PUBLIC_URL`: the address of the server with ONLYOFFICE Docs installed. Replace `documentserver` with its name or IP address. The default is `http://documentserver`.
+- `STORAGE_PATH`: the folder where the example creates and stores files. The default is `storage`. A relative path is resolved from the example directory, and you can also set an absolute path. The user running the example needs read and write permissions to this folder.
+- `JWT_SECRET`: must match the JWT secret of ONLYOFFICE Docs. If it is empty, which is the default, the example disables JWT. JWT is enabled in ONLYOFFICE Docs by default, so set `JWT_SECRET` to the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
+- `EXAMPLE_URL`: the address at which ONLYOFFICE Docs reaches the example. Set it if ONLYOFFICE Docs runs on another computer or in Docker, where the address you open in the browser, such as `localhost`, points somewhere else.
+
+If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) in the `$config` array of the `src/views/DocEditorView.php` file.
+
+## Step 3. Install the dependencies and run the example
 
 ```sh
-$ cd "PHP Example"
-$ make prod
-$ make server-prod
+composer install --no-dev
+php -S 0.0.0.0:9000
 ```
 
-By default, the server starts at `0.0.0.0:9000`.
+Open `http://localhost:9000` in your browser. You will see the example's start page, where you can upload a file or create a new document, spreadsheet, presentation, or PDF form.
 
-To configure the example, you can pass the environment variables before the command that starts the server. See [below](#configuration) for more information about environment variables.
+## Run with Docker
 
-## Post Installation
+If you have Docker with Docker Compose, you can run the example together with its own ONLYOFFICE Docs and an nginx proxy instead. You do not need a separate ONLYOFFICE Docs server for this. From the example directory, run:
 
-In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
+```sh
+docker compose up --build --detach
+```
 
-Make sure that the Document Server has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
+Open `http://localhost` in your browser. The environment variables are set in the `docker-compose.yml` file. JWT is enabled with the `your-256-bit-secret` secret. If you change it, change `JWT_SECRET` for both the `documentserver` and `example` services.
 
-## Configuration
+## Troubleshooting
 
-The example is configured by changing environment variables.
+- **The document security token is not correctly formed**: JWT is disabled in the example (`JWT_SECRET` is empty), or `JWT_SECRET` does not match the secret of ONLYOFFICE Docs.
+- **Download failed**: ONLYOFFICE Docs cannot reach the example. Set `EXAMPLE_URL` to an address that ONLYOFFICE Docs can resolve, and restart the example.
 
-| Name                          | Description                                                             | Example                 |
-| ----------------------------- | ----------------------------------------------------------------------- | ----------------------- |
-| `ADDRESS`                     | The address where the server should be started.                         | `0.0.0.0`               |
-| `PORT`                        | The port on which the server should be running.                         | `80`                    |
-| `DOCUMENT_SERVER_PRIVATE_URL` | The URL through which the server will communicate with Document Server. | `http://proxy:8080`     |
-| `DOCUMENT_SERVER_PUBLIC_URL`  | The URL through which a user will communicate with Document Server.     | `http://localhost:8080` |
-| `EXAMPLE_URL`                 | The URL through which Document Server will communicate with the server. | `http://proxy`          |
-| `JWT_SECRET`                  | JWT authorization secret. Leave blank to disable authorization.         | `your-256-bit-secret`   |
-
-## Security Info
-
-Please keep in mind the following security aspects when you are using test examples:
-
-- There is no protection of the storage from unauthorized access since there is no need for authorization.
-- There are no checks against parameter substitution in links, since the parameters are generated by the code according to the pre-arranged scripts.
-- There are no data checks in requests of saving the file after editing, since each test example is intended for requests only from ONLYOFFICE Document Server.
-- There are no prohibitions on using test examples from other sites, since they are intended to interact with ONLYOFFICE Document Server from another domain.
+For more information, see the [documentation](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/php-example/).
