@@ -200,6 +200,12 @@ class ConfigurationManagerJWTSecretTests(TestCase):
     def test_assigns_a_default_value(self):
         config_manager = ConfigurationManager()
         secret = config_manager.jwt_secret()
+        self.assertEqual(secret, 'developer-only-not-a-real-secret')
+
+    @patch.dict(environ, {'JWT_SECRET': ''})
+    def test_allows_an_empty_value_from_the_environment(self):
+        config_manager = ConfigurationManager()
+        secret = config_manager.jwt_secret()
         self.assertEqual(secret, '')
 
     @patch.dict(environ, {

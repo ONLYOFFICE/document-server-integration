@@ -37,7 +37,7 @@ On Windows, use `set NAME=value` in Command Prompt or `$env:NAME = "value"` in P
 
 - `DOCUMENT_SERVER_PUBLIC_URL`: the address of the server with ONLYOFFICE Docs installed. Replace `documentserver` with its name or IP address. The default is `http://documentserver`.
 - `STORAGE_PATH`: the folder where the example creates and stores files. The default is `storage`. A relative path is resolved from the example directory, and you can also set an absolute path. The user running the example needs read and write permissions to this folder.
-- `JWT_SECRET`: must match the JWT secret of ONLYOFFICE Docs. If it is empty, which is the default, the example disables JWT. JWT is enabled in ONLYOFFICE Docs by default, so set `JWT_SECRET` to the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
+- `JWT_SECRET`: must match the JWT secret of ONLYOFFICE Docs. The default is `developer-only-not-a-real-secret`, a test value for development only. Set it to an empty value to disable JWT. Replace it with the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
 - `EXAMPLE_URL`: the address at which ONLYOFFICE Docs reaches the example. Set it if ONLYOFFICE Docs runs on another computer or in Docker, where the address you open in the browser, such as `localhost`, points somewhere else.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) in the `$config` array of the `src/views/DocEditorView.php` file.
@@ -111,7 +111,7 @@ The methods described below are available for PHP test example.
 
 ## Troubleshooting
 
-- **The document security token is not correctly formed**: JWT is disabled in the example (`JWT_SECRET` is empty), or `JWT_SECRET` does not match the secret of ONLYOFFICE Docs.
+- **The document security token is not correctly formed**: JWT is disabled in the example (`JWT_SECRET` is set to an empty value), or `JWT_SECRET` does not match the secret of ONLYOFFICE Docs. It is set to the test value by default, so replace it with your server's secret and restart the example.
 - **Download failed**: ONLYOFFICE Docs cannot reach the example. Set `EXAMPLE_URL` to an address that ONLYOFFICE Docs can resolve, and restart the example.
 
 For more information, see the [documentation](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/php-example/).

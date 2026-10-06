@@ -37,7 +37,7 @@ On Windows, use `set NAME=value` in Command Prompt or `$env:NAME = "value"` in P
 
 - `DOCUMENT_SERVER_PUBLIC_URL`: the address of the server with ONLYOFFICE Docs installed. Replace `documentserver` with its name or IP address.
 - `STORAGE_PATH`: the folder where the example creates and stores files. The default is `storage` in the example folder. You can set an absolute path. The user running the example needs read and write permissions to this folder.
-- `JWT_SECRET`: must match the JWT secret of ONLYOFFICE Docs. JWT is enabled in ONLYOFFICE Docs by default, but disabled in the example until this variable is set, so set it to the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
+- `JWT_SECRET`: must match the JWT secret of ONLYOFFICE Docs. The default is `developer-only-not-a-real-secret`, a test value for development only. Set it to an empty value to disable JWT. Replace it with the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
 - `EXAMPLE_URL`: the address at which ONLYOFFICE Docs reaches the example. Set it if ONLYOFFICE Docs runs on another computer or in Docker, where the address you open in the browser, such as `localhost`, points somewhere else.
 
 If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) in the `config` method of the `app/models/file_model.rb` file.
@@ -55,7 +55,7 @@ To run the example together with ONLYOFFICE Docs in [Docker](https://docs.docker
 
 ## Troubleshooting
 
-- **The document security token is not correctly formed**: JWT is disabled in the example (`JWT_SECRET` is not set), or `JWT_SECRET` does not match the secret of ONLYOFFICE Docs.
+- **The document security token is not correctly formed**: JWT is disabled in the example (`JWT_SECRET` is set to an empty value), or `JWT_SECRET` does not match the secret of ONLYOFFICE Docs. It is set to the test value by default, so replace it with your server's secret and restart the example.
 - **Download failed**: ONLYOFFICE Docs cannot reach the example. Set `EXAMPLE_URL` to an address that ONLYOFFICE Docs can resolve.
 
 ## File API methods used in this example

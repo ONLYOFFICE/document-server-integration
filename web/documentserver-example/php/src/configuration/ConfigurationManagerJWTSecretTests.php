@@ -41,6 +41,14 @@ final class ConfigurationManagerJWTSecretTests extends TestCase
     {
         $configManager = new ConfigurationManager();
         $secret = $configManager->jwtSecret();
+        $this->assertEquals('developer-only-not-a-real-secret', $secret);
+    }
+
+    public function testAllowsAnEmptyValueFromTheEnvironment()
+    {
+        putenv('JWT_SECRET=');
+        $configManager = new ConfigurationManager();
+        $secret = $configManager->jwtSecret();
         $this->assertEquals('', $secret);
     }
 

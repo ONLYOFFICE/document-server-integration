@@ -87,7 +87,8 @@ class ConfigurationManager
 
     public function jwtSecret(): string
     {
-        return getenv('JWT_SECRET') ?: '';
+        $secret = getenv('JWT_SECRET');
+        return $secret === false ? 'developer-only-not-a-real-secret' : $secret;
     }
 
     public function jwtHeader(): string

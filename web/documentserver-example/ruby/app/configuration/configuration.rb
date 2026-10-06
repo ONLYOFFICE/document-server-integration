@@ -90,7 +90,7 @@ class ConfigurationManager
 
   sig { returns(String) }
   def jwt_secret
-    ENV['JWT_SECRET'] || ''
+    ENV['JWT_SECRET'] || 'developer-only-not-a-real-secret'
   end
 
   sig { returns(Integer) }

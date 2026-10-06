@@ -87,7 +87,7 @@ class ConfigurationManager:
         return urlparse(url)
 
     def jwt_secret(self) -> str:
-        return environ.get('JWT_SECRET') or ''
+        return environ.get('JWT_SECRET', 'developer-only-not-a-real-secret')
 
     def jwt_header(self) -> str:
         return environ.get('JWT_HEADER') or 'Authorization'

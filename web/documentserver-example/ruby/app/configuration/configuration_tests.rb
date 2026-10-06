@@ -197,6 +197,13 @@ class ConfigurationManagerJWTSecretTests < Test::Unit::TestCase
   def test_assigns_a_default_value
     config_manager = ConfigurationManager.new
     secret = config_manager.jwt_secret
+    assert_equal(secret, 'developer-only-not-a-real-secret')
+  end
+
+  def test_allows_an_empty_value_from_the_environment
+    ENV['JWT_SECRET'] = ''
+    config_manager = ConfigurationManager.new
+    secret = config_manager.jwt_secret
     assert_equal(secret, '')
   end
 
