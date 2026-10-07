@@ -96,7 +96,7 @@ exports.registerRoutes = function registerRoutes(app) {
         params: req.DocManager.getCustomParams(),
         users,
         preloaderUrl: req.DocManager.getSiteUrl(siteUrl) + configServer.get('preloaderUrl'),
-        convertExts: fileUtility.getConvertExtensions(req.DocManager),
+        convertExts: await fileUtility.getConvertExtensions(req.DocManager),
         editedExts,
         fillExts,
         languages: (await documentService.config(req.DocManager)).langObject,
