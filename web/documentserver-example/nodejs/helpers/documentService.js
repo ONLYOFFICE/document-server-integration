@@ -141,9 +141,17 @@ documentService.getConvertedUriSync = function getConvertedUriSync(
   documentRevisionId,
   callback,
 ) {
-  documentService.getConvertedUri(documentUri, fromExtension, toExtension, documentRevisionId, false, (err, data) => {
-    callback(err, data);
-  });
+  documentService.getConvertedUri(
+    docManager,
+    documentUri,
+    fromExtension,
+    toExtension,
+    documentRevisionId,
+    false,
+    (err, data) => {
+      callback(err, data);
+    },
+  );
 };
 
 // get the url of the converted file
