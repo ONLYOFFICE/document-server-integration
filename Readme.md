@@ -1,25 +1,30 @@
 ## Integration examples
 
-These test examples are simple document management systems that can be built into your application for testing.
-Do NOT use these integration examples on your own server without proper code modifications!
-In case you enabled any of the test examples, disable it before going for production.
+The integration examples are small web applications that list files, open them in [ONLYOFFICE Docs][2], and save them back through the callback handler. Each one does the same job in a different language or framework. Run the one closest to your stack to see a complete integration working before you write your own.
 
-These examples show the way to integrate [ONLYOFFICE Docs][2] into your own website or application using one of the programming languages.
-The package contains examples written in .Net (C# MVC), .Net (C#), Go, Java, Java Spring, Node.js, PHP, PHP (Laravel), Python and Ruby.
+> [!WARNING]
+> The examples are for testing only. They have no authentication, do not validate link parameters or save requests, and accept requests from any site, so anyone who can reach them can read and change their files. Do not run them on a public server, and disable them before going to production.
 
-You should change `http://documentserver` to your server address in these files:
-* [.Net (C# MVC)](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/csharp-mvc) - `web/documentserver-example/csharp-mvc/web.appsettings.config`
-* [.Net (C#)](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/csharp) - `web/documentserver-example/csharp/settings.config`
-* [Go](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/go) - `web\documentserver-example\go\config\configuration.json`
-* [Java](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/java) - `web/documentserver-example/java/src/main/resources/settings.properties`
-* [Java Spring](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/java-spring) - `web/documentserver-example/java-spring/src/main/resources/application.properties`
-* [Node.js](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/nodejs) - `web/documentserver-example/nodejs/config/default.json`
-* [PHP](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/php) - `web/documentserver-example/php/src/configuration/ConfigurationManager.php`
-* [PHP (Laravel)](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/php-laravel) - `web/documentserver-example/php-laravel/.env.example`
-* [Python](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/python) - `web/documentserver-example/python/src/configuration/configuration.py`
-* [Ruby](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/ruby) - `web/documentserver-example/ruby/app/configuration/configuration.rb`
+| Example | Built with | Settings | Runs with |
+| ------- | ---------- | -------- | --------- |
+| [.NET (C#)](web/documentserver-example/csharp) | ASP.NET Web Forms | `settings.config` | Visual Studio and IIS, Windows only |
+| [.NET (C# MVC)](web/documentserver-example/csharp-mvc) | ASP.NET MVC | `web.appsettings.config` | Visual Studio and IIS, Windows only |
+| [Go](web/documentserver-example/go) | gorilla/mux | `config/configuration.json` | `go run` |
+| [Java](web/documentserver-example/java) | Servlets and JSP | `src/main/resources/settings.properties` | Docker Compose |
+| [Java Spring](web/documentserver-example/java-spring) | Spring Boot | `src/main/resources/application.properties` | Maven |
+| [Node.js](web/documentserver-example/nodejs) | Express | `config/default.json` | npm |
+| [PHP](web/documentserver-example/php) | No framework | Environment variables | PHP built-in server or Docker Compose |
+| [PHP Laravel](web/documentserver-example/php-laravel) | Laravel | `.env` | Docker Compose |
+| [Python](web/documentserver-example/python) | Django | Environment variables | Django server or Docker Compose |
+| [Ruby](web/documentserver-example/ruby) | Ruby on Rails | Environment variables | Make |
 
-More information on how to use these examples can be found here: [https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/)
+Whichever example you choose, you set the same three things:
+
+- **The address of ONLYOFFICE Docs**, from which the browser loads the editors and to which the example sends its requests.
+- **The JWT secret**, which must match the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of ONLYOFFICE Docs.
+- **The address of the example**, at which ONLYOFFICE Docs downloads files and sends the callback. Set it when ONLYOFFICE Docs runs on another computer or in Docker, where `localhost` points somewhere else.
+
+The README of each example shows where these settings are and what they are called. For more information, see the [documentation](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/).
 
 ## API methods for test examples
 
@@ -70,15 +75,6 @@ The methods described below are available for all of the test examples.
 | **Method**         | GET                                                          |
 | **Response**       | **Code:** 200 OK <br />**Content on success:**<br /> `[{ "version": <file_version>, "id": <file_id>, "contentLength": <file_size_in_kilobytes>, "pureContentLength": <file_size_in_bytes>, "title": <file_name>, "updated": <last_change_date>}]`<br />**Content on error:**<br /> `"File not found"` |
 | **Sample**         | `curl -X GET http://localhost/files/{fileId}`                |
-
-## Important security info
-
-Please keep in mind the following security aspects when you are using test examples:
-
-* There is no protection of the storage from unauthorized access since there is no need for authorization.
-* There are no checks against parameter substitution in links, since the parameters are generated by the code according to the pre-arranged scripts.
-* There are no data checks in requests of saving the file after editing, since each test example is intended for requests only from ONLYOFFICE Document Server.
-* There are no prohibitions on using test examples from other sites, since they are intended to interact with ONLYOFFICE Document Server from another domain.
 
 ## Project Information
 

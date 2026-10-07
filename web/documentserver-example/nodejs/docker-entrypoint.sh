@@ -5,7 +5,7 @@ export NODE_CONFIG='{
 		"siteUrl": "'${DS_URL:-"/"}'",
 		"token": {
 			"enable": '${JWT_ENABLED:-false}',
-			"secret": "'${JWT_SECRET:-secret}'",
+			"secret": "'${JWT_SECRET:-developer-only-not-a-real-secret}'",
 			"authorizationHeader": "'${JWT_HEADER:-Authorization}'"
 		}
 	}

@@ -506,7 +506,7 @@ label .checkbox {
     display: inline;
 }
 
-.step-descr, .step-error {
+.step-descr, .step-error, .step-settings {
     display: block;
     margin-left: 35px;
     font-size: 11px;

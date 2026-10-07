@@ -1,207 +1,63 @@
-## Overview
+# Node.js integration
 
-This example will help you integrate ONLYOFFICE Docs into your web application on Node.js.
+The Node.js integration example is a small Express application that lists files, opens them in ONLYOFFICE Docs, and saves them back through the callback handler. Run it to see a complete integration working before you write your own.
 
-**Please note**: It is intended for testing purposes and demonstrating functionality of the editors. Do NOT use this integration example on your own server without proper code modifications! In case you enabled the test example, disable it before going for production.
+> [!WARNING]
+> This example is for testing only. It has no authentication, does not validate link parameters or save requests, and accepts requests from any site, so anyone who can reach it can read and change its files. Do not run it on a public server, and disable it before going to production.
 
-## For Windows
+## Prerequisites
 
-### Step 1. Install ONLYOFFICE Docs
+- **ONLYOFFICE Docs**: [self-hosted](https://www.onlyoffice.com/download?from=api#docs-developer) or [cloud](https://www.onlyoffice.com/docs-registration?from=api).
+- **Node.js**: see the [official website](https://nodejs.org/en/download/).
+- **Git**: see the [official website](https://git-scm.com/downloads).
 
-Download and install ONLYOFFICE Docs (packaged as Document Server).
+## Step 1. Download the example
 
-See the detailed guide to learn how to [install Document Server for Windows](https://helpcenter.onlyoffice.com/installation/docs-developer-install-windows.aspx).
+Clone the [example repository](https://github.com/ONLYOFFICE/document-server-integration/tree/main/web/documentserver-example/nodejs), go to the Node.js example, and fetch its submodules:
 
-### Step 2. Download the Node.js code for the editors integration
-
-Download the [Node.js example](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/) from our site.
-
-To connect the editors to your website, specify the path to the editors installation and the path to the storage folder in the *config/default.json* file:
-
-```
-"storageFolder": "./files"
-"storagePath": "/files"
-"siteUrl": "https://documentserver/"
+```sh
+git clone --depth 1 https://github.com/ONLYOFFICE/document-server-integration
+cd document-server-integration/web/documentserver-example/nodejs
+git submodule update --init --depth 1 .
 ```
 
-where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed, the **storageFolder** and **storagePath** are the paths where files will be created and stored. You can set an absolute path. For example, *D:\\\\folder*. Please note that on Windows OS the double backslash must be used as a separator.
+## Step 2. Configure the connection
 
-If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) in the *\views\editor.ejs* file.
+Open the `config/default.json` file and edit the following keys. All of them are inside the `server` object:
 
-### Step 3. Install Node.js environment
-
-Install the **node.js** environment which is going to be used to run the Node.js project. Please follow the link at the [official website](https://nodejs.org/en/download/) choosing the correct version for your Windows OS (32-bit or 64-bit).
-
-### Step 4. Configure JWT 
-
-Open the *config/default.json* file and enable JWT:
-
-```
+```json
 {
-    "server": {
-        "token": {
-            "enable": true
-        }
+  "server": {
+    "siteUrl": "http://documentserver/",
+    "storageFolder": "./files",
+    "exampleUrl": null,
+    "token": {
+      "enable": true,
+      "secret": "developer-only-not-a-real-secret"
     }
+  }
 }
 ```
 
-Also, [specify the same secret key](https://helpcenter.onlyoffice.com/installation/docs-configure-jwt.aspx) as used in your Document Server: 
+- `siteUrl`: the address of the server with ONLYOFFICE Docs installed. Replace `documentserver` with its name or IP address.
+- `storageFolder`: the folder where the example creates and stores files. You can set an absolute path. In JSON, escape each backslash, for example, `D:\\folder`. The user running the example needs read and write permissions to this folder.
+- `token.enable` and `token.secret`: must match the JWT settings of ONLYOFFICE Docs. JWT is enabled in both by default, so leave `enable` set to `true` and replace the `secret` value with the [secret key](https://api.onlyoffice.com/docs/docs-api/additional-api/signature/) of your server.
+- `exampleUrl`: the address at which ONLYOFFICE Docs reaches the example. Set it if ONLYOFFICE Docs runs on another computer or in Docker, where the address you open in the browser, such as `localhost`, points somewhere else.
 
+If you want to experiment with the editor configuration, modify the [parameters](https://api.onlyoffice.com/docs/docs-api/usage-api/advanced-parameters/) in the `views/config.ejs` file.
+
+## Step 3. Install the dependencies and run the example
+
+```sh
+npm install
+npm start
 ```
-{
-    "server": {
-        "token": {
-            "secret": "secret"
-        }
-    }
-}
-```
 
-### Step 5. Run the Node.js code
+Open `http://localhost:3000` in your browser. You will see the example's start page, where you can upload a file or create a new document, spreadsheet, presentation, or PDF form.
 
-We will run the code in Node.js runtime environment and will interact with it using the **command line interface (cmd)**.
+## Troubleshooting
 
-1. Launch the **Command Prompt** and switch to the folder with the Node.js project code, for example:
+- **The document security token is not correctly formed**: JWT is disabled in the example (`token.enable` is `false`), or `token.secret` does not match the secret of ONLYOFFICE Docs.
+- **Download failed**: ONLYOFFICE Docs cannot reach the example. Set `exampleUrl` in `config/default.json` to an address that ONLYOFFICE Docs can resolve.
 
-    ```
-    cd /d "C:\Node.js Example"
-    ```
-
-2. Node.js comes with a package manager, **node package manager (npm)**, which is automatically installed along with Node.js. To run the Node.js code, install the project modules using the following *npm* command:
-
-    ```
-    npm install
-    ```
-
-	A new *node_modules* folder will be created in the project folder.
-
-3. Run the project using the **Command Prompt**:
-
-    ```
-    node bin/www
-    ```
-
-4. See the result in your browser using the address:
-
-    ```
-    http://localhost:3000
-    ```
-
-### Step 6. Check accessibility
-
-In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
-
-Make sure that the Document Server has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
-
-## For Linux
-
-### Step 1. Install ONLYOFFICE Docs
-
-Download and install ONLYOFFICE Docs (packaged as Document Server).
-
-See the detailed guide to learn how to [install Document Server for Linux](https://helpcenter.onlyoffice.com/installation/docs-developer-install-ubuntu.aspx).
-
-### Step 2. Install the prerequisites and run the website with the editors
-
-1. Install **Node.js**:
-
-    ```
-    curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-    ```
-
-    ```
-    sudo apt-get install -y nodejs
-    ```
-
-2. Download the archive with the Node.js example and unpack it:
-
-    ```
-    wget https://github.com/ONLYOFFICE/document-server-integration/releases/latest/download/Node.js.Example.zip
-    ```
-
-    ```
-    unzip Node.js.Example.zip
-    ```
-
-3. Change the current directory for the project directory:
-
-    ```
-    cd Node.js\ Example/
-    ```
-
-4. Install the dependencies:
-
-    ```
-    npm install
-    ```
-
-5. Edit the *config/default.json* configuration file. Specify the name of your local server with the ONLYOFFICE Document Server installed.
-
-    ```
-    nano config/default.json
-    ```
-
-	Edit the following lines:
-
-    ```
-    "storageFolder": "./files"
-    "storagePath": "/files"
-    "siteUrl": "https://documentserver/"
-    ```
-
-	where the **documentserver** is the name of the server with the ONLYOFFICE Document Server installed, the **storageFolder** and **storagePath** are the paths where files will be created and stored. Please note that you must have read and write permissions to the folder. If you do not have them, please use the next command:
-   ```
-   sudo chmod -R ugo+rw /{path}
-   ```
-
-   Enable JWT:
-
-    ```
-    {
-      "server": {
-        "token": {
-          "enable: true
-        }
-      }
-    }
-    ```
-
-    Also, [specify the same secret key](https://helpcenter.onlyoffice.com/installation/docs-configure-jwt.aspx) as used in your Document Server: 
-
-    ```
-    {
-      "server": {
-        "token": {
-          "secret": "secret"
-        }
-      }
-    }
-    ```
-
-6. Run the project with Node.js:
-
-    ```
-    nodejs bin/www
-    ```
-
-7. See the result in your browser using the address:
-
-    ```
-    http://localhost:3000
-    ```
-
-### Step 3. Check accessibility
-
-In case the example and Document Server are installed on different computers, make sure that your server with the example installed has access to the Document Server with the address which you specify instead of **documentserver** in the configuration files. 
-
-Make sure that the Document Server has access to the server with the example installed with the address which you specify instead of **example.com** in the configuration files.
-
-## Important security info
-
-Please keep in mind the following security aspects when you are using test examples:
-
-* There is no protection of the storage from unauthorized access since there is no need for authorization.
-* There are no checks against parameter substitution in links, since the parameters are generated by the code according to the pre-arranged scripts.
-* There are no data checks in requests of saving the file after editing, since each test example is intended for requests only from ONLYOFFICE Document Server.
-* There are no prohibitions on using test examples from other sites, since they are intended to interact with ONLYOFFICE Document Server from another domain.
+For more information, see the [documentation](https://api.onlyoffice.com/docs/docs-api/samples/language-specific-examples/nodejs-example/).

@@ -197,6 +197,15 @@ DocManager.prototype.getServerHost = function getServerHost() {
     + `${this.req.headers['x-forwarded-prefix'] || ''}`;
 };
 
+// get site url
+DocManager.prototype.getSiteUrl = function getSiteUrl(siteUrl) {
+  let absSiteUrl = siteUrl;
+  if (absSiteUrl.indexOf('/') === 0) {
+    absSiteUrl = this.getServerHost() + siteUrl;
+  }
+  return absSiteUrl;
+};
+
 // get protocol from the request
 DocManager.prototype.getProtocol = function getProtocol() {
   return this.req.headers['x-forwarded-proto'] || this.req.protocol;

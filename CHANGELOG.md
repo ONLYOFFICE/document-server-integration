@@ -1,6 +1,10 @@
 # Change Log
 
 ##
+- nodejs: AI Auto Fill Plugin v1.1.0
+- nodejs: set default secret
+- nodejs: conversion with file in body
+- nodejs: handle 'newext' in WOPI discovery
 - nodejs: use formats, languages, maxFileSize, urls to services, jwt header and prefix from document server meta
 - nodejs: disable AI plugin for anonymous
 - nodejs: setUsers for c=filler
