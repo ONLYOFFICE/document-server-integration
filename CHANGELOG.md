@@ -1,6 +1,6 @@
 # Change Log
 
-##
+## 1.16.0
 - nodejs: Content-Digest header on file download
 - nodejs: AI Auto Fill Plugin v1.1.0
 - nodejs: set default secret
