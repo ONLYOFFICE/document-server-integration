@@ -131,7 +131,7 @@ app.get('/forgotten', async (req, res) => {
         } else {
           resolve(JSON.parse(ress.data));
         }
-      });
+      }).catch(reject);
     });
   }
 
@@ -148,7 +148,7 @@ app.get('/forgotten', async (req, res) => {
             url: parsedData.url,
           });
         }
-      });
+      }).catch(reject);
     });
   }
 
@@ -164,18 +164,18 @@ app.get('/forgotten', async (req, res) => {
   res.render('forgotten', { forgottenFiles });
 });
 
-app.delete('/forgotten', (req, res) => { // define a handler for removing forgotten file
+app.delete('/forgotten', async (req, res) => { // define a handler for removing forgotten file
   if (!enableForgotten) {
     res.sendStatus(403);
     return;
   }
 
-  res.DocManager = new DocManager(req, res);
+  req.DocManager = new DocManager(req, res);
 
   try {
     const fileName = req.query.filename;
     if (fileName && typeof fileName === 'string') { // if the forgotten file name is defined
-      documentService.commandRequest(req.DocManager, 'deleteForgotten', fileName);
+      await documentService.commandRequest(req.DocManager, 'deleteForgotten', fileName);
       res.status(204).send();
     }
   } catch (ex) {
@@ -1069,7 +1069,7 @@ app.post('/track', async (req, res) => { // define a handler for tracking file c
         if (bodyTrack.users.indexOf(user) === -1) {
           const { key } = bodyTrack;
           try {
-            documentService.commandRequest(req.DocManager, 'forcesave', key); // call the forcesave command
+            await documentService.commandRequest(req.DocManager, 'forcesave', key); // call the forcesave command
           } catch (ex) {
             console.log(ex);
           }
@@ -1456,7 +1456,7 @@ app.get('/editor', async (req, res) => { // define a handler for editing documen
   }
 });
 
-app.post('/rename', (req, res) => { // define a handler for renaming file
+app.post('/rename', async (req, res) => { // define a handler for renaming file
   req.DocManager = new DocManager(req, res);
   let { newfilename } = req.body;
   const origExt = req.body.ext;
@@ -1474,7 +1474,12 @@ app.post('/rename', (req, res) => { // define a handler for renaming file
     res.end();
   };
 
-  documentService.commandRequest(req.DocManager, 'meta', dockey, result, meta);
+  try {
+    await documentService.commandRequest(req.DocManager, 'meta', dockey, result, meta);
+  } catch (ex) {
+    console.log(ex);
+    res.status(500).json({ error: ex.message });
+  }
 });
 
 app.post('/historyObj', (req, res) => {
