@@ -93,6 +93,7 @@ documentService.config = async function config(docManager) {
         urls: {
           command: '',
           converter: '',
+          converterFromFile: '',
           api: '',
         },
         authorization: {
