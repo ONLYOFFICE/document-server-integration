@@ -615,6 +615,7 @@ footer table tr td:first-child {
     background-repeat: no-repeat;
     display: inline-block;
     height: 16px;
+    line-height: 0;
     max-width: 250px;
     overflow: hidden;
     padding: 8px 0 1px 26px;
@@ -780,6 +781,10 @@ footer table tr td:first-child {
     user-select: none;
     -moz-user-select: none;
     -webkit-user-select: none;
+}
+
+.contentCells img {
+    vertical-align: top;
 }
 
 .contentCells-shift {
