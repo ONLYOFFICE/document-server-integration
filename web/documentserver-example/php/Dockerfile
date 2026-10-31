@@ -1,4 +1,4 @@
-FROM php:8.2.8-fpm-alpine3.18 AS example
+FROM php:8.2-fpm-alpine AS example
 WORKDIR /srv
 COPY . .
 COPY --from=composer:2 /usr/bin/composer /usr/local/bin/composer
